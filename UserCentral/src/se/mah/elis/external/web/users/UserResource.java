@@ -1,4 +1,4 @@
-package se.mah.elis.authentication.users.impl;
+package se.mah.elis.external.web.users;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;

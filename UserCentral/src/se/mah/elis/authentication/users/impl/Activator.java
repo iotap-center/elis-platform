@@ -5,6 +5,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import se.mah.elis.authentication.users.UserCentral;
+import se.mah.elis.external.web.users.UserResource;
 
 public class Activator implements BundleActivator {
 

@@ -1,4 +1,5 @@
-Export-Package: se.mah.elis.authentication.users
+Export-Package: se.mah.elis.external.web.users,\
+	se.mah.elis.authentication.users
 Bundle-Activator: se.mah.elis.authentication.users.impl.Activator
 Private-Package: se.mah.elis.authentication.users.impl
 -buildpath: osgi.core,\
