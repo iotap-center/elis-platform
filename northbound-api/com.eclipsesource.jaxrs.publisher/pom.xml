@@ -1,19 +1,63 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.eclipsesource.jaxrs.publisher</groupId>
-  <artifactId>com.eclipsesource.jaxrs.publisher</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <artifactId>osgi-connector</artifactId>
+  <version>0.0.1</version>
+  <packaging>bundle</packaging>
+  <name>Adaptation of OSGi JAX-RS Connector</name>
+  
   <build>
-    <sourceDirectory>src</sourceDirectory>
     <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+      <plugin>    <!-- (2) START -->
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.4.0</version>
+        <extensions>true</extensions>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <instructions>
+            <Export-Package>${project.groupId}</Export-Package>
+            <Private-Package>${project.groupId}.*</Private-Package>
+            <Bundle-Activator>${project.groupId}.internal.Activator</Bundle-Activator>
+          </instructions>
         </configuration>
-      </plugin>
+      </plugin>    <!-- (2) END -->
     </plugins>
   </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.osgi</groupId>
+  		<artifactId>org.osgi.core</artifactId>
+  		<version>4.3.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.osgi</groupId>
+  		<artifactId>org.osgi.compendium</artifactId>
+  		<version>4.3.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>javax.servlet</groupId>
+  		<artifactId>javax.servlet-api</artifactId>
+  		<version>3.1.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>javax.ws.rs</groupId>
+  		<artifactId>javax.ws.rs-api</artifactId>
+  		<version>2.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.glassfish.jersey.core</groupId>
+  		<artifactId>jersey-server</artifactId>
+  		<version>2.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.glassfish.jersey.core</groupId>
+  		<artifactId>jersey-common</artifactId>
+  		<version>2.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.glassfish.jersey.containers</groupId>
+  		<artifactId>jersey-container-servlet-core</artifactId>
+  		<version>2.0</version>
+  	</dependency>
+  </dependencies>
 </project>

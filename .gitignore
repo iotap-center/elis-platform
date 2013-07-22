@@ -15,6 +15,7 @@
 /*/generated
 /*/target
 /*feature/compile*.xml
+/*/target
 
 # vi detritus
 *.swp
