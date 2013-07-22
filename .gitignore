@@ -13,6 +13,7 @@
 /*/bin
 /*/bin_test
 /*/generated
+/*/target
 /*feature/compile*.xml
 
 # vi detritus
