@@ -14,6 +14,7 @@
 /*/bin_test
 /*/generated
 /*feature/compile*.xml
+/*/target
 
 # vi detritus
 *.swp
