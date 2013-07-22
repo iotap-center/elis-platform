@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ElisDemoElectricityUse
+Bundle-SymbolicName: ElisDemoElectricityUse
+Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: ElisDemoElectricityUse.jar
+Export-Package: se.mah.elis.demo.electricityuse
+Bundle-Activator: se.mah.elis.demo.electricityuse.Activator
+Require-Bundle: org.eclipse.osgi;bundle-version="3.9.0",
+ com.googlecode.json-simple;bundle-version="1.1.1"
