@@ -3,6 +3,7 @@
  */
 package se.mah.elis.adaptor.building.api.entities.devices;
 
+import se.mah.elis.adaptor.building.api.data.Image;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
 
 /**
@@ -18,5 +19,5 @@ public interface Camera extends Sensor {
 	 * @return The image
 	 * @throws SensorFailedException if the image couldn't be fetched.
 	 */
-	Object getImage() throws SensorFailedException;
+	Image getImage() throws SensorFailedException;
 }

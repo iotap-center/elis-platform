@@ -41,4 +41,12 @@ public interface Gateway {
 	 * @throws GatewayCommunicationException
 	 */
 	void connect() throws GatewayCommunicationException;
+	
+	/**
+	 * Checks whether a gateway is online or not. If it isn't online, then we
+	 * shouldn't try to read stuff from it or perform actuating actions on it.
+	 * 
+	 * @return True if the gateway is online, otherwise false.
+	 */
+	boolean isOnline();
 }

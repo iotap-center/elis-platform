@@ -31,7 +31,7 @@ public interface Device {
 	/**
 	 * This method is used to get the name of this device.
 	 * 
-	 * @returnThe name of the device.
+	 * @return The name of the device.
 	 */
 	String getName();
 	
