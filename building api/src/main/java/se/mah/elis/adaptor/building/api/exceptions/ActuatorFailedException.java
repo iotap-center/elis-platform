@@ -7,7 +7,7 @@ package se.mah.elis.adaptor.building.api.exceptions;
  * This exception is thrown when an actuator fails to execute an action.
  * 
  * @author "Johan Holmberg, Malmö University"
- *
+ * @since 1.0
  */
 public class ActuatorFailedException extends Exception {
 

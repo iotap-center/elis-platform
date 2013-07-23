@@ -1,7 +1,38 @@
 <html>
 <body>
-This is merely a test.
+This package provides all device types that are supported by the Elis platform.
 
+<p>
+Every single device is descended from the {@link Device} base interface. They
+are then divided into two categories: {@link Sensor}s and {@link Actuator}s.
+The key difference between the two is that a sensor device <i>measures</i> its
+environment, whereas an actuator <i>manipulates</i> it. The sensor class of
+devices is further divided into the two {@link Detector} and {@link Sampler}
+interfaces, which provide functionality for sampling and event creation. Note
+that there are some sensors that fall outside of any of those two categories.
+Furthermore, a device can be both a sensor and an actuator. This is reflected
+in the API, where for example the {@link Thermostat} interface extends both the
+{@link Thermometer}, which is a sensor, and the {@link Actuator} interfaces. As
+is the case with all interfaces, any implementation of those interfaces can
+choose freely what interfaces to implement, giving way for multi-capable
+devices.
+</p>
+
+<p>
+However, the above isn't entirely true. The {@link Gateway} interface, that is
+used to describe a gateway device isn't considered a device on its own merits.
+Instead, it is considered a special case of a {@link DeviceSet}, with some
+extra information regarding addressing, identification and so on. In the case
+where an actual gateway has sensory or actuating capabilities, the proper
+implementation of such a gateway object would have to implement the gateway
+class as both a {@link Device} and a {@link Gateway}.
+</p>
+
+<p>
+Also provided in this package are various auxiliary interfaces, that can be
+used as capabilities to the device objects. One such example is the
+{@link BatteryEquipped} interface.
+</p>
 @since 1.0
 </body>
 </html>

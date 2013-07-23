@@ -13,6 +13,7 @@ import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
  * rooms, or a set of appliances in a room.
  * 
  * @author "Johan Holmberg, Malmö University"
+ * @since 1.0
  */
 public interface DeviceSet extends Collection<Device> {
 	
@@ -20,6 +21,7 @@ public interface DeviceSet extends Collection<Device> {
 	 * This method is used to get the id number of the set.
 	 * 
 	 * @return The id number of the set.
+	 * @since 1.0
 	 */
 	int getId();
 	
@@ -28,6 +30,7 @@ public interface DeviceSet extends Collection<Device> {
 	 * 
 	 * @param id The set's new id number.
 	 * @throws StaticEntityException if the set's id is locked.
+	 * @since 1.0
 	 */
 	void setId(int id) throws StaticEntityException;
 	
@@ -35,6 +38,7 @@ public interface DeviceSet extends Collection<Device> {
 	 * This method is used to get the name of this set.
 	 * 
 	 * @return The name of the set.
+	 * @since 1.0
 	 */
 	String getName();
 	
@@ -43,6 +47,7 @@ public interface DeviceSet extends Collection<Device> {
 	 * 
 	 * @param name The set's new name.
 	 * @throws StaticEntityException if the set's name is locked.
+	 * @since 1.0
 	 */
 	void setName(String name) throws StaticEntityException;
 }

@@ -8,6 +8,7 @@ package se.mah.elis.adaptor.building.api.exceptions;
  * device is interrupted or fails to be established.
  * 
  * @author "Johan Holmberg, Malmö University"
+ * @since 1.0
  */
 public class GatewayCommunicationException extends Exception {
 

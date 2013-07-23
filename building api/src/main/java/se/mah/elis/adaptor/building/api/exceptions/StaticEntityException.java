@@ -8,6 +8,7 @@ package se.mah.elis.adaptor.building.api.exceptions;
  * object that can't be altered for whatever reason.
  * 
  * @author "Johan Holmberg, Malmö University"
+ * @since 1.0
  */
 public class StaticEntityException extends Exception {
 

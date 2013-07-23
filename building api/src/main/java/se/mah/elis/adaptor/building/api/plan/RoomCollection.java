@@ -12,6 +12,7 @@ import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
  * a building.
  * 
  * @author "Johan Holmberg, Malmö University"
+ * @since 1.0
  */
 public interface RoomCollection extends BuildingPartition, Collection<Room> {
 }

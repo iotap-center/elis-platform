@@ -11,6 +11,7 @@ import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
  * comes equipped with toggling functionality.
  * 
  * @author "Johan Holmberg, Malmö University"
+ * @since 1.0
  *
  */
 public interface PowerSwitch extends Actuator {
@@ -19,6 +20,7 @@ public interface PowerSwitch extends Actuator {
 	 * This method is used to put the actuator in <i>on mode</i>.
 	 * 
 	 * @throws ActuatorFailedException if the action couldn't be executed.
+	 * @since 1.0
 	 */
 	void turnOn() throws ActuatorFailedException;
 	
@@ -26,6 +28,7 @@ public interface PowerSwitch extends Actuator {
 	 * This method is used to put the actuator in <i>off mode</i>.
 	 * 
 	 * @throws ActuatorFailedException if the action couldn't be executed.
+	 * @since 1.0
 	 */
 	void turnOff() throws ActuatorFailedException;
 	
@@ -34,6 +37,7 @@ public interface PowerSwitch extends Actuator {
 	 * mode is <i>off</i>, the mode will switch to <i>on</i> and vice versa.
 	 * 
 	 * @throws ActuatorFailedException if the action couldn't be executed.
+	 * @since 1.0
 	 */
 	void toggle() throws ActuatorFailedException;
 

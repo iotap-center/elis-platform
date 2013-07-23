@@ -10,6 +10,7 @@ import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
  * interface being excluded.
  * 
  * @author "Johan Holmberg, Malmö University"
+ * @since 1.0
  */
 public interface Device {
 	
@@ -17,6 +18,7 @@ public interface Device {
 	 * This method is used to get the id number of the device.
 	 * 
 	 * @return The id number of the device.
+	 * @since 1.0
 	 */
 	int getId();
 	
@@ -25,6 +27,7 @@ public interface Device {
 	 * 
 	 * @param id The device's new id number.
 	 * @throws StaticEntityException if the device's id is locked.
+	 * @since 1.0
 	 */
 	void setId(int id) throws StaticEntityException;
 	
@@ -32,6 +35,7 @@ public interface Device {
 	 * This method is used to get the name of this device.
 	 * 
 	 * @return The name of the device.
+	 * @since 1.0
 	 */
 	String getName();
 	
@@ -40,6 +44,7 @@ public interface Device {
 	 * 
 	 * @param name The device's new name.
 	 * @throws StaticEntityException if the device's name is locked.
+	 * @since 1.0
 	 */
 	void setName(String name) throws StaticEntityException;
 	
@@ -47,6 +52,7 @@ public interface Device {
 	 * This method is used to get the description for the device.
 	 * 
 	 * @return The description of this device.
+	 * @since 1.0
 	 */
 	String getDescription();
 	
@@ -55,6 +61,7 @@ public interface Device {
 	 * 
 	 * @param description The device's new description.
 	 * @throws StaticEntityException if the device's description is locked.
+	 * @since 1.0
 	 */
 	void setDescription(String description) throws StaticEntityException;
 	
@@ -63,6 +70,7 @@ public interface Device {
 	 * shouldn't try to read stuff from it or perform actuating actions on it.
 	 * 
 	 * @return True if the device is online, otherwise false.
+	 * @since 1.0
 	 */
 	boolean isOnline();
 }

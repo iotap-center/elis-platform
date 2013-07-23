@@ -12,6 +12,7 @@ import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
  * either apartments or rooms.
  * 
  * @author "Johan Holmberg, Malmö University"
+ * @since 1.0
  */
 public interface Building extends Collection<BuildingPartition> {
 	
@@ -19,6 +20,7 @@ public interface Building extends Collection<BuildingPartition> {
 	 * This method is used to get the id number of this building.
 	 * 
 	 * @return The id number of the building.
+	 * @since 1.0
 	 */
 	int getId();
 	
@@ -27,6 +29,7 @@ public interface Building extends Collection<BuildingPartition> {
 	 * 
 	 * @param id The device's new id number.
 	 * @throws StaticEntityException if the building's id is locked.
+	 * @since 1.0
 	 */
 	void setId(int id) throws StaticEntityException;
 	
@@ -34,6 +37,7 @@ public interface Building extends Collection<BuildingPartition> {
 	 * This method is used to get the name of this building.
 	 * 
 	 * @return The name of the building collection.
+	 * @since 1.0
 	 */
 	String getName();
 	
@@ -42,6 +46,7 @@ public interface Building extends Collection<BuildingPartition> {
 	 * 
 	 * @param name The device's new name.
 	 * @throws StaticEntityException if the building's name is locked.
+	 * @since 1.0
 	 */
 	void setName(String name) throws StaticEntityException;
 }
