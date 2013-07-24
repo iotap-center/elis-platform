@@ -3,6 +3,7 @@
  */
 package se.mah.elis.adaptor.building.api.entities.devices;
 
+import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
 
 /**
@@ -20,7 +21,7 @@ public interface Device {
 	 * @return The id number of the device.
 	 * @since 1.0
 	 */
-	int getId();
+	DeviceIdentifier getId();
 	
 	/**
 	 * This method is used to set the id number of the device.
@@ -29,7 +30,7 @@ public interface Device {
 	 * @throws StaticEntityException if the device's id is locked.
 	 * @since 1.0
 	 */
-	void setId(int id) throws StaticEntityException;
+	void setId(DeviceIdentifier id) throws StaticEntityException;
 	
 	/**
 	 * This method is used to get the name of this device.
