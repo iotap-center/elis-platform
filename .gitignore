@@ -33,3 +33,6 @@
 
 # findbugs
 *.findbugs.xml
+
+# Project specific
+!/felix-configuration/bundle/*.jar
