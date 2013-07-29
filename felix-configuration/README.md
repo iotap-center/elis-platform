@@ -21,3 +21,11 @@ From the command-line, assuming you are in `$FELIX_HOME` run `java -jar bin/feli
 ## Installing Elis bundles
 
 _TODO_
+
+## Configuration
+
+To change port modify the following property in `config.properties`:
+
+```
+    org.osgi.service.http.port=8088
+```
