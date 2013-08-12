@@ -17,114 +17,114 @@ public interface ElectricitySample extends Sample {
 	/**
 	 * Gets the currently measured current in Ampères.
 	 * 
-	 * @return The currently measured current in Ampères, given as a float.
+	 * @return The currently measured current in Ampères, given as a double.
 	 * @since 1.0
 	 */
-	float getCurrentCurrent();
+	double getCurrentCurrent();
 	
 	/**
 	 * Gets the currently measured voltage in Volts.
 	 * 
-	 * @return The currently measured voltage in Volts, given as a float.
+	 * @return The currently measured voltage in Volts, given as a double.
 	 * @since 1.0
 	 */
-	float getCurrentVoltage();
+	double getCurrentVoltage();
 	
 	/**
 	 * Gets the currently measured power consumption in Watts.
 	 * 
 	 * @return The currently measured power consumption in Watts, given as a
-	 * 		   float.
+	 * 		   double.
 	 * @since 1.0
 	 */
-	float getCurrentPower();
+	double getCurrentPower();
 	
 	/**
 	 * Gets the highest measured current in the sample in Ampères.
 	 * 
-	 * @return The highest measured current in Ampères, given as a float.
+	 * @return The highest measured current in Ampères, given as a double.
 	 * @since 1.0
 	 */
-	float getTopCurrent();
+	double getTopCurrent();
 	
 	/**
 	 * Gets the highest measured voltage in the sample in Volts.
 	 * 
-	 * @return The highest measured current in Volts, given as a float.
+	 * @return The highest measured current in Volts, given as a double.
 	 * @since 1.0
 	 */
-	float getTopVoltage();
+	double getTopVoltage();
 	
 	/**
 	 * Gets the highest measured power usage in the sample in Watts.
 	 * 
-	 * @return The highest measured power usage in Watts, given as a float.
+	 * @return The highest measured power usage in Watts, given as a double.
 	 * @since 1.0
 	 */
-	float getTopPower();
+	double getTopPower();
 	
 	/**
 	 * Gets the lowest measured current in the sample in Ampères.
 	 * 
-	 * @return The lowest measured current in Ampères, given as a float.
+	 * @return The lowest measured current in Ampères, given as a double.
 	 * @since 1.0
 	 */
-	float getMinCurrent();
+	double getMinCurrent();
 
 	/**
 	 * Gets the lowest measured voltage in the sample in Volts.
 	 * 
-	 * @return The lowest measured current in Volts, given as a float.
+	 * @return The lowest measured current in Volts, given as a double.
 	 * @since 1.0
 	 */
 	
-	float getMinVoltage();
+	double getMinVoltage();
 	
 	/**
 	 * Gets the lowest measured power usage in the sample in Watts.
 	 * 
-	 * @return The lowest measured power usage in Watts, given as a float.
+	 * @return The lowest measured power usage in Watts, given as a double.
 	 * @since 1.0
 	 */
-	float getMinPower();
+	double getMinPower();
 	
 	/**
 	 * Gets the mean current in the sample in Ampères.
 	 * 
-	 * @return The mean current in Ampères, given as a float.
+	 * @return The mean current in Ampères, given as a double.
 	 * @since 1.0
 	 */
-	float getMeanCurrent();
+	double getMeanCurrent();
 	
 	/**
 	 * Gets the mean voltage in the sample in Volts.
 	 * 
-	 * @return The mean voltage in Volts, given as a float.
+	 * @return The mean voltage in Volts, given as a double.
 	 * @since 1.0
 	 */
-	float getMeanVoltage();
+	double getMeanVoltage();
 	
 	/**
 	 * Gets the mean power usage in the sample in Watts.
 	 * 
-	 * @return The mean power usage in Watts, given as a float.
+	 * @return The mean power usage in Watts, given as a double.
 	 * @since 1.0
 	 */
-	float getMeanPower();
+	double getMeanPower();
 	
 	/**
 	 * Gets the total energy usage during the sample in Joules.
 	 * 
-	 * @return The total energy usage in Joules, given as a float.
+	 * @return The total energy usage in Joules, given as a double.
 	 * @since 1.0
 	 */
-	float getTotalEnergyUsageInJoules();
+	double getTotalEnergyUsageInJoules();
 	
 	/**
 	 * Gets the total energy usage during the sample in Watt hours (Wh).
 	 * 
-	 * @return The total energy usage in Watt hours, given as a float.
+	 * @return The total energy usage in Watt hours, given as a double.
 	 * @since 1.0
 	 */
-	float getTotalEnergyUsageInWh();
+	double getTotalEnergyUsageInWh();
 }
