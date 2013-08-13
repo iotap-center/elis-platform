@@ -1,4 +1,4 @@
-package se.mah.elis.demo.electricityuse;
+package se.mah.elis.adaptor.utilityprovider.eon;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -22,7 +22,7 @@ public class Activator implements BundleActivator {
 		System.out.println("Eletricity Use Service Started");
 		
 		// Username and Password needed for authentication
-		ElectricityUseService electricityService = new ElectricityUseService("eon2hem@gmail.com", "02DCBD");
+		EonUtilityProviderService electricityService = new EonUtilityProviderService("eon2hem@gmail.com", "02DCBD");
 		
 		long panelId = electricityService.getPanels();
 		String deviceId = electricityService.getDevices(panelId);

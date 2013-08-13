@@ -1,4 +1,4 @@
-package se.mah.elis.demo.electricityuse;
+package se.mah.elis.adaptor.utilityprovider.eon;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -11,12 +11,12 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
 
-public class ElectricityUseService{
+public class EonUtilityProviderService {
 
 	private final String USER_AGENT = "Mozilla/5.0 - Jocke";
 	private String key; 
 	
-	public ElectricityUseService (String User,String Password){
+	public EonUtilityProviderService (String User,String Password){
 		try {
 			this.key = getAuthKey(User,Password);
 		} catch (Exception e) {

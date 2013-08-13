@@ -1,15 +1,10 @@
-package org.example.foo.test;
+package se.mah.elis.adaptor.utilityprovider.eon.test;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class FooTest {
-
-	@Test
-	public void testStart() {
-		fail("Not yet implemented");
-	}
+public class EonUtilityProviderTest {
 
 	@Test
 	public void testStop() {
