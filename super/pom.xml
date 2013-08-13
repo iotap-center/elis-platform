@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>se.mah.elis</groupId>
+  <artifactId>super-pom</artifactId>
+  <version>0.0.1</version>
+  <packaging>pom</packaging>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>org.codehaus.mojo</groupId>
+  		<artifactId>wagon-maven-plugin</artifactId>
+  		<version>1.0-beta-4</version>
+  		<type>maven-plugin</type>
+  	</dependency>
+  	<dependency>
+  	  <groupId>junit</groupId>
+  	  <artifactId>junit</artifactId>
+  	  <version>4.8.1</version>
+  	  <scope>test</scope>
+  	</dependency>
+  </dependencies>  
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-file</artifactId>
+        <version>1.0-beta-4</version>
+      </extension>
+    </extensions>
+    <plugins>
+      <plugin>    <!-- OSGi BND START -->
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.4.0</version>
+        <extensions>true</extensions>
+      </plugin>    <!-- OSGi BND END -->
+      <plugin>    <!-- Wagon START -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>wagon-maven-plugin</artifactId>
+        <version>1.0-beta-4</version>
+        <executions>
+          <execution>
+            <id>deploy-to-local-test-installation</id>
+	        <phase>deploy</phase>
+		    <goals>
+			  <goal>upload</goal>
+		    </goals>
+          </execution>
+        </executions>
+		<configuration>
+		  <fromDir>${project.build.directory}</fromDir>
+		  <includes>*.jar</includes>
+		  <url>file://${user.home}</url>
+		  <toDir>elis-osgi</toDir>
+		</configuration>
+      </plugin>    <!-- Wagon END -->
+      <plugin>     <!-- Surefire tests START -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12</version>
+        <configuration>
+          <forkMode>always</forkMode>
+          <additionalClasspathElements>
+            <additionalClasspathElement>${user.home}/elis-osgi/*.jar</additionalClasspathElement>
+          </additionalClasspathElements>
+        </configuration>
+      </plugin>     <!-- Surefire tests END -->
+    </plugins>
+  </build>
+  <modules>
+  	<module>../Elis auxiliaries</module>
+  	<module>../building api</module>
+  </modules>
+</project>
