@@ -1,25 +1,19 @@
 package se.mah.elis.external.web.usage.electricity.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.glassfish.jersey.client.ClientResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
-import org.junit.Before;
-import org.junit.Test;
 
 import se.mah.elis.external.web.usage.electricity.ElectricityResource;
 import se.mah.elis.services.electricity.internal.DeviceSetRequest;
-import se.mah.elis.services.electricity.internal.UsageRequest;
-import se.mah.elis.services.electricity.internal.ElectricityResourceFactory;
 import se.mah.elis.services.electricity.internal.Usage;
+import se.mah.elis.services.electricity.internal.UsageRequest;
 
 public class ElectricityResourceTest extends JerseyTest {
 	

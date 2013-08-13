@@ -1,21 +1,18 @@
 package se.mah.elis.services.electricity.internal;
 
-import java.security.Provider;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 import se.mah.elis.adaptor.building.api.entities.devices.Device;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.building.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
-import se.mah.elis.demo.eon.driver.BMSProviderService;
+import se.mah.elis.adaptor.utilityprovider.api.UtilityProvider;
 import se.mah.elis.services.electricity.ElectricityService;
 
 public class ElectricityServiceImpl implements ElectricityService {
@@ -77,7 +74,7 @@ public class ElectricityServiceImpl implements ElectricityService {
 	}
 
 	private DeviceSet getDeviceSet(String id) throws InterruptedException {
-		BMSProviderService bmsService = (BMSProviderService) providerTracker
+		UtilityProvider bmsService = (UtilityProvider) providerTracker
 				.waitForService(5000);
 		DeviceSet set = null;
 		if (bmsService != null) {

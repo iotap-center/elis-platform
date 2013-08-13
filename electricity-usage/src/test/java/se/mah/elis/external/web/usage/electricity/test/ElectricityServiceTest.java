@@ -1,16 +1,14 @@
 package se.mah.elis.external.web.usage.electricity.test;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.util.tracker.ServiceTracker;
 
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
-import se.mah.elis.demo.eon.driver.BMSProviderService;
+import se.mah.elis.adaptor.utilityprovider.api.UtilityProvider;
 import se.mah.elis.services.electricity.ElectricityService;
 import se.mah.elis.services.electricity.internal.DeviceSetRequest;
 import se.mah.elis.services.electricity.internal.ElectricityServiceImpl;
@@ -21,7 +19,7 @@ public class ElectricityServiceTest {
 
 	private ElectricityService service;
 	
-	private class EonService implements BMSProviderService {
+	private class EonService implements UtilityProvider {
 		public DeviceSet getDeviceSet(String user, String deviceSetId) {
 			return null;
 		}
