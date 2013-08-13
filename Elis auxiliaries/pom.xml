@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>se.mah.elis.aux</groupId>
+  <groupId>se.mah.elis.auxiliaries</groupId>
   <artifactId>auxiliaries</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
@@ -32,9 +32,9 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>${project.groupId}</Export-Package>
+            <Export-Package>${project.groupId}, ${project.groupId}.exceptions</Export-Package>
             <Private-Package>${project.groupId}.*</Private-Package>
-            <Bundle-Activator>${project.groupId}.Activator</Bundle-Activator>
+            <!-- <Bundle-Activator>${project.groupId}.Activator</Bundle-Activator> -->
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
