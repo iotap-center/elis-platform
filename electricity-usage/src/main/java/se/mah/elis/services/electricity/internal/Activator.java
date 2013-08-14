@@ -5,7 +5,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
-import se.mah.elis.demo.eon.driver.BMSProviderService;
+import se.mah.elis.adaptor.utilityprovider.api.UtilityProvider;
 import se.mah.elis.external.web.usage.electricity.ElectricityResource;
 import se.mah.elis.services.electricity.ElectricityService;
 
@@ -34,7 +34,7 @@ public class Activator implements BundleActivator {
 		this.usageTracker = new ServiceTracker(context,
 				ElectricityService.class.getName(), null);
 		this.providerTracker = new ServiceTracker(context,
-				BMSProviderService.class.getName(), null);
+				UtilityProvider.class.getName(), null);
 
 		this.usageTracker.open();
 		this.providerTracker.open();

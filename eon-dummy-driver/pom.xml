@@ -18,6 +18,12 @@
 			<artifactId>building-api</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>se.mah.elis.adaptor.utilityprovider.api</groupId>
+			<artifactId>temp-utilityprovider-api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>bundle</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

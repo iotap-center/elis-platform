@@ -2,7 +2,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.eclipsesource.jaxrs.publisher</groupId>
   <artifactId>osgi-connector</artifactId>
-  <version>0.0.1</version>
   <packaging>bundle</packaging>
   <name>Adaptation of OSGi JAX-RS Connector</name>
   
@@ -60,4 +59,10 @@
   		<version>3.0.1</version>
   	</dependency>
   </dependencies>
+  <parent>
+  	<groupId>se.mah.elis</groupId>
+  	<artifactId>super-pom</artifactId>
+  	<version>0.0.1</version>
+  	<relativePath>../../super</relativePath>
+  </parent>
 </project>

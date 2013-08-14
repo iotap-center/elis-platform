@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.mah.elis.adaptor.building.api.entities.GatewayUser;
-import se.mah.elis.adaptor.building.api.entities.devices.Device;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.building.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
-import se.mah.elis.demo.eon.driver.BMSProviderService;
+import se.mah.elis.adaptor.utilityprovider.api.UtilityProvider;
 
-public class EonService implements BMSProviderService {
+public class EonService implements UtilityProvider {
 
 	private List<GatewayUser> users;
 	private DeviceSet onlyset;

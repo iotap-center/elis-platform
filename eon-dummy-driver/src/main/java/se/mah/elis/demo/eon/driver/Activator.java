@@ -1,12 +1,10 @@
 package se.mah.elis.demo.eon.driver;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
+import se.mah.elis.adaptor.utilityprovider.api.UtilityProvider;
 import se.mah.elis.demo.eon.driver.internal.EonService;
 
 public class Activator implements BundleActivator {
@@ -17,9 +15,9 @@ public class Activator implements BundleActivator {
 		//Dictionary<String, String> props = new Hashtable<String, String>();
 		//props.put("provider", "eon");
 		
-		BMSProviderService eonService = new EonService();
+		UtilityProvider eonService = new EonService();
 		this.eonServiceRegistration = 
-				ctx.registerService(BMSProviderService.class.getName(), 
+				ctx.registerService(UtilityProvider.class.getName(), 
 						eonService, null);
 	}
 

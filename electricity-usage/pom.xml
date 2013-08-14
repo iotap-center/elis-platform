@@ -53,6 +53,12 @@
 			<version>1.9.5</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>se.mah.elis.adaptor.utilityprovider.api</groupId>
+			<artifactId>temp-utilityprovider-api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>bundle</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -76,4 +82,10 @@
 	</build>
 	<packaging>bundle</packaging>
 	<name>Electricity Usage</name>
+	<parent>
+		<groupId>se.mah.elis</groupId>
+		<artifactId>super-pom</artifactId>
+		<version>0.0.1</version>
+		<relativePath>../super</relativePath>
+	</parent>
 </project>
