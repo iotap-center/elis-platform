@@ -26,7 +26,7 @@ import se.mah.elis.adaptor.utilityprovider.api.UtilityProvider;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonElectricitySampler;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonGateway;
 
-public class EonUtilityProviderService implements UtilityProvider {
+public class EonApiActor {
 
 	private final String USER_AGENT = "Mozilla/5.0 - Elis Platform";
 	private final String BASE_URL = "https://smarthome.eon.se/v0_2/api";
@@ -281,12 +281,6 @@ public class EonUtilityProviderService implements UtilityProvider {
 
 		return CurrentKwh;
 
-	}
-
-	public DeviceSet getDeviceSet(String user, String deviceSetId) {
-		Gateway eonGateway = new EonGateway();
-		eonGateway.add(new EonElectricitySampler());
-		return eonGateway;
 	}
 
 }

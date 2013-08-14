@@ -2,110 +2,45 @@ package se.mah.elis.adaptor.utilityprovider.eon.test;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Map;
-
-import javax.naming.AuthenticationException;
+import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import se.mah.elis.adaptor.building.api.data.ElectricitySample;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
-import se.mah.elis.adaptor.utilityprovider.eon.EonUtilityProviderService;
+import se.mah.elis.adaptor.building.api.entities.devices.ElectricitySampler;
+import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
+import se.mah.elis.adaptor.utilityprovider.eon.EonUtilityProvider;
 
 public class EonUtilityProviderTest {
-
-	private final String TEST_USER = "eon2hem@gmail.com";
-	private final String TEST_PASS = "02DCBD";
-	private final long EXPECTED_GATEWAY_ID = 60;
 	
-	private EonUtilityProviderService service;
+	private final String TEST_USER = "test";
+	private final String TEST_DEVICE_SET = "testset";
+	
+	private EonUtilityProvider provider;
 	
 	@Before
 	public void setUp() {
-		service = new EonUtilityProviderService();
+		provider = new EonUtilityProvider();
 	}
 	
 	@Test
 	public void testGetDeviceSet() {
-		DeviceSet set = service.getDeviceSet("", "test");
-		assertEquals(1, set.size());
+		DeviceSet set = provider.getDeviceSet(TEST_USER, TEST_DEVICE_SET);
+		assertTrue(set.size() > 0);
 	}
 	
 	@Test
-	public void testSuccessfulAuthenticationAgainstEonTestGateway() {
+	public void testGetCurrentKwh() {
+		DeviceSet set = provider.getDeviceSet(TEST_USER, TEST_DEVICE_SET);
+		Object[] devices = set.toArray();
+		ElectricitySampler sampler = (ElectricitySampler) devices[10];
 		try {
-			String key = service.getAuthenticationToken(TEST_USER, TEST_PASS);
-			assertTrue(key.contains("eon2hem@gmail.com"));
-		} catch (AuthenticationException | IOException e) {
-			fail("Exception thrown in success case"); 
+			ElectricitySample sample = sampler.getSample();
+			assertTrue(sample.getCurrentPower() >= 0.0);
+		} catch (SensorFailedException e) {
+			fail("unexpected exception in default case");
 		}
 	}
-	
-	@Test
-	public void testFailureAuthenticationAgainstEonTestGateway() {
-		try {
-			service.getAuthenticationToken("failure-user", "incorrect-password");
-			fail("token received");
-		} catch (AuthenticationException e) {
-			// success case
-		} catch (IOException e) {
-			fail("weird response");
-		}
-	}
-	
-	@Test 
-	public void testGetGatewayIds() {
-		try {
-			service.initialise(TEST_USER, TEST_PASS);
-			long panelId = service.getPanels();
-			assertEquals(EXPECTED_GATEWAY_ID, panelId);
-		} catch (Exception e) {
-			fail("unexpected exception in success case");
-		}
-	}
-	
-	@Test
-	public void testGetDeviceIdsFromGateway() {
-		try {
-			service.initialise(TEST_USER, TEST_PASS);
-			List<String> deviceIds = service.getDevices(EXPECTED_GATEWAY_ID);
-			assertFalse(deviceIds.isEmpty());
-		} catch (Exception e) {
-			fail("unexpected exception in success case");
-		}
-	}
-	
-	@Test 
-	public void testGetDeviceStatus() {
-		final int RANDOM_DEVICE = 10; 
-		try {
-			service.initialise(TEST_USER, TEST_PASS);
-			String id = service.getDevices(EXPECTED_GATEWAY_ID).get(RANDOM_DEVICE);
-			Map<String, Object> deviceStatus = service.getDeviceStatus(EXPECTED_GATEWAY_ID, id);
-			assertTrue(deviceStatus.containsKey("DeviceId")); // should always be there
-															  // according to EWP api spec
-		} catch (Exception e) {
-			fail("unexpected exception in success case");
-		}
-	}
-	
-	@Test
-	public void testGetCurrentDeviceKwh() {
-		final int RANDOM_DEVICE = 10; 
-		try {
-			service.initialise(TEST_USER, TEST_PASS);
-			// I'm not sure these are sorted... but leaving for now
-			String id = service.getDevices(EXPECTED_GATEWAY_ID).get(RANDOM_DEVICE);
-			Map<String, Object> deviceStatus = service.getDeviceStatus(EXPECTED_GATEWAY_ID, id);
-			assertTrue(deviceStatus.containsKey("CurrentKwh"));
-			double currentKwh = (double) deviceStatus.get("CurrentKwh");
-			assertTrue(currentKwh >= 0);
-		} catch (Exception e) {
-			fail("unexpected exception in success case");
-		}
-	}
-
 }
