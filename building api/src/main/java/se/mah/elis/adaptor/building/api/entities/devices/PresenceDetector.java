@@ -22,8 +22,6 @@ public interface PresenceDetector extends Detector {
 	 * detector's field of presence or not.
 	 * 
 	 * @return True if someone is within the range o the sensor.
-	 * @param consumer The notification provider that will consume the sensor's
-	 * 		  notifications.
 	 * @throws SensorFailedException if the presence detection failed.
 	 * @throws UnsupportedFunctionalityException if the sensor doesn't provide
 	 * 		   this functionality

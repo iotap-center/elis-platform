@@ -8,7 +8,8 @@ import se.mah.elis.adaptor.building.api.exceptions.UnsupportedFunctionalityExcep
 
 /**
  * A detector is a sensor that can trigger alarms and notifications. It is used
- * by {@link NotificationConsumer} to collect data in semi-real time.
+ * by {@link se.mah.elis.adaptor.building.api.entities.NotificationConsumer} to
+ * collect data in semi-real time.
  * 
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0

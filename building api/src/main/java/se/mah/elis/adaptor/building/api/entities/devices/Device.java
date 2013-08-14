@@ -67,6 +67,32 @@ public interface Device {
 	void setDescription(String description) throws StaticEntityException;
 	
 	/**
+	 * This method is used to get a reference to the gateway being tested.
+	 * 
+	 * @return The gateway that this device belongs to.
+	 * @since 1.0
+	 */
+	Gateway getGateway();
+	
+	/**
+	 * This method is used to set the gateway that the device should belong to.
+	 * 
+	 * @param gw The device's new gateway.
+	 * @throws StaticEntityException if the device's gateway is locked.
+	 * @since 1.0
+	 */
+	void setGateway(Gateway gw) throws StaticEntityException;
+	
+	/**
+	 * This method is used to figure out to which device sets this device
+	 * belongs to.
+	 * 
+	 * @return The DeviceSets that this device belongs to.
+	 * @since 1.0
+	 */
+	DeviceSet[] getDeviceSets();
+	
+	/**
 	 * Checks whether a device is online or not. If it isn't online, then we
 	 * shouldn't try to read stuff from it or perform actuating actions on it.
 	 * 

@@ -6,7 +6,9 @@ package se.mah.elis.adaptor.building.api.events;
 import se.mah.elis.adaptor.building.api.entities.devices.Detector;
 
 /**
- * The TripwireEvent is triggeded by PresenceDetector objects.
+ * The TripwireEvent is triggeded by
+ * {@link se.mah.elis.adaptor.building.api.entities.devices.PresenceDetector}
+ * objects.
  * 
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
@@ -28,7 +30,7 @@ public class PresenceEvent extends DetectorEvent {
 	 * 
 	 * @param detector The triggering detector.
 	 * @param message A message to be passed on to the consumer.
-	 * @param int The type of event.
+	 * @param type The type of event.
 	 * @since 1.0
 	 */
 	public PresenceEvent(Detector detector, String message, int type) {
@@ -45,7 +47,7 @@ public class PresenceEvent extends DetectorEvent {
 	 * PresenceEvent.<i>ABSENCE_DETECTED</i> is passed to it.
 	 * 
 	 * @param detector The triggering detector.
-	 * @param int The type of event.
+	 * @param type The type of event.
 	 * @since 1.0
 	 */
 	public PresenceEvent(Detector detector, int type) {

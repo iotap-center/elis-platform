@@ -5,6 +5,7 @@ package se.mah.elis.adaptor.building.api.plan;
 
 import java.util.Iterator;
 
+import se.mah.elis.adaptor.building.api.data.PartitionIdentifier;
 import se.mah.elis.adaptor.building.api.entities.devices.Device;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
@@ -19,21 +20,21 @@ import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
 public interface BuildingPartition {
 	
 	/**
-	 * This method is used to get the id number of this partition.
+	 * This method is used to get the identifier of this partition.
 	 * 
-	 * @return The id number of the partition.
+	 * @return The identifier of the partition.
 	 * @since 1.0
 	 */
-	int getId();
+	PartitionIdentifier getId();
 	
 	/**
-	 * This method is used to set the id number of a partition.
+	 * This method is used to set the identifier of a partition.
 	 * 
-	 * @param id The partition's new id number.
+	 * @param id The partition's new identifier.
 	 * @throws StaticEntityException if the partition's id is locked.
 	 * @since 1.0
 	 */
-	void setId(int id) throws StaticEntityException;
+	void setId(PartitionIdentifier id) throws StaticEntityException;
 	
 	/**
 	 * This method is used to get the name of this partition.
@@ -91,7 +92,7 @@ public interface BuildingPartition {
 	/**
 	 * Adds a device set to this apartment.
 	 * 
-	 * @param room The device set to be added.
+	 * @param set The device set to be added.
 	 * @since 1.0
 	 */
 	void addDeviceSet(DeviceSet set);
