@@ -6,7 +6,9 @@ package se.mah.elis.adaptor.building.api.events;
 import se.mah.elis.adaptor.building.api.entities.devices.Detector;
 
 /**
- * The TripwireEvent is triggeded by Tripwire detectors.
+ * The TripwireEvent is triggeded by
+ * {@link se.mah.elis.adaptor.building.api.entities.devices.Tripwire}
+ * detectors.
  * 
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
