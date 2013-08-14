@@ -17,36 +17,4 @@ import se.mah.elis.services.electricity.internal.UsageRequest;
 
 public class ElectricityServiceTest {
 
-	private ElectricityService service;
-	
-	private class EonService implements UtilityProvider {
-		public DeviceSet getDeviceSet(String user, String deviceSetId) {
-			return null;
-		}
-	}
-	
-	@Before
-	public void setUp() {
-		ServiceTracker tracker = mock(ServiceTracker.class);
-		when(tracker.getService()).thenReturn(null);
-		service = new ElectricityServiceImpl(tracker);
-	}
-	
-	@Test
-	public void getUsageUsingDeviceSetIdTest() {
-		UsageRequest ur = new UsageRequest();
-		DeviceSetRequest req = new DeviceSetRequest();
-		req.id = "1";
-		ur.deviceSets.add(req);
-		
-		Usage usage;
-		try {
-			usage = service.getDeviceSetUsage(ur);
-			assert(usage.getTimestamp().equals("fixed-timestamp"));
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 }
