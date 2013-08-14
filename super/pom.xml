@@ -78,10 +78,10 @@
 		</plugins>
 	</build>
 	<modules>
-		<module>../Elis auxiliaries</module>
 		<module>../building api</module>
-		<module>../electricity-usage</module>
+		<module>../Elis auxiliaries</module>
 		<module>../eon-utility-provider</module>
+		<module>../electricity-usage</module>
 		<module>
   		../northbound-api/com.eclipsesource.jaxrs.publisher
   	</module>
