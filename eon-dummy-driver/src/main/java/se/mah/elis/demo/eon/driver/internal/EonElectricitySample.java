@@ -17,72 +17,72 @@ public class EonElectricitySample implements ElectricitySample {
 		return null;
 	}
 
-	public float getCurrentCurrent() {
+	public double getCurrentCurrent() {
 		// TODO Auto-generated method stub
 		return 10;
 	}
 
-	public float getCurrentPower() {
+	public double getCurrentPower() {
 		// TODO Auto-generated method stub
 		return 20;
 	}
 
-	public float getCurrentVoltage() {
+	public double getCurrentVoltage() {
 		// TODO Auto-generated method stub
 		return 30;
 	}
 
-	public float getMeanCurrent() {
+	public double getMeanCurrent() {
 		// TODO Auto-generated method stub
 		return 10;
 	}
 
-	public float getMeanPower() {
+	public double getMeanPower() {
 		// TODO Auto-generated method stub
 		return 20;
 	}
 
-	public float getMeanVoltage() {
+	public double getMeanVoltage() {
 		// TODO Auto-generated method stub
 		return 30;
 	}
 
-	public float getMinCurrent() {
+	public double getMinCurrent() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public float getMinPower() {
+	public double getMinPower() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public float getMinVoltage() {
+	public double getMinVoltage() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public float getTopCurrent() {
+	public double getTopCurrent() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public float getTopPower() {
+	public double getTopPower() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public float getTopVoltage() {
+	public double getTopVoltage() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public float getTotalEnergyUsageInJoules() {
+	public double getTotalEnergyUsageInJoules() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public float getTotalEnergyUsageInWh() {
+	public double getTotalEnergyUsageInWh() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
