@@ -4,37 +4,25 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
+import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
+import se.mah.elis.adaptor.utilityprovider.api.UtilityProvider;
+
 public class Activator implements BundleActivator {
-	
-	private ServiceRegistration reg;
-	private static BundleContext context;
-	
-	
-	static BundleContext getContext() {
-		return context;
-	}
-	
+
+	private ServiceRegistration eonUtilityProviderServiceRegistration;
+
 	public void start(BundleContext context) throws Exception {
-		Activator.context =  context;
+		EonUtilityProviderService eonService = new EonUtilityProviderService();
+//		if (eonService.initialise("eon2hem@gmail.com", "02DCBD")) { 
+//			eonUtilityProviderServiceRegistration = context.registerService(
+//					UtilityProvider.class.getName(), eonService, null);
+//		}
 		
-		
-//        reg = context.registerService(ElectricityUseService.class.getName(),new ElectricityUseService(),null);
-		System.out.println("Eletricity Use Service Started");
-		
-		// Username and Password needed for authentication
-		EonUtilityProviderService electricityService = new EonUtilityProviderService("eon2hem@gmail.com", "02DCBD");
-		
-		long panelId = electricityService.getPanels();
-		String deviceId = electricityService.getDevices(panelId);
-
-		String kwh = electricityService.getDeviceStatus(panelId, deviceId);
-		System.out.println("Current Kwh is: "+kwh);
-			
-
+		DeviceSet set = eonService.getDeviceSet("", "apa");
+		System.out.println(set.size());
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		reg.unregister();
-		System.out.println("Eletricity Use Service Stopped");
+		eonUtilityProviderServiceRegistration.unregister();
 	}
 }

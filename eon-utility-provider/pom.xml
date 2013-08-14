@@ -17,6 +17,12 @@
     	<version>1.1.1</version>
     	<type>bundle</type>
     </dependency>
+    <dependency>
+    	<groupId>se.mah.elis.adaptor.utilityprovider.api</groupId>
+    	<artifactId>temp-utilityprovider-api</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+    	<type>bundle</type>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -36,4 +42,10 @@
     </plugins>
   </build>
   <groupId>se.mah.elis.adaptor.utilityprovider.eon</groupId>
+  <parent>
+  	<groupId>se.mah.elis</groupId>
+  	<artifactId>super-pom</artifactId>
+  	<version>0.0.1</version>
+  	<relativePath>../super</relativePath>
+  </parent>
 </project>
