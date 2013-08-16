@@ -38,7 +38,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>${project.groupId}.*</Export-Package>
+            <Export-Package>${project.groupId}</Export-Package>
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
