@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import se.mah.elis.adaptor.building.api.data.ElectricitySample;
+import se.mah.elis.auxiliaries.data.ElectricitySample;
 
 public class ElectricitySampleMock implements ElectricitySample {
 

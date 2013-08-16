@@ -2,8 +2,8 @@ package se.mah.elis.services.utilitiy.electricity;
 
 import java.util.Date;
 
-import se.mah.elis.services.utilitiy.electricity.data.PriceData;
-import se.mah.elis.services.utilitiy.electricity.exceptions.OutOfDateRangeException;
+import se.mah.elis.auxiliaries.data.PriceData;
+import se.mah.elis.auxiliaries.exceptions.OutOfDateRangeException;
 
 /**
  * The ElectricityPriceSource interface provides a set of methods used to

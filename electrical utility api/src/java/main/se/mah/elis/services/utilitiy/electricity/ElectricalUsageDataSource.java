@@ -2,11 +2,11 @@ package se.mah.elis.services.utilitiy.electricity;
 
 import java.util.Date;
 
-import se.mah.elis.adaptor.building.api.data.ElectricitySample;
 import se.mah.elis.adaptor.building.api.entities.devices.Device;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.building.api.plan.Apartment;
-import se.mah.elis.services.utilitiy.electricity.exceptions.OutOfDateRangeException;
+import se.mah.elis.auxiliaries.data.ElectricitySample;
+import se.mah.elis.auxiliaries.exceptions.OutOfDateRangeException;
 
 /**
  * The ElectricalUsageDataSource interface provides a set of methods used to

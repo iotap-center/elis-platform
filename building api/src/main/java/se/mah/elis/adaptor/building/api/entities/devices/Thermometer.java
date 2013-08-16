@@ -1,7 +1,7 @@
 package se.mah.elis.adaptor.building.api.entities.devices;
 
-import se.mah.elis.adaptor.building.api.data.TemperatureData;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
+import se.mah.elis.auxiliaries.data.TemperatureData;
 
 /**
  * The Thermometer interface describes a sensor that can sample the current

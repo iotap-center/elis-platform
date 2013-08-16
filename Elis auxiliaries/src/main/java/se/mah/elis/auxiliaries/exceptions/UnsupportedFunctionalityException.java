@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.mah.elis.adaptor.building.api.exceptions;
+package se.mah.elis.auxiliaries.exceptions;
 
 /**
  * This exception is thrown when a capability in an interface isn't actually

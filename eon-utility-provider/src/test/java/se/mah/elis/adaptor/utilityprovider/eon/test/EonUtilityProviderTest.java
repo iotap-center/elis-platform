@@ -7,11 +7,11 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.mah.elis.adaptor.building.api.data.ElectricitySample;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.building.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.utilityprovider.eon.EonUtilityProvider;
+import se.mah.elis.auxiliaries.data.ElectricitySample;
 
 public class EonUtilityProviderTest {
 	

@@ -23,6 +23,18 @@
     	<version>0.0.1-SNAPSHOT</version>
     	<type>bundle</type>
     </dependency>
+    <dependency>
+    	<groupId>se.mah.elis.auxiliaries</groupId>
+    	<artifactId>auxiliaries</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+    	<type>bundle</type>
+    </dependency>
+    <dependency>
+    	<groupId>se.mah.elis.adaptor.building.api</groupId>
+    	<artifactId>building-api</artifactId>
+    	<version>0.0.2</version>
+    	<type>bundle</type>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

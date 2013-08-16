@@ -1,8 +1,8 @@
 package se.mah.elis.adaptor.building.api.entities.devices;
 
-import se.mah.elis.adaptor.building.api.data.TemperatureData;
 import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
+import se.mah.elis.auxiliaries.data.TemperatureData;
 
 /**
  * The Thermostat interface describes a physical thermostat. A thermostat is

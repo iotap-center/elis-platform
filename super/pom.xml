@@ -78,8 +78,9 @@
 		</plugins>
 	</build>
 	<modules>
-		<module>../building api</module>
 		<module>../Elis auxiliaries</module>
+		<module>../building api</module>
+		<module>../electrical utility api</module>
 		<module>../eon-utility-provider</module>
 		<module>../electricity-usage</module>
 		<module>

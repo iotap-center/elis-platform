@@ -1,4 +1,4 @@
-package se.mah.elis.services.utilitiy.electricity.exceptions;
+package se.mah.elis.auxiliaries.exceptions;
 
 /**
  * OutOfDateRangeException is thrown by various methods dealing with historical

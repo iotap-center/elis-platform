@@ -3,7 +3,7 @@ package se.mah.elis.auxiliaries.test.mocks;
 import java.util.Date;
 import java.util.List;
 
-import se.mah.elis.adaptor.building.api.data.Sample;
+import se.mah.elis.auxiliaries.data.Sample;
 
 public class SimpleSampleMock implements Sample {
 

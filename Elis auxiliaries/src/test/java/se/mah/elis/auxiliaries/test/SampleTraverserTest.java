@@ -9,8 +9,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.mah.elis.adaptor.building.api.data.Sample;
 import se.mah.elis.auxiliaries.SampleTraverser;
+import se.mah.elis.auxiliaries.data.Sample;
 import se.mah.elis.auxiliaries.exceptions.MismatchingSampleException;
 import se.mah.elis.auxiliaries.test.mocks.ElectricitySampleMock;
 import se.mah.elis.auxiliaries.test.mocks.SimpleSampleMock;

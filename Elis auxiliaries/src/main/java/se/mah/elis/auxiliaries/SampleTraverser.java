@@ -5,7 +5,7 @@ package se.mah.elis.auxiliaries;
 
 import java.lang.reflect.Method;
 
-import se.mah.elis.adaptor.building.api.data.Sample;
+import se.mah.elis.auxiliaries.data.Sample;
 import se.mah.elis.auxiliaries.exceptions.MismatchingSampleException;
 
 /**

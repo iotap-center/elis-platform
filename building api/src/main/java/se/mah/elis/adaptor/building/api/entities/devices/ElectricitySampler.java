@@ -3,8 +3,8 @@
  */
 package se.mah.elis.adaptor.building.api.entities.devices;
 
-import se.mah.elis.adaptor.building.api.data.ElectricitySample;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
+import se.mah.elis.auxiliaries.data.ElectricitySample;
 
 /**
  * The ElectricitySampler interface describes a sensor with electricity

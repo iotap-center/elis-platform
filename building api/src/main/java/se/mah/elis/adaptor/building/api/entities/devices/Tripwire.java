@@ -3,7 +3,7 @@
  */
 package se.mah.elis.adaptor.building.api.entities.devices;
 
-import se.mah.elis.adaptor.building.api.exceptions.UnsupportedFunctionalityException;
+import se.mah.elis.auxiliaries.exceptions.UnsupportedFunctionalityException;
 
 /**
  * The Tripwire interface describes a sensor that will trigger when activated

@@ -1,12 +1,12 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal;
 
 import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
-import se.mah.elis.adaptor.building.api.data.ElectricitySample;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.building.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.auxiliaries.data.ElectricitySample;
 
 public class EonElectricitySampler implements ElectricitySampler {
 
