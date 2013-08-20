@@ -10,6 +10,7 @@
   <artifactId>auxiliaries</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
+  <name>The Elis Auxiliaries bundle</name>
   
   <dependencies>
   	<dependency>

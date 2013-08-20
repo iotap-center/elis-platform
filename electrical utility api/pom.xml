@@ -4,7 +4,14 @@
   <artifactId>electrical-utility-api</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
+  <name>The Elis Electricity Utility API bundle</name>
   
+  <parent>
+  	<groupId>se.mah.elis</groupId>
+  	<artifactId>super-pom</artifactId>
+  	<version>0.0.1</version>
+  	<relativePath>../super</relativePath>
+  </parent>
   <dependencies>
   	<dependency>
   		<groupId>org.osgi</groupId>
@@ -44,10 +51,4 @@
       </plugin>    <!-- (2) END -->
     </plugins>
   </build>
-  <parent>
-  	<groupId>se.mah.elis</groupId>
-  	<artifactId>super-pom</artifactId>
-  	<version>0.0.1</version>
-  	<relativePath>../super</relativePath>
-  </parent>
 </project>
