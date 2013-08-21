@@ -6,6 +6,63 @@
 	<version>0.0.1</version>
 	<packaging>pom</packaging>
 	<name>The Elis Platform</name>
+	
+	<developers>
+		<developer>
+			<id>archie</id>
+			<name>Marcus Ljungblad</name>
+			<email>marcus.ljungblad@mah.se</email>
+			<organization>MEDEA, Malmö University</organization>
+			<organizationUrl>http://medea.mah.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>koddas</id>
+			<name>Johan Holmberg</name>
+			<email>johan.holmberg@mah.se</email>
+			<organization>MEDEA, Malmö University</organization>
+			<organizationUrl>http://medea.mah.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>joakimlithell</id>
+			<name>Joakim Lithell</name>
+			<email>joakim.lithell@mah.se</email>
+			<organization>MEDEA, Malmö University</organization>
+			<organizationUrl>http://medea.mah.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>axelolsson</id>
+			<name>Axel Olsson</name>
+			<email>axel.olsson@mah.se</email>
+			<organization>MEDEA, Malmö University</organization>
+			<organizationUrl>http://medea.mah.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+	<organization>
+		<name>MEDEA, Malmö University</name>
+		<url>http://medea.mah.se</url>
+	</organization>
+	<scm>
+		<url>https://github.com/medeamalmo/elis-platform/</url>
+		<tag>HEAD</tag>
+		<connection>scm:git:https://github.com/medeamalmo/elis-platform/</connection>
+		<developerConnection>scm:git:https://github.com/medeamalmo/elis-platform/</developerConnection>
+	</scm>
 
 	<dependencies>
 		<dependency>
