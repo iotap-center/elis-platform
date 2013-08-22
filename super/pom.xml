@@ -77,6 +77,12 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-project-info-reports-plugin</artifactId>
+			<version>2.7</version>
+			<type>maven-plugin</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<extensions>
@@ -109,8 +115,8 @@
 				<configuration>
 					<fromDir>${project.build.directory}</fromDir>
 					<includes>*.jar</includes>
-					<url>file://${user.home}</url>
-					<toDir>elis-osgi</toDir>
+					<url>file://${user.home}/elis</url>
+					<toDir>osgi</toDir>
 				</configuration>
 			</plugin>    <!-- Wagon END -->
 			<plugin>     <!-- Surefire tests START -->
@@ -120,7 +126,7 @@
 				<configuration>
 					<forkMode>always</forkMode>
 					<additionalClasspathElements>
-						<additionalClasspathElement>${user.home}/elis-osgi/*.jar</additionalClasspathElement>
+						<additionalClasspathElement>${user.home}/elis/osgi/*.jar</additionalClasspathElement>
 					</additionalClasspathElements>
 				</configuration>
 			</plugin>     <!-- Surefire tests END -->
