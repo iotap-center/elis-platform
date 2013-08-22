@@ -33,8 +33,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>${project.groupId}, ${project.groupId}.exceptions</Export-Package>
-            <Private-Package>${project.groupId}.*</Private-Package>
+            <Export-Package>${project.groupId}, ${project.groupId}.*</Export-Package>
             <!-- <Bundle-Activator>${project.groupId}.Activator</Bundle-Activator> -->
           </instructions>
         </configuration>
