@@ -22,11 +22,11 @@ In Eclipse, navigate to this project in the _Git Repository Exploring_ view and 
 
 ### Build using Eclipse
 
-From Eclipse, right click the _Super POM_ project and select _Maven build..._ from the _Run As_ menu. You need to define what goals to taget. The targets needed to run the full build and deploy cycle are `clean test bundle:bundle install:install wagon:upload`. From now on, you should also be able to find this run configuration in Eclipse's global run menu.
+From Eclipse, right click the _Super POM_ project and select _Maven build..._ from the _Run As_ menu. You need to define what goals to taget. The targets needed to run the full build and deploy cycle are `clean test compile bundle:bundle install:install wagon:upload`. From now on, you should also be able to find this run configuration in Eclipse's global run menu.
 
 ### Build from CLI
 
-Navigate to this project's folder. Within it, build the project by typing `clean test bundle:bundle install:install wagon:upload` and hitting enter. That's it.
+Navigate to this project's folder. Within it, build the project by typing `clean test compile bundle:bundle install:install wagon:upload` and hitting enter. That's it.
 
 ## Build with documentation
 
