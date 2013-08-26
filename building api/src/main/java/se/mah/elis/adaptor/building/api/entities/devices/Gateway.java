@@ -56,6 +56,15 @@ public interface Gateway extends DeviceSet {
 	void connect() throws GatewayCommunicationException;
 	
 	/**
+	 * Checks whether the connection procedure has been performed or not.
+	 * 
+	 * @return True if the connection procedure has been performed, otherwise
+	 * 		   false.
+	 * @since 1.0
+	 */
+	boolean hasConnected();
+	
+	/**
 	 * Checks whether a gateway is online or not. If it isn't online, then we
 	 * shouldn't try to read stuff from it or perform actuating actions on it.
 	 * 
