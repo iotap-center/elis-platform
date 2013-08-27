@@ -5,6 +5,7 @@ package se.mah.elis.adaptor.building.api.entities;
 
 import se.mah.elis.adaptor.building.api.data.GatewayUserIdentifier;
 import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
+import se.mah.elis.services.users.User;
 
 /**
  * The GatewayUser interface describes a user of the local building system,
@@ -13,23 +14,7 @@ import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public interface GatewayUser {
-	
-	/**
-	 * Get this user's identifier.
-	 * 
-	 * @return The identifier.
-	 * @since 1.0
-	 */
-	GatewayUserIdentifier getId();
-	
-	/**
-	 * Set this user's identifier.
-	 * 
-	 * @param id The identifier.
-	 * @since 1.0
-	 */
-	void setId(GatewayUserIdentifier id);
+public interface GatewayUser extends User {
 	
 	/**
 	 * Get the gateway associated with this user.
