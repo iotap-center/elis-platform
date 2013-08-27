@@ -23,8 +23,8 @@ import org.json.simple.parser.ParseException;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.utilityprovider.api.UtilityProvider;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.EonElectricitySampler;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.EonGateway;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonElectricitySampler;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 
 public class EonApiActor {
 

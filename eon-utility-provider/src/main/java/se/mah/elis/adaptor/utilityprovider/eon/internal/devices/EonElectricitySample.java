@@ -1,10 +1,11 @@
-package se.mah.elis.adaptor.utilityprovider.eon.internal;
+package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 
 import java.util.Date;
 import java.util.List;
 
 import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 import se.mah.elis.auxiliaries.data.ElectricitySample;
 
 public class EonElectricitySample implements ElectricitySample {

@@ -1,4 +1,4 @@
-package se.mah.elis.adaptor.utilityprovider.eon.internal;
+package se.mah.elis.adaptor.utilityprovider.eon.internal.gateway;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,6 +17,8 @@ import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.building.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
 import se.mah.elis.adaptor.utilityprovider.eon.EonApiActor;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDeviceIdentifier;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonElectricitySampler;
 
 public class EonGateway implements Gateway {
 
@@ -163,6 +165,12 @@ public class EonGateway implements Gateway {
 	}
 
 	public boolean isOnline() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasConnected() {
 		// TODO Auto-generated method stub
 		return false;
 	}
