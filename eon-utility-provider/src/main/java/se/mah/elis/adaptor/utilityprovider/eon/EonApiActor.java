@@ -20,12 +20,6 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
-import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
-import se.mah.elis.adaptor.utilityprovider.api.UtilityProvider;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonElectricitySampler;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
-
 public class EonApiActor {
 
 	private final String USER_AGENT = "Mozilla/5.0 - Elis Platform";
