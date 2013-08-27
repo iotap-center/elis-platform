@@ -155,6 +155,7 @@
 	</reporting>
 	<modules>
 		<module>../Elis auxiliaries</module>
+		<module>../user service api</module>
 		<module>../building api</module>
 		<module>../electrical utility api</module>
 		<module>../eon-utility-provider</module>
