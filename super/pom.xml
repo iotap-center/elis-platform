@@ -161,5 +161,6 @@
 		<module>../electricity-usage</module>
 		<module>../northbound-api/com.eclipsesource.jaxrs.publisher</module>
 		<module>../temp-utility-provider-api</module>
+		<module>../qs-driver</module>
 	</modules>
 </project>
