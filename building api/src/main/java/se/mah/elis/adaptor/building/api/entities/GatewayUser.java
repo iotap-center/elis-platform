@@ -3,7 +3,6 @@
  */
 package se.mah.elis.adaptor.building.api.entities;
 
-import se.mah.elis.adaptor.building.api.data.GatewayUserIdentifier;
 import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
 import se.mah.elis.services.users.User;
 
