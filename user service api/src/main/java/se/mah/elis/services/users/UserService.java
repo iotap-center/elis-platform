@@ -1,5 +1,7 @@
 package se.mah.elis.services.users;
 
+import se.mah.elis.services.users.exceptions.NoSuchUserException;
+
 /**
  * The UserBroker interface describes a user service.
  * 
@@ -18,4 +20,25 @@ public interface UserService {
 	 */
 	User[] getUsers(PlatformUser pu);
 	
+	/**
+	 * Associates a user account with a platform user.
+	 * 
+	 * @param u The user to associate with a PlatformUser.
+	 * @param pu The PlatformUser to associate with.
+	 * @throws NoSuchUserException if no such PlatformUser exists.
+	 * @since 1.0
+	 */
+	void registerUserToPlatformUser(User u, PlatformUser pu)
+			throws NoSuchUserException;
+	
+	/**
+	 * Disassociates a user account with a platform user.
+	 * 
+	 * @param u The user to disassociate with the PlatformUser.
+	 * @param pu The PlatformUser.
+	 * @throws NoSuchUserException if no such PlatformUser exists.
+	 * @since 1.0
+	 */
+	void unregisterUserFromPlatformUser(User u, PlatformUser pu)
+			throws NoSuchUserException;
 }
