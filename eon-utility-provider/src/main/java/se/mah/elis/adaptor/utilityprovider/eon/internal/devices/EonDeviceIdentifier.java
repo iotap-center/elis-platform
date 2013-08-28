@@ -1,4 +1,4 @@
-package se.mah.elis.adaptor.utilityprovider.eon.internal;
+package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 
 import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
 

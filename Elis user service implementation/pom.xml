@@ -3,13 +3,14 @@
     <groupId>se.mah.elis</groupId>
     <artifactId>super-pom</artifactId>
     <version>0.0.1</version>
-    <relativePath>../super</relativePath>
+    <relativePath>../super/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>se.mah.elis.adaptor.building.api</groupId>
-  <artifactId>building-api</artifactId>
-  <version>0.0.2</version>
+  <groupId>se.mah.elis.services.users</groupId>
+  <artifactId>user-service-impl</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
+  <name>The Elis User Service Implementation bundle</name>
   
   <dependencies>
   	<dependency>
@@ -21,12 +22,6 @@
   		<groupId>org.osgi</groupId>
   		<artifactId>org.osgi.compendium</artifactId>
   		<version>4.3.1</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>se.mah.elis.auxiliaries</groupId>
-  		<artifactId>auxiliaries</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  		<type>bundle</type>
   	</dependency>
   	<dependency>
   		<groupId>se.mah.elis.services.users</groupId>
@@ -44,11 +39,11 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>${project.groupId}.*</Export-Package>
+            <Private-Package>${project.groupId}.*</Private-Package>
+            <!-- <Bundle-Activator>${project.groupId}.impl.Activator</Bundle-Activator> -->
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
     </plugins>
   </build>
-  <name>The Elis Building API bundle</name>
 </project>

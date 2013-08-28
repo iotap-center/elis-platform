@@ -11,7 +11,7 @@ import se.mah.elis.adaptor.building.api.entities.devices.Detector;
 /**
  * The DetectorEvent interface is a baseline interface for events triggered by
  * various detectors. DetectorEvents are consumed by
- * {@link se.mah.elis.adaptor.building.api.entities.devices.NotificationConsumer}
+ * {@link se.mah.elis.adaptor.building.api.entities.NotificationConsumer}
  * objects.
  * 
  * @author "Johan Holmberg, Malmö University"

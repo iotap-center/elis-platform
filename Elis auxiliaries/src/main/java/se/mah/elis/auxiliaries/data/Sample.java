@@ -33,7 +33,7 @@ public interface Sample {
 	/**
 	 * Gets a list of names of all methods that are traversable by a
 	 * {@link se.mah.elis.auxiliaries.SampleTraverser}. The names are used to
-	 * specify what data the traverser should look at. This is helful for e.g.
+	 * specify what data the traverser should look at. This is helpful for e.g.
 	 * summarizing power consumption.
 	 * 
 	 * @return A list of String objects.
