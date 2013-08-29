@@ -121,4 +121,11 @@ public class UserServiceImplTest {
 		assertEquals(0, users.length);
 	}
 
+	@Test
+	public void testCreatePlatformUser() {
+		UserService us = new UserServiceImpl();
+		PlatformUser pu = us.createPlatformUser("batman", "superman");
+		
+		assertEquals("PlatformUser batman", pu.toString());
+	}
 }

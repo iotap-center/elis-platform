@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public PlatformUser createPlatformUser(String username, String password) {
-		return new PlatformUserImpl();
+		return new PlatformUserImpl(new PlatformUserIdentifier(username, password));
 	}
 
 }

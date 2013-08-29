@@ -41,4 +41,14 @@ public interface UserService {
 	 */
 	void unregisterUserFromPlatformUser(User u, PlatformUser pu)
 			throws NoSuchUserException;
+	
+	/**
+	 * Creates a PlatformUser object.
+	 * 
+	 * @param username The platform user's username.
+	 * @param password The platform user's password.
+	 * @return The newly created PlatformUser.
+	 * @since 1.0
+	 */
+	PlatformUser createPlatformUser(String username, String password);
 }
