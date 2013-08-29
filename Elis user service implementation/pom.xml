@@ -40,7 +40,7 @@
         <configuration>
           <instructions>
             <Private-Package>${project.groupId}.*</Private-Package>
-            <!-- <Bundle-Activator>${project.groupId}.impl.Activator</Bundle-Activator> -->
+            <Bundle-Activator>${project.groupId}.impl.Activator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
