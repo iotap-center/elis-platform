@@ -67,7 +67,7 @@
         <configuration>
           <instructions>
             <Export-Package>${project.groupId}</Export-Package>
-            <Private-Package>${project.groupId}.*</Private-Package>
+            <Private-Package>${project.groupId}.internal.*</Private-Package>
             <Bundle-Activator>${project.groupId}.Activator</Bundle-Activator>
           </instructions>
         </configuration>
