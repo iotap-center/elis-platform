@@ -40,6 +40,7 @@ public class EonHttpBridge {
 	private static final String TRUSTSTORE_SECRET = "eon-truststore-secret";
 	private static final String KEYSTORE_FILE = "./eon_keystore_client";
 	private static final String KEYSTORE_SECRET = "eon-keystore-secret";
+	private static final String SWITCHPSS_ENDPOINT = null;
 	
 	// internal config
 	private String host;
@@ -103,8 +104,14 @@ public class EonHttpBridge {
 		return EonParser.parseDeviceStatus(response.readEntity(String.class));
 	}
 
-	public void switchPSS(String gatewayId, String deviceId) {
-		// TODO: not implemented
+	public void switchPSS(String token, String gatewayId, String deviceId) 
+		throws ResponseProcessingException {
+		WebTarget target = createTarget(SWITCHPSS_ENDPOINT);
+		target = target.queryParam("EwpPanelId", gatewayId)
+				.queryParam("DeviceId", deviceId)
+				.queryParam("TurnOn", "1");
+		Response response = doGet(token, target);
+		verifyResponse(response);
 	}
 
 	/*
