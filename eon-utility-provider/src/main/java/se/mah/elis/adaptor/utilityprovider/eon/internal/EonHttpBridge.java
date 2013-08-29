@@ -34,13 +34,13 @@ public class EonHttpBridge {
 	private static final String PANELS_ENDPOINT = "/Panel/GetPanels";
 	private static final String DEVICELIST_ENDPOINT = "/Device/GetDevices";
 	private static final String DEVICESTATUS_ENDPOINT = "/Device/GetDeviceStatus";
+	private static final String SWITCHPSS_ENDPOINT = "/Device/SwitchPSS";
 	
 	// SSL config
 	private static final String TRUSTSTORE_FILE = "./eon_truststore_client";
 	private static final String TRUSTSTORE_SECRET = "eon-truststore-secret";
 	private static final String KEYSTORE_FILE = "./eon_keystore_client";
 	private static final String KEYSTORE_SECRET = "eon-keystore-secret";
-	private static final String SWITCHPSS_ENDPOINT = null;
 	
 	// internal config
 	private String host;
