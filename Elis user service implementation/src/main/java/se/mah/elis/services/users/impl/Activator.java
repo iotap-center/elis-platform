@@ -46,8 +46,6 @@ public class Activator implements BundleActivator {
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		System.out.println("Stopping the user service");
-		
-		context.ungetService((ServiceReference<UserService>) sr);
 	}
 
 }
