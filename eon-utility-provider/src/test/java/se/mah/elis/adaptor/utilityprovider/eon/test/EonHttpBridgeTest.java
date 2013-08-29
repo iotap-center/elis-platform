@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -13,10 +11,8 @@ import javax.naming.AuthenticationException;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.Response;
 
-import org.apache.http.HttpException;
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
@@ -28,9 +24,7 @@ public class EonHttpBridgeTest {
 	private static final int TEST_PORT = 80;
 	private static final String TEST_BASEPATH = "/v0_2/api/";
 	private static final String TEST_USER = "marcus.ljungblad@mah.se";
-	//private static final String TEST_PASS = "02DCBD";
 	private static final String TEST_PASS = "medeamah2012";
-	private static final long EXPECTED_GATEWAY_ID = 60;
 	private static final String TEST_GATEWAY = "134";
 	private static final String TEST_DEVICEID = "ab62ec3d-f86d-46bc-905b-144ee0511a25";
 			
