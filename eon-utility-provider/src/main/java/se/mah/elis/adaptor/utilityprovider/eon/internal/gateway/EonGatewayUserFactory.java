@@ -8,6 +8,17 @@ import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.building.api.providers.GatewayUserProvider;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 
+/**
+ * E.On user factory
+ * 
+ * Create a new E.On user instance by calling {@link #getUser(String, String)}. 
+ * Afterwards you most likely want to run {@link EonGatewayUser#initialize()} to 
+ * populate the gateway with data and devices from the E.On service. 
+ * 
+ * @author Marcus Ljungblad
+ * @version 1.0.0
+ * @since 1.0
+ */
 public class EonGatewayUserFactory implements GatewayUserProvider {
 
 	private EonHttpBridge httpBridge;

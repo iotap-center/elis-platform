@@ -21,6 +21,21 @@ import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDeviceIdentifier;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
 
+/**
+ * Implementation of an E.On panel (in Elis terms: gateway)
+ * 
+ * An instance of gateway must have a {@link se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge} to function properly. 
+ * Most likely you also want to populate the gateway with data from the E.On service. 
+ * This is done using {@link EonGateway#connect()}. 
+ * 
+ * The recommended way to retrieve a new gateway instance is to use 
+ * {@link EonGatewayUserFactory#getUser(String, String)} and retrieve the gateway instance
+ * via the {@link EonGatewayUser} object. 
+ * 
+ * @author Marcus Ljungblad
+ * @version 1.0.0
+ * @since 1.0
+ */
 public class EonGateway implements Gateway {
 
 	private String authenticationToken;

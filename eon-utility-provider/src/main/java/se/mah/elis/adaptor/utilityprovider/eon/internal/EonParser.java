@@ -11,6 +11,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+/**
+ * Used to parse E.On HTTP response messages 
+ * 
+ * @author Marcus Ljungblad
+ * @version 1.0.0
+ * @since 1.0
+ */
 public class EonParser {
 
 	private static JSONParser parser = new JSONParser();

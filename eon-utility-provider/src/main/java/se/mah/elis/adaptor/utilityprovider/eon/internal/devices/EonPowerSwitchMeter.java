@@ -13,7 +13,9 @@ import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 import se.mah.elis.auxiliaries.data.ElectricitySample;
 
 /**
- * A virtual representation of the Eon Powerswitch
+ * A virtual representation of the E.On power switch
+ * 
+ * @TODO implemenation for sampling still missing
  * 
  * @author Marcus Ljungblad
  * @version 1.0.0
@@ -25,6 +27,7 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	private EonHttpBridge httpBridge;
 	private EonGateway gateway;
 	private DeviceIdentifier deviceId;
+	private String deviceName;
 
 	/**
 	 * Used to set initial device status when instantiating the device
@@ -57,14 +60,12 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return deviceName;
 	}
 
 	@Override
 	public void setName(String name) throws StaticEntityException {
-		// TODO Auto-generated method stub
-
+		deviceName = name;
 	}
 
 	@Override
