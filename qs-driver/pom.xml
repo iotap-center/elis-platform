@@ -1,14 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>se.mah.elis</groupId>
-    <artifactId>super-pom</artifactId>
-    <version>0.0.1</version>
-    <relativePath>../super</relativePath>
-  </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>se.mah.elis.adaptor.building.api</groupId>
-  <artifactId>building-api</artifactId>
-  <version>0.0.2</version>
+  <groupId>se.mah.elis.services.qsdriver</groupId>
+  <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
   
   <dependencies>
@@ -23,16 +16,20 @@
   		<version>4.3.1</version>
   	</dependency>
   	<dependency>
-  		<groupId>se.mah.elis.auxiliaries</groupId>
-  		<artifactId>auxiliaries</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<groupId>javax.ws.rs</groupId>
+  		<artifactId>javax.ws.rs-api</artifactId>
+  		<version>2.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>javax.xml.bind</groupId>
+  		<artifactId>jaxb-api-osgi</artifactId>
+  		<version>2.2.7</version>
   		<type>bundle</type>
   	</dependency>
   	<dependency>
-  		<groupId>se.mah.elis.services.users</groupId>
-  		<artifactId>user-service</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  		<type>bundle</type>
+  		<groupId>org.glassfish.jersey.media</groupId>
+  		<artifactId>jersey-media-moxy</artifactId>
+  		<version>2.0</version>
   	</dependency>
   </dependencies>
   <build>
@@ -45,10 +42,18 @@
         <configuration>
           <instructions>
             <Export-Package>${project.groupId}.*</Export-Package>
+             <Bundle-Activator>${project.groupId}.internal.Activator</Bundle-Activator> 
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
     </plugins>
   </build>
-  <name>The Elis Building API bundle</name>
+  <name>The Elis Quantified-Self HTTP Dummy bundle</name>
+  <artifactId>quantified-self-dummy</artifactId>
+  <parent>
+  	<groupId>se.mah.elis</groupId>
+  	<artifactId>super-pom</artifactId>
+  	<version>0.0.1</version>
+  	<relativePath>../super</relativePath>
+  </parent>
 </project>
