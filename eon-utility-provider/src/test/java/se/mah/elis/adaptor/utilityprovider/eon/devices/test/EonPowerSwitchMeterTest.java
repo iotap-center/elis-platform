@@ -3,25 +3,25 @@ package se.mah.elis.adaptor.utilityprovider.eon.devices.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.building.api.data.GatewayAddress;
-import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 
 public class EonPowerSwitchMeterTest {
 
 	private EonPowerSwitchMeter psm;
 	private EonHttpBridge bridge;
-	private Gateway gateway;
+	private EonGateway gateway;
 	
 	@Before
 	public void setUp() throws StaticEntityException {
@@ -33,8 +33,9 @@ public class EonPowerSwitchMeterTest {
 		GatewayAddress gwaddr = mock(GatewayAddress.class);
 		when(gwaddr.toString()).thenReturn("gateway"); 
 		
-		gateway = mock(Gateway.class);
+		gateway = mock(EonGateway.class);
 		when(gateway.getAddress()).thenReturn(gwaddr);
+		when(gateway.getAuthenticationToken()).thenReturn("someToken");
 		
 		psm = new EonPowerSwitchMeter();
 		psm.setHttpBridge(bridge);

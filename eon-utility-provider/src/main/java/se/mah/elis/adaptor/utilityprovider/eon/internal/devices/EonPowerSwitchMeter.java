@@ -9,6 +9,7 @@ import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 import se.mah.elis.auxiliaries.data.ElectricitySample;
 
 /**
@@ -22,7 +23,7 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 
 	private boolean isOnline;
 	private EonHttpBridge httpBridge;
-	private Gateway gateway;
+	private EonGateway gateway;
 	private DeviceIdentifier deviceId;
 
 	/**
@@ -86,9 +87,16 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 		return gateway;
 	}
 
+	/**
+	 * Set which E.On gateway this device belongs to
+	 * 
+	 * @param gateway
+	 */
 	@Override
-	public void setGateway(Gateway gw) throws StaticEntityException {
-		gateway = gw;
+	public void setGateway(Gateway gateway) throws StaticEntityException {
+		if (!(gateway instanceof EonGateway))
+			throw new StaticEntityException();
+		this.gateway = (EonGateway) gateway;
 	}
 
 	@Override
@@ -123,8 +131,8 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	@Override
 	public void turnOn() throws ActuatorFailedException {
 		if (!isOnline()) {
-			httpBridge.switchPSS(getGateway().getAddress().toString(), 
-								 getId().toString());
+			httpBridge.switchPSS(this.gateway.getAuthenticationToken(),
+					getGateway().getAddress().toString(), getId().toString());
 			setOnline(true);
 		}
 	}
@@ -135,8 +143,8 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	@Override
 	public void turnOff() throws ActuatorFailedException {
 		if (isOnline()) {
-			httpBridge.switchPSS(getGateway().getAddress().toString(), 
-					 			 getId().toString());
+			httpBridge.switchPSS(this.gateway.getAuthenticationToken(),
+					getGateway().getAddress().toString(), getId().toString());
 			setOnline(false);
 		}
 	}
