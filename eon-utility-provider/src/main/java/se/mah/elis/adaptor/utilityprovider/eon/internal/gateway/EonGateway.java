@@ -1,7 +1,9 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.gateway;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import se.mah.elis.adaptor.building.api.data.GatewayAddress;
 import se.mah.elis.adaptor.building.api.entities.GatewayUser;
@@ -9,19 +11,43 @@ import se.mah.elis.adaptor.building.api.entities.devices.Device;
 import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.building.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 
 public class EonGateway implements Gateway {
 
 	private String authenticationToken; 
+	private EonHttpBridge httpBridge;
+	private List<Device> devices;
+	private String name;
+	private GatewayAddress gatewayAddress;
+	private GatewayUser gatewayUser; 
 	
-	public EonGateway() { }
+	public EonGateway() {
+		this.devices = new ArrayList<Device>();
+	}
 	
+	/**
+	 * Get the active E.On authentication token
+	 * @return
+	 */
 	public String getAuthenticationToken() {
 		return authenticationToken;
 	}
 
+	/**
+	 * Set active E.On authentication token
+	 * @param authenticationToken
+	 */
 	public void setAuthenticationToken(String authenticationToken) {
 		this.authenticationToken = authenticationToken;
+	}
+
+	public EonHttpBridge getHttpBridge() {
+		return httpBridge;
+	}
+
+	public void setHttpBridge(EonHttpBridge httpBridge) {
+		this.httpBridge = httpBridge;
 	}
 
 	@Override
@@ -38,122 +64,106 @@ public class EonGateway implements Gateway {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.name;
 	}
 
 	@Override
 	public void setName(String name) throws StaticEntityException {
-		// TODO Auto-generated method stub
-
+		this.name = name;
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return devices.size();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return devices.isEmpty();
 	}
 
 	@Override
 	public boolean contains(Object o) {
-		// TODO Auto-generated method stub
-		return false;
+		return devices.contains(o);
 	}
 
 	@Override
 	public Iterator<Device> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return devices.iterator();
 	}
 
 	@Override
 	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
+		return devices.toArray();
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a) {
-		// TODO Auto-generated method stub
-		return null;
+		return devices.toArray(a);
 	}
 
 	@Override
 	public boolean add(Device e) {
-		// TODO Auto-generated method stub
-		return false;
+		return devices.add(e);
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		// TODO Auto-generated method stub
-		return false;
+		return devices.remove(o);
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+		return devices.containsAll(c);
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends Device> c) {
-		// TODO Auto-generated method stub
-		return false;
+		return devices.addAll(c);
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+		return devices.removeAll(c);
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+		return devices.retainAll(c);
 	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-
+		devices.clear();
 	}
 
 	@Override
 	public GatewayAddress getAddress() {
-		// TODO Auto-generated method stub
-		return null;
+		return gatewayAddress;
 	}
 
 	@Override
 	public void setAddress(GatewayAddress address) {
-		// TODO Auto-generated method stub
-
+		gatewayAddress = address;
 	}
 
 	@Override
 	public GatewayUser getUser() {
-		// TODO Auto-generated method stub
-		return null;
+		return gatewayUser;
 	}
 
 	@Override
 	public void setUser(GatewayUser user) {
-		// TODO Auto-generated method stub
-
+		gatewayUser = user;
 	}
 
+	/**
+	 * Populates the gateway with all known devices and maintains them 
+	 * in memory. Upon success this will cause hasConnected() to return true. 
+	 */
 	@Override
 	public void connect() throws GatewayCommunicationException {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
