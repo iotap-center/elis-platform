@@ -32,6 +32,7 @@ public class EonHttpBridgeTest {
 	private static final String TEST_PASS = "medeamah2012";
 	private static final long EXPECTED_GATEWAY_ID = 60;
 	private static final String TEST_GATEWAY = "134";
+	private static final String TEST_DEVICEID = "ab62ec3d-f86d-46bc-905b-144ee0511a25";
 			
 	private EonHttpBridge bridge; 
 	
@@ -89,8 +90,18 @@ public class EonHttpBridgeTest {
 	@Test
 	public void testGetDeviceStatus() throws ResponseProcessingException, ParseException, AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
-		String deviceId = "ab62ec3d-f86d-46bc-905b-144ee0511a25";
-		Map<String, Object> status = bridge.getDeviceStatus(token, TEST_GATEWAY, deviceId);
-		assertEquals(deviceId, status.get("DeviceId"));
+		Map<String, Object> status = bridge.getDeviceStatus(token, TEST_GATEWAY, TEST_DEVICEID);
+		assertEquals(TEST_DEVICEID, status.get("DeviceId"));
+	}
+	
+	@Test
+	public void testSwitchPSS() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		try {
+			bridge.switchPSS(token, TEST_GATEWAY, TEST_DEVICEID);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Failed to toggle device");
+		}
 	}
 }
