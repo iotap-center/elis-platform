@@ -57,6 +57,15 @@ public class EonHttpBridge {
 		this.client = createClient();
 	}
 	
+	/**
+	 * HTTP call to get an E.On token
+	 * 
+	 * @param username
+	 * @param password
+	 * @return token as String
+	 * @throws AuthenticationException
+	 * @throws ResponseProcessingException
+	 */
 	public String authenticate(String username, String password) 
 			throws AuthenticationException, ResponseProcessingException {
 		String token = "";
@@ -76,6 +85,17 @@ public class EonHttpBridge {
 		return token;
 	}
 	
+	/**
+	 * HTTP call to get the gateway of an E.On user
+	 * 
+	 * Note: if there are multiple gateways attached to the user, only the first 
+	 * is retrieved. Which gateway the first one is, is highly arbitrary. 
+	 * 
+	 * @param token
+	 * @return a gateway representation Map<String, Object>
+	 * @throws ResponseProcessingException
+	 * @throws ParseException
+	 */
 	public Map<String, Object> getGateway(String token) 
 			throws ResponseProcessingException, ParseException {
 		Response response = get(token, PANELS_ENDPOINT);
@@ -85,6 +105,15 @@ public class EonHttpBridge {
 		return gatewayMap;
 	}
 
+	/**
+	 * HTTP call to get a list of devices attached to an E.On gateway
+	 * 
+	 * @param token
+	 * @param gatewayId
+	 * @return a list of device representations List<Map<String, Object>>
+	 * @throws ResponseProcessingException
+	 * @throws ParseException
+	 */
 	public List<Map<String, Object>> getDevices(String token, String gatewayId) 
 			throws ResponseProcessingException, ParseException {
 		Response response = get(token, DEVICELIST_ENDPOINT, "EwpPanelId", gatewayId);
@@ -92,6 +121,16 @@ public class EonHttpBridge {
 		return EonParser.parseDeviceList(response.readEntity(String.class));
 	}
 
+	/**
+	 * HTTP call to get a status object of an E.On device 
+	 * 
+	 * @param token
+	 * @param gatewayId
+	 * @param deviceId
+	 * @return
+	 * @throws ResponseProcessingException
+	 * @throws ParseException
+	 */
 	public Map<String, Object> getDeviceStatus(String token, String gatewayId, String deviceId) 
 			throws ResponseProcessingException, ParseException {
 		JSONArray deviceList = new JSONArray();
@@ -104,6 +143,14 @@ public class EonHttpBridge {
 		return EonParser.parseDeviceStatus(response.readEntity(String.class));
 	}
 
+	/**
+	 * HTTP call to toggle an E.On device
+	 * 
+	 * @param token
+	 * @param gatewayId
+	 * @param deviceId
+	 * @throws ResponseProcessingException
+	 */
 	public void switchPSS(String token, String gatewayId, String deviceId) 
 		throws ResponseProcessingException {
 		WebTarget target = createTarget(SWITCHPSS_ENDPOINT);
@@ -207,6 +254,10 @@ public class EonHttpBridge {
 		return client;
 	}
 	
+	/*
+	 * This is an attempt to make the client SSL compatible
+	 * TODO: fix keystore file not available
+	 */
 	private Client createSslClient() {
 		SslConfigurator sslConfig = SslConfigurator.newInstance()
 				.trustStoreFile(TRUSTSTORE_FILE)
