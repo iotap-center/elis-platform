@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
@@ -42,10 +43,17 @@ public class EonHttpBridgeTest {
 		assertEquals(200, response.getStatus());
 	}
 	
+	/**
+	 * Test only required if post breaks. Must change path to 
+	 * new requestb.in container (http://requestb.in) if test is needed.
+	 */
 	@Test
+	@Ignore
 	public void testRegularPost() {
-		EonHttpBridge b = new EonHttpBridge("http://requestb.in", 80, "");
-		Response response = b.post("token", "/ql0zycql", 
+		final String HOST = "http://requestb.in";
+		final String PATH = "/ql0zycql";
+		EonHttpBridge b = new EonHttpBridge(HOST, 80, "");
+		Response response = b.post("token", PATH, 
 				"{\"data\": 123}");
 		assertEquals(200, response.getStatus());
 	}
