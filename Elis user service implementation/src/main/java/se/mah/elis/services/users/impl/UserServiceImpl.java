@@ -11,6 +11,7 @@ import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
+import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 /**
  * An implementation of {@link se.mah.elis.services.users.UserService}. For the
@@ -43,6 +44,15 @@ public class UserServiceImpl implements UserService {
 		
 		if (map.containsKey(pu)) {
 			users = (User[]) ((ArrayList<User>) map.get(pu)).toArray(users);
+		}
+		
+		for (User user : users) {
+			try {
+				user.initialize();
+			} catch (UserInitalizationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		return users;
