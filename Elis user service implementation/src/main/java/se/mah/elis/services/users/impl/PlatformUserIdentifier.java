@@ -13,35 +13,46 @@ import se.mah.elis.services.users.UserIdentifier;
  */
 public class PlatformUserIdentifier implements UserIdentifier {
 
-	private int id;
+	private String username;
+	private String password;
 	
 	public PlatformUserIdentifier() {
-		id = 0;
+		username = "username";
+		password = "password";
 	}
 	
-	public PlatformUserIdentifier(int id) throws IllegalArgumentException {
-		if (id >= 0) {
-			this.id = id;
-		} else {
-			this.id = 0;
-			throw new IllegalArgumentException("User id can't be negative");
-		}
+	public PlatformUserIdentifier(String username, String password)
+			throws IllegalArgumentException {
+		setUsername(username);
+		setPassword(password);
 	}
 
-	public void setId(int id) throws IllegalArgumentException {
-		if (id >= 0) {
-			this.id = id;
+	public void setUsername(String username) throws IllegalArgumentException {
+		if (username.length() > 0) {
+			this.username = username;
 		} else {
-			throw new IllegalArgumentException("User id can't be negative");
+			throw new IllegalArgumentException("User name can't be empty");
 		}
 	}
 	
-	public int getId() {
-		return id;
+	public String getUsername() {
+		return username;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		if (password.length() > 0) {
+			this.password = password;
+		} else {
+			throw new IllegalArgumentException("Password can't be empty");
+		}
 	}
 	
 	@Override
 	public String toString() {
-		return Integer.toString(id);
+		return username + ", " + password;
 	}
 }

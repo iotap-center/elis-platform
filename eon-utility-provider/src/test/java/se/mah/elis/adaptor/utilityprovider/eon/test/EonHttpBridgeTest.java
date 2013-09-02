@@ -1,0 +1,109 @@
+package se.mah.elis.adaptor.utilityprovider.eon.test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.naming.AuthenticationException;
+import javax.ws.rs.client.ResponseProcessingException;
+import javax.ws.rs.core.Response;
+
+import org.json.simple.parser.ParseException;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
+
+public class EonHttpBridgeTest {
+	
+	// test config
+	private static final String TEST_HOST = "http://ewpapi2.dev.appex.no";
+	private static final int TEST_PORT = 80;
+	private static final String TEST_BASEPATH = "/v0_2/api/";
+	private static final String TEST_USER = "marcus.ljungblad@mah.se";
+	private static final String TEST_PASS = "medeamah2012";
+	private static final String TEST_GATEWAY = "134";
+	private static final String TEST_DEVICEID = "ab62ec3d-f86d-46bc-905b-144ee0511a25";
+			
+	private EonHttpBridge bridge; 
+	
+	@Before
+	public void setUp() {
+		bridge = new EonHttpBridge(TEST_HOST, TEST_PORT, TEST_BASEPATH);
+	}
+	
+	@Test
+	public void testRegularGet() {
+		EonHttpBridge b = new EonHttpBridge("http://vecka.nu", 80, "");
+		Response response = b.get("token", "/");
+		assertEquals(200, response.getStatus());
+	}
+	
+	/**
+	 * Test only required if post breaks. Must change path to 
+	 * new requestb.in container (http://requestb.in) if test is needed.
+	 */
+	@Test
+	@Ignore
+	public void testRegularPost() {
+		final String HOST = "http://requestb.in";
+		final String PATH = "/ql0zycql";
+		EonHttpBridge b = new EonHttpBridge(HOST, 80, "");
+		Response response = b.post("token", PATH, 
+				"{\"data\": 123}");
+		assertEquals(200, response.getStatus());
+	}
+	
+	@Test
+	public void testAuthenticate() {
+		//EonHttpBridge b = new EonHttpBridge("http://requestb.in", 80, "/ql0zycql");
+		String token;
+		try {
+			token = bridge.authenticate(TEST_USER, TEST_PASS);
+			assertTrue(token.contains(TEST_USER));
+		} catch (AuthenticationException e) {
+			e.printStackTrace();
+			fail("Failed to authenticate");
+		} catch (ResponseProcessingException rpe) {
+			rpe.printStackTrace();
+			fail("Response not ok");
+		}
+	}
+	
+	@Test
+	public void testGetGateway() throws AuthenticationException, ResponseProcessingException, ParseException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		Map<String, Object> gatewayMap = bridge.getGateway(token);
+		assertTrue(gatewayMap.containsKey("EwpPanelId"));
+		assertTrue(gatewayMap.containsKey("Name"));
+	}
+	
+	@Test
+	public void testGetDeviceList() throws ResponseProcessingException, ParseException, AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		List<Map<String, Object>> devices = bridge.getDevices(token, TEST_GATEWAY);
+		assertTrue(devices.get(0).containsKey("Id"));
+	}
+	
+	@Test
+	public void testGetDeviceStatus() throws ResponseProcessingException, ParseException, AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		Map<String, Object> status = bridge.getDeviceStatus(token, TEST_GATEWAY, TEST_DEVICEID);
+		assertEquals(TEST_DEVICEID, status.get("DeviceId"));
+	}
+	
+	@Test
+	public void testSwitchPSS() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		try {
+			bridge.switchPSS(token, TEST_GATEWAY, TEST_DEVICEID);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Failed to toggle device");
+		}
+	}
+}

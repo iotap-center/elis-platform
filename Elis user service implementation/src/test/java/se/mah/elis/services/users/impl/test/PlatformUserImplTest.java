@@ -29,46 +29,48 @@ public class PlatformUserImplTest {
 
 	@Test
 	public void testPlatformUserImplUserIdentifier() {
-		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier(13));
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
 		
 		assertNotNull(pu);
-		assertEquals(13, ((PlatformUserIdentifier) pu.getId()).getId());
+		assertEquals("batman", ((PlatformUserIdentifier) pu.getId()).getUsername());
+		assertEquals("superman", ((PlatformUserIdentifier) pu.getId()).getPassword());
 	}
 
 	@Test
 	public void testGetId() {
 		PlatformUserImpl pu = new PlatformUserImpl();
-		
-		assertEquals(0, ((PlatformUserIdentifier) pu.getId()).getId());
+
+		assertEquals("username", ((PlatformUserIdentifier) pu.getId()).getUsername());
+		assertEquals("password", ((PlatformUserIdentifier) pu.getId()).getPassword());
 	}
 
 	@Test
 	public void testSetId() {
 		PlatformUserImpl pu = new PlatformUserImpl();
 		
-		assertEquals(0, ((PlatformUserIdentifier) pu.getId()).getId());
+		assertEquals("username", ((PlatformUserIdentifier) pu.getId()).getUsername());
 		
-		pu.setId(new PlatformUserIdentifier(13));
-		assertEquals(13, ((PlatformUserIdentifier) pu.getId()).getId());
+		pu.setId(new PlatformUserIdentifier("batman", "superman"));
+		assertEquals("batman", ((PlatformUserIdentifier) pu.getId()).getUsername());
 	}
 
 	@Test
 	public void testSetIdWithNull() {
-		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier(11));
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
 		
-		assertEquals(11, ((PlatformUserIdentifier) pu.getId()).getId());
+		assertEquals("batman", ((PlatformUserIdentifier) pu.getId()).getUsername());
 		
 		pu.setId(null);
 		assertNotNull(pu.getId());
-		assertEquals(0, ((PlatformUserIdentifier) pu.getId()).getId());
+		assertEquals("username", ((PlatformUserIdentifier) pu.getId()).getUsername());
 	}
 
 	@Test
 	public void testToString() {
 		PlatformUserImpl pu = new PlatformUserImpl();
-		pu.setId(new PlatformUserIdentifier(13));
+		pu.setId(new PlatformUserIdentifier("batman", "superman"));
 		
-		assertEquals("PlatformUser 13", pu.toString());
+		assertEquals("PlatformUser batman", pu.toString());
 	}
 
 }
