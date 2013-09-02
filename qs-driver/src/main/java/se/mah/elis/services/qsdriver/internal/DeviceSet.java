@@ -8,5 +8,4 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DeviceSet {
 	public String id;
 	public List<String> devices; 
-
 }

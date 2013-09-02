@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 
 import se.mah.elis.services.qsdriver.internal.Device;
 import se.mah.elis.services.qsdriver.internal.DeviceSet;
+import se.mah.elis.services.qsdriver.internal.Location;
 import se.mah.elis.services.qsdriver.internal.Power;
 
 @Path("/device")
@@ -41,9 +42,16 @@ public class QuantifiedSelfDeviceResource {
 	@Path("{id}")
 	public Response getDevice(@PathParam("id") String id) {
 
+		
+		// Setup new Location, adding Kitchen.
+		Location location = new Location();
+		location.relative = new ArrayList<String>(){{add("Kitchen");}};
+		
 		// setup dummy device "Refrigerator"
 		Device device = new Device();
 		device.id = id;
+		device.location=location;
+		device.actions = new ArrayList<String>(){{add("String");};};
 		device.name = "Refrigerator";
 
 		return Response.status(Response.Status.OK).entity(device).build();
