@@ -156,7 +156,7 @@ public class EonHttpBridge {
 	 * @throws ParseException
 	 */
 	public EonActionObject getActionObject(String token, String gatewayId,
-			int actionId) throws ParseException {
+			long actionId) throws ParseException {
 		WebTarget target = createTarget(ACTIONSTATUS_ENDPOINT);
 		target = target.queryParam(EWP_PANEL_ID, gatewayId).queryParam(
 				"ActionId", actionId);

@@ -5,7 +5,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyInt;
 
+import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,19 +16,29 @@ import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.building.api.data.GatewayAddress;
 import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionObject;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionStatus;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 
 public class EonPowerSwitchMeterTest {
 
-	private EonPowerSwitchMeter psm;
+	private EonPowerSwitchMeter powerSwitchMeter;
 	private EonHttpBridge bridge;
 	private EonGateway gateway;
 	
 	@Before
-	public void setUp() throws StaticEntityException {
+	public void setUp() throws StaticEntityException, ParseException {
+		EonActionObject mockActionObject = mock(EonActionObject.class);
+		when(mockActionObject.getId()).thenReturn((long) 1111);
+		when(mockActionObject.getStatus()).thenReturn(EonActionStatus.ACTION_SUCCESS);
+		
 		bridge = mock(EonHttpBridge.class);
+		when(bridge.getActionObject(anyString(), anyString(), anyInt()))
+			.thenReturn(mockActionObject);
+		when(bridge.switchPSS(anyString(), anyString(), anyString()))
+			.thenReturn(mockActionObject);
 		
 		DeviceIdentifier psmId = mock(DeviceIdentifier.class);
 		when(psmId.toString()).thenReturn("device");
@@ -37,39 +50,40 @@ public class EonPowerSwitchMeterTest {
 		when(gateway.getAddress()).thenReturn(gwaddr);
 		when(gateway.getAuthenticationToken()).thenReturn("someToken");
 		
-		psm = new EonPowerSwitchMeter();
-		psm.setHttpBridge(bridge);
-		psm.setGateway(gateway);
-		psm.setId(psmId);
+		powerSwitchMeter = new EonPowerSwitchMeter();
+		powerSwitchMeter.setHttpBridge(bridge);
+		powerSwitchMeter.setGateway(gateway);
+		powerSwitchMeter.setId(psmId);
 	}
 
 	@Test
 	public void testTurnOffDevice() {
 		// setup
-		psm.setOnline(true);
+		powerSwitchMeter.setOnline(true);
 		
 		// test
-		assertTrue(psm.isOnline());
+		assertTrue(powerSwitchMeter.isOnline());
 		try {
-			psm.turnOff();
+			powerSwitchMeter.turnOff();
 		} catch (ActuatorFailedException e) {
+			e.printStackTrace();
 			fail();
 		}
-		assertFalse(psm.isOnline());
+		assertFalse(powerSwitchMeter.isOnline());
 	}
 
 	@Test
 	public void testTurnOnDevice() {
 		// setup
-		psm.setOnline(false);
+		powerSwitchMeter.setOnline(false);
 
 		// test
-		assertFalse(psm.isOnline());
+		assertFalse(powerSwitchMeter.isOnline());
 		try {
-			psm.turnOn();
+			powerSwitchMeter.turnOn();
 		} catch (ActuatorFailedException e) {
 			fail();
 		}
-		assertTrue(psm.isOnline());
+		assertTrue(powerSwitchMeter.isOnline());
 	}
 }

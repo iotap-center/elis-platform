@@ -1,8 +1,6 @@
 package se.mah.elis.adaptor.utilityprovider.eon.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Map;
@@ -124,8 +122,8 @@ public class EonHttpBridgeTest {
 			int ACTION_ID = 1234;
 			EonActionObject obj = bridge.getActionObject(token, TEST_GATEWAY, ACTION_ID);
 			assertEquals(EonActionStatus.ACTION_QUEUED, obj.getStatus());
+			assertNotNull(obj.getId());
 		} catch (Exception ignore) { 
-			ignore.printStackTrace();
 			fail("No action object found"); 
 		}
 	}
