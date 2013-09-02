@@ -12,8 +12,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import se.mah.elis.services.qsdriver.internal.Device;
-import se.mah.elis.services.qsdriver.internal.DeviceObject;
 import se.mah.elis.services.qsdriver.internal.GatewayUsers;
 import se.mah.elis.services.qsdriver.internal.User;
 import se.mah.elis.services.qsdriver.internal.Users;
