@@ -21,6 +21,18 @@ public interface UserService {
 	User[] getUsers(PlatformUser pu);
 	
 	/**
+	 * Fetches all platform users associated with this user account.
+	 * 
+	 * @param u The user.
+	 * @return An array of PlatformUser objects. If no platform users are
+	 * 		   found, an empty array is returned.
+	 * @throws NoSuchUserException
+	 * @since 1.0
+	 */
+	PlatformUser[] getPlatformUsersAssociatedWithUser(User u)
+			throws NoSuchUserException;
+	
+	/**
 	 * Associates a user account with a platform user.
 	 * 
 	 * @param u The user to associate with a PlatformUser.
