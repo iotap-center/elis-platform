@@ -95,4 +95,12 @@ public class EonParserTest {
 			fail();
 		}
 	}
+	
+	@Test
+	public void testGetActionObject() {
+		String response = "{\"Id\":15959278,\"Message\":null,\"StatusId\":1}";
+		try {
+			assertTrue(EonParser.parseActionObject(response).containsKey("Id"));
+		} catch (Exception ignore) { fail(); }
+	}
 }

@@ -62,4 +62,13 @@ public class EonParser {
 		deviceStatus.put("DeviceId", obj.get("DeviceId"));
 		return deviceStatus;
 	}
+
+	public static Map<String, Object> parseActionObject(String response) throws ParseException {
+		Map<String, Object> actionObject = new HashMap<String, Object>();
+		JSONObject obj = (JSONObject) parser.parse(response);
+		actionObject.put("Id", obj.get("Id"));
+		actionObject.put("Message", obj.get("Message"));
+		actionObject.put("StatusId", obj.get("StatusId"));
+		return actionObject;
+	}
 }
