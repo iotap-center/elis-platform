@@ -1,5 +1,9 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 
+import javax.ws.rs.client.ResponseProcessingException;
+
+import org.json.simple.parser.ParseException;
+
 import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.building.api.entities.devices.ElectricitySampler;
@@ -8,6 +12,7 @@ import se.mah.elis.adaptor.building.api.entities.devices.PowerSwitch;
 import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionObject;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 import se.mah.elis.auxiliaries.data.ElectricitySample;
@@ -132,10 +137,11 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	@Override
 	public void turnOn() throws ActuatorFailedException {
 		if (!isOnline()) {
-			switchPss();
-			setOnline(true);
+			if (trySwitchPss())
+				setOnline(true);
 		}
 	}
+
 
 	/**
 	 * Turns off the device
@@ -143,14 +149,29 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	@Override
 	public void turnOff() throws ActuatorFailedException {
 		if (isOnline()) {
-			switchPss();
-			setOnline(false);
+			if (trySwitchPss())
+				setOnline(false);
 		}
 	}
 
-	private void switchPss() {
-		httpBridge.switchPSS(this.gateway.getAuthenticationToken(),
-				getGateway().getAddress().toString(), getId().toString());
+	private boolean trySwitchPss() throws ActuatorFailedException {
+		boolean success = false;
+		
+		try {
+			EonActionObject longRunningTask = 
+					httpBridge.switchPSS(this.gateway.getAuthenticationToken(),
+					getGateway().getAddress().toString(), getId().toString());
+			success = waitForSuccess(longRunningTask);
+		} catch (ResponseProcessingException | ParseException e) {
+			throw new ActuatorFailedException();
+		}
+		
+		return success;
+	}
+
+	private boolean waitForSuccess(EonActionObject longRunningTask) {
+		// TODO: Implement
+		return true;
 	}
 
 	/**

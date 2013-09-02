@@ -155,14 +155,18 @@ public class EonHttpBridge {
 	 * @param actionId
 	 * @throws ParseException
 	 */
-	public Map<String, Object> getActionObject(String token, String gatewayId,
+	public EonActionObject getActionObject(String token, String gatewayId,
 			int actionId) throws ParseException {
 		WebTarget target = createTarget(ACTIONSTATUS_ENDPOINT);
-		target = target.queryParam(EWP_PANEL_ID, gatewayId)
-				.queryParam("ActionId", actionId);
+		target = target.queryParam(EWP_PANEL_ID, gatewayId).queryParam(
+				"ActionId", actionId);
 		Response response = doGet(token, target);
 		verifyResponse(response);
-		return EonParser.parseActionObject(response.readEntity(String.class));
+		
+		Map<String, Object> actionObjectData = EonParser.parseActionObject(response
+				.readEntity(String.class));
+		
+		return createActionObject(actionObjectData);
 	}
 
 	/**
@@ -171,20 +175,64 @@ public class EonHttpBridge {
 	 * @param token
 	 * @param gatewayId
 	 * @param deviceId
+	 * @return
 	 * @throws ResponseProcessingException
+	 * @throws ParseException
 	 */
-	public void switchPSS(String token, String gatewayId, String deviceId)
-			throws ResponseProcessingException {
+	public EonActionObject switchPSS(String token, String gatewayId,
+			String deviceId) throws ResponseProcessingException, ParseException {
 		WebTarget target = createTarget(SWITCHPSS_ENDPOINT);
 		target = target.queryParam(EWP_PANEL_ID, gatewayId)
 				.queryParam("DeviceId", deviceId).queryParam("TurnOn", "1");
 		Response response = doGet(token, target);
 		verifyResponse(response);
+
+		Map<String, Object> actionObjectData = EonParser.parseActionObject(response
+				.readEntity(String.class));
+		
+		return createActionObject(actionObjectData);
 	}
 
-	/*
-	 * HTTP client implementation follows
-	 */
+	private EonActionObject createActionObject(Map<String, Object> actionStatus) {
+		long id = (long) actionStatus.get("Id");
+		EonActionStatus status = parseActionStatus(actionStatus);
+		return new EonActionObject(id, status);
+	}
+
+	private EonActionStatus parseActionStatus(Map<String, Object> actionStatus) {
+		EonActionStatus status = EonActionStatus.ACTION_ERROR;
+		
+		try {
+			Long statusId = (long) actionStatus.get("StatusId");
+			switch (statusId.intValue()) {
+			case -1:
+				status = EonActionStatus.ACTION_NOT_FOUND;
+				break;
+			case 0:
+				status = EonActionStatus.ACTION_QUEUED;
+				break;
+			case 1:
+				status = EonActionStatus.ACTION_WAITING;
+				break;
+			case 2:
+				status = EonActionStatus.ACTION_PROCESSING;
+				break;
+			case 3:
+				status = EonActionStatus.ACTION_ERROR;
+				break;
+			case 4:
+				status = EonActionStatus.ACTION_SUCCESS;
+				break;
+			default:
+				status = EonActionStatus.ACTION_ERROR;
+			}
+		} catch (Exception ignore) {
+			ignore.printStackTrace();
+		}
+
+		return status;
+	}
+
 	/**
 	 * Make a get request using one parameter
 	 * 
