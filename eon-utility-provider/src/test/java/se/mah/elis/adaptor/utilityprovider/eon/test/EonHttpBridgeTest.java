@@ -55,6 +55,7 @@ public class EonHttpBridgeTest {
 		EonHttpBridge b = new EonHttpBridge(HOST, 80, "");
 		Response response = b.post("token", PATH, 
 				"{\"data\": 123}");
+		System.out.println(response.getStatus());
 		assertEquals(200, response.getStatus());
 	}
 	
