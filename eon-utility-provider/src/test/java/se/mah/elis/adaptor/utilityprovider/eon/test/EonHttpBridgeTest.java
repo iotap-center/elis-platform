@@ -106,4 +106,13 @@ public class EonHttpBridgeTest {
 			fail("Failed to toggle device");
 		}
 	}
+	
+	@Test
+	public void testGetActionObject() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		try {
+			int ACTION_ID = 15959278;
+			bridge.getActionObject(token, TEST_GATEWAY, ACTION_ID); 
+		} catch (Exception ignore) { fail("No action object found"); }
+	}
 }

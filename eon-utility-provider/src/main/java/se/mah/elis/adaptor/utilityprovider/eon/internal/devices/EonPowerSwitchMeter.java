@@ -132,8 +132,7 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	@Override
 	public void turnOn() throws ActuatorFailedException {
 		if (!isOnline()) {
-			httpBridge.switchPSS(this.gateway.getAuthenticationToken(),
-					getGateway().getAddress().toString(), getId().toString());
+			switchPss();
 			setOnline(true);
 		}
 	}
@@ -144,10 +143,14 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	@Override
 	public void turnOff() throws ActuatorFailedException {
 		if (isOnline()) {
-			httpBridge.switchPSS(this.gateway.getAuthenticationToken(),
-					getGateway().getAddress().toString(), getId().toString());
+			switchPss();
 			setOnline(false);
 		}
+	}
+
+	private void switchPss() {
+		httpBridge.switchPSS(this.gateway.getAuthenticationToken(),
+				getGateway().getAddress().toString(), getId().toString());
 	}
 
 	/**
