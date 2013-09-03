@@ -1,6 +1,9 @@
 package se.mah.elis.adaptor.utilityprovider.eon.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
@@ -11,16 +14,13 @@ import javax.ws.rs.core.Response;
 
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionObject;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionStatus;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EonHttpBridgeTest {
 	
 	// test config
