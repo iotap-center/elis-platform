@@ -162,6 +162,7 @@
 		
 		<!-- Reference implementation modules -->
 		<module>../Elis user service implementation</module>
+		<module>../Elis user web service</module>
 		<module>../eon-utility-provider</module>
 		<module>../electricity-usage</module>
 		<module>../northbound-api/com.eclipsesource.jaxrs.publisher</module>
