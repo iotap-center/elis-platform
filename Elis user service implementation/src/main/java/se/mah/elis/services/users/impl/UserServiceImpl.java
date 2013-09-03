@@ -5,12 +5,16 @@ package se.mah.elis.services.users.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
+import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 /**
  * An implementation of {@link se.mah.elis.services.users.UserService}. For the
@@ -43,6 +47,15 @@ public class UserServiceImpl implements UserService {
 		
 		if (map.containsKey(pu)) {
 			users = (User[]) ((ArrayList<User>) map.get(pu)).toArray(users);
+		}
+		
+		for (User user : users) {
+			try {
+				user.initialize();
+			} catch (UserInitalizationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		return users;
@@ -84,6 +97,24 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public PlatformUser createPlatformUser(String username, String password) {
 		return new PlatformUserImpl(new PlatformUserIdentifier(username, password));
+	}
+
+	@Override
+	public PlatformUser[] getPlatformUsersAssociatedWithUser(User u)
+			throws NoSuchUserException {
+		
+		PlatformUser[] pus = new PlatformUserImpl[0];
+		Set<PlatformUser> set = new HashSet<PlatformUser>();
+		
+		for (Entry<PlatformUser, ArrayList<User>> entry : map.entrySet()) {
+			for (User user : entry.getValue()) {
+				if (user == u) {
+					set.add(entry.getKey());
+				}
+			}
+		}
+		
+		return set.toArray(pus);
 	}
 
 }

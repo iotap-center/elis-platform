@@ -1,8 +1,6 @@
 package se.mah.elis.adaptor.utilityprovider.eon.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +14,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionObject;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionStatus;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 
 public class EonHttpBridgeTest {
@@ -55,6 +55,7 @@ public class EonHttpBridgeTest {
 		EonHttpBridge b = new EonHttpBridge(HOST, 80, "");
 		Response response = b.post("token", PATH, 
 				"{\"data\": 123}");
+		System.out.println(response.getStatus());
 		assertEquals(200, response.getStatus());
 	}
 	
@@ -100,10 +101,31 @@ public class EonHttpBridgeTest {
 	public void testSwitchPSS() throws AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
 		try {
-			bridge.switchPSS(token, TEST_GATEWAY, TEST_DEVICEID);
+			EonActionObject reply = bridge.switchPSS(token, TEST_GATEWAY, TEST_DEVICEID);
+			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Failed to toggle device");
 		}
 	}
+	
+	/**
+	 * Default action status on non-existing action is ACTION_QUEUED although 
+	 * the documentation says it should be ACTION_NOT_FOUND. Documentation fail. 
+	 * 
+	 * @throws AuthenticationException
+	 */
+	@Test
+	public void testGetActionObject() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		try {
+			int ACTION_ID = 1234;
+			EonActionObject obj = bridge.getActionObject(token, TEST_GATEWAY, ACTION_ID);
+			assertEquals(EonActionStatus.ACTION_QUEUED, obj.getStatus());
+			assertNotNull(obj.getId());
+		} catch (Exception ignore) { 
+			fail("No action object found"); 
+		}
+	}
+	
 }

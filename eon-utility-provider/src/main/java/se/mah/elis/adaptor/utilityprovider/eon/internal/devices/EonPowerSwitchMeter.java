@@ -1,5 +1,9 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 
+import javax.ws.rs.client.ResponseProcessingException;
+
+import org.json.simple.parser.ParseException;
+
 import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.building.api.entities.devices.ElectricitySampler;
@@ -8,6 +12,8 @@ import se.mah.elis.adaptor.building.api.entities.devices.PowerSwitch;
 import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionObject;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionStatus;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 import se.mah.elis.auxiliaries.data.ElectricitySample;
@@ -23,6 +29,7 @@ import se.mah.elis.auxiliaries.data.ElectricitySample;
  */
 public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 
+	private static final int FAIL_COUNT = 3;
 	private boolean isOnline;
 	private EonHttpBridge httpBridge;
 	private EonGateway gateway;
@@ -132,11 +139,11 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	@Override
 	public void turnOn() throws ActuatorFailedException {
 		if (!isOnline()) {
-			httpBridge.switchPSS(this.gateway.getAuthenticationToken(),
-					getGateway().getAddress().toString(), getId().toString());
-			setOnline(true);
+			if (trySwitchPss())
+				setOnline(true);
 		}
 	}
+
 
 	/**
 	 * Turns off the device
@@ -144,12 +151,52 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	@Override
 	public void turnOff() throws ActuatorFailedException {
 		if (isOnline()) {
-			httpBridge.switchPSS(this.gateway.getAuthenticationToken(),
-					getGateway().getAddress().toString(), getId().toString());
-			setOnline(false);
+			if (trySwitchPss())
+				setOnline(false);
 		}
 	}
 
+	private boolean trySwitchPss() throws ActuatorFailedException {
+		boolean success = false;
+		
+		try {
+			EonActionObject longRunningTask = 
+					httpBridge.switchPSS(this.gateway.getAuthenticationToken(),
+					getGatewayAddress(), getId().toString());
+			success = waitForSuccess(longRunningTask);
+		} catch (ResponseProcessingException | ParseException e) {
+			throw new ActuatorFailedException();
+		}
+		
+		return success;
+	}
+
+	private boolean waitForSuccess(EonActionObject longRunningTask) throws ParseException {
+		return waitForSuccess(longRunningTask, 0);
+	}
+	
+	private boolean waitForSuccess(EonActionObject longRunningTask, int testCounter) throws ParseException {
+		if (testCounter > FAIL_COUNT)
+			return false;
+			
+		EonActionObject report = 
+				httpBridge.getActionObject(this.gateway.getAuthenticationToken(), 
+				getGatewayAddress(), longRunningTask.getId());
+			
+		if (report.getStatus() == EonActionStatus.ACTION_SUCCESS) 
+			return true;
+		else {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ignore) { }			
+			return waitForSuccess(longRunningTask, testCounter+1);
+		}
+	}
+
+	private String getGatewayAddress() {
+		return getGateway().getAddress().toString();
+	}
+	
 	/**
 	 * Toggle the device on and off
 	 */

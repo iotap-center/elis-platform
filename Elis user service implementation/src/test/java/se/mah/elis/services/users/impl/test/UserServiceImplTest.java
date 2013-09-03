@@ -10,6 +10,7 @@ import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
+import se.mah.elis.services.users.impl.PlatformUserIdentifier;
 import se.mah.elis.services.users.impl.PlatformUserImpl;
 import se.mah.elis.services.users.impl.UserServiceImpl;
 import se.mah.elis.services.users.impl.test.mock.AnotherMockUser;
@@ -127,5 +128,110 @@ public class UserServiceImplTest {
 		PlatformUser pu = us.createPlatformUser("batman", "superman");
 		
 		assertEquals("PlatformUser batman", pu.toString());
+	}
+
+	@Test
+	public void testGetPlatformUsersAssociatedWithUser() {
+		UserService us = new UserServiceImpl();
+		PlatformUser pu = us.createPlatformUser("batman", "superman");
+		User mu = new MockUser();
+		
+		try {
+			us.registerUserToPlatformUser(mu, pu);
+		} catch (NoSuchUserException e) {
+			fail("Register no workie");
+		}
+		
+		PlatformUser[] pus = null;
+		try {
+			pus = us.getPlatformUsersAssociatedWithUser(mu);
+		} catch (NoSuchUserException e) {
+			fail("No workie");
+		}
+		
+		assertNotNull(pus);
+		assertEquals(1, pus.length);
+		assertEquals("batman, superman", pus[0].getId().toString());
+	}
+
+	@Test
+	public void testGetPlatformUsersAssociatedWithUserTwoPlatformUsers() {
+		UserService us = new UserServiceImpl();
+		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifier("a", "b"));
+		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifier("1", "2"));
+		User mu = new MockUser();
+		
+		try {
+			us.registerUserToPlatformUser(mu, pu1);
+			us.registerUserToPlatformUser(mu, pu2);
+		} catch (NoSuchUserException e) {
+			fail("Register no workie");
+		}
+		
+		PlatformUser[] pus = null;
+		try {
+			pus = us.getPlatformUsersAssociatedWithUser(mu);
+		} catch (NoSuchUserException e) {
+			fail("No workie");
+		}
+		
+		assertNotNull(pus);
+		assertEquals(2, pus.length);
+		assertEquals("a, b", pus[0].getId().toString());
+		assertEquals("1, 2", pus[1].getId().toString());
+	}
+
+	@Test
+	public void testGetPlatformUsersAssociatedWithUserNonExistingUser() {
+		UserService us = new UserServiceImpl();
+		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifier("a", "b"));
+		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifier("1", "2"));
+		User mu1 = new MockUser();
+		User mu2 = new AnotherMockUser();
+		
+		try {
+			us.registerUserToPlatformUser(mu1, pu1);
+			us.registerUserToPlatformUser(mu1, pu2);
+		} catch (NoSuchUserException e) {
+			fail("Register no workie");
+		}
+		
+		PlatformUser[] pus = null;
+		try {
+			pus = us.getPlatformUsersAssociatedWithUser(mu2);
+		} catch (NoSuchUserException e) {
+			fail("No workie");
+		}
+		
+		assertNotNull(pus);
+		assertEquals(0, pus.length);
+	}
+
+	@Test
+	public void testGetPlatformUsersAssociatedWithUserNToMCase() {
+		UserService us = new UserServiceImpl();
+		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifier("a", "b"));
+		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifier("1", "2"));
+		User mu1 = new MockUser();
+		User mu2 = new AnotherMockUser();
+		
+		try {
+			us.registerUserToPlatformUser(mu1, pu1);
+			us.registerUserToPlatformUser(mu2, pu1);
+			us.registerUserToPlatformUser(mu2, pu2);
+		} catch (NoSuchUserException e) {
+			fail("Register no workie");
+		}
+		
+		PlatformUser[] pus = null;
+		try {
+			pus = us.getPlatformUsersAssociatedWithUser(mu1);
+		} catch (NoSuchUserException e) {
+			fail("No workie");
+		}
+		
+		assertNotNull(pus);
+		assertEquals(1, pus.length);
+		assertEquals("a, b", pus[0].getId().toString());
 	}
 }
