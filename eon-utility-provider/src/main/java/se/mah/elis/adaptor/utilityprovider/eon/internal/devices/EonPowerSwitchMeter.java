@@ -139,7 +139,7 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	@Override
 	public void turnOn() throws ActuatorFailedException {
 		if (!isOnline()) {
-			if (trySwitchPss())
+			if (tryTurnOn())
 				setOnline(true);
 		}
 	}
@@ -151,18 +151,33 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	@Override
 	public void turnOff() throws ActuatorFailedException {
 		if (isOnline()) {
-			if (trySwitchPss())
+			if (tryTurnOff())
 				setOnline(false);
 		}
 	}
 
-	private boolean trySwitchPss() throws ActuatorFailedException {
+	private boolean tryTurnOff() throws ActuatorFailedException {
 		boolean success = false;
 		
 		try {
 			EonActionObject longRunningTask = 
-					httpBridge.switchPSS(this.gateway.getAuthenticationToken(),
-					getGatewayAddress(), getId().toString());
+					httpBridge.turnOff(this.gateway.getAuthenticationToken(),
+							getGatewayAddress(), getId().toString());
+			success = waitForSuccess(longRunningTask);
+		} catch (ResponseProcessingException | ParseException e) {
+			throw new ActuatorFailedException();
+		}
+		
+		return success;
+	}
+	
+	private boolean tryTurnOn() throws ActuatorFailedException {
+		boolean success = false;
+		
+		try {
+			EonActionObject longRunningTask = 
+					httpBridge.turnOn(this.gateway.getAuthenticationToken(),
+							getGatewayAddress(), getId().toString());
 			success = waitForSuccess(longRunningTask);
 		} catch (ResponseProcessingException | ParseException e) {
 			throw new ActuatorFailedException();

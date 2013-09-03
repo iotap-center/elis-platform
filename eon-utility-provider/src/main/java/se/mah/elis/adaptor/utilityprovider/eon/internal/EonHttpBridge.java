@@ -38,6 +38,9 @@ public class EonHttpBridge {
 	private static final String SWITCHPSS_ENDPOINT = "/Device/SwitchPSS";
 	private static final String ACTIONSTATUS_ENDPOINT = "/Panel/GetActionStatus";
 
+	private static final int TURN_ON = 1;
+	private static final int TURN_OFF = 0;
+
 	// SSL config
 	private static final String TRUSTSTORE_FILE = "./eon_truststore_client";
 	private static final String TRUSTSTORE_SECRET = "eon-truststore-secret";
@@ -168,9 +171,9 @@ public class EonHttpBridge {
 		
 		return createActionObject(actionObjectData);
 	}
-
+	
 	/**
-	 * HTTP call to toggle an E.On device
+	 * HTTP call to turn on a device
 	 * 
 	 * @param token
 	 * @param gatewayId
@@ -179,11 +182,42 @@ public class EonHttpBridge {
 	 * @throws ResponseProcessingException
 	 * @throws ParseException
 	 */
-	public EonActionObject switchPSS(String token, String gatewayId,
+	public EonActionObject turnOn(String token, String gatewayId,
 			String deviceId) throws ResponseProcessingException, ParseException {
+		return switchPSS(token, gatewayId, deviceId, TURN_ON);
+	}
+	
+	/**
+	 * HTTP call to turn off a device
+	 * 
+	 * @param token
+	 * @param gatewayId
+	 * @param deviceId
+	 * @return
+	 * @throws ResponseProcessingException
+	 * @throws ParseException
+	 */
+	public EonActionObject turnOff(String token, String gatewayId,
+			String deviceId) throws ResponseProcessingException, ParseException {
+		return switchPSS(token, gatewayId, deviceId, TURN_OFF);
+	}
+
+	/**
+	 * HTTP call to toggle an E.On device
+	 * 
+	 * @param token
+	 * @param gatewayId
+	 * @param deviceId
+	 * @param onoff 1 for on, 0 for off
+	 * @return
+	 * @throws ResponseProcessingException
+	 * @throws ParseException
+	 */
+	public EonActionObject switchPSS(String token, String gatewayId,
+			String deviceId, int onoff) throws ResponseProcessingException, ParseException {
 		WebTarget target = createTarget(SWITCHPSS_ENDPOINT);
 		target = target.queryParam(EWP_PANEL_ID, gatewayId)
-				.queryParam("DeviceId", deviceId).queryParam("TurnOn", "1");
+				.queryParam("DeviceId", deviceId).queryParam("TurnOn", onoff);
 		Response response = doGet(token, target);
 		verifyResponse(response);
 

@@ -101,7 +101,9 @@ public class EonHttpBridgeTest {
 	public void testSwitchPSS() throws AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
 		try {
-			EonActionObject reply = bridge.switchPSS(token, TEST_GATEWAY, TEST_DEVICEID);
+			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5";
+			int on = 1; 
+			EonActionObject reply = bridge.switchPSS(token, TEST_GATEWAY, tulpanLampa, on);
 			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -37,7 +37,9 @@ public class EonPowerSwitchMeterTest {
 		bridge = mock(EonHttpBridge.class);
 		when(bridge.getActionObject(anyString(), anyString(), anyInt()))
 			.thenReturn(mockActionObject);
-		when(bridge.switchPSS(anyString(), anyString(), anyString()))
+		when(bridge.turnOn(anyString(), anyString(), anyString()))
+			.thenReturn(mockActionObject);
+		when(bridge.turnOff(anyString(), anyString(), anyString()))
 			.thenReturn(mockActionObject);
 		
 		DeviceIdentifier psmId = mock(DeviceIdentifier.class);
