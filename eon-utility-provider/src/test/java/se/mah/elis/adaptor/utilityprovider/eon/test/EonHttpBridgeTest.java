@@ -11,13 +11,16 @@ import javax.ws.rs.core.Response;
 
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionObject;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionStatus;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EonHttpBridgeTest {
 	
 	// test config
@@ -98,12 +101,24 @@ public class EonHttpBridgeTest {
 	}
 	
 	@Test
-	public void testSwitchPSS() throws AuthenticationException {
+	public void testTurnOn() throws AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
 		try {
 			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5";
-			int on = 1; 
-			EonActionObject reply = bridge.switchPSS(token, TEST_GATEWAY, tulpanLampa, on);
+			EonActionObject reply = bridge.turnOn(token, TEST_GATEWAY, tulpanLampa);
+			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Failed to toggle device");
+		}
+	}
+	
+	@Test
+	public void testTurnOff() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		try {
+			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5"; 
+			EonActionObject reply = bridge.turnOff(token, TEST_GATEWAY, tulpanLampa);
 			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
 		} catch (Exception e) {
 			e.printStackTrace();
