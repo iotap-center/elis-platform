@@ -121,13 +121,47 @@ public class UserServiceImplTest {
 		assertNotNull(users);
 		assertEquals(0, users.length);
 	}
+	
+	@Test
+	public void testGetNbrOfPlatformUsers() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu = new PlatformUserImpl();
+		User mu = new MockUser();
+
+		try {
+			us.registerUserToPlatformUser(mu, pu);
+		} catch (NoSuchUserException e) {
+			fail("Register no workie");
+		}
+		
+		assertEquals(1, us.getNbrOfPlatformUsers());
+	}
+	
+	@Test
+	public void testGetNbrOfPlatformUsersNoUsers() {
+		UserServiceImpl us = new UserServiceImpl();
+		
+		assertEquals(0, us.getNbrOfPlatformUsers());
+	}
 
 	@Test
 	public void testCreatePlatformUser() {
-		UserService us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl();
 		PlatformUser pu = us.createPlatformUser("batman", "superman");
 		
 		assertEquals("PlatformUser batman", pu.toString());
+		assertEquals(1, us.getNbrOfPlatformUsers());
+	}
+
+	@Test
+	public void testCreatePlatformUserTwoUsers() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu1 = us.createPlatformUser("batman", "superman");
+		PlatformUser pu2 = us.createPlatformUser("bilbo", "baggins");
+
+		assertEquals("PlatformUser batman", pu1.toString());
+		assertEquals("PlatformUser bilbo", pu2.toString());
+		assertEquals(2, us.getNbrOfPlatformUsers());
 	}
 
 	@Test
@@ -177,8 +211,8 @@ public class UserServiceImplTest {
 		
 		assertNotNull(pus);
 		assertEquals(2, pus.length);
-		assertEquals("a, b", pus[0].getId().toString());
-		assertEquals("1, 2", pus[1].getId().toString());
+		assertTrue(findInArray(pu1,  pus));
+		assertTrue(findInArray(pu2,  pus));
 	}
 
 	@Test
@@ -233,5 +267,15 @@ public class UserServiceImplTest {
 		assertNotNull(pus);
 		assertEquals(1, pus.length);
 		assertEquals("a, b", pus[0].getId().toString());
+	}
+	
+	private boolean findInArray(PlatformUser needle, PlatformUser[] haystack) {
+		for (int i = 0; i < haystack.length; i++) {
+			if (needle.toString().equals(haystack[i].toString())) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

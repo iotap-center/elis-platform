@@ -96,7 +96,17 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public PlatformUser createPlatformUser(String username, String password) {
-		return new PlatformUserImpl(new PlatformUserIdentifier(username, password));
+		ArrayList<User> list = null;
+		PlatformUser pu =
+				new PlatformUserImpl(new PlatformUserIdentifier(username,
+						password));
+		
+		if (!map.containsKey(pu)) {
+			list = new ArrayList<User>();
+			map.put(pu, list);
+		}
+		
+		return pu;
 	}
 
 	@Override
@@ -115,6 +125,15 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		return set.toArray(pus);
+	}
+	
+	/**
+	 * This is used mainly for testing.
+	 * 
+	 * @return The number of registered platform users.
+	 */
+	public int getNbrOfPlatformUsers() {
+		return map.size();
 	}
 
 }
