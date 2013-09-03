@@ -81,6 +81,9 @@ public class Activator implements BundleActivator, ServiceListener {
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		System.out.println("Stopping the demo");
+		
+		ctx.ungetService(usRef);
+		ctx.ungetService(gupRef);
 	}
 
 	@SuppressWarnings("unchecked")

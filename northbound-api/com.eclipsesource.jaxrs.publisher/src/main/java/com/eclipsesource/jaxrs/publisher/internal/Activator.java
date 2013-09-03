@@ -26,7 +26,6 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedService;
 
-
 public class Activator implements BundleActivator {
 
   private ServiceRegistration<?> connectorRegistration;
@@ -44,6 +43,7 @@ public class Activator implements BundleActivator {
     connectorRegistration = context.registerService( JAXRSConnector.class.getName(), jaxRsConnector, null );
     openHttpServiceTracker( context );
     openAllServiceTracker( context );
+
   }
 
   private void registerConfiguration( BundleContext context ) {
@@ -80,7 +80,7 @@ public class Activator implements BundleActivator {
   }
 
   // For testing purpose
-  Bundle getJerseyAPIBundle() {
+  Bundle getJerseyAPIBundle() {	  
     return FrameworkUtil.getBundle( Path.class );
   }
 }

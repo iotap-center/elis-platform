@@ -16,7 +16,6 @@ public class Configuration implements ManagedService {
   public Configuration( JAXRSConnector jaxRsConnector ) {
     this.connector = jaxRsConnector;
   }
-
   public void updated( Dictionary<String, ?> properties ) throws ConfigurationException {
     if( properties != null ) {
       Object root = properties.get( ROOT_PROPERTY );
