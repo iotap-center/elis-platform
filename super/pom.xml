@@ -160,12 +160,14 @@
 		<module>../building api</module>
 		<module>../electrical utility api</module>
 		
+		<!-- Northbound API modules -->
+		<module>../northbound-api/com.eclipsesource.jaxrs.publisher</module>
+		
 		<!-- Reference implementation modules -->
 		<module>../Elis user service implementation</module>
 		<module>../Elis user web service</module>
 		<module>../eon-utility-provider</module>
 		<module>../electricity-usage</module>
-		<module>../northbound-api/com.eclipsesource.jaxrs.publisher</module>
 		<module>../temp-utility-provider-api</module>
 		<module>../qs-driver</module>
 	</modules>
