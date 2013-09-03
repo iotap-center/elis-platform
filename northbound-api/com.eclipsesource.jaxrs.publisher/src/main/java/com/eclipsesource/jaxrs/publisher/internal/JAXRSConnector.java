@@ -56,6 +56,7 @@ public class JAXRSConnector {
     for( ServiceHolder<HttpService> serviceHolder : services ) {
       doRemoveHttpService( serviceHolder.getService() );
       doAddHttpService( serviceHolder.getReference() );
+      System.out.println(serviceHolder.getReference());
     }
   }
   
@@ -110,6 +111,10 @@ public class JAXRSConnector {
 
   private Object doAddResource( ServiceReference<Object> reference ) {
     ServiceHolder<Object> serviceHolder = resources.add( reference );
+    
+    // Elis Specific: Print the bundles started by Felix.
+    System.out.println(reference.getBundle().toString());
+    
     registerResource( serviceHolder );
     return serviceHolder.getService();
   }
