@@ -37,6 +37,7 @@ public class EonParser {
 		return gateway;
 	}
 
+	// make this return List<Device> instead
 	public static List<Map<String, Object>> parseDeviceList(String json) throws ParseException {
 		List<Map<String, Object>> deviceList = new ArrayList<Map<String, Object>>();
 		JSONArray devices = (JSONArray) parser.parse(json);
