@@ -37,9 +37,9 @@ public class EonParserTest {
 	
 	@Test
 	public void testGetDeviceList() {
-		String response = "[" + SAMPLE_POWERSWITCH + "," + SAMPLE_TERMOMETER + "]";
+		String response = "[" + SAMPLE_POWERSWITCH + "]";
 		try {
-			assertEquals(2, EonParser.parseDeviceList(response).size());
+			assertEquals(1, EonParser.parseDeviceList(response).size());
 		} catch (Exception ignore) {
 			fail();
 		}

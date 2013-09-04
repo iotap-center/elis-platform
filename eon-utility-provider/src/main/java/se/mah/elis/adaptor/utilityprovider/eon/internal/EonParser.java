@@ -11,6 +11,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import se.mah.elis.adaptor.building.api.entities.devices.Device;
+import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
+import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+
 /**
  * Used to parse E.On HTTP response messages 
  * 
@@ -38,18 +42,20 @@ public class EonParser {
 	}
 
 	// make this return List<Device> instead
-	public static List<Map<String, Object>> parseDeviceList(String json) throws ParseException {
-		List<Map<String, Object>> deviceList = new ArrayList<Map<String, Object>>();
+	public static List<Device> parseDeviceList(String json) throws ParseException {
+		List<Device> deviceList = new ArrayList<Device>();
 		JSONArray devices = (JSONArray) parser.parse(json);
 		for (Iterator<JSONObject> deviceIterator = devices.iterator(); deviceIterator.hasNext(); ) { 
 			JSONObject obj = deviceIterator.next();
-			Map<String, Object> device = new HashMap<String, Object>();
-			device.put("Id", obj.get("Id"));
-			device.put("Name", obj.get("Name"));
-			device.put("DeviceTypeId", obj.get("DeviceTypeId"));
-			device.put("RoomId", obj.get("RoomId"));
-			device.put("IsPowerSwitch", obj.get("IsPowerSwitch"));
-			deviceList.add(device);
+			Device device;
+			try {
+				device = EonDeviceFactory.createFrom(obj);
+				deviceList.add(device);
+			} catch (MethodNotSupportedException e) {
+				continue;
+			} catch (StaticEntityException e) {
+				throw new ParseException(0);
+			}
 		}
 		return deviceList;
 	}
