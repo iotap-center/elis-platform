@@ -185,7 +185,7 @@ public class UserServiceImplTest {
 		
 		assertNotNull(pus);
 		assertEquals(1, pus.length);
-		assertEquals("batman, superman", pus[0].getId().toString());
+		assertEquals("0: batman, superman", pus[0].getId().toString());
 	}
 
 	@Test
@@ -266,7 +266,7 @@ public class UserServiceImplTest {
 		
 		assertNotNull(pus);
 		assertEquals(1, pus.length);
-		assertEquals("a, b", pus[0].getId().toString());
+		assertEquals("0: a, b", pus[0].getId().toString());
 	}
 	
 	private boolean findInArray(PlatformUser needle, PlatformUser[] haystack) {

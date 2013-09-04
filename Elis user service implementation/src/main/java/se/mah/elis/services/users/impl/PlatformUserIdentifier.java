@@ -13,6 +13,7 @@ import se.mah.elis.services.users.UserIdentifier;
  */
 public class PlatformUserIdentifier implements UserIdentifier {
 
+	private int id;
 	private String username;
 	private String password;
 	
@@ -23,8 +24,28 @@ public class PlatformUserIdentifier implements UserIdentifier {
 	
 	public PlatformUserIdentifier(String username, String password)
 			throws IllegalArgumentException {
+		id = 0;
 		setUsername(username);
 		setPassword(password);
+	}
+	
+	public PlatformUserIdentifier(int id, String username, String password)
+			throws IllegalArgumentException {
+		setId(id);
+		setUsername(username);
+		setPassword(password);
+	}
+	
+	public void setId(int id) throws IllegalArgumentException {
+		if (id > 0) {
+			this.id = id;
+		} else {
+			throw new IllegalArgumentException("Id can't be zero");
+		}
+	}
+	
+	public int getId() {
+		return id;
 	}
 
 	public void setUsername(String username) throws IllegalArgumentException {
@@ -53,6 +74,6 @@ public class PlatformUserIdentifier implements UserIdentifier {
 	
 	@Override
 	public String toString() {
-		return username + ", " + password;
+		return id + ": " + username + ", " + password;
 	}
 }
