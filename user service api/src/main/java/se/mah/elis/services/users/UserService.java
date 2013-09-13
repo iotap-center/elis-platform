@@ -21,6 +21,15 @@ public interface UserService {
 	User[] getUsers(PlatformUser pu);
 	
 	/**
+	 * Fetches all platform users.
+	 * 
+	 * @return An array of PlatformUser objects. If no users are found, an
+	 *         empty array is returned.
+	 * @since 1.0
+	 */
+	PlatformUser[] getPlatformUsers();
+	
+	/**
 	 * Fetches all platform users associated with this user account.
 	 * 
 	 * @param u The user.
@@ -63,4 +72,14 @@ public interface UserService {
 	 * @since 1.0
 	 */
 	PlatformUser createPlatformUser(String username, String password);
+	
+	/**
+	 * Updates a platform user.
+	 * 
+	 * @param pu The platform user to update.
+	 * @throws NoSuchUserException if no such PlatformUser exists.
+	 * @since 1.0
+	 */
+	void updatePlatformUser(PlatformUser pu)
+			throws NoSuchUserException;
 }
