@@ -15,6 +15,9 @@ public class PlatformUserBean {
 	public String userId;
 	
 	@XmlElement(required = true)
+	public String username;
+	
+	@XmlElement(required = true)
 	public String password;
 	
 	@XmlElement
