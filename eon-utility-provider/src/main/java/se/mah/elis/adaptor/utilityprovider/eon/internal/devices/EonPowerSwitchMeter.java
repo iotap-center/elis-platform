@@ -27,11 +27,10 @@ import se.mah.elis.auxiliaries.data.ElectricitySample;
  * @version 1.0.0
  * @since 1.0
  */
-public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
+public class EonPowerSwitchMeter extends EonDevice implements PowerSwitch, ElectricitySampler {
 
 	private static final int FAIL_COUNT = 3;
 	private boolean isOnline;
-	private EonHttpBridge httpBridge;
 	private EonGateway gateway;
 	private DeviceIdentifier deviceId;
 	private String deviceName;
@@ -44,17 +43,7 @@ public class EonPowerSwitchMeter implements PowerSwitch, ElectricitySampler {
 	public void setOnline(boolean online) {
 		isOnline = online;
 	}
-
-	/**
-	 * Attach a HTTP bridge to the device - mock bridges can be used during
-	 * testing.
-	 * 
-	 * @param bridge
-	 */
-	public void setHttpBridge(EonHttpBridge bridge) {
-		httpBridge = bridge;
-	}
-
+	
 	@Override
 	public DeviceIdentifier getId() {
 		return deviceId;

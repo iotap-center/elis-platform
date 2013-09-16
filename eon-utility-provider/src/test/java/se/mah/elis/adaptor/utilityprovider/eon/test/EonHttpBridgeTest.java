@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import se.mah.elis.adaptor.building.api.entities.devices.Device;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionObject;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionStatus;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
@@ -89,8 +90,8 @@ public class EonHttpBridgeTest {
 	@Test
 	public void testGetDeviceList() throws ResponseProcessingException, ParseException, AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
-		List<Map<String, Object>> devices = bridge.getDevices(token, TEST_GATEWAY);
-		assertTrue(devices.get(0).containsKey("Id"));
+		List<Device> devices = bridge.getDevices(token, TEST_GATEWAY);
+		assertTrue(devices.size() > 0);
 	}
 	
 	@Test

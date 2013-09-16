@@ -18,6 +18,7 @@ import se.mah.elis.adaptor.building.api.exceptions.GatewayCommunicationException
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
 import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDevice;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDeviceIdentifier;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
 
@@ -210,16 +211,13 @@ public class EonGateway implements Gateway {
 	private void getAllDevices() throws ResponseProcessingException,
 			ParseException {
 		
-		List<Map<String, Object>> data = httpBridge.getDevices(
+		List<Device> devices = httpBridge.getDevices(
 				getAuthenticationToken(), getAddress().toString());
 		
-		for (Map<String, Object> deviceMap : data) {
+		for (Device device : devices) {
 			try {
-				Device device = convertToDevice(deviceMap);
+				setEonProperties(device);
 				this.add(device);
-			} catch (MethodNotSupportedException e) {
-				e.printStackTrace();
-				continue; // TODO: add logging
 			} catch (StaticEntityException e) {
 				e.printStackTrace();
 				continue; // TODO: add logging
@@ -227,26 +225,13 @@ public class EonGateway implements Gateway {
 		}
 	}
 
-	private Device convertToDevice(Map<String, Object> deviceMap)
-			throws MethodNotSupportedException, StaticEntityException {
-		
-		if ((boolean) deviceMap.get("IsPowerSwitch")) {
-			return createPowerSwitch(deviceMap);
-		} else {
-			throw new MethodNotSupportedException();
+	private void setEonProperties(Device device) throws StaticEntityException {
+		device.setGateway(this);
+		if (device instanceof EonDevice) {
+			EonDevice eonDevice = (EonDevice) device;
+			eonDevice.setHttpBridge(getHttpBridge());
 		}
-	}
-
-	private Device createPowerSwitch(Map<String, Object> deviceMap) throws StaticEntityException {
-		EonPowerSwitchMeter psm = new EonPowerSwitchMeter();
-		String id = (String) deviceMap.get("Id");
 		
-		psm.setGateway(this);
-		psm.setHttpBridge(getHttpBridge());
-		psm.setId(new EonDeviceIdentifier(id));
-		psm.setName((String) deviceMap.get("Name"));
-		
-		return psm;
 	}
 
 	private void markAsConnected() {

@@ -19,6 +19,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import se.mah.elis.adaptor.building.api.entities.devices.Device;
+
 /**
  * HTTP bridge to communicate with the E.On HTTP API using JSON.
  * 
@@ -119,7 +121,7 @@ public class EonHttpBridge {
 	 * @throws ResponseProcessingException
 	 * @throws ParseException
 	 */
-	public List<Map<String, Object>> getDevices(String token, String gatewayId)
+	public List<Device> getDevices(String token, String gatewayId)
 			throws ResponseProcessingException, ParseException {
 		Response response = get(token, DEVICELIST_ENDPOINT, EWP_PANEL_ID,
 				gatewayId);

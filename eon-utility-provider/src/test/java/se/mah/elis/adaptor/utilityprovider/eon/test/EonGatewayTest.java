@@ -18,7 +18,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.mah.elis.adaptor.building.api.data.GatewayAddress;
+import se.mah.elis.adaptor.building.api.entities.devices.Device;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 
 public class EonGatewayTest {
@@ -48,12 +50,9 @@ public class EonGatewayTest {
 		gateway.setAddress(address);
 	}
 
-	private List<Map<String, Object>> fakeDeviceList() {
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		Map<String, Object> device = new HashMap<String, Object>();
-		device.put("Id", "someid");
-		device.put("Name", "testDevice");
-		device.put("IsPowerSwitch", true);
+	private List<Device> fakeDeviceList() {
+		List<Device> list = new ArrayList<Device>();
+		Device device = mock(Device.class);
 		list.add(device);
 		return list;
 	}
@@ -64,7 +63,7 @@ public class EonGatewayTest {
 		fakeGatewayData.put("EwpPanelId", "1234");
 		return fakeGatewayData;
 	}
-
+	
 	@Test
 	public void testConnect() {
 		try {
