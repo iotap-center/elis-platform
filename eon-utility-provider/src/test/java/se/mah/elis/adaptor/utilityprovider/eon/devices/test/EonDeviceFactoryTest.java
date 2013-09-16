@@ -13,6 +13,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import se.mah.elis.adaptor.building.api.entities.devices.Device;
+import se.mah.elis.adaptor.building.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.building.api.entities.devices.PowerSwitch;
 import se.mah.elis.adaptor.building.api.entities.devices.Thermometer;
 import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
@@ -25,11 +26,13 @@ public class EonDeviceFactoryTest {
 	private JSONParser parser = new JSONParser();
 	private static JSONObject POWERSWITCH_METER;
 	private static JSONObject THERMOMETER;
+	private static JSONObject POWERMETER;
 	
 	@Before
 	public void setUp() throws ParseException {
 		createSamplePowerSwitchMeter();
 		createSampleThermometer();
+		createSamplePowerMeter();
 	}
 	
 	@Test
@@ -46,12 +49,26 @@ public class EonDeviceFactoryTest {
 	}
 	
 	@Test
-	@Ignore // THIS IS NOT IMPLEMENTED YET
+	@Ignore // TODO: THIS IS NOT IMPLEMENTED YET
 	public void testCreateThermometer() {
 		Device sample;
 		try {
 			sample = EonDeviceFactory.createFrom(THERMOMETER);
 			assertTrue(sample instanceof Thermometer);
+			assertFalse(sample.getId().toString().isEmpty());
+			assertFalse(sample.getName().isEmpty());
+		} catch (MethodNotSupportedException | StaticEntityException e) {
+			fail();
+		}
+	}
+	
+	@Test
+	@Ignore // TODO: THIS IS NOT IMPLEMENTED YET
+	public void testCreatePowerMeter() {
+		Device sample;
+		try {
+			sample = EonDeviceFactory.createFrom(POWERMETER);
+			assertTrue(sample instanceof ElectricitySampler);
 			assertFalse(sample.getId().toString().isEmpty());
 			assertFalse(sample.getName().isEmpty());
 		} catch (MethodNotSupportedException | StaticEntityException e) {
@@ -82,5 +99,9 @@ public class EonDeviceFactoryTest {
 
 	private void createSamplePowerSwitchMeter() throws ParseException {
 		POWERSWITCH_METER = (JSONObject) parser.parse(EonParserTest.SAMPLE_POWERSWITCH);
+	}
+	
+	private void createSamplePowerMeter() throws ParseException {
+		POWERMETER = (JSONObject) parser.parse(EonParserTest.SAMPLE_POWERMETER);
 	}
 }

@@ -153,4 +153,40 @@ public class EonParserTest {
 		    + "\"UsageAreaId\": 10,"
 		    + "\"ZoneNo\": 3"
 		    + "}";
+	
+	/**
+	 * May also be used to create JSON objects
+	 */
+	public static final String SAMPLE_POWERMETER = ""
+			+"{\"AreaNo\": 1,"
+			+"\"ChannelNo\": 0,"
+			+"\"ControllerDeviceId\": None,"
+			+"\"Description\": None,"
+			+"\"DeviceTypeId\": 51,"
+			+"\"DistributorCode\": None,"
+			+"\"EnergyOptimisedDate\": \"\","
+			+"\"EnergyOptimisingMode\": 0,"
+			+"\"EnergyOptimisingOption\": 0,"
+			+"\"EnergyOptmisationTemporaryDisabled\": False,"
+			+"\"EnergyTypeId\": None,"
+			+"\"IconId\": None,"
+			+"\"Id\": \"1c167952-2941-479d-b8ab-898f05fea5da\","
+			+"\"IsCamera\": False,"
+			+"\"IsChargingDevice\": False,"
+			+"\"IsDimmer\": False,"
+			+"\"IsDoorSwitch\": False,"
+			+"\"IsHumidity\": False,"
+			+"\"IsPowerSwitch\": False,"
+			+"\"IsProduction\": False,"
+			+"\"IsRadon\": False,"
+			+"\"IsSummaryDevice\": True,"
+			+"\"IsTemperature\": False,"
+			+"\"IsThermostat\": False,"
+			+"\"IsUpic\": False,"
+			+"\"IsVirtualDevice\": True,"
+			+"\"Name\": \"Elmätare elishem3\","
+			+"\"PowerSwitchIsOn\": False,"
+			+"\"RoomId\": None,"
+			+"\"UsageAreaId\": 0,"
+			+"\"ZoneNo\": 1}";
 }
