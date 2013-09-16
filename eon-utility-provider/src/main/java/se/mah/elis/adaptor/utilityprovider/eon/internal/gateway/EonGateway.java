@@ -46,6 +46,7 @@ public class EonGateway implements Gateway {
 	private GatewayAddress gatewayAddress;
 	private GatewayUser gatewayUser;
 	private boolean gatewayHasConnected;
+	private int gatewayId;
 
 	public EonGateway() {
 		this.devices = new ArrayList<Device>();
@@ -80,14 +81,12 @@ public class EonGateway implements Gateway {
 
 	@Override
 	public int getId() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.gatewayId;
 	}
 
 	@Override
 	public void setId(int id) throws StaticEntityException {
-		// TODO Auto-generated method stub
-
+		this.gatewayId = id;
 	}
 
 	@Override
