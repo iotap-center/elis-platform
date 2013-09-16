@@ -307,18 +307,33 @@ public class UserServiceImplTest {
 		
 		assertEquals("PlatformUser batman", pu.toString());
 		assertEquals(1, us.getNbrOfPlatformUsers());
+
+		pu.setFirstName("Bruce");
+		pu.setLastName("Wayne");
 		
-		
+		try {
+			us.updatePlatformUser(pu);
+		} catch (NoSuchUserException e) {
+			fail("Bad stuff going on");
+		}
 	}
 	
 	@Test
 	public void testUpdatePlatformUserNonExistingUser() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu1 = us.createPlatformUser("batman", "superman");
+		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifier("1", "a"));
 		
-	}
-	
-	@Test
-	public void testUpdatePlatformUserBadData() {
+		assertEquals("PlatformUser batman", pu1.toString());
+		assertEquals(1, us.getNbrOfPlatformUsers());
+
+		pu2.setFirstName("Bruce");
+		pu2.setLastName("Wayne");
 		
+		try {
+			us.updatePlatformUser(pu2);
+			fail("No exception rose");
+		} catch (NoSuchUserException e) {}
 	}
 	
 	private boolean findInArray(PlatformUser needle, PlatformUser[] haystack) {
