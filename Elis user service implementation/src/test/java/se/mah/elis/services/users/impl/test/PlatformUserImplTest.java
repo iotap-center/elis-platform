@@ -208,4 +208,35 @@ public class PlatformUserImplTest {
 		assertEquals("PlatformUser batman", pu.toString());
 	}
 
+	@Test
+	public void testEqualsSameId() {
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(1, "fred", "barney"));
+		
+		assertTrue(pu1.equals(pu2));
+	}
+
+	@Test
+	public void testEqualsSameName() {
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(2, "batman", "superman"));
+		
+		assertTrue(pu1.equals(pu2));
+	}
+
+	@Test
+	public void testEqualsSameNameAndId() {
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
+		
+		assertTrue(pu1.equals(pu2));
+	}
+
+	@Test
+	public void testEqualsDifferentStuff() {
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(2, "fred", "barney"));
+		
+		assertFalse(pu1.equals(pu2));
+	}
 }

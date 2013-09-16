@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.mah.elis.services.users.impl.PlatformUserIdentifier;
+import se.mah.elis.services.users.impl.PlatformUserImpl;
 
 public class PlatformUserIdentifierTest {
 
@@ -226,5 +227,37 @@ public class PlatformUserIdentifierTest {
 		PlatformUserIdentifier p = new PlatformUserIdentifier(3, "batman", "superman");
 		
 		assertEquals("3: batman, superman", p.toString());
+	}
+
+	@Test
+	public void testEqualsSameId() {
+		PlatformUserIdentifier pu1 = new PlatformUserIdentifier(1, "batman", "superman");
+		PlatformUserIdentifier pu2 = new PlatformUserIdentifier(1, "fred", "barney");
+		
+		assertTrue(pu1.equals(pu2));
+	}
+
+	@Test
+	public void testEqualsSameUsername() {
+		PlatformUserIdentifier pu1 = new PlatformUserIdentifier("batman", "superman");
+		PlatformUserIdentifier pu2 = new PlatformUserIdentifier("batman", "george");
+		
+		assertTrue(pu1.equals(pu2));
+	}
+
+	@Test
+	public void testEqualsSameUsernameAndId() {
+		PlatformUserIdentifier pu1 = new PlatformUserIdentifier(1, "batman", "superman");
+		PlatformUserIdentifier pu2 = new PlatformUserIdentifier(1, "batman", "superman");
+		
+		assertTrue(pu1.equals(pu2));
+	}
+
+	@Test
+	public void testEqualsDifferentStuff() {
+		PlatformUserIdentifier pu1 = new PlatformUserIdentifier(1, "batman", "superman");
+		PlatformUserIdentifier pu2 = new PlatformUserIdentifier(2, "fred", "barney");
+		
+		assertFalse(pu1.equals(pu2));
 	}
 }
