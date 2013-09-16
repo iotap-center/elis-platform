@@ -126,6 +126,18 @@ public class UserServiceImpl implements UserService {
 		
 		return set.toArray(pus);
 	}
+
+	@Override
+	public PlatformUser[] getPlatformUsers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void updatePlatformUser(PlatformUser pu) throws NoSuchUserException {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	/**
 	 * This is used mainly for testing.

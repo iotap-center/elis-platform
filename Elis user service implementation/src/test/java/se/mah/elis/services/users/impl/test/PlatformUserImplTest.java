@@ -64,6 +64,141 @@ public class PlatformUserImplTest {
 		assertNotNull(pu.getId());
 		assertEquals("username", ((PlatformUserIdentifier) pu.getId()).getUsername());
 	}
+	
+	@Test
+	public void testGetFirstName() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setFirstName("Bruce");
+		
+		assertEquals("Bruce", pu.getFirstName());
+		
+	}
+	
+	@Test
+	public void testGetFirstNameNoName() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setFirstName("");
+		
+		assertEquals("", pu.getFirstName());
+	}
+	
+	@Test
+	public void testSetFirstName() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setFirstName("Bruce");
+		
+		assertEquals("Bruce", pu.getFirstName());
+	}
+	
+	@Test
+	public void testSetFirstNameEmptyName() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setFirstName("Bruce");
+		pu.setFirstName("");
+		
+		assertEquals("", pu.getFirstName());
+	}
+	
+	@Test
+	public void testSetFirstNameNull() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setFirstName("Bruce");
+		pu.setFirstName(null);
+		
+		assertEquals("", pu.getFirstName());
+	}
+	
+	@Test
+	public void testGetLastName() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setLastName("Wayne");
+		
+		assertEquals("Wayne", pu.getLastName());
+		
+	}
+	
+	@Test
+	public void testGetLastNameNoName() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		
+		assertEquals("", pu.getLastName());
+	}
+	
+	@Test
+	public void testSetLastName() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setLastName("Wayne");
+		
+		assertEquals("Wayne", pu.getLastName());
+	}
+	
+	@Test
+	public void testSetLastNameNoName() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setLastName("Wayne");
+		pu.setLastName("");
+		
+		assertEquals("", pu.getLastName());	
+	}
+	
+	@Test
+	public void testSetLastNameNull() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setLastName("Wayne");
+		pu.setLastName(null);
+		
+		assertEquals("", pu.getLastName());	
+	}
+	
+	@Test
+	public void testGetEmail() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setEmail("batman@gotham.net");
+		
+		assertEquals("batman@gotham.net", pu.getEmail());
+	}
+	
+	@Test
+	public void testGetEmailNoAddress() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		
+		assertEquals("", pu.getEmail());
+	}
+	
+	@Test
+	public void testSetEmail() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setEmail("batman@gotham.net");
+		
+		assertEquals("batman@gotham.net", pu.getEmail());
+	}
+	
+	@Test
+	public void testSetEmailNoAddress() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setEmail("batman@gotham.net");
+		pu.setEmail("");
+		
+		assertEquals("", pu.getEmail());
+	}
+	
+	@Test
+	public void testSetEmailBadAddress() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setEmail("batman@gotham.net");
+		pu.setEmail("batman@gotham");
+		
+		assertEquals("", pu.getEmail());
+	}
+	
+	@Test
+	public void testSetEmailNull() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
+		pu.setEmail("batman@gotham.net");
+		pu.setEmail(null);
+		
+		assertEquals("", pu.getEmail());
+	}
 
 	@Test
 	public void testToString() {

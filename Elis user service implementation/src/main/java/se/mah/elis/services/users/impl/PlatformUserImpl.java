@@ -49,4 +49,40 @@ public class PlatformUserImpl implements PlatformUser {
 	public String toString() {
 		return "PlatformUser " + ((PlatformUserIdentifier) id).getUsername();
 	}
+
+	@Override
+	public void setFirstName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getFirstName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setLastName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getLastName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setEmail(String address) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getEmail() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

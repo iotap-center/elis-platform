@@ -269,6 +269,58 @@ public class UserServiceImplTest {
 		assertEquals("0: a, b", pus[0].getId().toString());
 	}
 	
+	@Test
+	public void testGetPlatformUsers() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu1 = us.createPlatformUser("batman", "superman");
+		PlatformUser pu2 = us.createPlatformUser("bilbo", "baggins");
+		PlatformUser pu3 = us.createPlatformUser("orvar", "säfström");
+
+		PlatformUser[] pus = us.getPlatformUsers();
+		assertNotNull(pus);
+		assertEquals(3, pus.length);
+	}
+	
+	@Test
+	public void testGetPlatformUsersNoUsers() {
+		UserServiceImpl us = new UserServiceImpl();
+
+		PlatformUser[] pus = us.getPlatformUsers();
+		assertNotNull(pus);
+		assertEquals(0, pus.length);
+	}
+	
+	@Test
+	public void testGetPlatformUsersOneUser() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu1 = us.createPlatformUser("batman", "superman");
+
+		PlatformUser[] pus = us.getPlatformUsers();
+		assertNotNull(pus);
+		assertEquals(1, pus.length);
+	}
+	
+	@Test
+	public void testUpdatePlatformUser() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu = us.createPlatformUser("batman", "superman");
+		
+		assertEquals("PlatformUser batman", pu.toString());
+		assertEquals(1, us.getNbrOfPlatformUsers());
+		
+		
+	}
+	
+	@Test
+	public void testUpdatePlatformUserNonExistingUser() {
+		
+	}
+	
+	@Test
+	public void testUpdatePlatformUserBadData() {
+		
+	}
+	
 	private boolean findInArray(PlatformUser needle, PlatformUser[] haystack) {
 		for (int i = 0; i < haystack.length; i++) {
 			if (needle.toString().equals(haystack[i].toString())) {
