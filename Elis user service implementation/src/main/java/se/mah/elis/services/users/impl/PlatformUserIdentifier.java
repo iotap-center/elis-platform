@@ -76,4 +76,14 @@ public class PlatformUserIdentifier implements UserIdentifier {
 	public String toString() {
 		return id + ": " + username + ", " + password;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o.getClass().getName().equals(this.getClass().getName())) {
+			PlatformUserIdentifier oid = (PlatformUserIdentifier) o;
+			return (id == oid.getId() || username.equals(oid.getUsername()));
+		}
+		
+		return false;
+	}
 }

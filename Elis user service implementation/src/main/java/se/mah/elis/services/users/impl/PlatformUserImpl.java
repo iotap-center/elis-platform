@@ -3,6 +3,9 @@
  */
 package se.mah.elis.services.users.impl;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.UserIdentifier;
 
@@ -11,18 +14,31 @@ import se.mah.elis.services.users.UserIdentifier;
  *
  */
 public class PlatformUserImpl implements PlatformUser {
+
+	public static final Pattern VALID_EMAIL = 
+			Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
+					Pattern.CASE_INSENSITIVE);
 	
 	private UserIdentifier id;
+	private String firstName;
+	private String lastName;
+	private String email;
 
 	/**
 	 * 
 	 */
 	public PlatformUserImpl() {
 		id = new PlatformUserIdentifier();
+		firstName = "";
+		lastName = "";
+		email = "";
 	}
 	
 	public PlatformUserImpl(UserIdentifier id) {
 		this.id = id;
+		firstName = "";
+		lastName = "";
+		email = "";
 	}
 
 	/* (non-Javadoc)
@@ -52,37 +68,58 @@ public class PlatformUserImpl implements PlatformUser {
 
 	@Override
 	public void setFirstName(String name) {
-		// TODO Auto-generated method stub
-		
+		if (name == null) {
+			firstName = "";
+		} else {
+			firstName = name;
+		}
 	}
 
 	@Override
 	public String getFirstName() {
-		// TODO Auto-generated method stub
-		return null;
+		return firstName;
 	}
 
 	@Override
 	public void setLastName(String name) {
-		// TODO Auto-generated method stub
-		
+		if (name == null) {
+			lastName = "";
+		} else {
+			lastName = name;
+		}
 	}
 
 	@Override
 	public String getLastName() {
-		// TODO Auto-generated method stub
-		return null;
+		return lastName;
 	}
 
 	@Override
 	public void setEmail(String address) {
-		// TODO Auto-generated method stub
-		
+		if (address == null || !validateAddress(address)) {
+			email = "";
+		} else {
+			email = address;
+		}
 	}
 
 	@Override
 	public String getEmail() {
-		// TODO Auto-generated method stub
-		return null;
+		return email;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o.getClass().getName().equals(this.getClass().getName())) {
+			return this.id.equals(((PlatformUserImpl) o).getId());
+		}
+		
+		return false;
+	}
+	
+	private boolean validateAddress(String address) {
+		Matcher matcher = VALID_EMAIL.matcher(address);
+		
+		return matcher.find();
 	}
 }

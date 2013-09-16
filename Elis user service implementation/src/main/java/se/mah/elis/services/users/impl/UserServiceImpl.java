@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void registerUserToPlatformUser(User u, PlatformUser pu)
+	public synchronized void registerUserToPlatformUser(User u, PlatformUser pu)
 			throws NoSuchUserException {
 		// TODO This isn't kosher
 		
@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void unregisterUserFromPlatformUser(User u, PlatformUser pu)
+	public synchronized void unregisterUserFromPlatformUser(User u, PlatformUser pu)
 			throws NoSuchUserException {
 		// TODO This isn't kosher
 		
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public PlatformUser createPlatformUser(String username, String password) {
+	public synchronized PlatformUser createPlatformUser(String username, String password) {
 		ArrayList<User> list = null;
 		PlatformUser pu =
 				new PlatformUserImpl(new PlatformUserIdentifier(username,
@@ -129,14 +129,20 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public PlatformUser[] getPlatformUsers() {
-		// TODO Auto-generated method stub
-		return null;
+		PlatformUser[] pus = new PlatformUserImpl[0];
+		
+		return map.keySet().toArray(pus);
 	}
 
 	@Override
-	public void updatePlatformUser(PlatformUser pu) throws NoSuchUserException {
-		// TODO Auto-generated method stub
-		
+	public synchronized void updatePlatformUser(PlatformUser pu) throws NoSuchUserException {
+		if (map.containsKey(pu)) {
+			ArrayList<User> users = map.get(pu);
+			map.remove(pu);
+			map.put(pu, users);
+		} else {
+			throw new NoSuchUserException();
+		}
 	}
 	
 	/**
