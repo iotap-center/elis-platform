@@ -184,7 +184,7 @@ public class EonParserTest {
 			+"\"IsThermostat\": False,"
 			+"\"IsUpic\": False,"
 			+"\"IsVirtualDevice\": True,"
-			+"\"Name\": \"Elmätare elishem3\","
+			+"\"Name\": \"Elmatare elishem3\","
 			+"\"PowerSwitchIsOn\": False,"
 			+"\"RoomId\": None,"
 			+"\"UsageAreaId\": 0,"

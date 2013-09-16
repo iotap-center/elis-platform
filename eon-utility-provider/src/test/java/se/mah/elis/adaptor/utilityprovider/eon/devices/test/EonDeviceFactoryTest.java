@@ -49,7 +49,7 @@ public class EonDeviceFactoryTest {
 	}
 	
 	@Test
-	@Ignore // TODO: THIS IS NOT IMPLEMENTED YET
+	// TODO: THIS IS NOT IMPLEMENTED YET
 	public void testCreateThermometer() {
 		Device sample;
 		try {
