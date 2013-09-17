@@ -57,6 +57,7 @@ public class EonHttpBridge {
 
 	// helpers
 	private Client client;
+	private Object switchPSSLock = new Object();
 
 	public EonHttpBridge(String host, int port, String basepath) {
 		this.host = host;
@@ -240,7 +241,15 @@ public class EonHttpBridge {
 		WebTarget target = createTarget(SWITCHPSS_ENDPOINT);
 		target = target.queryParam(EWP_PANEL_ID, gatewayId)
 				.queryParam("DeviceId", deviceId).queryParam("TurnOn", onoff);
-		Response response = doGet(token, target);
+		
+		Response response = null;
+		
+		synchronized (switchPSSLock) {
+			// this ensures the same client cannot turn off/on a 
+			// power switch in parallel
+			response = doGet(token, target);
+		}
+		
 		verifyResponse(response);
 
 		Map<String, Object> actionObjectData = EonParser.parseActionObject(response
