@@ -203,9 +203,9 @@ public class PlatformUserImplTest {
 	@Test
 	public void testToString() {
 		PlatformUserImpl pu = new PlatformUserImpl();
-		pu.setId(new PlatformUserIdentifier("batman", "superman"));
+		pu.setId(new PlatformUserIdentifier(1, "batman", "superman"));
 		
-		assertEquals("PlatformUser batman", pu.toString());
+		assertEquals("PlatformUser batman (1)", pu.toString());
 	}
 
 	@Test

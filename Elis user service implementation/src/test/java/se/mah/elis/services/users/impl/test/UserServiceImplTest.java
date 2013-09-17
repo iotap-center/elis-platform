@@ -148,8 +148,8 @@ public class UserServiceImplTest {
 	public void testCreatePlatformUser() {
 		UserServiceImpl us = new UserServiceImpl();
 		PlatformUser pu = us.createPlatformUser("batman", "superman");
-		
-		assertEquals("PlatformUser batman", pu.toString());
+
+		assertEquals("PlatformUser batman (1)", pu.toString());
 		assertEquals(1, us.getNbrOfPlatformUsers());
 	}
 
@@ -159,8 +159,8 @@ public class UserServiceImplTest {
 		PlatformUser pu1 = us.createPlatformUser("batman", "superman");
 		PlatformUser pu2 = us.createPlatformUser("bilbo", "baggins");
 
-		assertEquals("PlatformUser batman", pu1.toString());
-		assertEquals("PlatformUser bilbo", pu2.toString());
+		assertEquals("PlatformUser batman (1)", pu1.toString());
+		assertEquals("PlatformUser bilbo (2)", pu2.toString());
 		assertEquals(2, us.getNbrOfPlatformUsers());
 	}
 
@@ -185,7 +185,7 @@ public class UserServiceImplTest {
 		
 		assertNotNull(pus);
 		assertEquals(1, pus.length);
-		assertEquals("0: batman, superman", pus[0].getId().toString());
+		assertEquals("1: batman, superman", pus[0].getId().toString());
 	}
 
 	@Test
@@ -305,7 +305,7 @@ public class UserServiceImplTest {
 		UserServiceImpl us = new UserServiceImpl();
 		PlatformUser pu = us.createPlatformUser("batman", "superman");
 		
-		assertEquals("PlatformUser batman", pu.toString());
+		assertEquals("PlatformUser batman (1)", pu.toString());
 		assertEquals(1, us.getNbrOfPlatformUsers());
 
 		pu.setFirstName("Bruce");
@@ -324,7 +324,7 @@ public class UserServiceImplTest {
 		PlatformUser pu1 = us.createPlatformUser("batman", "superman");
 		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifier("1", "a"));
 		
-		assertEquals("PlatformUser batman", pu1.toString());
+		assertEquals("PlatformUser batman (1)", pu1.toString());
 		assertEquals(1, us.getNbrOfPlatformUsers());
 
 		pu2.setFirstName("Bruce");
