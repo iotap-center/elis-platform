@@ -114,20 +114,19 @@ public class UserWebServiceTest {
 		} catch (UserExistsException e) {}
 		
 		String responseString = responseStart + response200
-				+ "  \"User\": {\n"
-				+ "    \"id\": \"1\",\n"
-				+ "    \"username\": \"1\",\n"
-				+ "    \"firstName\": \"\",\n"
-				+ "    \"lastName\": \"\",\n"
-				+ "    \"email\": \"\"\n"
+				+ "\"User\": {\n"
+				+ "  \"userId\": \"1\",\n"
+				+ "  \"username\": \"1\",\n"
+				+ "  \"firstName\": \"\",\n"
+				+ "  \"lastName\": \"\",\n"
+				+ "  \"email\": \"\"\n"
 				+ "}"
 				+ responseEnd;
 		
 		Response r = uws.getUser("1");
 		
 		assertEquals(200, r.getStatus());
-		assertEquals("application/json", r.getMediaType().toString());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
@@ -142,7 +141,7 @@ public class UserWebServiceTest {
 		Response r = uws.getUser("3");
 		
 		assertEquals(404, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
@@ -207,7 +206,7 @@ public class UserWebServiceTest {
 		Response r = uws.addUser(bean);
 		
 		assertEquals(201, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 		
 		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
 		
@@ -286,31 +285,27 @@ public class UserWebServiceTest {
 		assertEquals(0, users.length);
 		
 		String responseString = responseStart + response200
-				+ "    \"User\": {\n"
-				+ "      \"id\": \"1\",\n"
-				+ "      \"username\": \"1\",\n"
-				+ "      \"firstName\": \"\",\n"
-				+ "      \"lastName\": \"\",\n"
-				+ "      \"email\": \"\"\n"
-				+ "    }\n"
+				+ "\"User\": {\n"
+				+ "  \"userId\": \"1\",\n"
+				+ "  \"username\": \"1\",\n"
+				+ "  \"firstName\": \"Bruce\",\n"
+				+ "  \"lastName\": \"Wayne\"\n"
+				+ "}"
 				+ responseEnd;
 		
 		Response r = uws.updateUser(bean.userId, bean);
 		
 		assertEquals(200, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 		
-		users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		PlatformUser pu = us.getPlatformUser("1");
 		
-		assertNotNull(users);
-		assertEquals(1, users.length);
+		assertNotNull(pu);
+		assertEquals("Bruce", pu.getFirstName());
 	}
 
 	@Test
 	public void testUpdateUserNoSuchUser() {
-		try {
-			PlatformUser pu = us.createPlatformUser("1", "2");
-		} catch (UserExistsException e) {}
 		PlatformUserBean bean = new PlatformUserBean();
 		bean.userId = "1";
 		bean.username = "1";
@@ -323,7 +318,7 @@ public class UserWebServiceTest {
 		Response r = uws.updateUser(bean.userId, bean);
 		
 		assertEquals(404, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
@@ -337,7 +332,7 @@ public class UserWebServiceTest {
 		Response r = uws.deleteUser("1");
 		
 		assertEquals(204, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
@@ -351,7 +346,7 @@ public class UserWebServiceTest {
 		Response r = uws.deleteUser("3");
 		
 		assertEquals(404, r.getStatus());  // TODO: This, or a 204?
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
@@ -387,7 +382,7 @@ public class UserWebServiceTest {
 		Response r = uws.coupleGatewayWithUser("a", gw);
 		
 		assertEquals(201, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
@@ -408,7 +403,7 @@ public class UserWebServiceTest {
 		Response r = uws.coupleGatewayWithUser("2", gw);
 		
 		assertEquals(404, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
@@ -445,7 +440,7 @@ public class UserWebServiceTest {
 		r = uws.decoupleGatewayFromUser("1", "2");
 		
 		assertEquals(200, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
@@ -477,7 +472,7 @@ public class UserWebServiceTest {
 		responseString = responseStart + response404 + responseEnd;
 		
 		assertEquals(404, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
@@ -507,7 +502,7 @@ public class UserWebServiceTest {
 		r = uws.decoupleGatewayFromUser("1", "1");
 
 		assertEquals(404, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 }
