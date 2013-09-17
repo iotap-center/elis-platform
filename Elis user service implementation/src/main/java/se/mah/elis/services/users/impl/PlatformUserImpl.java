@@ -123,8 +123,18 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	public int compareTo(PlatformUserImpl pu) {
 		PlatformUserIdentifier puId = (PlatformUserIdentifier) pu.getId();
 		PlatformUserIdentifier thisId = (PlatformUserIdentifier) id;
+		int result = 0;
 		
-		return thisId.getId() - puId.getId();
+		if (!puId.getUsername().equals(thisId.getUsername()) &&
+				thisId.getId() != puId.getId()) {
+			if (thisId.getId() > puId.getId()) {
+				result = 1;
+			} else  {
+				result = -1;
+			}
+		}
+		
+		return result;
 	}
 	
 	private boolean validateAddress(String address) {

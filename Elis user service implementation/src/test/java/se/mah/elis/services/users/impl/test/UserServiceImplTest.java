@@ -10,6 +10,7 @@ import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
+import se.mah.elis.services.users.exceptions.UserExistsException;
 import se.mah.elis.services.users.impl.PlatformUserIdentifier;
 import se.mah.elis.services.users.impl.PlatformUserImpl;
 import se.mah.elis.services.users.impl.UserServiceImpl;
@@ -147,17 +148,40 @@ public class UserServiceImplTest {
 	@Test
 	public void testCreatePlatformUser() {
 		UserServiceImpl us = new UserServiceImpl();
-		PlatformUser pu = us.createPlatformUser("batman", "superman");
+		PlatformUser pu = new PlatformUserImpl();
+		try {
+			pu = us.createPlatformUser("batman", "superman");
+		} catch (UserExistsException e) {}
 
 		assertEquals("PlatformUser batman (1)", pu.toString());
 		assertEquals(1, us.getNbrOfPlatformUsers());
 	}
 
 	@Test
+	public void testCreatePlatformUserExistingUser() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu1;
+		try {
+			pu1 = us.createPlatformUser("batman", "superman");
+		} catch (UserExistsException e) {
+			fail("Adding a platform user should work");
+		}
+		
+		try {
+			PlatformUser pu2 = us.createPlatformUser("batman", "robin");
+			fail("Readding an existing user shouldn't work.");
+		} catch (UserExistsException e) {}
+	}
+
+	@Test
 	public void testCreatePlatformUserTwoUsers() {
 		UserServiceImpl us = new UserServiceImpl();
-		PlatformUser pu1 = us.createPlatformUser("batman", "superman");
-		PlatformUser pu2 = us.createPlatformUser("bilbo", "baggins");
+		PlatformUser pu1 = new PlatformUserImpl();
+		PlatformUser pu2 = new PlatformUserImpl();
+		try {
+			pu1 = us.createPlatformUser("batman", "superman");
+			pu2 = us.createPlatformUser("bilbo", "baggins");
+		} catch (UserExistsException e) {}
 
 		assertEquals("PlatformUser batman (1)", pu1.toString());
 		assertEquals("PlatformUser bilbo (2)", pu2.toString());
@@ -167,7 +191,10 @@ public class UserServiceImplTest {
 	@Test
 	public void testGetPlatformUsersAssociatedWithUser() {
 		UserService us = new UserServiceImpl();
-		PlatformUser pu = us.createPlatformUser("batman", "superman");
+		PlatformUser pu = new PlatformUserImpl();
+		try {
+			pu = us.createPlatformUser("batman", "superman");
+		} catch (UserExistsException e1) {}
 		User mu = new MockUser();
 		
 		try {
@@ -272,10 +299,11 @@ public class UserServiceImplTest {
 	@Test
 	public void testGetPlatformUsers() {
 		UserServiceImpl us = new UserServiceImpl();
-		PlatformUser pu1 = us.createPlatformUser("batman", "superman");
-		PlatformUser pu2 = us.createPlatformUser("bilbo", "baggins");
-		PlatformUser pu3 = us.createPlatformUser("orvar", "säfström");
-
+		try {
+			PlatformUser pu1 = us.createPlatformUser("batman", "superman");
+			PlatformUser pu2 = us.createPlatformUser("bilbo", "baggins");
+			PlatformUser pu3 = us.createPlatformUser("orvar", "säfström");
+		} catch (UserExistsException e) {}
 		PlatformUser[] pus = us.getPlatformUsers();
 		assertNotNull(pus);
 		assertEquals(3, pus.length);
@@ -293,7 +321,9 @@ public class UserServiceImplTest {
 	@Test
 	public void testGetPlatformUsersOneUser() {
 		UserServiceImpl us = new UserServiceImpl();
-		PlatformUser pu1 = us.createPlatformUser("batman", "superman");
+		try {
+			PlatformUser pu1 = us.createPlatformUser("batman", "superman");
+		} catch (UserExistsException e) {}
 
 		PlatformUser[] pus = us.getPlatformUsers();
 		assertNotNull(pus);
@@ -303,7 +333,10 @@ public class UserServiceImplTest {
 	@Test
 	public void testUpdatePlatformUser() {
 		UserServiceImpl us = new UserServiceImpl();
-		PlatformUser pu = us.createPlatformUser("batman", "superman");
+		PlatformUser pu = new PlatformUserImpl();
+		try {
+			pu = us.createPlatformUser("batman", "superman");
+		} catch (UserExistsException e1) {}
 		
 		assertEquals("PlatformUser batman (1)", pu.toString());
 		assertEquals(1, us.getNbrOfPlatformUsers());
@@ -321,8 +354,13 @@ public class UserServiceImplTest {
 	@Test
 	public void testUpdatePlatformUserNonExistingUser() {
 		UserServiceImpl us = new UserServiceImpl();
-		PlatformUser pu1 = us.createPlatformUser("batman", "superman");
-		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifier("1", "a"));
+		PlatformUser pu1 = new PlatformUserImpl();
+		PlatformUser pu2 = new PlatformUserImpl();
+		try {
+			pu1 = us.createPlatformUser("batman", "superman");
+			pu2 = new PlatformUserImpl(new PlatformUserIdentifier("1", "a"));
+		} catch (UserExistsException e1) {}
+		
 		
 		assertEquals("PlatformUser batman (1)", pu1.toString());
 		assertEquals(1, us.getNbrOfPlatformUsers());

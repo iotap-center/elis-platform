@@ -14,6 +14,7 @@ import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
+import se.mah.elis.services.users.exceptions.UserExistsException;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 /**
@@ -98,7 +99,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public synchronized PlatformUser createPlatformUser(String username, String password) {
+	public synchronized PlatformUser createPlatformUser(String username,
+			String password) throws UserExistsException {
 		ArrayList<User> list = null;
 		PlatformUser pu =
 				new PlatformUserImpl(new PlatformUserIdentifier(username,
@@ -109,6 +111,8 @@ public class UserServiceImpl implements UserService {
 			
 			list = new ArrayList<User>();
 			map.put(pu, list);
+		} else {
+			throw new UserExistsException();
 		}
 		
 		return pu;
