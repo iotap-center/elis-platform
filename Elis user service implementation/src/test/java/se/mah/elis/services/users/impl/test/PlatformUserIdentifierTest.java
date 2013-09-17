@@ -71,6 +71,16 @@ public class PlatformUserIdentifierTest {
 	}
 
 	@Test
+	public void testSetPasswordNull() {
+		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		
+		try {
+			p.setPassword(null);
+			fail("Should throw an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {}
+	}
+
+	@Test
 	public void testSetEmptyPassword() {
 		PlatformUserIdentifier p = new PlatformUserIdentifier();
 		p.setPassword("batman");
@@ -101,6 +111,16 @@ public class PlatformUserIdentifierTest {
 		p.setUsername("batman");
 		
 		assertEquals("batman", p.getUsername());
+	}
+
+	@Test
+	public void testSetUsernameNull() {
+		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		
+		try {
+			p.setUsername(null);
+			fail("Should throw an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {}
 	}
 
 	@Test
