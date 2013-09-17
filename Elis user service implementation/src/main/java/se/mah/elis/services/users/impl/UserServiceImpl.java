@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
+import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
 import se.mah.elis.services.users.exceptions.UserExistsException;
@@ -62,6 +63,28 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		return users;
+	}
+
+	@Override
+	public PlatformUser getPlatformUser(UserIdentifier identifier) {
+		PlatformUser pu = null;
+		
+		for (PlatformUser key: map.keySet()) {
+			if (key.getId().equals(identifier)) {
+				pu = key;
+				break;
+			}
+		}
+		
+		return pu;
+	}
+
+	@Override
+	public PlatformUser getPlatformUser(String id) {
+		PlatformUserIdentifier identifier = new PlatformUserIdentifier();
+		identifier.setId(Integer.parseInt(id));
+		
+		return getPlatformUser(identifier);
 	}
 
 	@Override

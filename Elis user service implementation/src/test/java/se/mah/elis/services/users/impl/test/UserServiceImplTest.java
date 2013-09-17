@@ -122,6 +122,77 @@ public class UserServiceImplTest {
 		assertNotNull(users);
 		assertEquals(0, users.length);
 	}
+
+	@Test
+	public void testGetUser() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu = new PlatformUserImpl();
+		PlatformUser actual = null;
+		try {
+			pu = us.createPlatformUser("batman", "superman");
+		} catch (UserExistsException e) {}
+
+		assertEquals("PlatformUser batman (1)", pu.toString());
+		assertEquals(1, us.getNbrOfPlatformUsers());
+		
+		actual = us.getPlatformUser(pu.getId());
+		
+		assertEquals(actual, pu);
+	}
+
+	@Test
+	public void testGetUserMultipleUsers() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu1 = new PlatformUserImpl();
+		PlatformUser pu2 = new PlatformUserImpl();
+		PlatformUser actual = null;
+		try {
+			pu1 = us.createPlatformUser("batman", "superman");
+			pu2 = us.createPlatformUser("fred", "barney");
+		} catch (UserExistsException e) {}
+
+		assertEquals(2, us.getNbrOfPlatformUsers());
+		
+		actual = us.getPlatformUser(pu2.getId());
+		
+		assertEquals(actual, pu2);
+	}
+
+	@Test
+	public void testGetUserWithString() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu1 = new PlatformUserImpl();
+		PlatformUser pu2 = new PlatformUserImpl();
+		PlatformUser actual = null;
+		try {
+			pu1 = us.createPlatformUser("batman", "superman");
+			pu2 = us.createPlatformUser("fred", "barney");
+		} catch (UserExistsException e) {}
+
+		assertEquals(2, us.getNbrOfPlatformUsers());
+		
+		actual = us.getPlatformUser("2");
+		
+		assertEquals(actual, pu2);
+	}
+
+	@Test
+	public void testGetUserNotFound() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu1 = new PlatformUserImpl();
+		PlatformUser pu2 = new PlatformUserImpl();
+		PlatformUser actual = null;
+		try {
+			pu1 = us.createPlatformUser("batman", "superman");
+			pu2 = us.createPlatformUser("fred", "barney");
+		} catch (UserExistsException e) {}
+
+		assertEquals(2, us.getNbrOfPlatformUsers());
+		
+		actual = us.getPlatformUser(new PlatformUserIdentifier(3, "arthur", "douglas"));
+		
+		assertNull(actual);
+	}
 	
 	@Test
 	public void testGetNbrOfPlatformUsers() {

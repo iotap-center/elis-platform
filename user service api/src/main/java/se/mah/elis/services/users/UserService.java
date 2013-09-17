@@ -31,6 +31,25 @@ public interface UserService {
 	PlatformUser[] getPlatformUsers();
 	
 	/**
+	 * Fetches a platform user, based on a proper UserIdentifier object.
+	 * 
+	 * @param identifier A UserIdentifier object.
+	 * @return A PlatformUser object. If no user is found, null is returned.
+	 * @since 1.0
+	 */
+	PlatformUser getPlatformUser(UserIdentifier identifier);
+	
+	/**
+	 * Fetches a platform user, based on a String representation of the main
+	 * identifier.
+	 * 
+	 * @param id The main identifier.
+	 * @return A PlatformUser object. If no user is found, null is returned.
+	 * @since 1.0
+	 */
+	PlatformUser getPlatformUser(String id);
+	
+	/**
 	 * Fetches all platform users associated with this user account.
 	 * 
 	 * @param u The user.
