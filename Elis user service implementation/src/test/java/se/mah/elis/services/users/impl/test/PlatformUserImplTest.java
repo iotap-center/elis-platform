@@ -253,13 +253,13 @@ public class PlatformUserImplTest {
 		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
 		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(2, "fred", "barney"));
 		
-		assertEquals(-1, pu1.compareTo(pu2));
+		assertEquals(-1, pu2.compareTo(pu1));
 	}
 	
 	@Test
 	public void testCompareToAEqualToB() {
 		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
-		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(2, "fred", "barney"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(1, "fred", "barney"));
 		
 		assertEquals(0, pu1.compareTo(pu2));
 	}

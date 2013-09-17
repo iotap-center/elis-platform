@@ -204,7 +204,9 @@ public class UserServiceImplTest {
 		
 		PlatformUser[] pus = null;
 		try {
+			System.out.println("Test start");
 			pus = us.getPlatformUsersAssociatedWithUser(mu);
+			System.out.println("Test stop");
 		} catch (NoSuchUserException e) {
 			fail("No workie");
 		}
@@ -266,7 +268,7 @@ public class UserServiceImplTest {
 		
 		assertNotNull(pus);
 		assertEquals(1, pus.length);
-		assertEquals("0: a, b", pus[0].getId().toString());
+		assertEquals("1: a, b", pus[0].getId().toString());
 	}
 	
 	@Test
