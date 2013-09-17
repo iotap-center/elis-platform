@@ -15,9 +15,7 @@ public class Activator implements BundleActivator {
 	ServiceRegistration sr;
 	
 	public Activator() {
-		userFactory = new EonGatewayUserFactory(
-				new EonHttpBridge("http://ewpapi2.dev.appex.no", 80,
-						"/v0_2/api/"));
+		userFactory = new EonGatewayUserFactory();
 	}
 	
 	public void start(BundleContext context) throws Exception {

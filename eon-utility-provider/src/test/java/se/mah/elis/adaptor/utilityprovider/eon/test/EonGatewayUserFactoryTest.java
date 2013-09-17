@@ -20,7 +20,7 @@ import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGatewayUserFa
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGatewayUserIdentifer;
 
 public class EonGatewayUserFactoryTest {
-	
+
 	private static final String TEST_TOKEN = "sometoken";
 	private static final String TEST_PASS = null;
 	private static final String TEST_USER = null;
@@ -28,17 +28,21 @@ public class EonGatewayUserFactoryTest {
 	private EonGatewayUserFactory factory;
 
 	@Before
-	public void setUp() throws AuthenticationException, ResponseProcessingException {
+	public void setUp() throws AuthenticationException,
+			ResponseProcessingException {
 		bridge = mock(EonHttpBridge.class);
-		when(bridge.authenticate(anyString(), anyString())).thenReturn(TEST_TOKEN);
-		factory = new EonGatewayUserFactory(bridge);
+		when(bridge.authenticate(anyString(), anyString())).thenReturn(
+				TEST_TOKEN);
+		factory = new EonGatewayUserFactory();
 	}
-	
+
 	@Test
 	public void testCreateUser() {
 		try {
-			EonGatewayUser user =  (EonGatewayUser) factory.getUser(TEST_USER, TEST_PASS);
-			EonGatewayUserIdentifer userId = (EonGatewayUserIdentifer) user.getId();
+			EonGatewayUser user = (EonGatewayUser) factory.getUser(TEST_USER,
+					TEST_PASS, bridge);
+			EonGatewayUserIdentifer userId = (EonGatewayUserIdentifer) user
+					.getId();
 			EonGateway gateway = (EonGateway) user.getGateway();
 			assertEquals(gateway.getAuthenticationToken(), TEST_TOKEN);
 			assertNotNull(gateway.getHttpBridge());
