@@ -103,9 +103,13 @@ public class UserServiceImpl implements UserService {
 			String password)
 					throws UserExistsException, IllegalArgumentException {
 		ArrayList<User> list = null;
-		PlatformUser pu =
-				new PlatformUserImpl(new PlatformUserIdentifier(username,
-						password));
+		PlatformUser pu = null;
+		try {
+			pu = new PlatformUserImpl(new PlatformUserIdentifier(username,
+																 password));
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException();
+		}
 		
 		if (!map.containsKey(pu)) {
 			((PlatformUserIdentifier) pu.getId()).setId(++counter);

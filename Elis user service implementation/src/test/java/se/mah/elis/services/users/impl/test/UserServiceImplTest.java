@@ -158,6 +158,18 @@ public class UserServiceImplTest {
 	}
 
 	@Test
+	public void testCreatePlatformUserBadData() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu = new PlatformUserImpl();
+		try {
+			pu = us.createPlatformUser("", "superman");
+			fail("IllegalArgumentException should've been raised");
+		} catch (UserExistsException e) {
+			fail("IllegalArgumentException should've been raised");
+		} catch (IllegalArgumentException e) {}
+	}
+
+	@Test
 	public void testCreatePlatformUserExistingUser() {
 		UserServiceImpl us = new UserServiceImpl();
 		PlatformUser pu1;
