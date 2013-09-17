@@ -379,4 +379,10 @@ public class EonHttpBridge {
 
 		return client;
 	}
+
+	public float getTemperature(String token, String gatewayId,
+			String deviceId) {
+		// TODO Auto-generated method stub
+		return 0.0f;
+	}
 }

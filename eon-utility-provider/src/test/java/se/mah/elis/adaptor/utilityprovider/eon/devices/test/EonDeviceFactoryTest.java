@@ -49,7 +49,6 @@ public class EonDeviceFactoryTest {
 	}
 	
 	@Test
-	// TODO: THIS IS NOT IMPLEMENTED YET
 	public void testCreateThermometer() {
 		Device sample;
 		try {

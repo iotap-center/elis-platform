@@ -147,7 +147,6 @@ public class EonPowerSwitchMeter extends EonDevice implements PowerSwitch, Elect
 
 	private boolean tryTurnOff() throws ActuatorFailedException {
 		boolean success = false;
-		
 		try {
 			EonActionObject longRunningTask = 
 					httpBridge.turnOff(this.gateway.getAuthenticationToken(),
