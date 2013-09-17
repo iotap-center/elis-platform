@@ -239,4 +239,28 @@ public class PlatformUserImplTest {
 		
 		assertFalse(pu1.equals(pu2));
 	}
+	
+	@Test
+	public void testCompareToAGreaterThanB() {
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(2, "fred", "barney"));
+		
+		assertEquals(1, pu1.compareTo(pu2));
+	}
+	
+	@Test
+	public void testCompareToALesserThanB() {
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(2, "fred", "barney"));
+		
+		assertEquals(-1, pu1.compareTo(pu2));
+	}
+	
+	@Test
+	public void testCompareToAEqualToB() {
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(2, "fred", "barney"));
+		
+		assertEquals(0, pu1.compareTo(pu2));
+	}
 }
