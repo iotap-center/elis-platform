@@ -124,7 +124,7 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 		PlatformUserIdentifier puId = (PlatformUserIdentifier) pu.getId();
 		PlatformUserIdentifier thisId = (PlatformUserIdentifier) id;
 		
-		return puId.getId() - thisId.getId();
+		return thisId.getId() - puId.getId();
 	}
 	
 	private boolean validateAddress(String address) {

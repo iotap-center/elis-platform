@@ -241,19 +241,19 @@ public class PlatformUserImplTest {
 	}
 	
 	@Test
-	public void testCompareToAGreaterThanB() {
+	public void testCompareToABeforeB() {
 		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
 		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(2, "fred", "barney"));
 		
-		assertEquals(1, pu1.compareTo(pu2));
+		assertEquals(-1, pu1.compareTo(pu2));
 	}
 	
 	@Test
-	public void testCompareToALesserThanB() {
+	public void testCompareToAAfterB() {
 		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifier(1, "batman", "superman"));
 		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifier(2, "fred", "barney"));
 		
-		assertEquals(-1, pu2.compareTo(pu1));
+		assertEquals(1, pu2.compareTo(pu1));
 	}
 	
 	@Test
