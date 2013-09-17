@@ -457,6 +457,50 @@ public class UserServiceImplTest {
 		} catch (NoSuchUserException e) {}
 	}
 	
+	@Test
+	public void testDeletePlatformUser() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu1 = new PlatformUserImpl();
+		PlatformUser pu2 = new PlatformUserImpl();
+		try {
+			pu1 = us.createPlatformUser("batman", "superman");
+			pu2 = us.createPlatformUser("bilbo", "baggins");
+		} catch (UserExistsException e) {}
+
+		try {
+			us.deletePlatformUser(pu1);
+		} catch (NoSuchUserException e) {
+			fail("Didn't find the user");
+		}
+		
+		PlatformUser pu3 = us.getPlatformUser(pu1.getId());
+		
+		assertNull(pu3);
+		assertEquals(1, us.getNbrOfPlatformUsers());
+	}
+	
+	@Test
+	public void testDeletePlatformUserNoSuchUser() {
+		UserServiceImpl us = new UserServiceImpl();
+		PlatformUser pu1 = new PlatformUserImpl();
+		PlatformUser pu2 = new PlatformUserImpl();
+		try {
+			pu1 = us.createPlatformUser("batman", "superman");
+			pu2 = us.createPlatformUser("bilbo", "baggins");
+		} catch (UserExistsException e) {}
+
+		try {
+			us.deletePlatformUser(new PlatformUserImpl(new PlatformUserIdentifier(3, "george", "tarzan")));
+			fail("Didn't delete the user");
+		} catch (NoSuchUserException e) {
+		}
+		
+		PlatformUser pu3 = us.getPlatformUser(pu1.getId());
+		
+		assertNotNull(pu3);
+		assertEquals(2, us.getNbrOfPlatformUsers());
+	}
+	
 	private boolean findInArray(PlatformUser needle, PlatformUser[] haystack) {
 		for (int i = 0; i < haystack.length; i++) {
 			if (needle.toString().equals(haystack[i].toString())) {

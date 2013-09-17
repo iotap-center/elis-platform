@@ -104,4 +104,14 @@ public interface UserService {
 	 */
 	void updatePlatformUser(PlatformUser pu)
 			throws NoSuchUserException;
+	
+	/**
+	 * Deletes a platform user.
+	 * 
+	 * @param pu The platform user to delete.
+	 * @throws NoSuchUserException if no such PlatformUser exists.
+	 * @since 1.0
+	 */
+	void deletePlatformUser(PlatformUser pu)
+			throws NoSuchUserException;
 }
