@@ -49,7 +49,7 @@ public class PlatformUserIdentifier implements UserIdentifier {
 	}
 
 	public void setUsername(String username) throws IllegalArgumentException {
-		if (username.length() > 0) {
+		if (!username.isEmpty()) {
 			this.username = username;
 		} else {
 			throw new IllegalArgumentException("User name can't be empty");
@@ -65,7 +65,7 @@ public class PlatformUserIdentifier implements UserIdentifier {
 	}
 
 	public void setPassword(String password) {
-		if (password.length() > 0) {
+		if (!password.isEmpty()) {
 			this.password = password;
 		} else {
 			throw new IllegalArgumentException("Password can't be empty");
