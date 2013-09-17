@@ -71,6 +71,14 @@ public class PlatformUserIdentifierTest {
 	}
 
 	@Test
+	public void testSetPasswordWithWhitespaces() {
+		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		p.setPassword("  batman ");
+		
+		assertEquals("batman", p.getPassword());
+	}
+
+	@Test
 	public void testSetPasswordNull() {
 		PlatformUserIdentifier p = new PlatformUserIdentifier();
 		
@@ -88,6 +96,20 @@ public class PlatformUserIdentifierTest {
 		assertEquals("batman", p.getPassword());
 		try {
 			p.setPassword("");
+			fail("Should've triggered an exception.");
+		} catch (IllegalArgumentException e) {}
+		
+		assertEquals("batman", p.getPassword());
+	}
+
+	@Test
+	public void testSetBlankPassword() {
+		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		p.setPassword("batman");
+		
+		assertEquals("batman", p.getPassword());
+		try {
+			p.setPassword(" ");
 			fail("Should've triggered an exception.");
 		} catch (IllegalArgumentException e) {}
 		
@@ -114,6 +136,14 @@ public class PlatformUserIdentifierTest {
 	}
 
 	@Test
+	public void testSetUsernameWithWhitespaces() {
+		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		p.setUsername(" batman   ");
+		
+		assertEquals("batman", p.getUsername());
+	}
+
+	@Test
 	public void testSetUsernameNull() {
 		PlatformUserIdentifier p = new PlatformUserIdentifier();
 		
@@ -125,6 +155,20 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetEmptyUsername() {
+		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		p.setUsername("batman");
+		
+		assertEquals("batman", p.getUsername());
+		try {
+			p.setUsername("");
+			fail("Should've triggered an exception.");
+		} catch (IllegalArgumentException e) {}
+		
+		assertEquals("batman", p.getUsername());
+	}
+
+	@Test
+	public void testSetBlankUsername() {
 		PlatformUserIdentifier p = new PlatformUserIdentifier();
 		p.setUsername("batman");
 		
@@ -240,6 +284,48 @@ public class PlatformUserIdentifierTest {
 		} catch (IllegalArgumentException e) {
 			assertNull(p);
 		}
+	}
+	
+	@Test
+	public void testIsEmptyValid() {
+		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		p.setUsername("batman");
+		p.setPassword("robin");
+		
+		assertFalse(p.isEmpty());
+	}
+	
+	@Test
+	public void testIsEmptyValidUsername() {
+		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		try {
+			p.setUsername("batman");
+			p.setPassword("");
+		} catch (IllegalArgumentException e) {}
+		
+		assertTrue(p.isEmpty());
+	}
+	
+	@Test
+	public void testIsEmptyValidPassword() {
+		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		try {
+			p.setUsername("");
+			p.setPassword("robin");
+		} catch (IllegalArgumentException e) {}
+		
+		assertTrue(p.isEmpty());
+	}
+	
+	@Test
+	public void testIsEmptyReallyEmpty() {
+		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		try {
+			p.setUsername("");
+			p.setPassword("");
+		} catch (IllegalArgumentException e) {}
+		
+		assertTrue(p.isEmpty());
 	}
 
 	@Test
