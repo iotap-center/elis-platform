@@ -78,4 +78,10 @@ public class EonParser {
 		actionObject.put("StatusId", obj.get("StatusId"));
 		return actionObject;
 	}
+
+	public static float parseTemperatureValue(String response) throws ParseException {
+		JSONObject temperatureObject = (JSONObject) parser.parse(response);
+		Number tempValue = (Number) temperatureObject.get("Temperature");
+		return tempValue.floatValue();
+	}
 }

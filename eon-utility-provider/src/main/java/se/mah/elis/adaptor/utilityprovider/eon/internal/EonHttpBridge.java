@@ -39,6 +39,7 @@ public class EonHttpBridge {
 	private static final String DEVICESTATUS_ENDPOINT = "/Device/GetDeviceStatus";
 	private static final String SWITCHPSS_ENDPOINT = "/Device/SwitchPSS";
 	private static final String ACTIONSTATUS_ENDPOINT = "/Panel/GetActionStatus";
+	private static final String TEMPERATURE_ENDPOINT = "/Device/GetThermostatTemp";
 
 	private static final int TURN_ON = 1;
 	private static final int TURN_OFF = 0;
@@ -149,6 +150,25 @@ public class EonHttpBridge {
 				deviceList.toJSONString(), EWP_PANEL_ID, gatewayId);
 		verifyResponse(response);
 		return EonParser.parseDeviceStatus(response.readEntity(String.class));
+	}
+
+	/**
+	 * HTTP call to retrieve the temperature from an E.On thermometer device
+	 *  
+	 * @param token
+	 * @param gatewayId
+	 * @param deviceId
+	 * @return temperature in Celsius degrees as float
+	 * @throws ParseException 
+	 */
+	public float getTemperature(String token, String gatewayId,
+			String deviceId) throws ParseException {
+		WebTarget target = createTarget(TEMPERATURE_ENDPOINT);
+		target = target.queryParam(EWP_PANEL_ID, gatewayId).queryParam("DeviceId", deviceId);
+		Response response = doGet(token,target);
+		verifyResponse(response);
+	
+		return EonParser.parseTemperatureValue(response.readEntity(String.class));
 	}
 
 	/**
@@ -380,9 +400,4 @@ public class EonHttpBridge {
 		return client;
 	}
 
-	public float getTemperature(String token, String gatewayId,
-			String deviceId) {
-		// TODO Auto-generated method stub
-		return 0.0f;
-	}
 }

@@ -146,4 +146,16 @@ public class EonHttpBridgeTest {
 		}
 	}
 	
+	@Test
+	public void testGetTemperature() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		try {
+			String thermometerDeviceId = "b6530784-14da-469b-8a46-36e8e2c0d684";
+			float temperature = bridge.getTemperature(token, TEST_GATEWAY, thermometerDeviceId);
+			assertTrue(temperature == -1f);
+		} catch (Exception ignore) {
+			fail("Temperature not retrieved");
+		}
+	}
+	
 }

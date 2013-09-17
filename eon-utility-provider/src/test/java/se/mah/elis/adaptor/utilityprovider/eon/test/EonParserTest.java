@@ -78,6 +78,14 @@ public class EonParserTest {
 		} catch (Exception ignore) { fail(); }
 	}
 	
+	@Test
+	public void testParseTemperature() {
+		String response = "{\"Temperature\":-1}";
+		try{
+			assertTrue(EonParser.parseTemperatureValue(response) == -1); // TODO: this will break when temp = -1.1 (floats)
+		} catch (Exception ignore) { fail(); }
+	}
+	
 	/**
 	 * May also be used to create JSON objects
 	 */

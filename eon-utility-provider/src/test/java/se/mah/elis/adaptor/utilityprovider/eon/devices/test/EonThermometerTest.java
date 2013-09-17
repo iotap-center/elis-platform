@@ -1,5 +1,6 @@
 package se.mah.elis.adaptor.utilityprovider.eon.devices.test;
 
+import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,13 +21,13 @@ import se.mah.elis.auxiliaries.data.TemperatureData;
 
 public class EonThermometerTest {
 	
-	private static final float DUMMY_TEMPERATURE = 24.4f;
+	private static final float DUMMY_TEMPERATURE = 25.0f;
 	private	EonThermometer eonThermometer; 
 	private EonHttpBridge bridge;
 	private EonGateway gateway;
 	
 	@Before
-	public void setUp() throws StaticEntityException{
+	public void setUp() throws StaticEntityException, ParseException{
 		// Create a mockup httpbridge
 		bridge = mock(EonHttpBridge.class);
 		when(bridge.getTemperature(anyString(), anyString(), anyString())).thenReturn(DUMMY_TEMPERATURE);
