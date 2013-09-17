@@ -1,6 +1,7 @@
 package se.mah.elis.services.users;
 
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
+import se.mah.elis.services.users.exceptions.UserExistsException;
 
 /**
  * The UserBroker interface describes a user service.
@@ -69,9 +70,11 @@ public interface UserService {
 	 * @param username The platform user's username.
 	 * @param password The platform user's password.
 	 * @return The newly created PlatformUser.
+	 * @throws NoSuchUserException if the PlatformUser already exists.
 	 * @since 1.0
 	 */
-	PlatformUser createPlatformUser(String username, String password);
+	PlatformUser createPlatformUser(String username, String password)
+			throws UserExistsException;
 	
 	/**
 	 * Updates a platform user.
