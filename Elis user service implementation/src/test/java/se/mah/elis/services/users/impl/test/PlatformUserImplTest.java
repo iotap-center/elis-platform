@@ -40,15 +40,15 @@ public class PlatformUserImplTest {
 	public void testGetId() {
 		PlatformUserImpl pu = new PlatformUserImpl();
 
-		assertEquals("username", ((PlatformUserIdentifier) pu.getId()).getUsername());
-		assertEquals("password", ((PlatformUserIdentifier) pu.getId()).getPassword());
+		assertEquals("", ((PlatformUserIdentifier) pu.getId()).getUsername());
+		assertEquals("", ((PlatformUserIdentifier) pu.getId()).getPassword());
 	}
 
 	@Test
 	public void testSetId() {
 		PlatformUserImpl pu = new PlatformUserImpl();
 		
-		assertEquals("username", ((PlatformUserIdentifier) pu.getId()).getUsername());
+		assertEquals("", ((PlatformUserIdentifier) pu.getId()).getUsername());
 		
 		pu.setId(new PlatformUserIdentifier("batman", "superman"));
 		assertEquals("batman", ((PlatformUserIdentifier) pu.getId()).getUsername());
@@ -62,7 +62,7 @@ public class PlatformUserImplTest {
 		
 		pu.setId(null);
 		assertNotNull(pu.getId());
-		assertEquals("username", ((PlatformUserIdentifier) pu.getId()).getUsername());
+		assertEquals("", ((PlatformUserIdentifier) pu.getId()).getUsername());
 	}
 	
 	@Test

@@ -100,7 +100,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public synchronized PlatformUser createPlatformUser(String username,
-			String password) throws UserExistsException {
+			String password)
+					throws UserExistsException, IllegalArgumentException {
 		ArrayList<User> list = null;
 		PlatformUser pu =
 				new PlatformUserImpl(new PlatformUserIdentifier(username,

@@ -18,8 +18,8 @@ public class PlatformUserIdentifier implements UserIdentifier {
 	private String password;
 	
 	public PlatformUserIdentifier() {
-		username = "username";
-		password = "password";
+		username = "";
+		password = "";
 	}
 	
 	public PlatformUserIdentifier(String username, String password)
@@ -49,7 +49,13 @@ public class PlatformUserIdentifier implements UserIdentifier {
 	}
 
 	public void setUsername(String username) throws IllegalArgumentException {
-		if (username != null && !username.isEmpty()) {
+		if (username != null) {
+			username = username.trim();
+		} else {
+			throw new IllegalArgumentException("User name can't be empty");
+		}
+		
+		if (!username.isEmpty()) {
 			this.username = username;
 		} else {
 			throw new IllegalArgumentException("User name can't be empty");
@@ -65,11 +71,21 @@ public class PlatformUserIdentifier implements UserIdentifier {
 	}
 
 	public void setPassword(String password) {
-		if (password != null && !password.isEmpty()) {
+		if (password != null) {
+			password = password.trim();
+		} else {
+			throw new IllegalArgumentException("Password can't be empty");
+		}
+		
+		if (!password.isEmpty()) {
 			this.password = password;
 		} else {
 			throw new IllegalArgumentException("Password can't be empty");
 		}
+	}
+	
+	public boolean isEmpty() {
+		return username.isEmpty() || password.isEmpty();
 	}
 	
 	@Override

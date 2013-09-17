@@ -24,8 +24,8 @@ public class PlatformUserIdentifierTest {
 		PlatformUserIdentifier p = new PlatformUserIdentifier();
 
 		assertEquals(0, p.getId());
-		assertEquals("username", p.getUsername());
-		assertEquals("password", p.getPassword());
+		assertEquals("", p.getUsername());
+		assertEquals("", p.getPassword());
 	}
 	
 	@Test
