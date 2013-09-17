@@ -8,12 +8,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gson.Gson;
+
 import se.mah.elis.external.users.UserWebService;
 import se.mah.elis.external.users.jaxbeans.GatewayUserBean;
 import se.mah.elis.external.users.jaxbeans.PlatformUserBean;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
+import se.mah.elis.services.users.exceptions.UserExistsException;
 import se.mah.elis.services.users.impl.PlatformUserIdentifier;
 import se.mah.elis.services.users.impl.PlatformUserImpl;
 import se.mah.elis.services.users.impl.UserServiceImpl;
@@ -28,12 +31,10 @@ public class UserWebServiceTest {
 	private static String responseEnd = "})";
 	private static String response200 = "  \"status\": \"OK\",\n"
 			+ "  \"code\": \"200\",\n"
-			+ "  \"response\": {\n"
-			+ "  }\n";
+			+ "  \"response\": ";
 	private static String response201 = "  \"status\": \"CREATED\",\n"
 			+ "  \"code\": \"201\",\n"
-			+ "  \"response\": {\n"
-			+ "  }\n";
+			+ "  \"response\": ";
 	private static String response204 = "  \"status\": \"NO CONTENT\",\n"
 			+ "  \"code\": \"204\",\n"
 			+ "  \"response\": {\n"
@@ -68,56 +69,58 @@ public class UserWebServiceTest {
 
 	@Test
 	public void testGetUsers() {
-		PlatformUser pu1 = us.createPlatformUser("1", "a");
-		PlatformUser pu2 = us.createPlatformUser("2", "A");
-		PlatformUser pu3 = us.createPlatformUser("3", "1");
+		try {
+			PlatformUser pu1 = us.createPlatformUser("1", "a");
+			PlatformUser pu2 = us.createPlatformUser("2", "A");
+			PlatformUser pu3 = us.createPlatformUser("3", "1");
+		} catch (UserExistsException e) {}
 		
 		String responseString = responseStart + response200
-				+ "      \"UserList\": [\n"
-				+ "      {\n"
-				+ "        \"id\": \"1\",\n"
-				+ "        \"username\": \"1\",\n"
-				+ "        \"firstName\": \"\",\n"
-				+ "        \"lastName\": \"\",\n"
-				+ "        \"email\": \"\"\n"
-				+ "      },\n"
-				+ "      {\n"
-				+ "        \"id\": \"2\",\n"
-				+ "        \"username\": \"2\",\n"
-				+ "        \"firstName\": \"\",\n"
-				+ "        \"lastName\": \"\",\n"
-				+ "        \"email\": \"\"\n"
-				+ "      },\n"
-				+ "      {\n"
-				+ "        \"id\": \"3\",\n"
-				+ "        \"username\": \"3\",\n"
-				+ "        \"firstName\": \"\",\n"
-				+ "        \"lastName\": \"\",\n"
-				+ "        \"email\": \"\"\n"
-				+ "      }\n"
-				+ "    ]\n"
-				+ responseEnd;
+				+ "  \"UserList\": [\n"
+				+ "  {\n"
+				+ "    \"userId\": \"1\",\n"
+				+ "    \"username\": \"1\",\n"
+				+ "    \"firstName\": \"\",\n"
+				+ "    \"lastName\": \"\",\n"
+				+ "    \"email\": \"\"\n"
+				+ "  },\n"
+				+ "  {\n"
+				+ "    \"userId\": \"2\",\n"
+				+ "    \"username\": \"2\",\n"
+				+ "    \"firstName\": \"\",\n"
+				+ "    \"lastName\": \"\",\n"
+				+ "    \"email\": \"\"\n"
+				+ "  },\n"
+				+ "  {\n"
+				+ "    \"userId\": \"3\",\n"
+				+ "    \"username\": \"3\",\n"
+				+ "    \"firstName\": \"\",\n"
+				+ "    \"lastName\": \"\",\n"
+				+ "    \"email\": \"\"\n"
+				+ "  }\n"
+				+ "]" + responseEnd;
 		
 		Response r = uws.getUsers();
 		
 		assertEquals(200, r.getStatus());
-		assertEquals("application/json", r.getMediaType().toString());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
 	public void testGetUser() {
-		PlatformUser pu1 = us.createPlatformUser("1", "b");
-		PlatformUser pu2 = us.createPlatformUser("2", "B");
+		try {
+			PlatformUser pu1 = us.createPlatformUser("1", "b");
+			PlatformUser pu2 = us.createPlatformUser("2", "B");
+		} catch (UserExistsException e) {}
 		
 		String responseString = responseStart + response200
-				+ "    \"User\": {\n"
-				+ "      \"id\": \"1\",\n"
-				+ "      \"username\": \"1\",\n"
-				+ "      \"firstName\": \"\",\n"
-				+ "      \"lastName\": \"\",\n"
-				+ "      \"email\": \"\"\n"
-				+ "    }\n"
+				+ "  \"User\": {\n"
+				+ "    \"id\": \"1\",\n"
+				+ "    \"username\": \"1\",\n"
+				+ "    \"firstName\": \"\",\n"
+				+ "    \"lastName\": \"\",\n"
+				+ "    \"email\": \"\"\n"
+				+ "}"
 				+ responseEnd;
 		
 		Response r = uws.getUser("1");
@@ -129,8 +132,10 @@ public class UserWebServiceTest {
 
 	@Test
 	public void testGetUserNoSuchUser() {
-		PlatformUser pu1 = us.createPlatformUser("1", "b");
-		PlatformUser pu2 = us.createPlatformUser("2", "B");
+		try {
+			PlatformUser pu1 = us.createPlatformUser("1", "b");
+			PlatformUser pu2 = us.createPlatformUser("2", "B");
+		} catch (UserExistsException e) {}
 		
 		String responseString = responseStart + response404 + responseEnd;
 		
@@ -144,25 +149,26 @@ public class UserWebServiceTest {
 	public void testAddUser() {
 		PlatformUserBean bean = new PlatformUserBean();
 		bean.userId = "1";
+		bean.username = "1";
 		bean.password = "secret";
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
 		bean.email = "batman@batcave.org";
 		
 		String responseString = responseStart + response201
-				+ "    \"User\": {\n"
-				+ "      \"id\": \"1\",\n"
-				+ "      \"username\": \"1\",\n"
-				+ "      \"firstName\": \"\",\n"
-				+ "      \"lastName\": \"\",\n"
-				+ "      \"email\": \"\"\n"
-				+ "    }\n"
+				+ "  \"User\": {\n"
+				+ "  \"userId\": \"1\",\n"
+				+ "  \"username\": \"1\",\n"
+				+ "  \"firstName\": \"Bruce\",\n"
+				+ "  \"lastName\": \"Wayne\",\n"
+				+ "  \"email\": \"batman@batcave.org\"\n"
+				+ "}"
 				+ responseEnd;
 		
 		Response r = uws.addUser(bean);
-		
+				
 		assertEquals(201, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, (String) r.getEntity());
 	}
 
 	@Test
@@ -170,6 +176,7 @@ public class UserWebServiceTest {
 		PlatformUserBean bean = new PlatformUserBean();
 		GatewayUserBean gw = new GatewayUserBean();
 		bean.userId = "1";
+		bean.username = "1";
 		bean.password = "secret";
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
@@ -182,27 +189,30 @@ public class UserWebServiceTest {
 		gw.id = "1";
 		
 		String responseString = responseStart + response201
-				+ "    \"User\": {\n"
+				+ "  \"User\": {\n"
+				+ "  \"id\": \"1\",\n"
+				+ "  \"username\": \"1\",\n"
+				+ "  \"firstName\": \"Bruce\",\n"
+				+ "  \"lastName\": \"Wayne\",\n"
+				+ "  \"email\": \"batman@batcave.org\",\n"
+				+ "  \"GatewayUser\": [\n"
+				+ "    {\n"
 				+ "      \"id\": \"1\",\n"
-				+ "      \"username\": \"1\",\n"
-				+ "      \"firstName\": \"\",\n"
-				+ "      \"lastName\": \"\",\n"
-				+ "      \"email\": \"\",\n"
-				+ "      \"GatewayUser\": [\n"
-				+ "        {\n"
-				+ "          \"id\": \"1\",\n"
-				+ "          \"serviceName\": \"Waynecorp\",\n"
-				+ "          \"serviceUserName\": \"batman\",\n"
-				+ "          \"servicePassword\": \"robin\"\n"
-				+ "        }\n"
-				+ "      ]\n"
-				+ "    }\n"
+				+ "      \"serviceName\": \"Waynecorp\",\n"
+				+ "      \"serviceUserName\": \"batman\",\n"
+				+ "      \"servicePassword\": \"robin\"\n"
+				+ "}]}"
 				+ responseEnd;
 		
 		Response r = uws.addUser(bean);
 		
 		assertEquals(201, r.getStatus());
 		assertEquals(responseString, r.toString());
+		
+		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		
+		assertNotNull(users);
+		assertEquals(1, users.length);
 	}
 
 	@Test
@@ -210,6 +220,7 @@ public class UserWebServiceTest {
 		PlatformUserBean bean = new PlatformUserBean();
 		GatewayUserBean gw = new GatewayUserBean();
 		bean.userId = "1";
+		bean.username = "1";
 		bean.password = "secret";
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
@@ -223,11 +234,13 @@ public class UserWebServiceTest {
 
 		String responseString = responseStart + response409 + responseEnd;
 		
-		us.createPlatformUser("1", "secret");
+		try {
+			us.createPlatformUser("1", "secret");
+		} catch (UserExistsException e) {}
 		Response r = uws.addUser(bean);
 		
 		assertEquals(409, r.getStatus());
-		assertEquals(responseString, r.toString());
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
@@ -235,6 +248,7 @@ public class UserWebServiceTest {
 		PlatformUserBean bean = new PlatformUserBean();
 		GatewayUserBean gw = new GatewayUserBean();
 		bean.userId = "";
+		bean.username = "";
 		bean.password = "";
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
@@ -248,21 +262,28 @@ public class UserWebServiceTest {
 
 		String responseString = responseStart + response400 + responseEnd;
 		
-		Response r = uws.addUser(null);
+		Response r = uws.addUser(bean);
 		
 		assertEquals(400, r.getStatus());
-		assertEquals(responseString, r.toString());
-		fail("Still needs some love");
+		assertEquals(responseString, r.getEntity());
 	}
 
 	@Test
 	public void testUpdateUser() {
-		PlatformUser pu = us.createPlatformUser("1", "secret");
+		try {
+			PlatformUser pu = us.createPlatformUser("1", "secret");
+		} catch (UserExistsException e) {}
 		PlatformUserBean bean = new PlatformUserBean();
 		bean.userId = "1";
+		bean.username = "1";
 		bean.password = "supersecret";
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
+		
+		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		
+		assertNotNull(users);
+		assertEquals(0, users.length);
 		
 		String responseString = responseStart + response200
 				+ "    \"User\": {\n"
@@ -278,13 +299,21 @@ public class UserWebServiceTest {
 		
 		assertEquals(200, r.getStatus());
 		assertEquals(responseString, r.toString());
+		
+		users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		
+		assertNotNull(users);
+		assertEquals(1, users.length);
 	}
 
 	@Test
 	public void testUpdateUserNoSuchUser() {
-		PlatformUser pu = us.createPlatformUser("1", "2");
+		try {
+			PlatformUser pu = us.createPlatformUser("1", "2");
+		} catch (UserExistsException e) {}
 		PlatformUserBean bean = new PlatformUserBean();
 		bean.userId = "1";
+		bean.username = "1";
 		bean.password = "secret";
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
@@ -299,7 +328,9 @@ public class UserWebServiceTest {
 
 	@Test
 	public void testDeleteUser() {
-		PlatformUser pu = us.createPlatformUser("1", "2");
+		try {
+			PlatformUser pu = us.createPlatformUser("1", "2");
+		} catch (UserExistsException e) {}
 		
 		String responseString = responseStart + response204 + responseEnd;
 		
@@ -311,7 +342,9 @@ public class UserWebServiceTest {
 
 	@Test
 	public void testDeleteUserNoSuchUser() {
-		PlatformUser pu = us.createPlatformUser("1", "2");
+		try {
+			PlatformUser pu = us.createPlatformUser("1", "2");
+		} catch (UserExistsException e) {}
 		
 		String responseString = responseStart + response404 + responseEnd;
 		
@@ -323,7 +356,9 @@ public class UserWebServiceTest {
 
 	@Test
 	public void testCoupleGatewayWithUser() {
-		PlatformUser pu = us.createPlatformUser("1", "2");
+		try {
+			PlatformUser pu = us.createPlatformUser("1", "2");
+		} catch (UserExistsException e) {}
 		GatewayUserBean gw = new GatewayUserBean();
 		
 		gw.serviceName = "Waynecorp";
@@ -357,7 +392,9 @@ public class UserWebServiceTest {
 
 	@Test
 	public void testCoupleGatewayWithUserNoSuchUser() {
-		PlatformUser pu = us.createPlatformUser("1", "2");
+		try {
+			PlatformUser pu = us.createPlatformUser("1", "2");
+		} catch (UserExistsException e) {}
 		
 		GatewayUserBean gw = new GatewayUserBean();
 		
@@ -379,6 +416,7 @@ public class UserWebServiceTest {
 		PlatformUserBean bean = new PlatformUserBean();
 		GatewayUserBean gw = new GatewayUserBean();
 		bean.userId = "1";
+		bean.username = "1";
 		bean.password = "secret";
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
@@ -415,6 +453,7 @@ public class UserWebServiceTest {
 		PlatformUserBean bean = new PlatformUserBean();
 		GatewayUserBean gw = new GatewayUserBean();
 		bean.userId = "1";
+		bean.username = "1";
 		bean.password = "secret";
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
@@ -446,6 +485,7 @@ public class UserWebServiceTest {
 		PlatformUserBean bean = new PlatformUserBean();
 		GatewayUserBean gw = new GatewayUserBean();
 		bean.userId = "1";
+		bean.username = "1";
 		bean.password = "secret";
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
