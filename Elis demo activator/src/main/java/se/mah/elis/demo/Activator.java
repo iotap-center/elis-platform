@@ -19,6 +19,7 @@ import se.mah.elis.adaptor.building.api.providers.GatewayUserProvider;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
+import se.mah.elis.services.users.exceptions.UserExistsException;
 
 /**
  * Activates the user service.
@@ -150,7 +151,9 @@ public class Activator implements BundleActivator, ServiceListener {
 	private void populate() {
 		if (us != null) {
 			if (pu == null) {
-				pu = us.createPlatformUser(platformUsername, platformPassword);
+				try {
+					pu = us.createPlatformUser(platformUsername, platformPassword);
+				} catch (UserExistsException e) {}
 			}
 		}
 		if (gup != null) {
