@@ -11,9 +11,10 @@ import se.mah.elis.services.users.UserIdentifier;
 
 /**
  * @author "Johan Holmberg, Malmö University"
- *
+ * @since 1.0
  */
-public class PlatformUserImpl implements PlatformUser {
+public class PlatformUserImpl
+implements PlatformUser, Comparable<PlatformUserImpl> {
 
 	public static final Pattern VALID_EMAIL = 
 			Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
@@ -116,6 +117,14 @@ public class PlatformUserImpl implements PlatformUser {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public int compareTo(PlatformUserImpl pu) {
+		PlatformUserIdentifier puId = (PlatformUserIdentifier) pu.getId();
+		PlatformUserIdentifier thisId = (PlatformUserIdentifier) id;
+		
+		return puId.getId() - thisId.getId();
 	}
 	
 	private boolean validateAddress(String address) {

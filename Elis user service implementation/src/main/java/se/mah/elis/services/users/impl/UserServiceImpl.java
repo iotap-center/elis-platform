@@ -4,11 +4,11 @@
 package se.mah.elis.services.users.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	public UserServiceImpl() {
 		// TODO This isn't kosher
-		map = new HashMap<PlatformUser, ArrayList<User>>();
+		map = new TreeMap<PlatformUser, ArrayList<User>>();
 		counter = 0;
 	}
 
@@ -72,6 +72,7 @@ public class UserServiceImpl implements UserService {
 		
 		if (!map.containsKey(pu)) {
 			list = new ArrayList<User>();
+			((PlatformUserIdentifier) pu.getId()).setId(++counter);
 			map.put(pu, list);
 		} else {
 			list = (ArrayList<User>) map.get(pu);
@@ -118,7 +119,7 @@ public class UserServiceImpl implements UserService {
 			throws NoSuchUserException {
 		
 		PlatformUser[] pus = new PlatformUserImpl[0];
-		Set<PlatformUser> set = new HashSet<PlatformUser>();
+		Set<PlatformUser> set = new TreeSet<PlatformUser>();
 		
 		for (Entry<PlatformUser, ArrayList<User>> entry : map.entrySet()) {
 			for (User user : entry.getValue()) {
