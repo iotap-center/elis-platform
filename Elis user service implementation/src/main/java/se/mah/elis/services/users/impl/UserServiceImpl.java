@@ -27,6 +27,7 @@ public class UserServiceImpl implements UserService {
 
 	// TODO This is a placeholer. It has to be replaced with a persistent storage at a later stage.
 	private Map<PlatformUser, ArrayList<User>> map;
+	private int counter;
 	
 	/**
 	 * 
@@ -34,6 +35,7 @@ public class UserServiceImpl implements UserService {
 	public UserServiceImpl() {
 		// TODO This isn't kosher
 		map = new HashMap<PlatformUser, ArrayList<User>>();
+		counter = 0;
 	}
 
 	/* (non-Javadoc)
@@ -102,6 +104,8 @@ public class UserServiceImpl implements UserService {
 						password));
 		
 		if (!map.containsKey(pu)) {
+			((PlatformUserIdentifier) pu.getId()).setId(++counter);
+			
 			list = new ArrayList<User>();
 			map.put(pu, list);
 		}

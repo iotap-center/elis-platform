@@ -63,7 +63,8 @@ public class PlatformUserImpl implements PlatformUser {
 
 	@Override
 	public String toString() {
-		return "PlatformUser " + ((PlatformUserIdentifier) id).getUsername();
+		return "PlatformUser " + ((PlatformUserIdentifier) id).getUsername() +
+				" (" + ((PlatformUserIdentifier) id).getId() + ")";
 	}
 
 	@Override
