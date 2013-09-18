@@ -53,9 +53,54 @@ public class OAuthResourceTest {
 	}
 	
 	@Test
-	public void testOAuthServiceNotAvailableOnSuccessRequest() {
+	public void testAuthenticateOAuthServiceNotAvailable() {
 		oauth.setOAuthService(null);
 		Response response = oauth.authenticate(TEST_CLIENTID, TEST_REDIRECT_URI);
+		testOAuthServiceNotAvailable(response);
+	}
+	
+	@Test 
+	public void testAuthenticateClientIdInvalid() {
+		Response response = oauth.authenticate("", TEST_REDIRECT_URI);
+		testInvalidClientId(response);
+	}
+	
+	@Test 
+	public void testAuthenticateInvalidRedirectURI() {
+		Response response = oauth.authenticate(TEST_CLIENTID, "");
+		testInvalidRedirectURI(response);
+	}
+	
+	@Test
+	public void testAccessTokenSuccess() {
+		Response response = oauth.accessToken(TEST_CLIENTID, TEST_AUTHCODE, 
+				TEST_REDIRECT_URI);
+		assertEquals(Status.OK, Status.fromStatusCode(response.getStatus()));
+		
+		String body = (String) response.getEntity();
+		String expectedBody = ""
+				+ "elisApi({\n"
+				+ "  \"status\": \"OK\",\n"
+				+ "  \"code\": \"200\",\n"
+				+ "  \"response\": {\"access_token\": \"" + TEST_ACCESSCODE + "\"}\n"
+				+ "})";
+		assertEquals(expectedBody, body);
+	}
+	
+	@Test
+	public void testAccessTokenMismatchClientIdAndClientSecret() {
+		fail();
+	}
+	
+	@Test
+	public void testAccessTokenOAuthServiceNotAvailable() {
+		oauth.setOAuthService(null);
+		Response response = oauth.accessToken(TEST_CLIENTID, TEST_AUTHCODE, 
+				TEST_REDIRECT_URI);
+		testOAuthServiceNotAvailable(response);
+	}
+
+	private void testOAuthServiceNotAvailable(Response response) {
 		assertEquals(Status.INTERNAL_SERVER_ERROR, Status.fromStatusCode(response.getStatus()));
 		String body = (String) response.getEntity();
 		String expectedBody = ""
@@ -69,9 +114,19 @@ public class OAuthResourceTest {
 		assertEquals(expectedBody, body);
 	}
 	
+	@Test
+	public void testAccessTokenInvalidRedirectURI() {
+		Response response = oauth.accessToken(TEST_CLIENTID, TEST_AUTHCODE, "");
+		testInvalidRedirectURI(response);
+	}
+	
 	@Test 
-	public void testAuthenticateClientIdInvalid() {
-		Response response = oauth.authenticate("", TEST_REDIRECT_URI);
+	public void testAccessTokenInvalidClientId() {
+		Response response = oauth.accessToken("", TEST_AUTHCODE, TEST_REDIRECT_URI);
+		testInvalidClientId(response);
+	}
+
+	private void testInvalidClientId(Response response) {
 		assertEquals(Status.BAD_REQUEST, Status.fromStatusCode(response.getStatus()));
 		String body = (String) response.getEntity();
 		String expectedBody = ""
@@ -84,10 +139,8 @@ public class OAuthResourceTest {
 				+ "})";
 		assertEquals(expectedBody, body);
 	}
-	
-	@Test 
-	public void testAuthenticateInvalidRedirectURI() {
-		Response response = oauth.authenticate(TEST_CLIENTID, "");
+
+	private void testInvalidRedirectURI(Response response) {
 		assertEquals(Status.BAD_REQUEST, Status.fromStatusCode(response.getStatus()));
 		String body = (String) response.getEntity();
 		String expectedBody = ""
@@ -99,30 +152,5 @@ public class OAuthResourceTest {
 				+ "  \"response\": {}"
 				+ "})";
 		assertEquals(expectedBody, body);
-	}
-	
-	@Test
-	public void testAuthenticateMissingParams() {
-		fail();
-	}
-	
-	@Test
-	public void testAccessTokenSuccess() {
-		fail();
-	}
-	
-	@Test
-	public void testAccessTokenMissingParams() {
-		fail();
-	}
-	
-	@Test
-	public void testAccessTokenMismatchClientIdAndClientSecret() {
-		fail();
-	}
-	
-	@Test
-	public void testAccessTokenInvalidRedirectURI() {
-		fail();
 	}
 }
