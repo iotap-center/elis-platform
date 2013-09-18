@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>se.mah.elis.authentication.oauth</groupId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+  <name>The Elis OAuth Bundle</name>
+  
+  <parent>
+  	<groupId>se.mah.elis</groupId>
+  	<artifactId>super-pom</artifactId>
+  	<version>0.0.1</version>
+  	<relativePath>../super</relativePath>
+  </parent>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.osgi</groupId>
+  		<artifactId>org.osgi.core</artifactId>
+  		<version>4.3.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.osgi</groupId>
+  		<artifactId>org.osgi.compendium</artifactId>
+  		<version>4.3.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.eclipsesource.jaxrs.publisher</groupId>
+  		<artifactId>osgi-connector</artifactId>
+  		<version>0.0.1</version>
+  		<type>bundle</type>
+  	</dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>    <!-- (2) START -->
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.4.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>${project.groupId}.*</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>    <!-- (2) END -->
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <configuration>
+          <groups>
+            <title>${project.name}</title>
+            <group>${project.groupId},${project.groupId}.*</group>
+          </groups>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+  <artifactId>oauth</artifactId>
+</project>
