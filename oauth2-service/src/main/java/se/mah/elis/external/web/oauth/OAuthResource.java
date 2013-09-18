@@ -29,7 +29,7 @@ public class OAuthResource {
 			+ "  \"status\": \"ERROR\",\n"
 			+ "  \"code\": \"400\",\n"
 			+ "  \"errorType\": \"invalid client id\",\n"
-			+ "  \"errorDetail\": \"Client ID is empty, incorrectly formatted or does not exist.\","
+			+ "  \"errorDetail\": \"Client ID is empty, incorrectly formatted or does not exist.\",\n"
 			+ "  \"response\": {}"
 			+ "})";
 	private static final String invalidRedirectURI = ""
@@ -37,7 +37,15 @@ public class OAuthResource {
 			+ "  \"status\": \"ERROR\",\n"
 			+ "  \"code\": \"400\",\n"
 			+ "  \"errorType\": \"invalid redirect uri\",\n"
-			+ "  \"errorDetail\": \"Redirect URI is empty or incorrectly formatted.\","
+			+ "  \"errorDetail\": \"Redirect URI is empty or incorrectly formatted.\",\n"
+			+ "  \"response\": {}"
+			+ "})";
+	private static final Object internalErrorOAuthServiceNotAvailable = ""
+			+ "elisApi({\n"
+			+ "  \"status\": \"ERROR\",\n"
+			+ "  \"code\": \"500\",\n"
+			+ "  \"errorType\": \"platform error\",\n"
+			+ "  \"errorDetail\": \"The OAuth service is not available.\",\n"
 			+ "  \"response\": {}"
 			+ "})";
 	
@@ -72,10 +80,17 @@ public class OAuthResource {
 	}
 
 	private Response handle_authenticate(String clientId, String redirectUri) {
-		Response response = Response.status(Status.FOUND)
-				.header("Elis-Authorization-Code", oauthService.createAuthorizationCode())
-				.header("Location", redirectUri)
-				.build();
+		Response response = null;
+		if (oauthService != null)
+			response = Response.status(Status.FOUND)
+					.header("Elis-Authorization-Code", oauthService.createAuthorizationCode())
+					.header("Location", redirectUri)
+					.build();
+		else 
+			response = Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(internalErrorOAuthServiceNotAvailable)
+					.build();
+			
 		return response;
 	}
 

@@ -54,7 +54,19 @@ public class OAuthResourceTest {
 	
 	@Test
 	public void testOAuthServiceNotAvailableOnSuccessRequest() {
-		fail();
+		oauth.setOAuthService(null);
+		Response response = oauth.authenticate(TEST_CLIENTID, TEST_REDIRECT_URI);
+		assertEquals(Status.INTERNAL_SERVER_ERROR, Status.fromStatusCode(response.getStatus()));
+		String body = (String) response.getEntity();
+		String expectedBody = ""
+				+ "elisApi({\n"
+				+ "  \"status\": \"ERROR\",\n"
+				+ "  \"code\": \"500\",\n"
+				+ "  \"errorType\": \"platform error\",\n"
+				+ "  \"errorDetail\": \"The OAuth service is not available.\",\n"
+				+ "  \"response\": {}"
+				+ "})";
+		assertEquals(expectedBody, body);
 	}
 	
 	@Test 
@@ -67,7 +79,7 @@ public class OAuthResourceTest {
 				+ "  \"status\": \"ERROR\",\n"
 				+ "  \"code\": \"400\",\n"
 				+ "  \"errorType\": \"invalid client id\",\n"
-				+ "  \"errorDetail\": \"Client ID is empty, incorrectly formatted or does not exist.\","
+				+ "  \"errorDetail\": \"Client ID is empty, incorrectly formatted or does not exist.\",\n"
 				+ "  \"response\": {}"
 				+ "})";
 		assertEquals(expectedBody, body);
@@ -83,7 +95,7 @@ public class OAuthResourceTest {
 				+ "  \"status\": \"ERROR\",\n"
 				+ "  \"code\": \"400\",\n"
 				+ "  \"errorType\": \"invalid redirect uri\",\n"
-				+ "  \"errorDetail\": \"Redirect URI is empty or incorrectly formatted.\","
+				+ "  \"errorDetail\": \"Redirect URI is empty or incorrectly formatted.\",\n"
 				+ "  \"response\": {}"
 				+ "})";
 		assertEquals(expectedBody, body);
