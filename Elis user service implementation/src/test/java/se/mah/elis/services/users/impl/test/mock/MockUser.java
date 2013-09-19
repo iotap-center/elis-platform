@@ -6,8 +6,17 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 public class MockUser implements User {
 
+	private String stuff;
+	private int whatever;
+	
 	public MockUser() {
-		// TODO Auto-generated constructor stub
+		stuff = "";
+		whatever = 0;
+	}
+	
+	public MockUser(String stuff, int whatever) {
+		this.stuff = stuff;
+		this.whatever = whatever;
 	}
 
 	@Override
@@ -28,4 +37,11 @@ public class MockUser implements User {
 
 	}
 
+	public String getStuff() {
+		return stuff;
+	}
+	
+	public int getWhatever() {
+		return whatever;
+	}
 }
