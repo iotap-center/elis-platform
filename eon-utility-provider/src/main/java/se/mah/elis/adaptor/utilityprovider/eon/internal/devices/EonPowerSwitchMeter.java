@@ -112,8 +112,19 @@ public class EonPowerSwitchMeter extends EonDevice implements PowerSwitch, Elect
 
 	@Override
 	public ElectricitySample getSample() throws SensorFailedException {
-		// TODO Auto-generated method stub
-		return null;
+		double value;
+		
+		try {
+			value = httpBridge.getPowerMeterKWh(this.gateway.getAuthenticationToken(), getGatewayAddress(),
+					getId().toString());
+		} catch (ParseException e) {
+			throw new SensorFailedException();
+		}
+		
+		ElectricitySample electricitySample = null;
+		electricitySample = new ElectricitySampleImpl(value);
+
+		return electricitySample;
 	}
 
 	@Override
