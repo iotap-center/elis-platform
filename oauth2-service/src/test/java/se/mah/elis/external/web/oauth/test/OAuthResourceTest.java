@@ -66,9 +66,28 @@ public class OAuthResourceTest {
 	}
 	
 	@Test 
-	public void testAuthenticateInvalidRedirectURI() {
+	public void testAuthenticateEmptyRedirectURI() {
 		Response response = oauth.authenticate(TEST_CLIENTID, "");
 		testInvalidRedirectURI(response);
+	}
+	
+	@Test
+	public void testAuthenticateWithInvalidRedirectURIBrokenProtocol() {
+		Response response = oauth.authenticate(TEST_CLIENTID, "htasdfsdfp://www.joker.com");
+		testInvalidRedirectURI(response);
+	}
+	
+	@Test
+	public void testAuthenticateWithInvalidRedirectURIBrokenPath() {
+		Response response = oauth.authenticate(TEST_CLIENTID, "http:// some strange");
+		testInvalidRedirectURI(response);
+	}
+	
+	@Test
+	public void testAuthenticateWithValidRedirectURIComplexPath() {
+		Response response = oauth.authenticate(TEST_CLIENTID, 
+				"http://mah.se/target.php?param=test");
+		assertEquals(Status.FOUND, Status.fromStatusCode(response.getStatus()));
 	}
 	
 	@Test

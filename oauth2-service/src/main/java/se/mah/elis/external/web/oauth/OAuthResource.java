@@ -1,5 +1,9 @@
 package se.mah.elis.external.web.oauth;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -60,6 +64,15 @@ public class OAuthResource {
 		this.oauthService = oauthService;
 	}
 	
+	/**
+	 * HTTP End-point for apps to acquire an authorization code as the first 
+	 * step of the OAuth 2.0 authentication process.
+	 *  
+	 * @param clientId
+	 * @param redirectUri
+	 * @return Response with authorization code in 'Elis-Authorization-Code' and 
+	 * 	redirect to the specified 'Location' header
+	 */
 	@GET
 	@Path("/authenticate")
 	public Response authenticate(
@@ -67,16 +80,33 @@ public class OAuthResource {
 			@DefaultValue("") @QueryParam("redirect_uri") String redirectUri) {
 		Response response = null;
 		
-		if (!clientId.isEmpty() && !redirectUri.isEmpty())
+		if (isValidClientId(clientId) && isValidRedirectUri(redirectUri))
 			response = handle_authenticate(clientId, redirectUri);
 		else {
-			if (clientId.isEmpty())
-				response = invalidClientId();
-			else if (redirectUri.isEmpty()) 
-				response = invalidRedirectUri();
+			if (!isValidClientId(clientId))
+				response = generateInvalidClientId();
+			else if (!isValidRedirectUri(redirectUri)) 
+				response = generateInvalidRedirectUri();
 		}
 		
 		return response;
+	}
+
+	private boolean isValidRedirectUri(String redirectUri) {
+		boolean isValid = true;
+		
+		try {
+			URI uri = new URI(redirectUri);
+			uri.toURL();
+		} catch (MalformedURLException | URISyntaxException e) {
+			isValid = false;
+		}
+		
+		return isValid;
+	}
+
+	private boolean isValidClientId(String clientId) {
+		return !clientId.isEmpty();
 	}
 
 	private Response handle_authenticate(String clientId, String redirectUri) {
@@ -94,24 +124,34 @@ public class OAuthResource {
 		return response;
 	}
 
-	private Response invalidRedirectUri() {
+	private Response generateInvalidRedirectUri() {
 		Response response = Response.status(Status.BAD_REQUEST)
 				.entity(invalidRedirectURI)
 				.build();
 		return response;
 	}
 
-	private Response invalidClientId() {
+	private Response generateInvalidClientId() {
 		Response response = Response.status(Status.BAD_REQUEST)
 				.entity(invalidClientId)
 				.build();
 		return response;
 	}
 
+	/**
+	 * HTTP End-point for apps to collect the OAuth 2.0 access token generated
+	 * by the Elis platform. 
+	 * @param clientId
+	 * @param clientAuthorizationCode
+	 * @param redirectUri
+	 * @return Response with JSON body including the access token and header with 'Location'
+	 */
 	@GET
 	@Path("/access_token")
-	public Response accessToken(String clientId,
-			String clientAuthorizationCode, String redirectUri) {
+	public Response accessToken(
+			@DefaultValue("") @QueryParam("client_id") String clientId,
+			@DefaultValue("") @QueryParam("client_secret") String clientAuthorizationCode, 
+			@DefaultValue("") @QueryParam("redirect_uri") String redirectUri) {
 		return null;
 	}
 }
