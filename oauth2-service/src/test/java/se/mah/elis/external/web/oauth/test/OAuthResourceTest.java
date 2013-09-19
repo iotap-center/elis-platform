@@ -43,7 +43,7 @@ public class OAuthResourceTest {
 	private OAuthService createMockOAuthService() {
 		OAuthService oauthService = mock(OAuthService.class);
 		when(oauthService.createAuthorizationCode(
-				TEST_CLIENTID)).thenReturn(TEST_AUTHCODE);
+				TEST_CLIENTID, TEST_REDIRECT_URI)).thenReturn(TEST_AUTHCODE);
 		when(oauthService.createAccessToken(TEST_CLIENTID, 
 				TEST_AUTHCODE)).thenReturn(TEST_ACCESSCODE);
 		return oauthService;

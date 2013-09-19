@@ -5,37 +5,43 @@ import se.mah.elis.authentication.oauth.OAuthService;
 public class OAuthServiceImpl implements OAuthService {
 
 	@Override
-	public String createAccessToken(String arg0, String arg1) {
+	public String createAuthorizationCode(String clientId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public String createAuthorizationCode(String clientId, String redirectUri) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String createAuthorizationCode(String arg0) {
+	public String createAccessToken(String clientId, String code) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String createRefreshToken(String arg0, String arg1) {
+	public String createRefreshToken(String clientId, String code) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean verifyAccessToken(String arg0) {
+	public boolean verifyAccessToken(String token) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean verifyAuthorizationCode(String arg0, String arg1) {
+	public boolean verifyAuthorizationCode(String clientId, String code) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean verifyAuthorizationCode(String arg0, String arg1, String arg2) {
+	public boolean verifyAuthorizationCode(String clientId, String redirectUri, String code) {
 		// TODO Auto-generated method stub
 		return false;
 	}

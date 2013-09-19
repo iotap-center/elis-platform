@@ -13,12 +13,21 @@ package se.mah.elis.authentication.oauth;
 public interface OAuthService {
 
 	/**
-	 * Create an authorization code (step 1 in OAuth 2.0) 
+	 * Create an authorization code based on client id (step 1 in OAuth 2.0) 
 	 * 
 	 * @param clientId - the code generated is linked to this client
 	 * @return a hashed token used for authorizing the client
 	 */
 	public String createAuthorizationCode(String clientId);
+	
+	/**
+	 * Create an authorization code (step 1 in OAuth 2.0)
+	 * 
+	 * @param clientId
+	 * @param redirectUri
+	 * @return a hashed token used for authorizing the client
+	 */
+	public String createAuthorizationCode(String clientId, String redirectUri);
 	
 	/**
 	 * Create an access token for the application (step 2 in OAuth 2.0)
