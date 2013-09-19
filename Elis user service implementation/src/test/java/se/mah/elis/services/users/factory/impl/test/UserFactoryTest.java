@@ -34,6 +34,7 @@ public class UserFactoryTest {
 
 	@After
 	public void tearDown() throws Exception {
+		uf = null;
 	}
 
 	@Test
@@ -45,8 +46,8 @@ public class UserFactoryTest {
 		uf.registerProvider(provider);
 		
 		props.put("stuff", "batman");
-		props.put("whatever", 42);
-		
+		props.put("whatever", (new Integer(42)).toString());
+
 		try {
 			user = uf.build("MockUser", "test", props);
 		} catch (UserInitalizationException e) {
@@ -70,8 +71,8 @@ public class UserFactoryTest {
 		uf.registerProvider(provider2);
 		
 		props.put("stuff", "batman");
-		props.put("whatever", 42);
-		
+		props.put("whatever", (new Integer(42)).toString());
+
 		try {
 			user = uf.build("MockUser", "test", props);
 		} catch (UserInitalizationException e) {
@@ -85,17 +86,13 @@ public class UserFactoryTest {
 
 	@Test
 	public void testBuildNoProviders() {
-		UserProvider provider = new MockUserProvider();
-		User user = null;
 		Properties props = new Properties();
 		
-		uf.registerProvider(provider);
-		
 		props.put("stuff", "batman");
-		props.put("Whatever", 42);
-		
+		props.put("Whatever", (new Integer(42)).toString());
+
 		try {
-			user = uf.build("MockUser", "test", props);
+			uf.build("MockUser", "test", props);
 			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {}
 	}
@@ -103,16 +100,15 @@ public class UserFactoryTest {
 	@Test
 	public void testBuildBadUserType() {
 		UserProvider provider = new MockUserProvider();
-		User user = null;
 		Properties props = new Properties();
 		
 		uf.registerProvider(provider);
 		
 		props.put("stuff", "batman");
-		props.put("Whatever", 42);
-		
+		props.put("Whatever", (new Integer(42)).toString());
+
 		try {
-			user = uf.build("GatewayUser", "test", props);
+			uf.build("GatewayUser", "test", props);
 			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {}
 	}
@@ -120,16 +116,15 @@ public class UserFactoryTest {
 	@Test
 	public void testBuildBadServiceName() {
 		UserProvider provider = new MockUserProvider();
-		User user = null;
 		Properties props = new Properties();
 		
 		uf.registerProvider(provider);
 		
 		props.put("stuff", "batman");
-		props.put("Whatever", 42);
-		
+		props.put("Whatever", (new Integer(42)).toString());
+
 		try {
-			user = uf.build("MockUser", "foobar", props);
+			uf.build("MockUser", "foobar", props);
 			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {}
 	}
@@ -137,18 +132,20 @@ public class UserFactoryTest {
 	@Test
 	public void testBuildBadProperties() {
 		UserProvider provider = new MockUserProvider();
-		User user = null;
 		Properties props = new Properties();
 		
 		uf.registerProvider(provider);
 		
 		props.put("stuff", "batman");
 		props.put("Whatever", "horses");
-		
+
+		System.out.println();
+		System.out.println("Starting testBuildBadProperties");
 		try {
-			user = uf.build("MockUser", "test", props);
+			uf.build("MockUser", "test", props);
 			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {}
+		System.out.println("Stopping");
 	}
 
 	@Test
