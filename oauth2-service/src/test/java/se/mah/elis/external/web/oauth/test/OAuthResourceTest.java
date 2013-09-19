@@ -30,10 +30,16 @@ public class OAuthResourceTest {
 	
 	@Before
 	public void setUp() {
+		OAuthService oauthService = createMockOAuthService();
+		when(oauthService.verifyAuthorizationCode(TEST_AUTHCODE)).thenReturn(true);
+		oauth = new OAuthResource(oauthService);
+	}
+
+	private OAuthService createMockOAuthService() {
 		OAuthService oauthService = mock(OAuthService.class);
 		when(oauthService.createAuthorizationCode()).thenReturn(TEST_AUTHCODE);
 		when(oauthService.createAccessToken()).thenReturn(TEST_ACCESSCODE);
-		oauth = new OAuthResource(oauthService);
+		return oauthService;
 	}
 	
 	@Test
@@ -107,11 +113,6 @@ public class OAuthResourceTest {
 	}
 	
 	@Test
-	public void testAccessTokenMismatchClientIdAndClientSecret() {
-		fail();
-	}
-	
-	@Test
 	public void testAccessTokenOAuthServiceNotAvailable() {
 		oauth.setOAuthService(null);
 		Response response = oauth.accessToken(TEST_CLIENTID, TEST_AUTHCODE, 
@@ -134,7 +135,7 @@ public class OAuthResourceTest {
 	}
 	
 	@Test
-	public void testAccessTokenInvalidRedirectURI() {
+	public void testAccessTokenEmptyRedirectURI() {
 		Response response = oauth.accessToken(TEST_CLIENTID, TEST_AUTHCODE, "");
 		testInvalidRedirectURI(response);
 	}
@@ -143,6 +144,46 @@ public class OAuthResourceTest {
 	public void testAccessTokenInvalidClientId() {
 		Response response = oauth.accessToken("", TEST_AUTHCODE, TEST_REDIRECT_URI);
 		testInvalidClientId(response);
+	}
+	
+	@Test 
+	public void testAccessTokenNotAuthorizedClientSecret() {
+		// make sure service denies auth code
+		OAuthService service = createMockOAuthService();
+		when(service.verifyAuthorizationCode(TEST_AUTHCODE)).thenReturn(false);
+		OAuthResource oauthResource = new OAuthResource(service);
+		
+		// test the response
+		Response response = oauthResource.accessToken(TEST_CLIENTID, "not_matching", 
+				TEST_REDIRECT_URI);
+		assertEquals(Status.FORBIDDEN, Status.fromStatusCode(response.getStatus()));
+		String body = (String) response.getEntity();
+		String expectedBody = ""
+				+ "elisApi({\n"
+				+ "  \"status\": \"ERROR\",\n"
+				+ "  \"code\": \"403\",\n"
+				+ "  \"errorType\": \"unauthorized\",\n"
+				+ "  \"errorDetail\": \"The client secret is not valid for this client id.\",\n"
+				+ "  \"response\": {}"
+				+ "})"; 
+		assertEquals(expectedBody, body);
+	}
+	
+	@Test
+	public void testAccessTokenInvalidClientSecret() {
+		Response response = oauth.accessToken(TEST_CLIENTID, "", 
+				TEST_REDIRECT_URI);
+		assertEquals(Status.BAD_REQUEST, Status.fromStatusCode(response.getStatus()));
+		String body = (String) response.getEntity();
+		String expectedBody = ""
+				+ "elisApi({\n"
+				+ "  \"status\": \"ERROR\",\n"
+				+ "  \"code\": \"400\",\n"
+				+ "  \"errorType\": \"invalid client secret\",\n"
+				+ "  \"errorDetail\": \"The client secret is empty or incorrectly formatted.\",\n"
+				+ "  \"response\": {}"
+				+ "})"; 
+		assertEquals(expectedBody, body);
 	}
 
 	private void testInvalidClientId(Response response) {

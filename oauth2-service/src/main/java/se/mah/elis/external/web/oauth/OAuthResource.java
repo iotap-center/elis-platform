@@ -28,7 +28,7 @@ import se.mah.elis.authentication.oauth.OAuthService;
 public class OAuthResource {
 
 	// error envelopes 
-	private static final String invalidClientId = ""
+	private static final String invalidClientIdEnvelope = ""
 			+ "elisApi({\n"
 			+ "  \"status\": \"ERROR\",\n"
 			+ "  \"code\": \"400\",\n"
@@ -36,7 +36,7 @@ public class OAuthResource {
 			+ "  \"errorDetail\": \"Client ID is empty, incorrectly formatted or does not exist.\",\n"
 			+ "  \"response\": {}"
 			+ "})";
-	private static final String invalidRedirectURI = ""
+	private static final String invalidRedirectURIEnvelope = ""
 			+ "elisApi({\n"
 			+ "  \"status\": \"ERROR\",\n"
 			+ "  \"code\": \"400\",\n"
@@ -44,13 +44,35 @@ public class OAuthResource {
 			+ "  \"errorDetail\": \"Redirect URI is empty or incorrectly formatted.\",\n"
 			+ "  \"response\": {}"
 			+ "})";
-	private static final Object internalErrorOAuthServiceNotAvailable = ""
+	private static final String internalErrorOAuthServiceNotAvailableEnvelope = ""
 			+ "elisApi({\n"
 			+ "  \"status\": \"ERROR\",\n"
 			+ "  \"code\": \"500\",\n"
 			+ "  \"errorType\": \"platform error\",\n"
 			+ "  \"errorDetail\": \"The OAuth service is not available.\",\n"
 			+ "  \"response\": {}"
+			+ "})";
+	private static final String forbiddenAuthorizationCodeEnvelope = ""
+			+ "elisApi({\n"
+			+ "  \"status\": \"ERROR\",\n"
+			+ "  \"code\": \"403\",\n"
+			+ "  \"errorType\": \"unauthorized\",\n"
+			+ "  \"errorDetail\": \"The client secret is not valid for this client id.\",\n"
+			+ "  \"response\": {}"
+			+ "})";
+	private static final String invalidClientSecretEnvelope = ""
+			+ "elisApi({\n"
+			+ "  \"status\": \"ERROR\",\n"
+			+ "  \"code\": \"400\",\n"
+			+ "  \"errorType\": \"invalid client secret\",\n"
+			+ "  \"errorDetail\": \"The client secret is empty or incorrectly formatted.\",\n"
+			+ "  \"response\": {}"
+			+ "})"; 
+	private static String accessTokenEnvelope = ""
+			+ "elisApi({\n"
+			+ "  \"status\": \"OK\",\n"
+			+ "  \"code\": \"200\",\n"
+			+ "  \"response\": {\"access_token\": \"%s\"}\n"
 			+ "})";
 	
 	// internals
@@ -92,23 +114,6 @@ public class OAuthResource {
 		return response;
 	}
 
-	private boolean isValidRedirectUri(String redirectUri) {
-		boolean isValid = true;
-		
-		try {
-			URI uri = new URI(redirectUri);
-			uri.toURL();
-		} catch (MalformedURLException | URISyntaxException e) {
-			isValid = false;
-		}
-		
-		return isValid;
-	}
-
-	private boolean isValidClientId(String clientId) {
-		return !clientId.isEmpty();
-	}
-
 	private Response handle_authenticate(String clientId, String redirectUri) {
 		Response response = null;
 		if (oauthService != null)
@@ -116,25 +121,9 @@ public class OAuthResource {
 					.header("Elis-Authorization-Code", oauthService.createAuthorizationCode())
 					.header("Location", redirectUri)
 					.build();
-		else 
-			response = Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(internalErrorOAuthServiceNotAvailable)
-					.build();
+		else
+			response = generateOAuthServiceError();
 			
-		return response;
-	}
-
-	private Response generateInvalidRedirectUri() {
-		Response response = Response.status(Status.BAD_REQUEST)
-				.entity(invalidRedirectURI)
-				.build();
-		return response;
-	}
-
-	private Response generateInvalidClientId() {
-		Response response = Response.status(Status.BAD_REQUEST)
-				.entity(invalidClientId)
-				.build();
 		return response;
 	}
 
@@ -152,6 +141,122 @@ public class OAuthResource {
 			@DefaultValue("") @QueryParam("client_id") String clientId,
 			@DefaultValue("") @QueryParam("client_secret") String clientAuthorizationCode, 
 			@DefaultValue("") @QueryParam("redirect_uri") String redirectUri) {
-		return null;
+		Response response;
+		
+		if (isValidClientId(clientId) 
+			&& isValidRedirectUri(redirectUri)
+			&& isValidClientSecret(clientAuthorizationCode)) {
+			response = createAccessTokenResponse(clientAuthorizationCode, redirectUri);
+		} else {
+			response = generateErrorResponse(clientId, clientAuthorizationCode, redirectUri);
+		}
+		
+		return response;
+	}
+
+	private Response createAccessTokenResponse(String clientAuthorizationCode, 
+			String redirectUri) {
+		Response response; 
+		if (oauthService != null) {
+			response = doCreateAccessTokenResponse(clientAuthorizationCode, redirectUri);
+		} else {
+			response = generateOAuthServiceError();
+		}
+		return response;
+	}
+	
+	private Response doCreateAccessTokenResponse(String clientAuthorizationCode,
+			String redirectUri) {
+		Response response; 
+		if (oauthService.verifyAuthorizationCode(clientAuthorizationCode)) {
+			String accessTokenJsonResponse = String.format(accessTokenEnvelope, 
+					oauthService.createAccessToken()); 
+			response = Response.ok(accessTokenJsonResponse)
+					.header("Location", redirectUri)
+					.build();
+		} else {
+			response = generateForbiddenClientSecretError(); 
+		}
+		return response;
+	}
+
+	private Response generateErrorResponse(String clientId,
+			String clientAuthorizationCode, String redirectUri) {
+		Response response;
+		
+		// figure out what the error is and generate the appropriate response
+		if (!isValidClientId(clientId)) 
+			response = generateInvalidClientId();
+		else if (!isValidRedirectUri(redirectUri))
+			response = generateInvalidRedirectUri();
+		else if (!isValidClientSecret(clientAuthorizationCode))
+			response = generateInvalidClientSecretError();
+		else
+			response = generateOAuthServiceError(); 
+		
+		return response;
+	}
+	
+	/*
+	 * Helper methods
+	 */
+	private boolean isValidRedirectUri(String redirectUri) {
+		boolean isValid = true;
+		
+		try {
+			URI uri = new URI(redirectUri);
+			uri.toURL();
+		} catch (MalformedURLException 
+				| URISyntaxException 
+				| IllegalArgumentException e) {
+			isValid = false;
+		}
+		
+		return isValid;
+	}
+
+	private boolean isValidClientId(String clientId) {
+		return !clientId.isEmpty();
+	}
+	
+	private boolean isValidClientSecret(String clientAuthorizationCode) {
+		return !clientAuthorizationCode.isEmpty();
+	}
+
+	/*
+	 * Error generator messages
+	 */
+	private Response generateInvalidClientSecretError() {
+		return Response.status(Status.BAD_REQUEST)
+				.entity(invalidClientSecretEnvelope)
+				.build();
+	}
+
+	private Response generateForbiddenClientSecretError() {
+		Response response = Response.status(Status.FORBIDDEN)
+				.entity(forbiddenAuthorizationCodeEnvelope)
+				.build();
+		return response;
+	}
+	
+	private Response generateOAuthServiceError() {
+		Response response = Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(internalErrorOAuthServiceNotAvailableEnvelope)
+				.build();
+		return response;
+	}
+
+	private Response generateInvalidRedirectUri() {
+		Response response = Response.status(Status.BAD_REQUEST)
+				.entity(invalidRedirectURIEnvelope)
+				.build();
+		return response;
+	}
+
+	private Response generateInvalidClientId() {
+		Response response = Response.status(Status.BAD_REQUEST)
+				.entity(invalidClientIdEnvelope)
+				.build();
+		return response;
 	}
 }
