@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>se.mah.elis.authentication.oauth.impl</groupId>
+  <groupId>se.mah.elis.authentication.oauth</groupId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
-  <name>The Elis OAuth 2.0 Service Implementation Bundle</name>
+  <name>The Elis OAuth 2.0 Service API Bundle</name>
   
   <parent>
   	<groupId>se.mah.elis</groupId>
@@ -34,12 +34,6 @@
     	<version>1.9.5</version>
     	<scope>test</scope>
     </dependency>
-  	<dependency>
-  		<groupId>se.mah.elis.authentication.oauth</groupId>
-  		<artifactId>oauth</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  		<type>bundle</type>
-  	</dependency>
   </dependencies>
   <build>
     <plugins>
