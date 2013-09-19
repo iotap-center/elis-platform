@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deletePlatformUser(PlatformUser pu) throws NoSuchUserException {
+	public synchronized void deletePlatformUser(PlatformUser pu) throws NoSuchUserException {
 		if (map.remove(pu) == null) {
 			throw new NoSuchUserException();
 		}
