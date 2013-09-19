@@ -8,6 +8,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -31,31 +35,38 @@ public class OAuthResourceTest {
 	@Before
 	public void setUp() {
 		OAuthService oauthService = createMockOAuthService();
-		when(oauthService.verifyAuthorizationCode(TEST_AUTHCODE)).thenReturn(true);
+		when(oauthService.verifyAuthorizationCode(TEST_CLIENTID,
+				TEST_REDIRECT_URI, TEST_AUTHCODE)).thenReturn(true);
 		oauth = new OAuthResource(oauthService);
 	}
 
 	private OAuthService createMockOAuthService() {
 		OAuthService oauthService = mock(OAuthService.class);
-		when(oauthService.createAuthorizationCode()).thenReturn(TEST_AUTHCODE);
-		when(oauthService.createAccessToken()).thenReturn(TEST_ACCESSCODE);
+		when(oauthService.createAuthorizationCode(
+				TEST_CLIENTID)).thenReturn(TEST_AUTHCODE);
+		when(oauthService.createAccessToken(TEST_CLIENTID, 
+				TEST_AUTHCODE)).thenReturn(TEST_ACCESSCODE);
 		return oauthService;
 	}
 	
 	@Test
-	public void testAuthenticateSuccess() {
+	public void testAuthenticateHasLocationHeaderWithAuthCode() throws URISyntaxException {
 		Response response = oauth.authenticate(TEST_CLIENTID, TEST_REDIRECT_URI);
 		assertEquals(Status.FOUND, Status.fromStatusCode(response.getStatus()));
 		
-		String authCode = response.getHeaderString("Elis-Authorization-Code");
-		String redirectTo = response.getHeaderString("Location");
+		URI uri = null;
+		try {
+			uri = new URI(response.getHeaderString("Location"));
+		} catch (IllegalArgumentException 
+				| URISyntaxException e) {
+			fail("Location redirect URI is not properly formed.");
+		}
 		
-		assertNotNull(authCode);
-		assertTrue(!authCode.isEmpty());
-		assertEquals(TEST_AUTHCODE, authCode);
+		// make sure host is the same
+		assertEquals(new URI(TEST_REDIRECT_URI).getHost(), uri.getHost());
 		
-		assertNotNull(redirectTo);
-		assertEquals(TEST_REDIRECT_URI, redirectTo);
+		// make sure code is attached to redirect
+		assertEquals("code=" + TEST_AUTHCODE, uri.getQuery());		
 	}
 	
 	@Test
@@ -127,7 +138,7 @@ public class OAuthResourceTest {
 				+ "elisApi({\n"
 				+ "  \"status\": \"ERROR\",\n"
 				+ "  \"code\": \"500\",\n"
-				+ "  \"errorType\": \"platform error\",\n"
+				+ "  \"errorType\": \"server_error\",\n"
 				+ "  \"errorDetail\": \"The OAuth service is not available.\",\n"
 				+ "  \"response\": {}"
 				+ "})";
@@ -150,7 +161,8 @@ public class OAuthResourceTest {
 	public void testAccessTokenNotAuthorizedClientSecret() {
 		// make sure service denies auth code
 		OAuthService service = createMockOAuthService();
-		when(service.verifyAuthorizationCode(TEST_AUTHCODE)).thenReturn(false);
+		when(service.verifyAuthorizationCode(TEST_CLIENTID, 
+				TEST_REDIRECT_URI, TEST_AUTHCODE)).thenReturn(false);
 		OAuthResource oauthResource = new OAuthResource(service);
 		
 		// test the response
@@ -162,7 +174,7 @@ public class OAuthResourceTest {
 				+ "elisApi({\n"
 				+ "  \"status\": \"ERROR\",\n"
 				+ "  \"code\": \"403\",\n"
-				+ "  \"errorType\": \"unauthorized\",\n"
+				+ "  \"errorType\": \"access_denied\",\n"
 				+ "  \"errorDetail\": \"The client secret is not valid for this client id.\",\n"
 				+ "  \"response\": {}"
 				+ "})"; 
@@ -179,7 +191,7 @@ public class OAuthResourceTest {
 				+ "elisApi({\n"
 				+ "  \"status\": \"ERROR\",\n"
 				+ "  \"code\": \"400\",\n"
-				+ "  \"errorType\": \"invalid client secret\",\n"
+				+ "  \"errorType\": \"invalid_request\",\n"
 				+ "  \"errorDetail\": \"The client secret is empty or incorrectly formatted.\",\n"
 				+ "  \"response\": {}"
 				+ "})"; 
@@ -193,7 +205,7 @@ public class OAuthResourceTest {
 				+ "elisApi({\n"
 				+ "  \"status\": \"ERROR\",\n"
 				+ "  \"code\": \"400\",\n"
-				+ "  \"errorType\": \"invalid client id\",\n"
+				+ "  \"errorType\": \"invalid_request\",\n"
 				+ "  \"errorDetail\": \"Client ID is empty, incorrectly formatted or does not exist.\",\n"
 				+ "  \"response\": {}"
 				+ "})";
@@ -207,7 +219,7 @@ public class OAuthResourceTest {
 				+ "elisApi({\n"
 				+ "  \"status\": \"ERROR\",\n"
 				+ "  \"code\": \"400\",\n"
-				+ "  \"errorType\": \"invalid redirect uri\",\n"
+				+ "  \"errorType\": \"invalid_request\",\n"
 				+ "  \"errorDetail\": \"Redirect URI is empty or incorrectly formatted.\",\n"
 				+ "  \"response\": {}"
 				+ "})";

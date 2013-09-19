@@ -11,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import se.mah.elis.authentication.oauth.OAuthService;
@@ -32,7 +33,7 @@ public class OAuthResource {
 			+ "elisApi({\n"
 			+ "  \"status\": \"ERROR\",\n"
 			+ "  \"code\": \"400\",\n"
-			+ "  \"errorType\": \"invalid client id\",\n"
+			+ "  \"errorType\": \"invalid_request\",\n"
 			+ "  \"errorDetail\": \"Client ID is empty, incorrectly formatted or does not exist.\",\n"
 			+ "  \"response\": {}"
 			+ "})";
@@ -40,7 +41,7 @@ public class OAuthResource {
 			+ "elisApi({\n"
 			+ "  \"status\": \"ERROR\",\n"
 			+ "  \"code\": \"400\",\n"
-			+ "  \"errorType\": \"invalid redirect uri\",\n"
+			+ "  \"errorType\": \"invalid_request\",\n"
 			+ "  \"errorDetail\": \"Redirect URI is empty or incorrectly formatted.\",\n"
 			+ "  \"response\": {}"
 			+ "})";
@@ -48,7 +49,7 @@ public class OAuthResource {
 			+ "elisApi({\n"
 			+ "  \"status\": \"ERROR\",\n"
 			+ "  \"code\": \"500\",\n"
-			+ "  \"errorType\": \"platform error\",\n"
+			+ "  \"errorType\": \"server_error\",\n"
 			+ "  \"errorDetail\": \"The OAuth service is not available.\",\n"
 			+ "  \"response\": {}"
 			+ "})";
@@ -56,7 +57,7 @@ public class OAuthResource {
 			+ "elisApi({\n"
 			+ "  \"status\": \"ERROR\",\n"
 			+ "  \"code\": \"403\",\n"
-			+ "  \"errorType\": \"unauthorized\",\n"
+			+ "  \"errorType\": \"access_denied\",\n"
 			+ "  \"errorDetail\": \"The client secret is not valid for this client id.\",\n"
 			+ "  \"response\": {}"
 			+ "})";
@@ -64,7 +65,7 @@ public class OAuthResource {
 			+ "elisApi({\n"
 			+ "  \"status\": \"ERROR\",\n"
 			+ "  \"code\": \"400\",\n"
-			+ "  \"errorType\": \"invalid client secret\",\n"
+			+ "  \"errorType\": \"invalid_request\",\n"
 			+ "  \"errorDetail\": \"The client secret is empty or incorrectly formatted.\",\n"
 			+ "  \"response\": {}"
 			+ "})"; 
@@ -103,7 +104,7 @@ public class OAuthResource {
 		Response response = null;
 		
 		if (isValidClientId(clientId) && isValidRedirectUri(redirectUri))
-			response = handle_authenticate(clientId, redirectUri);
+			response = handleAuthenticate(clientId, redirectUri);
 		else {
 			if (!isValidClientId(clientId))
 				response = generateInvalidClientId();
@@ -114,17 +115,24 @@ public class OAuthResource {
 		return response;
 	}
 
-	private Response handle_authenticate(String clientId, String redirectUri) {
+	private Response handleAuthenticate(String clientId, String redirectUri) {
 		Response response = null;
-		if (oauthService != null)
+		if (oauthService != null) {
+			String authCode = oauthService.createAuthorizationCode(clientId);
+			String redirectUriWithCode = createRedirectWithCode(redirectUri, authCode); 
 			response = Response.status(Status.FOUND)
-					.header("Elis-Authorization-Code", oauthService.createAuthorizationCode())
-					.header("Location", redirectUri)
+					.header("Location", redirectUriWithCode.toString())
 					.build();
-		else
+		} else
 			response = generateOAuthServiceError();
 			
 		return response;
+	}
+
+	private String createRedirectWithCode(String redirectUri, String authCode) {
+		return UriBuilder.fromUri(redirectUri)
+				.queryParam("code", authCode)
+				.toTemplate();
 	}
 
 	/**
@@ -146,34 +154,36 @@ public class OAuthResource {
 		if (isValidClientId(clientId) 
 			&& isValidRedirectUri(redirectUri)
 			&& isValidClientSecret(clientAuthorizationCode)) {
-			response = createAccessTokenResponse(clientAuthorizationCode, redirectUri);
+			response = createAccessTokenResponse(clientId, 
+					clientAuthorizationCode, redirectUri);
 		} else {
-			response = generateErrorResponse(clientId, clientAuthorizationCode, redirectUri);
+			response = generateErrorResponse(clientId, 
+					clientAuthorizationCode, redirectUri);
 		}
 		
 		return response;
 	}
 
-	private Response createAccessTokenResponse(String clientAuthorizationCode, 
-			String redirectUri) {
+	private Response createAccessTokenResponse(String clientId, 
+			String clientAuthorizationCode, String redirectUri) {
 		Response response; 
 		if (oauthService != null) {
-			response = doCreateAccessTokenResponse(clientAuthorizationCode, redirectUri);
+			response = doCreateAccessTokenResponse(clientId, 
+					clientAuthorizationCode, redirectUri);
 		} else {
 			response = generateOAuthServiceError();
 		}
 		return response;
 	}
 	
-	private Response doCreateAccessTokenResponse(String clientAuthorizationCode,
-			String redirectUri) {
+	private Response doCreateAccessTokenResponse(String clientId, 
+			String clientAuthorizationCode,	String redirectUri) {
 		Response response; 
-		if (oauthService.verifyAuthorizationCode(clientAuthorizationCode)) {
+		if (oauthService.verifyAuthorizationCode(clientId, redirectUri, 
+				clientAuthorizationCode)) {
 			String accessTokenJsonResponse = String.format(accessTokenEnvelope, 
-					oauthService.createAccessToken()); 
-			response = Response.ok(accessTokenJsonResponse)
-					.header("Location", redirectUri)
-					.build();
+					oauthService.createAccessToken(clientId, clientAuthorizationCode)); 
+			response = Response.ok(accessTokenJsonResponse).build();
 		} else {
 			response = generateForbiddenClientSecretError(); 
 		}
