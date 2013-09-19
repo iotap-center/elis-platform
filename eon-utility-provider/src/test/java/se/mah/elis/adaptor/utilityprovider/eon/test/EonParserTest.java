@@ -71,6 +71,21 @@ public class EonParserTest {
 	}
 	
 	@Test
+	public void testGetDeviceStatusForPowerMeterDevice() {
+		String response = "["
+				   + "{"
+				   +    "\"CurrentKwh\": 24.0"
+				   +    "\"CurrentOn\": false,"
+				   +    "\"CurrentPrice\": 0,"
+				   +    "\"DeviceId\": \"1c167952-2941-479d-b8ab-898f05fea5da\""
+				   + "}"
+				+ "]";
+		try {
+			assertEquals(24.0, EonParser.parsePowerMeterValue(response), 0.01);
+		} catch (Exception ignore) { ignore.printStackTrace(); fail(); }
+	}
+	
+	@Test
 	public void testGetActionObject() {
 		String response = "{\"Id\":15959278,\"Message\":null,\"StatusId\":1}";
 		try {

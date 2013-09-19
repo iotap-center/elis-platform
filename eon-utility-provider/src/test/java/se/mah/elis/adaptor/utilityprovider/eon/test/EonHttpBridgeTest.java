@@ -158,4 +158,13 @@ public class EonHttpBridgeTest {
 		}
 	}
 	
+	@Test
+	public void testGetPowerMeterValueKWh() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		try {
+			double value = bridge.getPowerMeterKWh(token, TEST_GATEWAY, TEST_DEVICEID);
+			assertTrue(value >= 0.0);
+		} catch (Exception ignore) { fail("No power meter value received"); }
+	}
+	
 }

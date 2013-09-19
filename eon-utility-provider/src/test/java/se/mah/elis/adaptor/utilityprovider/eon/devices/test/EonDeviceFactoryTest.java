@@ -62,7 +62,6 @@ public class EonDeviceFactoryTest {
 	}
 	
 	@Test
-	@Ignore // TODO: THIS IS NOT IMPLEMENTED YET
 	public void testCreatePowerMeter() {
 		Device sample;
 		try {

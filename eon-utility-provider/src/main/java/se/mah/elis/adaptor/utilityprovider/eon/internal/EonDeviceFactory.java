@@ -7,6 +7,7 @@ import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDevice;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDeviceIdentifier;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerMeter;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonThermometer;
 
@@ -38,11 +39,13 @@ public class EonDeviceFactory {
 		Device device = null;
 		
 		int deviceType = getDeviceType(jsonDevice);
-		if (deviceType == EonDevice.TYPE_POWERSWITCH_METER)
-			device = createPowerSwitchMeter(jsonDevice);
-
-		else if (deviceType == EonDevice.TYPE_TERMOMETER)
-			device = createThermometer(jsonDevice);
+		if (deviceType == EonDevice.TYPE_POWERSWITCH_METER){
+			device = createPowerSwitchMeter(jsonDevice);	
+		} else if (deviceType == EonDevice.TYPE_TERMOMETER){
+			device = createThermometer(jsonDevice);			
+		} else if (deviceType == EonDevice.TYPE_POWERMETER){
+				device = createPowerMeter(jsonDevice);
+		}
 
 		
 		if (device == null)
@@ -54,6 +57,13 @@ public class EonDeviceFactory {
 	private static Device createThermometer(JSONObject any)
 		throws StaticEntityException {
 		Device device = new EonThermometer();
+		device = setGenericProperties(device, any);
+		return device;
+	}
+	
+	private static Device createPowerMeter(JSONObject any)
+		throws StaticEntityException{
+		Device device = new EonPowerMeter();
 		device = setGenericProperties(device, any);
 		return device;
 	}

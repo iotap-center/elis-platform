@@ -84,4 +84,11 @@ public class EonParser {
 		Number tempValue = (Number) temperatureObject.get("Temperature");
 		return tempValue.floatValue();
 	}
+	
+	public static double parsePowerMeterValue(String response) throws ParseException{
+		// retrieves the first json object in [{ 'CurrentKwh': value }]
+		JSONObject powerMeterObject = (JSONObject) ((JSONArray) parser.parse(response)).get(0);
+		double powerMeterValue = ((Number) powerMeterObject.get("CurrentKwh")).doubleValue();
+		return powerMeterValue;
+	}
 }

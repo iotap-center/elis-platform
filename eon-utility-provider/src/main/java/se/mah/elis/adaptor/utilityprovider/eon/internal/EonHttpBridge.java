@@ -137,7 +137,7 @@ public class EonHttpBridge {
 	 * @param token
 	 * @param gatewayId
 	 * @param deviceId
-	 * @return
+	 * @return 
 	 * @throws ResponseProcessingException
 	 * @throws ParseException
 	 */
@@ -151,6 +151,23 @@ public class EonHttpBridge {
 				deviceList.toJSONString(), EWP_PANEL_ID, gatewayId);
 		verifyResponse(response);
 		return EonParser.parseDeviceStatus(response.readEntity(String.class));
+	}
+	
+	/**
+	 * Wrapper method to retrieve the power value from a electricity sampler device. 
+	 * 
+	 * @param token
+	 * @param gatewayId
+	 * @param deviceId
+	 * @return the power used in KWh
+	 * @throws ResponseProcessingException
+	 * @throws ParseException
+	 */
+	public double getPowerMeterKWh(String token, String gatewayId, String deviceId)
+		throws ResponseProcessingException, ParseException {
+		Map<String, Object> data = getDeviceStatus(token, gatewayId, deviceId);
+		double value = ((Number) data.get("CurrentKwh")).doubleValue();
+		return value;
 	}
 
 	/**
