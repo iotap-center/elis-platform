@@ -55,8 +55,28 @@ public class UserFactoryImpl implements UserFactory {
 	@Override
 	public User build(String userType, String serviceName, Properties properties)
 			throws UserInitalizationException {
-		// TODO Auto-generated method stub
-		return null;
+		UserProvider provider = null;
+		User user = null;
+		Map<String, UserProvider> map =
+				providers.get(userType);
+		
+		if (map == null) {
+			throw new UserInitalizationException("No such user provider");
+		}
+		
+		provider = map.get(serviceName);
+		
+		if (provider == null) {
+			throw new UserInitalizationException("No such user provider");
+		}
+		
+		System.out.println(userType + ", " + serviceName);
+		
+		user = provider.build(properties);
+		
+		System.out.println(user);
+		
+		return user;
 	}
 
 	@Override
