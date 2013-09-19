@@ -23,8 +23,8 @@ public class MockUserRecipeMock implements UserRecipe {
 	public Properties getProperties() {
 		Properties p = new Properties();
 		
-		p.put("stuff", "");
-		p.put("whatever", new Integer(0));
+		p.put("stuff", "string");
+		p.put("whatever", "integer");
 		
 		return p;
 	}
