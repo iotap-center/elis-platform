@@ -214,4 +214,42 @@ public class EonParserTest {
 			+"\"UsageAreaId\": 0,"
 			+"\"ZoneNo\": 1"
 			+"}";
+	
+	/**
+	 * May also be used to create JSON objects
+	 */
+	public static final String SAMPLE_THERMOSTAT = ""
+			+"{"
+			+"\"AreaNo\": 1,"
+			+"\"ChannelNo\": 0,"
+			+"\"ControllerDeviceId\": null,"
+			+"\"Description\": null,"
+			+"\"DeviceTypeId\": 96,"
+			+"\"DistributorCode\": null,"
+			+"\"EnergyOptimisedDate\": \"\","
+			+"\"EnergyOptimisingMode\": 0,"
+			+"\"EnergyOptimisingOption\": 0,"
+			+"\"EnergyOptmisationTemporaryDisabled\": false,"
+			+"\"EnergyTypeId\": 1,"
+			+"\"IconId\": null,"
+			+"\"Id\": \"69d0ea21-09c4-421a-8862-5edf8fd78c61\","
+			+"\"IsCamera\": false,"
+			+"\"IsChargingDevice\": false,"
+			+"\"IsDimmer\": false,"
+			+"\"IsDoorSwitch\": false,"
+			+"\"IsHumidity\": false,"
+			+"\"IsPowerSwitch\": false,"
+			+"\"IsProduction\": false,"
+			+"\"IsRadon\": false,"
+			+"\"IsSummaryDevice\": false,"
+			+"\"IsTemperature\": false,"
+			+"\"IsThermostat\": true,"
+			+"\"IsUpic\": false,"
+			+"\"IsVirtualDevice\": false,"
+			+"\"Name\": \"Termostat\","
+			+"\"PowerSwitchIsOn\": false,"
+			+"\"RoomId\": \"197f210a-58ea-483d-bd41-2248b03edbff\","
+			+"\"UsageAreaId\": 9,"
+			+"\"ZoneNo\": 1"
+			+"}";
 }
