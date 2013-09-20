@@ -22,6 +22,17 @@ public interface UserService {
 	User[] getUsers(PlatformUser pu);
 	
 	/**
+	 * Fetches a user based on its owning platform user and its user
+	 * identifier.
+	 * 
+	 * @param pu The platform user.
+	 * @param uid The user identifier.
+	 * @return A User object. If no user is found, null is returned.
+	 * @since 1.0
+	 */
+	User getUser(PlatformUser pu, UserIdentifier uid);
+	
+	/**
 	 * Fetches all platform users.
 	 * 
 	 * @return An array of PlatformUser objects. If no users are found, an
