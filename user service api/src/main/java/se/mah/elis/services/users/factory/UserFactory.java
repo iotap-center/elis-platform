@@ -59,4 +59,14 @@ public interface UserFactory {
 	 * @since 1.0
 	 */
 	public UserRecipe[] getAvailableUserRecipes();
+	
+	/**
+	 * Returns a user recipe.
+	 * 
+	 * @param userType The user type that we want a recipe for.
+	 * @param systemName The name of the system providing the user.
+	 * @return A user recipe.
+	 * @since 1.0
+	 */
+	public UserRecipe getRecipe(String userType, String systemName);
 }
