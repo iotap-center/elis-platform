@@ -8,6 +8,7 @@ public class MockUser implements User {
 
 	private String stuff;
 	private int whatever;
+	private int id;
 	
 	public MockUser() {
 		stuff = "";
@@ -20,13 +21,13 @@ public class MockUser implements User {
 	}
 
 	@Override
-	public UserIdentifier getId() {
+	public UserIdentifier getIdentifier() {
 		// TODO Auto-generated method stub
 		return new MockUserIdentifier();
 	}
 
 	@Override
-	public void setId(UserIdentifier id) {
+	public void setIdentifier(UserIdentifier id) {
 		// TODO Auto-generated method stub
 
 	}
@@ -43,5 +44,15 @@ public class MockUser implements User {
 	
 	public int getWhatever() {
 		return whatever;
+	}
+
+	@Override
+	public int getIdNumber() {
+		return id;
+	}
+
+	@Override
+	public void setIdNumber(int id) {
+		this.id = id;
 	}
 }
