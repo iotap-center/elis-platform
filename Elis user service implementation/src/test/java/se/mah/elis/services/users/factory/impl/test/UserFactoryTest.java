@@ -182,6 +182,58 @@ public class UserFactoryTest {
 		assertNotSame(recipes[0], recipes[1]);
 		assertThat(recipes[0].getClass().getName()).doesNotMatch(recipes[1].getClass().getName());
 	}
+	
+	@Test
+	public void testGetUserRecipe() {
+		UserRecipe recipe = null;
+		
+		uf.registerProvider(new MockUserProvider());
+		uf.registerProvider(new AnotherMockUserProvider());
+		
+		recipe = uf.getRecipe("MockUser", "test");
+		
+		assertNotNull(recipe);
+		assertThat(recipe.getUserType()).matches("MockUser");
+		assertThat(recipe.getServiceName()).matches("test");
+	}
+	
+	@Test
+	public void testGetUserRecipeNotFirstlyAdded() {
+		UserRecipe recipe = null;
+		
+		uf.registerProvider(new MockUserProvider());
+		uf.registerProvider(new AnotherMockUserProvider());
+		
+		recipe = uf.getRecipe("AnotherMockUser", "test");
+		
+		assertNotNull(recipe);
+		assertThat(recipe.getUserType()).matches("AnotherMockUser");
+		assertThat(recipe.getServiceName()).matches("test");
+	}
+	
+	@Test
+	public void testGetUserRecipeNoSuchUserType() {
+		UserRecipe recipe = null;
+		
+		uf.registerProvider(new MockUserProvider());
+		uf.registerProvider(new AnotherMockUserProvider());
+		
+		recipe = uf.getRecipe("MoccaUser", "test");
+		
+		assertThat(recipe).isNull();
+	}
+	
+	@Test
+	public void testGetUserRecipeNoSuchSystemName() {
+		UserRecipe recipe = null;
+		
+		uf.registerProvider(new MockUserProvider());
+		uf.registerProvider(new AnotherMockUserProvider());
+		
+		recipe = uf.getRecipe("MockUser", "horse");
+		
+		assertThat(recipe).isNull();
+	}
 
 	@Test
 	public void testRegisterProvider() {

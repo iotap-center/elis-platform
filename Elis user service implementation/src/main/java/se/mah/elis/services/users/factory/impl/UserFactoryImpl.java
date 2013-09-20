@@ -90,4 +90,18 @@ public class UserFactoryImpl implements UserFactory {
 		return recipes.toArray(new UserRecipe[0]);
 	}
 
+	@Override
+	public UserRecipe getRecipe(String userType, String systemName) {
+		UserRecipe recipe = null;
+		Map<String, UserProvider> types = providers.get(userType);
+		
+		if (types != null) {
+			try {
+				recipe = ((UserProvider) types.get(systemName)).getRecipe();
+			} catch (NullPointerException e) {}
+		}
+
+		return recipe;
+	}
+
 }
