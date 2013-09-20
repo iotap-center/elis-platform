@@ -17,7 +17,7 @@ public interface AbstractUser {
 	 * @return The identifier.
 	 * @since 1.0
 	 */
-	UserIdentifier getId();
+	UserIdentifier getIdentifier();
 	
 	/**
 	 * Set this user's identifier.
@@ -25,6 +25,6 @@ public interface AbstractUser {
 	 * @param id The identifier.
 	 * @since 1.0
 	 */
-	void setId(UserIdentifier id);
+	void setIdentifier(UserIdentifier id);
 
 }
