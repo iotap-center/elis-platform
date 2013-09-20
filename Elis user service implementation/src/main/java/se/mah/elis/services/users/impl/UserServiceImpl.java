@@ -66,6 +66,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public User getUser(PlatformUser pu, UserIdentifier uid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public PlatformUser getPlatformUser(UserIdentifier identifier) {
 		PlatformUser pu = null;
 		
