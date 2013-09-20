@@ -23,14 +23,14 @@ public interface UserService {
 	
 	/**
 	 * Fetches a user based on its owning platform user and its user
-	 * identifier.
+	 * id number.
 	 * 
 	 * @param pu The platform user.
-	 * @param uid The user identifier.
+	 * @param uid The user object's id number.
 	 * @return A User object. If no user is found, null is returned.
 	 * @since 1.0
 	 */
-	User getUser(PlatformUser pu, UserIdentifier uid);
+	User getUser(PlatformUser pu, int uid);
 	
 	/**
 	 * Fetches all platform users.
