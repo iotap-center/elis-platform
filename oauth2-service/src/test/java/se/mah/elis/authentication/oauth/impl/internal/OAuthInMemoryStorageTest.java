@@ -38,7 +38,20 @@ public class OAuthInMemoryStorageTest {
 	
 	@Test 
 	public void getAuthorizationCodeWithNullRedirect() {
-		fail();
+		Map<OAuthCodeKey, String> map = new HashMap<OAuthCodeKey, String>();
+		OAuthCodeKey key = OAuthCodeKey.createKey(CLIENT_ID, "");
+		map.put(key, CODE);
+		storage.setAuthCodeMap(map);
+		assertEquals(CODE, storage.getAuthorizationCode(CLIENT_ID, null));
+	}
+	
+	@Test
+	public void getAuthorizationCodeWithEmptyRedirect() {
+		Map<OAuthCodeKey, String> map = new HashMap<OAuthCodeKey, String>();
+		OAuthCodeKey key = OAuthCodeKey.createKey(CLIENT_ID, "");
+		map.put(key, CODE);
+		storage.setAuthCodeMap(map);
+		assertEquals(CODE, storage.getAuthorizationCode(CLIENT_ID, ""));
 	}
 	
 	@Test
@@ -100,7 +113,9 @@ public class OAuthInMemoryStorageTest {
 	public void storeAuthorizationCode() {
 		storage.storeAuthorizationCode(CLIENT_ID, REDIRECT_URI, CODE);
 		assertEquals(1, storage.getAuthorizationCodeMap().size());
-		assertTrue(storage.getAuthorizationCodeMap().containsKey(CLIENT_ID));
+		
+		OAuthCodeKey key = OAuthCodeKey.createKey(CLIENT_ID, REDIRECT_URI);
+		assertTrue(storage.getAuthorizationCodeMap().containsKey(key));
 	}
 	
 	@Test
@@ -139,11 +154,10 @@ public class OAuthInMemoryStorageTest {
 		assertEquals(0, storage.getAuthorizationCodeMap().size());
 	}
 	
-	private Map<String, Map<String, String>> defaultAuthCodeMap() {
-		Map<String, Map<String, String>> map = new HashMap<String, Map<String,String>>();
-		Map<String, String> entry = new HashMap<String, String>();
-		entry.put(REDIRECT_URI, CODE);
-		map.put(CLIENT_ID, entry);
+	private Map<OAuthCodeKey, String> defaultAuthCodeMap() {
+		Map<OAuthCodeKey, String> map = new HashMap<OAuthCodeKey, String>();
+		OAuthCodeKey key = OAuthCodeKey.createKey(CLIENT_ID, REDIRECT_URI);
+		map.put(key, CODE);
 		return map;
 	}
 	

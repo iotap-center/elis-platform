@@ -19,11 +19,11 @@ import se.mah.elis.authentication.oauth.OAuthStorage;
  */
 public class OAuthInMemoryStorage implements OAuthStorage {
 
-	private Map<String, Map<String, String>> authorizationCodes;
+	private Map<OAuthCodeKey, String> authorizationCodes;
 	private Map<String, String> accessTokens;
 
 	public OAuthInMemoryStorage() {
-		this.authorizationCodes = new HashMap<String, Map<String, String>>();
+		this.authorizationCodes = new HashMap<OAuthCodeKey, String>();
 		this.accessTokens = new HashMap<String, String>();
 	}
 
@@ -35,9 +35,11 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 	@Override
 	public String getAuthorizationCode(String clientId, String redirectUri) {
 		String code = null;
-
-		if (authorizationCodes.containsKey(clientId))
-			code = authorizationCodes.get(clientId).get(redirectUri);
+		
+		OAuthCodeKey key = OAuthCodeKey.createKey(clientId, redirectUri);
+		
+		if (authorizationCodes.containsKey(key))
+			code = authorizationCodes.get(key);
 
 		return code;
 	}
@@ -50,11 +52,8 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 	@Override
 	synchronized public void removeAuthorizationCode(String clientId,
 			String redirectUri) {
-		if (authorizationCodes.containsKey(clientId)) {
-			authorizationCodes.get(clientId).remove(redirectUri);
-			if (authorizationCodes.get(clientId).isEmpty())
-				authorizationCodes.remove(clientId);
-		}
+		OAuthCodeKey key = OAuthCodeKey.createKey(clientId, redirectUri);
+		authorizationCodes.remove(key);
 	}
 
 	/**
@@ -73,15 +72,9 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 	@Override
 	synchronized public void storeAuthorizationCode(String clientId,
 			String redirectUri, String code) {
-		if (isValidString(clientId) && isValidString(code)) { 
-			if (authorizationCodes.containsKey(clientId)) {
-				redirectUri = redirectUri == null ? "" : redirectUri;
-				authorizationCodes.get(clientId).put(redirectUri, code);
-			} else {
-				Map<String, String> entry = new HashMap<String, String>();
-				entry.put(redirectUri, code);
-				authorizationCodes.put(clientId, entry);
-			}
+		if (isValidString(clientId) && isValidString(code)) {
+			OAuthCodeKey key = OAuthCodeKey.createKey(clientId, redirectUri);
+			authorizationCodes.put(key, code);
 		}
 	}
 
@@ -95,7 +88,7 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 	/*
 	 * For testing purposes
 	 */
-	void setAuthCodeMap(Map<String, Map<String, String>> map) {
+	void setAuthCodeMap(Map<OAuthCodeKey, String> map) {
 		this.authorizationCodes = map;
 	}
 
@@ -103,7 +96,7 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 		this.accessTokens = map;
 	}
 
-	Map<String, Map<String, String>> getAuthorizationCodeMap() {
+	Map<OAuthCodeKey, String> getAuthorizationCodeMap() {
 		return this.authorizationCodes;
 	}
 
