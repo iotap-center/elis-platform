@@ -32,37 +32,37 @@ public class PlatformUserImplTest {
 		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
 		
 		assertNotNull(pu);
-		assertEquals("batman", ((PlatformUserIdentifier) pu.getId()).getUsername());
-		assertEquals("superman", ((PlatformUserIdentifier) pu.getId()).getPassword());
+		assertEquals("batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("superman", ((PlatformUserIdentifier) pu.getIdentifier()).getPassword());
 	}
 
 	@Test
 	public void testGetId() {
 		PlatformUserImpl pu = new PlatformUserImpl();
 
-		assertEquals("", ((PlatformUserIdentifier) pu.getId()).getUsername());
-		assertEquals("", ((PlatformUserIdentifier) pu.getId()).getPassword());
+		assertEquals("", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("", ((PlatformUserIdentifier) pu.getIdentifier()).getPassword());
 	}
 
 	@Test
 	public void testSetId() {
 		PlatformUserImpl pu = new PlatformUserImpl();
 		
-		assertEquals("", ((PlatformUserIdentifier) pu.getId()).getUsername());
+		assertEquals("", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
 		
-		pu.setId(new PlatformUserIdentifier("batman", "superman"));
-		assertEquals("batman", ((PlatformUserIdentifier) pu.getId()).getUsername());
+		pu.setIdentifier(new PlatformUserIdentifier("batman", "superman"));
+		assertEquals("batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
 	}
 
 	@Test
 	public void testSetIdWithNull() {
 		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifier("batman", "superman"));
 		
-		assertEquals("batman", ((PlatformUserIdentifier) pu.getId()).getUsername());
+		assertEquals("batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
 		
-		pu.setId(null);
-		assertNotNull(pu.getId());
-		assertEquals("", ((PlatformUserIdentifier) pu.getId()).getUsername());
+		pu.setIdentifier(null);
+		assertNotNull(pu.getIdentifier());
+		assertEquals("", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
 	}
 	
 	@Test
@@ -203,7 +203,7 @@ public class PlatformUserImplTest {
 	@Test
 	public void testToString() {
 		PlatformUserImpl pu = new PlatformUserImpl();
-		pu.setId(new PlatformUserIdentifier(1, "batman", "superman"));
+		pu.setIdentifier(new PlatformUserIdentifier(1, "batman", "superman"));
 		
 		assertEquals("PlatformUser batman (1)", pu.toString());
 	}

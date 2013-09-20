@@ -37,6 +37,84 @@ public class UserServiceImplTest {
 		assertNotNull(users);
 		assertEquals(0, users.length);
 	}
+	
+	@Test
+	public void testGetUser() {
+		UserService us = new UserServiceImpl();
+		PlatformUser pu = new PlatformUserImpl();
+		User mu = new MockUser();
+		
+		try {
+			us.registerUserToPlatformUser(mu, pu);
+		} catch (NoSuchUserException e) {
+			fail("Register no workie");
+		}
+		
+		User user = us.getUser(pu, mu.getIdentifier());
+		
+		assertNotNull(user);
+		assertEquals(user, mu);
+	}
+	
+	@Test
+	public void testGetUserMultipleUserTypes() {
+		UserService us = new UserServiceImpl();
+		PlatformUser pu = new PlatformUserImpl();
+		User mu = new MockUser();
+		
+		try {
+			us.registerUserToPlatformUser(mu, pu);
+			us.registerUserToPlatformUser(new AnotherMockUser(), pu);
+		} catch (NoSuchUserException e) {
+			fail("Register no workie");
+		}
+		
+		User user = us.getUser(pu, mu.getIdentifier());
+		
+		assertNotNull(user);
+		assertEquals(user, mu);
+	}
+	
+	@Test
+	public void testGetUserMultipeUsersOfSameType() {
+		UserService us = new UserServiceImpl();
+		PlatformUser pu = new PlatformUserImpl();
+		User mu = new MockUser();
+		
+		try {
+			us.registerUserToPlatformUser(mu, pu);
+			us.registerUserToPlatformUser(new MockUser(), pu);
+		} catch (NoSuchUserException e) {
+			fail("Register no workie");
+		}
+		
+		User user = us.getUser(pu, mu.getIdentifier());
+		
+		assertNotNull(user);
+		assertEquals(user, mu);
+	}
+	
+	@Test
+	public void testGetUserNoSuchUser() {
+		UserService us = new UserServiceImpl();
+		PlatformUser pu = new PlatformUserImpl();
+		User mu = new MockUser();
+		
+		try {
+			us.registerUserToPlatformUser(new AnotherMockUser(), pu);
+		} catch (NoSuchUserException e) {
+			fail("Register no workie");
+		}
+		
+		User user = us.getUser(pu, mu.getIdentifier());
+		
+		assertNull(user);
+	}
+	
+	@Test
+	public void testGetUserNoSuchPlatformUser() {
+		fail("Not yet implemented");
+	}
 
 	@Test
 	public void testRegisterUserToPlatformUser() {
@@ -54,7 +132,7 @@ public class UserServiceImplTest {
 		
 		assertNotNull(users);
 		assertEquals(1, users.length);
-		assertEquals("I'm a MockUserIndentifier", users[0].getId().toString());
+		assertEquals("I'm a MockUserIndentifier", users[0].getIdentifier().toString());
 	}
 
 	@Test
@@ -75,8 +153,8 @@ public class UserServiceImplTest {
 		
 		assertNotNull(users);
 		assertEquals(2, users.length);
-		assertEquals("I'm a MockUserIndentifier", users[0].getId().toString());
-		assertEquals("I'm an AnotherMockUserIndentifier", users[1].getId().toString());
+		assertEquals("I'm a MockUserIndentifier", users[0].getIdentifier().toString());
+		assertEquals("I'm an AnotherMockUserIndentifier", users[1].getIdentifier().toString());
 	}
 
 	@Test
@@ -98,7 +176,7 @@ public class UserServiceImplTest {
 		
 		assertNotNull(users);
 		assertEquals(1, users.length);
-		assertEquals("I'm an AnotherMockUserIndentifier", users[0].getId().toString());
+		assertEquals("I'm an AnotherMockUserIndentifier", users[0].getIdentifier().toString());
 	}
 
 	@Test
@@ -124,7 +202,7 @@ public class UserServiceImplTest {
 	}
 
 	@Test
-	public void testGetUser() {
+	public void testGetPlatformUser() {
 		UserServiceImpl us = new UserServiceImpl();
 		PlatformUser pu = new PlatformUserImpl();
 		PlatformUser actual = null;
@@ -135,13 +213,13 @@ public class UserServiceImplTest {
 		assertEquals("PlatformUser batman (1)", pu.toString());
 		assertEquals(1, us.getNbrOfPlatformUsers());
 		
-		actual = us.getPlatformUser(pu.getId());
+		actual = us.getPlatformUser(pu.getIdentifier());
 		
 		assertEquals(actual, pu);
 	}
 
 	@Test
-	public void testGetUserMultipleUsers() {
+	public void testGetPlatformUserMultipleUsers() {
 		UserServiceImpl us = new UserServiceImpl();
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
@@ -153,13 +231,13 @@ public class UserServiceImplTest {
 
 		assertEquals(2, us.getNbrOfPlatformUsers());
 		
-		actual = us.getPlatformUser(pu2.getId());
+		actual = us.getPlatformUser(pu2.getIdentifier());
 		
 		assertEquals(actual, pu2);
 	}
 
 	@Test
-	public void testGetUserWithString() {
+	public void testGetPlatformUserWithString() {
 		UserServiceImpl us = new UserServiceImpl();
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
@@ -177,7 +255,7 @@ public class UserServiceImplTest {
 	}
 
 	@Test
-	public void testGetUserNotFound() {
+	public void testGetPlatformUserNotFound() {
 		UserServiceImpl us = new UserServiceImpl();
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
@@ -295,7 +373,7 @@ public class UserServiceImplTest {
 		
 		assertNotNull(pus);
 		assertEquals(1, pus.length);
-		assertEquals("1: batman, superman", pus[0].getId().toString());
+		assertEquals("1: batman, superman", pus[0].getIdentifier().toString());
 	}
 
 	@Test
@@ -376,7 +454,7 @@ public class UserServiceImplTest {
 		
 		assertNotNull(pus);
 		assertEquals(1, pus.length);
-		assertEquals("1: a, b", pus[0].getId().toString());
+		assertEquals("1: a, b", pus[0].getIdentifier().toString());
 	}
 	
 	@Test
@@ -473,7 +551,7 @@ public class UserServiceImplTest {
 			fail("Didn't find the user");
 		}
 		
-		PlatformUser pu3 = us.getPlatformUser(pu1.getId());
+		PlatformUser pu3 = us.getPlatformUser(pu1.getIdentifier());
 		
 		assertNull(pu3);
 		assertEquals(1, us.getNbrOfPlatformUsers());
@@ -495,7 +573,7 @@ public class UserServiceImplTest {
 		} catch (NoSuchUserException e) {
 		}
 		
-		PlatformUser pu3 = us.getPlatformUser(pu1.getId());
+		PlatformUser pu3 = us.getPlatformUser(pu1.getIdentifier());
 		
 		assertNotNull(pu3);
 		assertEquals(2, us.getNbrOfPlatformUsers());
