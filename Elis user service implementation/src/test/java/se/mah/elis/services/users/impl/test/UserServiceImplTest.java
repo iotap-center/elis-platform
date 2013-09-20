@@ -50,10 +50,11 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, mu.getIdentifier());
+		User user = us.getUser(pu, 1);
 		
 		assertNotNull(user);
 		assertEquals(user, mu);
+		assertEquals(1, user.getIdNumber());
 	}
 	
 	@Test
@@ -69,7 +70,7 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, mu.getIdentifier());
+		User user = us.getUser(pu, 1);
 		
 		assertNotNull(user);
 		assertEquals(user, mu);
@@ -88,7 +89,7 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, mu.getIdentifier());
+		User user = us.getUser(pu, 1);
 		
 		assertNotNull(user);
 		assertEquals(user, mu);
@@ -106,14 +107,27 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, mu.getIdentifier());
+		User user = us.getUser(pu, 3);
 		
 		assertNull(user);
 	}
 	
 	@Test
 	public void testGetUserNoSuchPlatformUser() {
-		fail("Not yet implemented");
+		UserService us = new UserServiceImpl();
+		PlatformUser pu = new PlatformUserImpl(
+				new PlatformUserIdentifier(1, "a", "b"));
+		User mu = new MockUser();
+		
+		try {
+			us.registerUserToPlatformUser(mu, pu);
+		} catch (NoSuchUserException e) {
+			fail("Register no workie");
+		}
+		
+		User user = us.getUser(new PlatformUserImpl(), 1);
+		
+		assertNull(user);
 	}
 
 	@Test
@@ -133,6 +147,7 @@ public class UserServiceImplTest {
 		assertNotNull(users);
 		assertEquals(1, users.length);
 		assertEquals("I'm a MockUserIndentifier", users[0].getIdentifier().toString());
+		assertEquals(1, users[0].getIdNumber());
 	}
 
 	@Test
@@ -155,6 +170,8 @@ public class UserServiceImplTest {
 		assertEquals(2, users.length);
 		assertEquals("I'm a MockUserIndentifier", users[0].getIdentifier().toString());
 		assertEquals("I'm an AnotherMockUserIndentifier", users[1].getIdentifier().toString());
+		assertEquals(1, users[0].getIdNumber());
+		assertEquals(2, users[1].getIdNumber());
 	}
 
 	@Test
@@ -177,6 +194,7 @@ public class UserServiceImplTest {
 		assertNotNull(users);
 		assertEquals(1, users.length);
 		assertEquals("I'm an AnotherMockUserIndentifier", users[0].getIdentifier().toString());
+		assertEquals(2, users[0].getIdNumber());
 	}
 
 	@Test

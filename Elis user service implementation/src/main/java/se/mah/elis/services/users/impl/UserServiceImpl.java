@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
 	// TODO This is a placeholer. It has to be replaced with a persistent storage at a later stage.
 	private Map<PlatformUser, ArrayList<User>> map;
-	private int counter;
+	private int platformUserCounter, userCounter;
 	
 	/**
 	 * 
@@ -37,7 +37,8 @@ public class UserServiceImpl implements UserService {
 	public UserServiceImpl() {
 		// TODO This isn't kosher
 		map = new TreeMap<PlatformUser, ArrayList<User>>();
-		counter = 0;
+		platformUserCounter = 0;
+		userCounter = 0;
 	}
 
 	/* (non-Javadoc)
@@ -66,9 +67,19 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User getUser(PlatformUser pu, UserIdentifier uid) {
-		// TODO Auto-generated method stub
-		return null;
+	public User getUser(PlatformUser pu, int uid) {
+		User user = null;
+		ArrayList<User> users = map.get(pu);
+		
+		if (users != null) {
+			for (User u : users) {
+				if (u.getIdNumber() == uid) {
+					user = u;
+				}
+			}
+		}
+		
+		return user;
 	}
 
 	@Override
@@ -76,7 +87,7 @@ public class UserServiceImpl implements UserService {
 		PlatformUser pu = null;
 		
 		for (PlatformUser key: map.keySet()) {
-			if (key.getId().equals(identifier)) {
+			if (key.getIdentifier().equals(identifier)) {
 				pu = key;
 				break;
 			}
@@ -100,9 +111,13 @@ public class UserServiceImpl implements UserService {
 		
 		ArrayList<User> list = null;
 		
+		if (u.getIdNumber() < 1) {
+			u.setIdNumber(++userCounter);
+		}
+		
 		if (!map.containsKey(pu)) {
 			list = new ArrayList<User>();
-			((PlatformUserIdentifier) pu.getId()).setId(++counter);
+			((PlatformUserIdentifier) pu.getIdentifier()).setId(++platformUserCounter);
 			map.put(pu, list);
 		} else {
 			list = (ArrayList<User>) map.get(pu);
@@ -141,7 +156,7 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		if (!map.containsKey(pu)) {
-			((PlatformUserIdentifier) pu.getId()).setId(++counter);
+			((PlatformUserIdentifier) pu.getIdentifier()).setId(++platformUserCounter);
 			
 			list = new ArrayList<User>();
 			map.put(pu, list);

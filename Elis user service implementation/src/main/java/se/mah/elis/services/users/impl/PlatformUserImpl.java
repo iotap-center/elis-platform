@@ -46,7 +46,7 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	 * @see se.mah.elis.services.users.AbstractUser#getId()
 	 */
 	@Override
-	public UserIdentifier getId() {
+	public UserIdentifier getIdentifier() {
 		return id;
 	}
 
@@ -54,7 +54,7 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	 * @see se.mah.elis.services.users.AbstractUser#setId(se.mah.elis.services.users.UserIdentifier)
 	 */
 	@Override
-	public void setId(UserIdentifier id) {
+	public void setIdentifier(UserIdentifier id) {
 		if (id != null) {
 			this.id = id;
 		} else {
@@ -113,7 +113,7 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	@Override
 	public boolean equals(Object o) {
 		if (o.getClass().getName().equals(this.getClass().getName())) {
-			return this.id.equals(((PlatformUserImpl) o).getId());
+			return this.id.equals(((PlatformUserImpl) o).getIdentifier());
 		}
 		
 		return false;
@@ -121,7 +121,7 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 
 	@Override
 	public int compareTo(PlatformUserImpl pu) {
-		PlatformUserIdentifier puId = (PlatformUserIdentifier) pu.getId();
+		PlatformUserIdentifier puId = (PlatformUserIdentifier) pu.getIdentifier();
 		PlatformUserIdentifier thisId = (PlatformUserIdentifier) id;
 		int result = 0;
 		

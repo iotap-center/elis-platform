@@ -70,11 +70,7 @@ public class UserFactoryImpl implements UserFactory {
 			throw new UserInitalizationException("No such user provider");
 		}
 		
-		System.out.println(userType + ", " + serviceName);
-		
 		user = provider.build(properties);
-		
-		System.out.println(user);
 		
 		return user;
 	}
