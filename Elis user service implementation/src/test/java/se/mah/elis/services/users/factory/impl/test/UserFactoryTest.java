@@ -139,13 +139,10 @@ public class UserFactoryTest {
 		props.put("stuff", "batman");
 		props.put("Whatever", "horses");
 
-		System.out.println();
-		System.out.println("Starting testBuildBadProperties");
 		try {
 			uf.build("MockUser", "test", props);
 			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {}
-		System.out.println("Stopping");
 	}
 
 	@Test
