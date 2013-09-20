@@ -25,6 +25,7 @@ import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 
 public class EonGatewayTest {
 
+	private static final String TEST_GATEWAY_ID = "1234";
 	private static final String TEST_GATEWAY_NAME = "testGateway";
 	private static final String TEST_TOKEN = "sometoken";
 	private static final String TEST_GATEWAY_ADDRESS = "someaddress";
@@ -60,7 +61,7 @@ public class EonGatewayTest {
 	private Map<String, Object> fakeGatewayData() {
 		Map<String, Object> fakeGatewayData = new HashMap<String, Object>();
 		fakeGatewayData.put("Name", TEST_GATEWAY_NAME);
-		fakeGatewayData.put("EwpPanelId", "1234");
+		fakeGatewayData.put("EwpPanelId", TEST_GATEWAY_ID);
 		return fakeGatewayData;
 	}
 	
@@ -69,10 +70,12 @@ public class EonGatewayTest {
 		try {
 			gateway.connect();
 			assertEquals(TEST_GATEWAY_NAME, gateway.getName());
+			assertEquals(Integer.parseInt(TEST_GATEWAY_ID), gateway.getId());
 			assertTrue(gateway.size() > 0);
 			assertTrue(gateway.hasConnected());
 		} catch (Exception e) {
 			fail();
 		}
 	}
+
 }
