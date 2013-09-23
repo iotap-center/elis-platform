@@ -29,6 +29,7 @@ public class OAuthServiceImpl implements OAuthService {
 			long ttlSixMonths = 1000*60*60*24*30*6;
 			OAuthCode tokenCode = OAuthCodeImpl.create(ttlSixMonths);
 			storage.storeAccessToken(clientId, tokenCode, ttlSixMonths);
+			storage.removeAuthorizationCode(clientId, redirectUri);
 			token = tokenCode.getCode();
 		}
 		return token;
@@ -36,7 +37,7 @@ public class OAuthServiceImpl implements OAuthService {
 
 	@Override
 	public String createRefreshToken(String clientId, String redirectUri, String code) {
-		return createAccessToken(clientId, redirectUri, code);
+		return null;
 	}
 
 	@Override
