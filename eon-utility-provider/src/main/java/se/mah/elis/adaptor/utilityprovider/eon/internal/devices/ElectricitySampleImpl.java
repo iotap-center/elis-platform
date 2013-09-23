@@ -52,19 +52,19 @@ public class ElectricitySampleImpl implements ElectricitySample{
 	}
 
 	@Override
-	public double getTopCurrent() {
+	public double getMaxCurrent() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getTopVoltage() {
+	public double getMaxVoltage() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getTopPower() {
+	public double getMaxPower() {
 		return getPowerInWatts();
 	}
 

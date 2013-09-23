@@ -9,15 +9,15 @@ package se.mah.elis.auxiliaries.data;
  * used, support for Watt hours is also available, since that unit is widely
  * used by electric utilities.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm�� University"
  * @since 1.0
  */
 public interface ElectricitySample extends Sample {
 	
 	/**
-	 * Gets the currently measured current in Ampères.
+	 * Gets the currently measured current in Amp��res.
 	 * 
-	 * @return The currently measured current in Ampères, given as a double.
+	 * @return The currently measured current in Amp��res, given as a double.
 	 * @since 1.0
 	 */
 	double getCurrentCurrent();
@@ -40,12 +40,12 @@ public interface ElectricitySample extends Sample {
 	double getCurrentPower();
 	
 	/**
-	 * Gets the highest measured current in the sample in Ampères.
+	 * Gets the highest measured current in the sample in Amp��res.
 	 * 
-	 * @return The highest measured current in Ampères, given as a double.
+	 * @return The highest measured current in Amp��res, given as a double.
 	 * @since 1.0
 	 */
-	double getTopCurrent();
+	double getMaxCurrent();
 	
 	/**
 	 * Gets the highest measured voltage in the sample in Volts.
@@ -53,7 +53,7 @@ public interface ElectricitySample extends Sample {
 	 * @return The highest measured current in Volts, given as a double.
 	 * @since 1.0
 	 */
-	double getTopVoltage();
+	double getMaxVoltage();
 	
 	/**
 	 * Gets the highest measured power usage in the sample in Watts.
@@ -61,12 +61,12 @@ public interface ElectricitySample extends Sample {
 	 * @return The highest measured power usage in Watts, given as a double.
 	 * @since 1.0
 	 */
-	double getTopPower();
+	double getMaxPower();
 	
 	/**
-	 * Gets the lowest measured current in the sample in Ampères.
+	 * Gets the lowest measured current in the sample in Amp��res.
 	 * 
-	 * @return The lowest measured current in Ampères, given as a double.
+	 * @return The lowest measured current in Amp��res, given as a double.
 	 * @since 1.0
 	 */
 	double getMinCurrent();
@@ -89,9 +89,9 @@ public interface ElectricitySample extends Sample {
 	double getMinPower();
 	
 	/**
-	 * Gets the mean current in the sample in Ampères.
+	 * Gets the mean current in the sample in Amp��res.
 	 * 
-	 * @return The mean current in Ampères, given as a double.
+	 * @return The mean current in Amp��res, given as a double.
 	 * @since 1.0
 	 */
 	double getMeanCurrent();

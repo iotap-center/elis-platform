@@ -52,7 +52,7 @@ public class ElectricitySampleTest {
 	@Test
 	public void testGetTopPower(){
 		ElectricitySampleImpl electricitySample = new ElectricitySampleImpl(CURRENT_KWH);
-		assertEquals(WATTS, electricitySample.getTopPower(), 0.01);
+		assertEquals(WATTS, electricitySample.getMaxPower(), 0.01);
 	}
 	
 	
