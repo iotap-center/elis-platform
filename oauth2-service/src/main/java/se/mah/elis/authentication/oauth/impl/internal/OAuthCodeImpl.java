@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import se.mah.elis.authentication.oauth.OAuthCode;
+
 /**
  * 
  * Representation of a authorization code or access token and 
@@ -14,7 +16,7 @@ import java.security.NoSuchAlgorithmException;
  * @since 1.0
  *
  */
-public class OAuthCode {
+public class OAuthCodeImpl implements OAuthCode {
 
 	private static final String SALT = "elis-monkey-make-me-salt";
 	
@@ -23,7 +25,7 @@ public class OAuthCode {
 	private long timeToLive; // millis
 	private long creationTime; 
 	
-	private OAuthCode() { } // force use of factory
+	private OAuthCodeImpl() { } // force use of factory
 	
 	/**
 	 * Check if the code has expired or not.
@@ -75,9 +77,9 @@ public class OAuthCode {
 	
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof OAuthCode))
+		if (!(other instanceof OAuthCodeImpl))
 			return false;
-		return this.getCode().equals(((OAuthCode) other).getCode());
+		return this.getCode().equals(((OAuthCodeImpl) other).getCode());
 	}
 	
 	@Override
@@ -97,8 +99,8 @@ public class OAuthCode {
 	 * @return an instance of a code
 	 * @since 1.0
 	 */
-	public static OAuthCode create(long ttl) {
-		OAuthCode code = new OAuthCode();
+	public static OAuthCodeImpl create(long ttl) {
+		OAuthCodeImpl code = new OAuthCodeImpl();
 		code.setTimeToLive(ttl);
 		code.setCreationTime(System.currentTimeMillis());
 		code.setCode(createCode());
@@ -111,7 +113,7 @@ public class OAuthCode {
 	 * @return an instance of a code
 	 * @since 1.0
 	 */
-	public static OAuthCode create() {
+	public static OAuthCodeImpl create() {
 		long tenMinutes = 1000*60*10;
 		return create(tenMinutes);
 	}

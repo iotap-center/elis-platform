@@ -1,5 +1,7 @@
 package se.mah.elis.authentication.oauth.impl.internal;
 
+import se.mah.elis.authentication.oauth.OAuthCodeKey;
+
 /**
  * Key to be used for identifying authorization code requests.
  * 
@@ -10,13 +12,13 @@ package se.mah.elis.authentication.oauth.impl.internal;
  * @since 1.0
  *
  */
-public class OAuthCodeKey {
+public class OAuthCodeKeyImpl implements OAuthCodeKey {
 
 	private String clientId;
 	private String redirectUri;
 
 	// force use of factory
-	private OAuthCodeKey() { }
+	private OAuthCodeKeyImpl() { }
 	
 	public String getRedirectUri() {
 		return redirectUri;
@@ -41,7 +43,7 @@ public class OAuthCodeKey {
 	
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof OAuthCodeKey)) 
+		if (!(other instanceof OAuthCodeKeyImpl)) 
 			return false;
 		
 		return this.toString().equals(other.toString());
@@ -61,7 +63,7 @@ public class OAuthCodeKey {
 	 */
 	public static OAuthCodeKey createKey(String clientId, String redirectUri) {
 		redirectUri = (redirectUri == null) ? "" : redirectUri;
-		OAuthCodeKey key = new OAuthCodeKey();
+		OAuthCodeKeyImpl key = new OAuthCodeKeyImpl();
 		key.setClientId(clientId);
 		key.setRedirectUri(redirectUri);
 		return key;

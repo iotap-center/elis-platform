@@ -18,7 +18,7 @@ public interface OAuthStorage {
 	 * @param code
 	 */
 	public void storeAuthorizationCode(String clientId, String redirectUri,
-			String code, int timeToLive);
+			OAuthCode code, int timeToLive);
 
 	/**
 	 * Retrieve an authorization code from storage. 
@@ -27,7 +27,7 @@ public interface OAuthStorage {
 	 * @param redirectUri
 	 * @return the authorization code
 	 */
-	public String getAuthorizationCode(String clientId, String redirectUri);
+	public OAuthCode getAuthorizationCode(String clientId, String redirectUri);
 	
 	/**
 	 * Remove an authorization code from storage. 

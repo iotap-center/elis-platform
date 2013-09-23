@@ -1,6 +1,9 @@
 package se.mah.elis.authentication.oauth.impl.internal;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,17 +13,21 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.mah.elis.authentication.oauth.OAuthCode;
+import se.mah.elis.authentication.oauth.OAuthCodeKey;
+
 public class OAuthInMemoryStorageTest {
 
 	private static final String ACCESS_TOKEN = "access_token";
 	private static final String CLIENT_ID = "client_id";
 	private static final String REDIRECT_URI = "redirect_uri";
-	private static final String CODE = "code";
+	private static OAuthCode CODE;
 	private static final int TTL = 0;
 	private OAuthInMemoryStorage storage; 
 	
 	@Before
 	public void setUp() {
+		CODE = OAuthCodeImpl.create();
 		storage = new OAuthInMemoryStorage();
 	}
 	
@@ -38,8 +45,8 @@ public class OAuthInMemoryStorageTest {
 	
 	@Test 
 	public void getAuthorizationCodeWithNullRedirect() {
-		Map<OAuthCodeKey, String> map = new HashMap<OAuthCodeKey, String>();
-		OAuthCodeKey key = OAuthCodeKey.createKey(CLIENT_ID, "");
+		Map<OAuthCodeKey, OAuthCode> map = new HashMap<OAuthCodeKey, OAuthCode>();
+		OAuthCodeKey key = OAuthCodeKeyImpl.createKey(CLIENT_ID, "");
 		map.put(key, CODE);
 		storage.setAuthCodeMap(map);
 		assertEquals(CODE, storage.getAuthorizationCode(CLIENT_ID, null));
@@ -47,8 +54,8 @@ public class OAuthInMemoryStorageTest {
 	
 	@Test
 	public void getAuthorizationCodeWithEmptyRedirect() {
-		Map<OAuthCodeKey, String> map = new HashMap<OAuthCodeKey, String>();
-		OAuthCodeKey key = OAuthCodeKey.createKey(CLIENT_ID, "");
+		Map<OAuthCodeKey, OAuthCode> map = new HashMap<OAuthCodeKey, OAuthCode>();
+		OAuthCodeKey key = OAuthCodeKeyImpl.createKey(CLIENT_ID, "");
 		map.put(key, CODE);
 		storage.setAuthCodeMap(map);
 		assertEquals(CODE, storage.getAuthorizationCode(CLIENT_ID, ""));
@@ -114,7 +121,7 @@ public class OAuthInMemoryStorageTest {
 		storage.storeAuthorizationCode(CLIENT_ID, REDIRECT_URI, CODE, TTL);
 		assertEquals(1, storage.getAuthorizationCodeMap().size());
 		
-		OAuthCodeKey key = OAuthCodeKey.createKey(CLIENT_ID, REDIRECT_URI);
+		OAuthCodeKey key = OAuthCodeKeyImpl.createKey(CLIENT_ID, REDIRECT_URI);
 		assertTrue(storage.getAuthorizationCodeMap().containsKey(key));
 	}
 	
@@ -143,8 +150,10 @@ public class OAuthInMemoryStorageTest {
 	}
 	
 	@Test
-	public void storeAuthorizationCodeWhenCodeIsEmpty() {
-		storage.storeAuthorizationCode(CLIENT_ID, REDIRECT_URI, "", TTL);
+	public void storeAuthorizationCodeWhenCodeIsExpired() throws InterruptedException {
+		OAuthCode code = OAuthCodeImpl.create(0);
+		Thread.sleep(10); // sleep some to ensure it is expired
+		storage.storeAuthorizationCode(CLIENT_ID, REDIRECT_URI, code, TTL);
 		assertEquals(0, storage.getAuthorizationCodeMap().size());
 	}
 	
@@ -154,9 +163,9 @@ public class OAuthInMemoryStorageTest {
 		assertEquals(0, storage.getAuthorizationCodeMap().size());
 	}
 	
-	private Map<OAuthCodeKey, String> defaultAuthCodeMap() {
-		Map<OAuthCodeKey, String> map = new HashMap<OAuthCodeKey, String>();
-		OAuthCodeKey key = OAuthCodeKey.createKey(CLIENT_ID, REDIRECT_URI);
+	private Map<OAuthCodeKey, OAuthCode> defaultAuthCodeMap() {
+		Map<OAuthCodeKey, OAuthCode> map = new HashMap<OAuthCodeKey, OAuthCode>();
+		OAuthCodeKey key = OAuthCodeKeyImpl.createKey(CLIENT_ID, REDIRECT_URI);
 		map.put(key, CODE);
 		return map;
 	}
