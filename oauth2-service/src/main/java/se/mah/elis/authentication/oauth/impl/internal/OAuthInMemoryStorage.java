@@ -22,15 +22,15 @@ import se.mah.elis.authentication.oauth.OAuthStorage;
 public class OAuthInMemoryStorage implements OAuthStorage {
 
 	private Map<OAuthCodeKey, OAuthCode> authorizationCodes;
-	private Map<String, String> accessTokens;
+	private Map<String, OAuthCode> accessTokens;
 
 	public OAuthInMemoryStorage() {
 		this.authorizationCodes = new HashMap<OAuthCodeKey, OAuthCode>();
-		this.accessTokens = new HashMap<String, String>();
+		this.accessTokens = new HashMap<String, OAuthCode>();
 	}
 
 	@Override
-	public String getAccessToken(String clientId) {
+	public OAuthCode getAccessToken(String clientId) {
 		return accessTokens.get(clientId);
 	}
 
@@ -66,8 +66,8 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 	 */
 	@Override
 	synchronized public void storeAccessToken(String clientId,
-			String accessToken, int ttl) {
-		if (isValidString(clientId) && isValidString(accessToken))
+			OAuthCode accessToken, int ttl) {
+		if (isValidString(clientId) && isValidCode(accessToken))
 			accessTokens.put(clientId, accessToken);
 	}
 
@@ -99,7 +99,7 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 		this.authorizationCodes = map;
 	}
 
-	void setAccessTokenMap(Map<String, String> map) {
+	void setAccessTokenMap(Map<String, OAuthCode> map) {
 		this.accessTokens = map;
 	}
 
@@ -107,7 +107,7 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 		return this.authorizationCodes;
 	}
 
-	Map<String, String> getAccessTokensMap() {
+	Map<String, OAuthCode> getAccessTokensMap() {
 		return this.accessTokens;
 	}
 }

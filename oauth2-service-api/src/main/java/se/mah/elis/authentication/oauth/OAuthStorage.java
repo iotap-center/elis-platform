@@ -44,7 +44,7 @@ public interface OAuthStorage {
 	 * @param token
 	 * @param timeToLiveInMillis
 	 */
-	public void storeAccessToken(String clientId, String token,
+	public void storeAccessToken(String clientId, OAuthCode token,
 			int timeToLiveInMillis);
 
 	/**
@@ -53,7 +53,7 @@ public interface OAuthStorage {
 	 * @param clientId
 	 * @return the access token 
 	 */
-	public String getAccessToken(String clientId);
+	public OAuthCode getAccessToken(String clientId);
 	
 	/**
 	 * Remove an access token

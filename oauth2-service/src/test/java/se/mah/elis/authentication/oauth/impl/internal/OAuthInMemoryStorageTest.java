@@ -18,7 +18,7 @@ import se.mah.elis.authentication.oauth.OAuthCodeKey;
 
 public class OAuthInMemoryStorageTest {
 
-	private static final String ACCESS_TOKEN = "access_token";
+	private static OAuthCode ACCESS_TOKEN;
 	private static final String CLIENT_ID = "client_id";
 	private static final String REDIRECT_URI = "redirect_uri";
 	private static OAuthCode CODE;
@@ -28,6 +28,7 @@ public class OAuthInMemoryStorageTest {
 	@Before
 	public void setUp() {
 		CODE = OAuthCodeImpl.create();
+		ACCESS_TOKEN = OAuthCodeImpl.create();
 		storage = new OAuthInMemoryStorage();
 	}
 	
@@ -105,8 +106,10 @@ public class OAuthInMemoryStorageTest {
 	}
 	
 	@Test
-	public void storeAccessTokenWhenTokenIsEmpty() {
-		storage.storeAccessToken(CLIENT_ID, "", TTL);
+	public void storeAccessTokenWhenTokenIsExpired() throws InterruptedException {
+		OAuthCode token = OAuthCodeImpl.create(0);
+		Thread.sleep(10); // ensure token expires
+		storage.storeAccessToken(CLIENT_ID, token, TTL);
 		assertEquals(0, storage.getAccessTokensMap().size());
 	}
 	
@@ -170,8 +173,8 @@ public class OAuthInMemoryStorageTest {
 		return map;
 	}
 	
-	private Map<String, String> defaultAccessTokenMap() {
-		Map<String, String> map = new HashMap<String, String>();
+	private Map<String, OAuthCode> defaultAccessTokenMap() {
+		Map<String, OAuthCode> map = new HashMap<String, OAuthCode>();
 		map.put(CLIENT_ID, ACCESS_TOKEN);
 		return map;
 	}
