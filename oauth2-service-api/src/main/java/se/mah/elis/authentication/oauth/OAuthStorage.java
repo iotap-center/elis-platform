@@ -45,7 +45,7 @@ public interface OAuthStorage {
 	 * @param timeToLiveInMillis
 	 */
 	public void storeAccessToken(String clientId, OAuthCode token,
-			int timeToLiveInMillis);
+			long timeToLiveInMillis);
 
 	/**
 	 * Retrieve an access token from storage. 

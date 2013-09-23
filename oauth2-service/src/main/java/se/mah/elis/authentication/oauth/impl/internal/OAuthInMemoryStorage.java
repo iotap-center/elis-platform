@@ -76,7 +76,7 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 	 */
 	@Override
 	synchronized public void storeAccessToken(String clientId,
-			OAuthCode accessToken, int ttl) {
+			OAuthCode accessToken, long ttl) {
 		if (isValidString(clientId) && isValidCode(accessToken))
 			accessTokens.put(clientId, accessToken);
 	}

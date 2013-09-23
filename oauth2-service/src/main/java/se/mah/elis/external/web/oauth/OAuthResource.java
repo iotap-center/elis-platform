@@ -118,10 +118,10 @@ public class OAuthResource {
 	private Response handleAuthenticate(String clientId, String redirectUri) {
 		Response response = null;
 		if (oauthService != null) {
-			String authCode = oauthService.createAuthorizationCode(clientId);
+			String authCode = oauthService.createAuthorizationCode(clientId, redirectUri);
 			String redirectUriWithCode = createRedirectWithCode(redirectUri, authCode); 
 			response = Response.status(Status.FOUND)
-					.header("Location", redirectUriWithCode.toString())
+					.header("Location", redirectUriWithCode)
 					.build();
 		} else
 			response = generateOAuthServiceError();
@@ -182,7 +182,8 @@ public class OAuthResource {
 		if (oauthService.verifyAuthorizationCode(clientId, redirectUri, 
 				clientAuthorizationCode)) {
 			String accessTokenJsonResponse = String.format(accessTokenEnvelope, 
-					oauthService.createAccessToken(clientId, clientAuthorizationCode)); 
+					oauthService.createAccessToken(clientId, redirectUri, 
+							clientAuthorizationCode)); 
 			response = Response.ok(accessTokenJsonResponse).build();
 		} else {
 			response = generateForbiddenClientSecretError(); 

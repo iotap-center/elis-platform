@@ -13,14 +13,6 @@ package se.mah.elis.authentication.oauth;
 public interface OAuthService {
 
 	/**
-	 * Create an authorization code based on client id (step 1 in OAuth 2.0) 
-	 * 
-	 * @param clientId - the code generated is linked to this client
-	 * @return a hashed token used for authorizing the client
-	 */
-	public String createAuthorizationCode(String clientId);
-	
-	/**
 	 * Create an authorization code (step 1 in OAuth 2.0)
 	 * 
 	 * @param clientId
@@ -38,10 +30,11 @@ public interface OAuthService {
 	 * The access token created is linked to the client id and authorization code.
 	 * 
 	 * @param clientId
+	 * @param redirectUri
 	 * @param authCode
 	 * @return a hashed access token used by the application
 	 */
-	public String createAccessToken(String clientId, String authCode);
+	public String createAccessToken(String clientId, String redirectUri, String authCode);
 	
 	/**
 	 * Used to create a refresh token if access token is time restricted. This token
@@ -50,10 +43,11 @@ public interface OAuthService {
 	 * The refresh token is linked to the client id and authorization code.
 	 *  
 	 * @param clientId
+	 * @param redirectUri
 	 * @param authCode
 	 * @return a hashed token used by the application to renew the access token
 	 */
-	public String createRefreshToken(String clientId, String authCode);
+	public String createRefreshToken(String clientId, String redirectUri, String authCode);
 	
 	/**
 	 * Service method to verify the validity (may include freshness) of the access 
@@ -76,16 +70,5 @@ public interface OAuthService {
 	 * @return true if the authorization code is valid
 	 */
 	public boolean verifyAuthorizationCode(String clientId, String redirectUri, String code);
-	
-	/**
-	 * Service method to verify the validity of a client authorization code. 
-	 * 
-	 * A code MUST be rendered invalid once used and SHOULD be invalid if not
-	 * used within 10 minutes of issuing.
-	 * 
-	 * @param clientId
-	 * @param code
-	 * @return
-	 */
-	public boolean verifyAuthorizationCode(String clientId, String code);
+
 }

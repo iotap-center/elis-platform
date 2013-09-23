@@ -14,11 +14,6 @@ public class OAuthServiceImpl implements OAuthService {
 	}
 
 	@Override
-	public String createAuthorizationCode(String clientId) {
-		return createAuthorizationCode(clientId, null);
-	}
-
-	@Override
 	public String createAuthorizationCode(String clientId, String redirectUri) {
 		OAuthCode authCode = OAuthCodeImpl.create();
 		storage.storeAuthorizationCode(clientId, redirectUri, authCode,
@@ -27,34 +22,40 @@ public class OAuthServiceImpl implements OAuthService {
 	}
 
 	@Override
-	public String createAccessToken(String clientId, String code) {
-		// TODO Auto-generated method stub
-		return null;
+	public String createAccessToken(String clientId, String redirectUri, String code) {
+		String token = null;
+		OAuthCode authCode = storage.getAuthorizationCode(clientId, redirectUri);
+		if (authCode != null && !authCode.isExpired()) {
+			long ttlSixMonths = 1000*60*60*24*30*6;
+			OAuthCode tokenCode = OAuthCodeImpl.create(ttlSixMonths);
+			storage.storeAccessToken(clientId, tokenCode, ttlSixMonths);
+			token = tokenCode.getCode();
+		}
+		return token;
 	}
 
 	@Override
-	public String createRefreshToken(String clientId, String code) {
-		// TODO Auto-generated method stub
-		return null;
+	public String createRefreshToken(String clientId, String redirectUri, String code) {
+		return createAccessToken(clientId, redirectUri, code);
 	}
 
 	@Override
 	public boolean verifyAccessToken(String token) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean verifyAuthorizationCode(String clientId, String code) {
-		// TODO Auto-generated method stub
-		return false;
+		OAuthCode accessTokenCode = storage.lookupAccessToken(token);
+		return accessTokenCode != null && !accessTokenCode.isExpired();
 	}
 
 	@Override
 	public boolean verifyAuthorizationCode(String clientId, String redirectUri,
 			String code) {
-		// TODO Auto-generated method stub
-		return false;
+		OAuthCode authCode = storage.getAuthorizationCode(clientId, redirectUri);
+		return validateAuthCode(code, authCode);
+	}
+
+	private boolean validateAuthCode(String code, OAuthCode authCode) {
+		return authCode != null 
+				&& !authCode.isExpired() 
+				&& code.equals(authCode.toString());
 	}
 
 }
