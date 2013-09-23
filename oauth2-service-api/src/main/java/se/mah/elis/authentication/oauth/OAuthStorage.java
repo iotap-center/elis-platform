@@ -18,7 +18,7 @@ public interface OAuthStorage {
 	 * @param code
 	 */
 	public void storeAuthorizationCode(String clientId, String redirectUri,
-			OAuthCode code, int timeToLive);
+			OAuthCode code, long timeToLive);
 
 	/**
 	 * Retrieve an authorization code from storage. 
@@ -41,7 +41,7 @@ public interface OAuthStorage {
 	 * Store an access token. 
 	 * 
 	 * @param clientId
-	 * @param token
+	 * @param {@link OAuthCode}
 	 * @param timeToLiveInMillis
 	 */
 	public void storeAccessToken(String clientId, OAuthCode token,
@@ -51,9 +51,17 @@ public interface OAuthStorage {
 	 * Retrieve an access token from storage. 
 	 * 
 	 * @param clientId
-	 * @return the access token 
+	 * @return the access token as {@link OAuthCode}
 	 */
 	public OAuthCode getAccessToken(String clientId);
+	
+	/**
+	 * Look up an access token from storage
+	 * 
+	 * @param token
+	 * @return the {@link OAuthCode} object
+	 */
+	public OAuthCode lookupAccessToken(String token); 
 	
 	/**
 	 * Remove an access token

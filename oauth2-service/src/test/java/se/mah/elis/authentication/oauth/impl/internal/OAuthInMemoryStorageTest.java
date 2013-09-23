@@ -87,6 +87,12 @@ public class OAuthInMemoryStorageTest {
 	}
 	
 	@Test
+	public void lookupAccessToken() {
+		storage.setAccessTokenMap(defaultAccessTokenMap());
+		assertEquals(ACCESS_TOKEN, storage.lookupAccessToken(ACCESS_TOKEN.getCode()));
+	}
+	
+	@Test
 	public void storeAccessToken() {
 		storage.storeAccessToken(CLIENT_ID, ACCESS_TOKEN, TTL);
 		assertEquals(1, storage.getAccessTokensMap().size());

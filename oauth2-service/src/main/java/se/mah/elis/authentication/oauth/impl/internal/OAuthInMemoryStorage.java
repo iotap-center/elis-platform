@@ -45,6 +45,16 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 
 		return code;
 	}
+	
+	@Override
+	public OAuthCode lookupAccessToken(String token) {
+		OAuthCode code = null;
+		for (OAuthCode c : accessTokens.values()) {
+			if (token.equals(c.getCode())) 
+				code = c;
+		}
+		return code;
+	}
 
 	@Override
 	synchronized public void removeAccessToken(String clientId) {
@@ -73,7 +83,7 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 
 	@Override
 	synchronized public void storeAuthorizationCode(String clientId,
-			String redirectUri, OAuthCode code, int timeToLive) {
+			String redirectUri, OAuthCode code, long timeToLive) {
 		if (isValidString(clientId) && isValidCode(code)) {
 			OAuthCodeKey key = OAuthCodeKeyImpl.createKey(clientId, redirectUri);
 			authorizationCodes.put(key, code);
