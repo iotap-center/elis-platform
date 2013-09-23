@@ -14,6 +14,8 @@ public class EonDevice {
 	// constants
 	public final static int TYPE_POWERSWITCH_METER = 49;
 	public final static int TYPE_TERMOMETER = 101;
+	public final static int TYPE_POWERMETER = 51;
+	public final static int TYPE_THERMOSTAT = 96;
 
 	// fields
 	protected EonHttpBridge httpBridge;

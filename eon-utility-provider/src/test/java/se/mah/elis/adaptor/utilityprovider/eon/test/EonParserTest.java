@@ -71,10 +71,33 @@ public class EonParserTest {
 	}
 	
 	@Test
+	public void testGetDeviceStatusForPowerMeterDevice() {
+		String response = "["
+				   + "{"
+				   +    "\"CurrentKwh\": 24.0"
+				   +    "\"CurrentOn\": false,"
+				   +    "\"CurrentPrice\": 0,"
+				   +    "\"DeviceId\": \"1c167952-2941-479d-b8ab-898f05fea5da\""
+				   + "}"
+				+ "]";
+		try {
+			assertEquals(24.0, EonParser.parsePowerMeterValue(response), 0.01);
+		} catch (Exception ignore) { ignore.printStackTrace(); fail(); }
+	}
+	
+	@Test
 	public void testGetActionObject() {
 		String response = "{\"Id\":15959278,\"Message\":null,\"StatusId\":1}";
 		try {
 			assertTrue(EonParser.parseActionObject(response).containsKey("Id"));
+		} catch (Exception ignore) { fail(); }
+	}
+	
+	@Test
+	public void testParseTemperature() {
+		String response = "{\"Temperature\":-1}";
+		try{
+			assertTrue(EonParser.parseTemperatureValue(response) == -1); // TODO: this will break when temp = -1.1 (floats)
 		} catch (Exception ignore) { fail(); }
 	}
 	
@@ -120,37 +143,113 @@ public class EonParserTest {
 	 * May also be used to create JSON objects
 	 */
 	public static final String SAMPLE_TERMOMETER = ""
-			+ "{"
-		    + "\"AreaNo\": 1,"
-		    + "\"ChannelNo\": 0,"
-		    + "\"ControllerDeviceId\": null,"
-		    + "\"Description\": null,"
-		    + "\"DeviceTypeId\": 101,"
-		    + "\"DistributorCode\": null,"
-		    + "\"EnergyOptimisedDate\": \"\","
-		    + "\"EnergyOptimisingMode\": 0,"
-		    + "\"EnergyOptimisingOption\": 0,"
-		    + "\"EnergyOptmisationTemporaryDisabled\": false,"
-		    + "\"EnergyTypeId\": null,"
-		    + "\"IconId\": null,"
-		    + "\"Id\": \"b6530784-14da-469b-8a46-36e8e2c0d684\","
-		    + "\"IsCamera\": false,"
-		    + "\"IsChargingDevice\": false,"
-		    + "\"IsDimmer\": false,"
-		    + "\"IsDoorSwitch\": false,"
-		    + "\"IsHumidity\": true,"
-		    + "\"IsPowerSwitch\": false,"
-		    + "\"IsProduction\": false,"
-		    + "\"IsRadon\": false,"
-		    + "\"IsSummaryDevice\": false,"
-		    + "\"IsTemperature\": true,"
-		    + "\"IsThermostat\": false,"
-		    + "\"IsUpic\": false,"
-		    + "\"IsVirtualDevice\": false,"
-		    + "\"Name\": \"NO%20NAME\","
-		    + "\"PowerSwitchIsOn\": false,"
-		    + "\"RoomId\": null,"
-		    + "\"UsageAreaId\": 10,"
-		    + "\"ZoneNo\": 3"
-		    + "}";
+			+"{"
+			+"\"AreaNo\": 1,"
+			+"\"ChannelNo\": 0,"
+			+"\"ControllerDeviceId\": null,"
+			+"\"Description\": null,"
+			+"\"DeviceTypeId\": 101,"
+			+"\"DistributorCode\": null,"
+			+"\"EnergyOptimisedDate\": \"\","
+			+"\"EnergyOptimisingMode\": 0,"
+			+"\"EnergyOptimisingOption\": 0,"
+			+"\"EnergyOptmisationTemporaryDisabled\": false,"
+			+"\"EnergyTypeId\": null,"
+			+"\"IconId\": null,"
+			+"\"Id\": \"b6530784-14da-469b-8a46-36e8e2c0d684\","
+			+"\"IsCamera\": false,"
+			+"\"IsChargingDevice\": false,"
+			+"\"IsDimmer\": false,"
+			+"\"IsDoorSwitch\": false,"
+			+"\"IsHumidity\": true,"
+			+"\"IsPowerSwitch\": false,"
+			+"\"IsProduction\": false,"
+			+"\"IsRadon\": false,"
+			+"\"IsSummaryDevice\": false,"
+			+"\"IsTemperature\": true,"
+			+"\"IsThermostat\": false,"
+			+"\"IsUpic\": false,"
+			+"\"IsVirtualDevice\": false,"
+			+"\"Name\": \"NO%20NAME\","
+			+"\"PowerSwitchIsOn\": false,"
+			+"\"RoomId\": null,"
+			+"\"UsageAreaId\": 10,"
+			+"\"ZoneNo\": 3"
+			+"}";
+	
+	/**
+	 * May also be used to create JSON objects
+	 */
+	public static final String SAMPLE_POWERMETER = ""
+			+"{"
+			+"\"AreaNo\": 1,"
+			+"\"ChannelNo\": 0,"
+			+"\"ControllerDeviceId\": null,"
+			+"\"Description\": null,"
+			+"\"DeviceTypeId\": 51,"
+			+"\"DistributorCode\": null,"
+			+"\"EnergyOptimisedDate\": \"\","
+			+"\"EnergyOptimisingMode\": 0,"
+			+"\"EnergyOptimisingOption\": 0,"
+			+"\"EnergyOptmisationTemporaryDisabled\": false,"
+			+"\"EnergyTypeId\": null,"
+			+"\"IconId\": null,"
+			+"\"Id\": \"1c167952-2941-479d-b8ab-898f05fea5da\","
+			+"\"IsCamera\": false,"
+			+"\"IsChargingDevice\": false,"
+			+"\"IsDimmer\": false,"
+			+"\"IsDoorSwitch\": false,"
+			+"\"IsHumidity\": false,"
+			+"\"IsPowerSwitch\": false,"
+			+"\"IsProduction\": false,"
+			+"\"IsRadon\": false,"
+			+"\"IsSummaryDevice\": true,"
+			+"\"IsTemperature\": false,"
+			+"\"IsThermostat\": false,"
+			+"\"IsUpic\": false,"
+			+"\"IsVirtualDevice\": true,"
+			+"\"Name\": \"Elmtare elishem3\","
+			+"\"PowerSwitchIsOn\": false,"
+			+"\"RoomId\": null,"
+			+"\"UsageAreaId\": 0,"
+			+"\"ZoneNo\": 1"
+			+"}";
+	
+	/**
+	 * May also be used to create JSON objects
+	 */
+	public static final String SAMPLE_THERMOSTAT = ""
+			+"{"
+			+"\"AreaNo\": 1,"
+			+"\"ChannelNo\": 0,"
+			+"\"ControllerDeviceId\": null,"
+			+"\"Description\": null,"
+			+"\"DeviceTypeId\": 96,"
+			+"\"DistributorCode\": null,"
+			+"\"EnergyOptimisedDate\": \"\","
+			+"\"EnergyOptimisingMode\": 0,"
+			+"\"EnergyOptimisingOption\": 0,"
+			+"\"EnergyOptmisationTemporaryDisabled\": false,"
+			+"\"EnergyTypeId\": 1,"
+			+"\"IconId\": null,"
+			+"\"Id\": \"69d0ea21-09c4-421a-8862-5edf8fd78c61\","
+			+"\"IsCamera\": false,"
+			+"\"IsChargingDevice\": false,"
+			+"\"IsDimmer\": false,"
+			+"\"IsDoorSwitch\": false,"
+			+"\"IsHumidity\": false,"
+			+"\"IsPowerSwitch\": false,"
+			+"\"IsProduction\": false,"
+			+"\"IsRadon\": false,"
+			+"\"IsSummaryDevice\": false,"
+			+"\"IsTemperature\": false,"
+			+"\"IsThermostat\": true,"
+			+"\"IsUpic\": false,"
+			+"\"IsVirtualDevice\": false,"
+			+"\"Name\": \"Termostat\","
+			+"\"PowerSwitchIsOn\": false,"
+			+"\"RoomId\": \"197f210a-58ea-483d-bd41-2248b03edbff\","
+			+"\"UsageAreaId\": 9,"
+			+"\"ZoneNo\": 1"
+			+"}";
 }

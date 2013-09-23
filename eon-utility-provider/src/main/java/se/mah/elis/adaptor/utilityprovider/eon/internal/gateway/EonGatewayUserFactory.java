@@ -11,9 +11,9 @@ import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 /**
  * E.On user factory
  * 
- * Create a new E.On user instance by calling {@link #getUser(String, String)}. 
- * Afterwards you most likely want to run {@link EonGatewayUser#initialize()} to 
- * populate the gateway with data and devices from the E.On service. 
+ * Create a new E.On user instance by calling {@link #getUser(String, String)}.
+ * Afterwards you most likely want to run {@link EonGatewayUser#initialize()} to
+ * populate the gateway with data and devices from the E.On service.
  * 
  * @author Marcus Ljungblad
  * @version 1.0.0
@@ -21,30 +21,34 @@ import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
  */
 public class EonGatewayUserFactory implements GatewayUserProvider {
 
-	private EonHttpBridge httpBridge;
-
-	public EonGatewayUserFactory(EonHttpBridge bridge) {
-		this.httpBridge = bridge;
-	}
-
 	/**
 	 * Creates an gateway user with an uninitialised gateway
 	 * 
 	 * @param username
 	 * @param password
 	 * @return an E.On gateway user
+	 * @throws MethodNotSupportedException
+	 * @throws AuthenticationException
 	 */
 	public GatewayUser getUser(String username, String password)
-			throws MethodNotSupportedException, AuthenticationException {
+			throws AuthenticationException, MethodNotSupportedException {
+		EonHttpBridge bridge = createBridgeFromConfig();
+		return this.getUser(username, password, bridge);
+	}
+
+	public GatewayUser getUser(String username, String password,
+			EonHttpBridge bridge) throws MethodNotSupportedException,
+			AuthenticationException {
 		EonGatewayUser user = createGatewayUser(username, password);
-		EonGateway gateway = createGateway(username, password);
+		EonGateway gateway = createGateway(username, password, bridge);
 		user.setGateway(gateway);
 		return user;
 	}
 
-	private EonGateway createGateway(String username, String password)
-			throws AuthenticationException {
+	private EonGateway createGateway(String username, String password,
+			EonHttpBridge httpBridge) throws AuthenticationException {
 		EonGateway gateway = new EonGateway();
+		
 		String token;
 		try {
 			token = httpBridge.authenticate(username, password);
@@ -52,8 +56,10 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 			throw new AuthenticationException(
 					"Could not authenticate against E.On for " + username);
 		}
+		
 		gateway.setAuthenticationToken(token);
 		gateway.setHttpBridge(httpBridge);
+		
 		return gateway;
 	}
 
@@ -66,4 +72,9 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 		return user;
 	}
 
+	private EonHttpBridge createBridgeFromConfig() {
+		// TODO: this should read from standard osgi configuration
+		return new EonHttpBridge("http://ewpapi2.dev.appex.no", 80,
+				"/v0_2/api/");
+	}
 }
