@@ -20,6 +20,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import se.mah.elis.adaptor.building.api.entities.devices.Device;
+import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
 
 /**
  * HTTP bridge to communicate with the E.On HTTP API using JSON.
@@ -40,6 +41,7 @@ public class EonHttpBridge {
 	private static final String SWITCHPSS_ENDPOINT = "/Device/SwitchPSS";
 	private static final String ACTIONSTATUS_ENDPOINT = "/Panel/GetActionStatus";
 	private static final String TEMPERATURE_ENDPOINT = "/Device/GetThermostatTemp";
+	private static final String THERMOSTAT_ENDPOINT = "/Device/SetThermostatTemp";
 
 	private static final int TURN_ON = 1;
 	private static final int TURN_OFF = 0;
@@ -188,6 +190,26 @@ public class EonHttpBridge {
 	
 		return EonParser.parseTemperatureValue(response.readEntity(String.class));
 	}
+	
+	/**
+	 * HTTP call to set the desired temperature on a thermostat device.
+	 * 
+	 * @param token
+	 * @param gatewayId
+	 * @param deviceId
+	 * @throws ActuatorFailedException
+	 */
+	public void setDesiredTemperature(String token , String gatewayId,
+			String deviceId, float temp) throws ParseException {
+		
+		WebTarget target = createTarget(THERMOSTAT_ENDPOINT);
+		target = target.queryParam(EWP_PANEL_ID, gatewayId)
+				.queryParam("DeviceId", deviceId).queryParam("Temp", temp);
+		Response response = doGet(token, target);
+		verifyResponse(response);
+
+	}
+	
 
 	/**
 	 * HTTP call to get an action object. These are typically created by the

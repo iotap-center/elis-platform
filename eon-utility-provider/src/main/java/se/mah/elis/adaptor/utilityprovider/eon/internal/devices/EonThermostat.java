@@ -1,33 +1,34 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 
-import java.util.Map;
-
 import org.json.simple.parser.ParseException;
 
 import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
+import se.mah.elis.adaptor.building.api.entities.devices.Actuator;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
-import se.mah.elis.adaptor.building.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
+import se.mah.elis.adaptor.building.api.entities.devices.Thermometer;
+import se.mah.elis.adaptor.building.api.entities.devices.Thermostat;
+import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionObject;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
-import se.mah.elis.auxiliaries.data.ElectricitySample;
 import se.mah.elis.auxiliaries.data.TemperatureData;
 
 /**
- * A virtual representation of the E.On power meter
+ * A virtual representation of the E.On Thermostat
  * 
  * @author Joakim Lithell
  * @version 1.0.0
  * @since 1.0
  */
 
-public class EonPowerMeter extends EonDevice implements ElectricitySampler {
+public class EonThermostat extends EonDevice implements Actuator,Thermostat{
 
-	private boolean isOnline;
 	private EonGateway gateway;
 	private DeviceIdentifier deviceId;
 	private String deviceName;
+	private boolean isOnline;
 	
 	@Override
 	public DeviceIdentifier getId() {
@@ -70,8 +71,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 	public void setGateway(Gateway gateway) throws StaticEntityException {
 		if (!(gateway instanceof EonGateway))
 			throw new StaticEntityException();
-		this.gateway = (EonGateway) gateway;
-	}
+		this.gateway = (EonGateway) gateway;	}
 
 	@Override
 	public DeviceSet[] getDeviceSets() {
@@ -85,28 +85,37 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 	}
 
 	@Override
-	public ElectricitySample getSample() throws SensorFailedException {
-		double value;
+	public void setDesiredTemperature(TemperatureData goal)
+			throws ActuatorFailedException {
 		
+		float goalTemp = goal.getCelsius();
+
 		try {
-			value = httpBridge.getPowerMeterKWh(this.gateway.getAuthenticationToken(), getGatewayAddress(),
+			httpBridge.setDesiredTemperature(this.gateway.getAuthenticationToken(), getGatewayAddress(), getId().toString(), goalTemp);
+		} catch (ParseException e) {
+			throw new ActuatorFailedException();
+		}
+				
+	}
+
+	@Override
+	public TemperatureData getCurrentTemperature() throws SensorFailedException {
+		float currentTemperature = 0;
+
+		try {
+			currentTemperature = httpBridge.getTemperature(
+					this.gateway.getAuthenticationToken(), getGatewayAddress(),
 					getId().toString());
 		} catch (ParseException e) {
 			throw new SensorFailedException();
 		}
-		
-		ElectricitySample electricitySample = null;
-		electricitySample = new ElectricitySampleImpl(value);
 
-		return electricitySample;
+		TemperatureData temperatureData = new TemperatureDataImpl(
+				currentTemperature);
+
+		return temperatureData;
 	}
 
-	@Override
-	public ElectricitySample sample(int millis) throws SensorFailedException {
-		// TODO Sample the current energy usage for a given amount of time.
-		return null;
-	}
-	
 	private String getGatewayAddress() {
 		return getGateway().getAddress().toString();
 	}

@@ -66,7 +66,6 @@ public class EonDeviceFactoryTest {
 	}
 
 	@Test
-	@Ignore // TODO: THIS IS NOT IMPLEMENTED YET
 	public void testCreateThermostat() {
 		Device sample;
 		try {

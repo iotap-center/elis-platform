@@ -11,10 +11,17 @@ import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 import se.mah.elis.auxiliaries.data.TemperatureData;
 
+/**
+ * A virtual representation of the E.On Thermometer
+ * 
+ * @author Joakim Lithell
+ * @version 1.0.0
+ * @since 1.0
+ *
+ */
+
 public class EonThermometer extends EonDevice implements Thermometer {
 
-	// private static final TemperatureData tempData = new
-	// TemperatureDataImpl();
 	private EonGateway gateway;
 	private DeviceIdentifier deviceId;
 	private String deviceName;
