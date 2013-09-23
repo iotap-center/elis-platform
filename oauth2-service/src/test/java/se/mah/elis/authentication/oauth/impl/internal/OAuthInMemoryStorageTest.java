@@ -111,7 +111,7 @@ public class OAuthInMemoryStorageTest {
 	
 	@Test
 	public void storeAuthorizationCode() {
-		storage.storeAuthorizationCode(CLIENT_ID, REDIRECT_URI, CODE);
+		storage.storeAuthorizationCode(CLIENT_ID, REDIRECT_URI, CODE, TTL);
 		assertEquals(1, storage.getAuthorizationCodeMap().size());
 		
 		OAuthCodeKey key = OAuthCodeKey.createKey(CLIENT_ID, REDIRECT_URI);
@@ -120,37 +120,37 @@ public class OAuthInMemoryStorageTest {
 	
 	@Test
 	public void storeAuthorizationCodeWhenClientIdIsEmpty() {
-		storage.storeAuthorizationCode("", REDIRECT_URI, CODE);
+		storage.storeAuthorizationCode("", REDIRECT_URI, CODE, TTL);
 		assertEquals(0, storage.getAuthorizationCodeMap().size());
 	}
 	
 	@Test
 	public void storeAuthorizationCodeWhenClientIdIsNull() {
-		storage.storeAuthorizationCode(null, REDIRECT_URI, CODE);
+		storage.storeAuthorizationCode(null, REDIRECT_URI, CODE, TTL);
 		assertEquals(0, storage.getAuthorizationCodeMap().size());
 	}
 	
 	@Test
 	public void storeAuthorizationCodeWhenRedirectIsEmpty() {
-		storage.storeAuthorizationCode(CLIENT_ID, "", CODE);
+		storage.storeAuthorizationCode(CLIENT_ID, "", CODE, TTL);
 		assertEquals(1, storage.getAuthorizationCodeMap().size()); // this is allowed
 	}
 	
 	@Test
 	public void storeAuthorizationCodeWhenRedirectNull() {
-		storage.storeAuthorizationCode(CLIENT_ID, null, CODE);
+		storage.storeAuthorizationCode(CLIENT_ID, null, CODE, TTL);
 		assertEquals(1, storage.getAuthorizationCodeMap().size()); // this is allowed
 	}
 	
 	@Test
 	public void storeAuthorizationCodeWhenCodeIsEmpty() {
-		storage.storeAuthorizationCode(CLIENT_ID, REDIRECT_URI, "");
+		storage.storeAuthorizationCode(CLIENT_ID, REDIRECT_URI, "", TTL);
 		assertEquals(0, storage.getAuthorizationCodeMap().size());
 	}
 	
 	@Test
 	public void storeAuthorizationCodeWhenCodeNull() {
-		storage.storeAuthorizationCode(CLIENT_ID, REDIRECT_URI, null);
+		storage.storeAuthorizationCode(CLIENT_ID, REDIRECT_URI, null, TTL);
 		assertEquals(0, storage.getAuthorizationCodeMap().size());
 	}
 	

@@ -71,7 +71,7 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 
 	@Override
 	synchronized public void storeAuthorizationCode(String clientId,
-			String redirectUri, String code) {
+			String redirectUri, String code, int timeToLive) {
 		if (isValidString(clientId) && isValidString(code)) {
 			OAuthCodeKey key = OAuthCodeKey.createKey(clientId, redirectUri);
 			authorizationCodes.put(key, code);
