@@ -20,6 +20,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import se.mah.elis.adaptor.building.api.entities.devices.Device;
+import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
 
 /**
  * HTTP bridge to communicate with the E.On HTTP API using JSON.
@@ -39,6 +40,8 @@ public class EonHttpBridge {
 	private static final String DEVICESTATUS_ENDPOINT = "/Device/GetDeviceStatus";
 	private static final String SWITCHPSS_ENDPOINT = "/Device/SwitchPSS";
 	private static final String ACTIONSTATUS_ENDPOINT = "/Panel/GetActionStatus";
+	private static final String TEMPERATURE_ENDPOINT = "/Device/GetThermostatTemp";
+	private static final String THERMOSTAT_ENDPOINT = "/Device/SetThermostatTemp";
 
 	private static final int TURN_ON = 1;
 	private static final int TURN_OFF = 0;
@@ -56,6 +59,7 @@ public class EonHttpBridge {
 
 	// helpers
 	private Client client;
+	private Object switchPSSLock = new Object();
 
 	public EonHttpBridge(String host, int port, String basepath) {
 		this.host = host;
@@ -135,7 +139,7 @@ public class EonHttpBridge {
 	 * @param token
 	 * @param gatewayId
 	 * @param deviceId
-	 * @return
+	 * @return 
 	 * @throws ResponseProcessingException
 	 * @throws ParseException
 	 */
@@ -150,6 +154,62 @@ public class EonHttpBridge {
 		verifyResponse(response);
 		return EonParser.parseDeviceStatus(response.readEntity(String.class));
 	}
+	
+	/**
+	 * Wrapper method to retrieve the power value from a electricity sampler device. 
+	 * 
+	 * @param token
+	 * @param gatewayId
+	 * @param deviceId
+	 * @return the power used in KWh
+	 * @throws ResponseProcessingException
+	 * @throws ParseException
+	 */
+	public double getPowerMeterKWh(String token, String gatewayId, String deviceId)
+		throws ResponseProcessingException, ParseException {
+		Map<String, Object> data = getDeviceStatus(token, gatewayId, deviceId);
+		double value = ((Number) data.get("CurrentKwh")).doubleValue();
+		return value;
+	}
+
+	/**
+	 * HTTP call to retrieve the temperature from an E.On thermometer device
+	 *  
+	 * @param token
+	 * @param gatewayId
+	 * @param deviceId
+	 * @return temperature in Celsius degrees as float
+	 * @throws ParseException 
+	 */
+	public float getTemperature(String token, String gatewayId,
+			String deviceId) throws ParseException {
+		WebTarget target = createTarget(TEMPERATURE_ENDPOINT);
+		target = target.queryParam(EWP_PANEL_ID, gatewayId).queryParam("DeviceId", deviceId);
+		Response response = doGet(token,target);
+		verifyResponse(response);
+	
+		return EonParser.parseTemperatureValue(response.readEntity(String.class));
+	}
+	
+	/**
+	 * HTTP call to set the desired temperature on a thermostat device.
+	 * 
+	 * @param token
+	 * @param gatewayId
+	 * @param deviceId
+	 * @throws ActuatorFailedException
+	 */
+	public void setDesiredTemperature(String token , String gatewayId,
+			String deviceId, float temp) throws ParseException {
+		
+		WebTarget target = createTarget(THERMOSTAT_ENDPOINT);
+		target = target.queryParam(EWP_PANEL_ID, gatewayId)
+				.queryParam("DeviceId", deviceId).queryParam("Temp", temp);
+		Response response = doGet(token, target);
+		verifyResponse(response);
+
+	}
+	
 
 	/**
 	 * HTTP call to get an action object. These are typically created by the
@@ -220,7 +280,15 @@ public class EonHttpBridge {
 		WebTarget target = createTarget(SWITCHPSS_ENDPOINT);
 		target = target.queryParam(EWP_PANEL_ID, gatewayId)
 				.queryParam("DeviceId", deviceId).queryParam("TurnOn", onoff);
-		Response response = doGet(token, target);
+		
+		Response response = null;
+		
+		synchronized (switchPSSLock) {
+			// this ensures the same client cannot turn off/on a 
+			// power switch in parallel
+			response = doGet(token, target);
+		}
+		
 		verifyResponse(response);
 
 		Map<String, Object> actionObjectData = EonParser.parseActionObject(response
@@ -379,4 +447,5 @@ public class EonHttpBridge {
 
 		return client;
 	}
+
 }

@@ -1,5 +1,6 @@
 package se.mah.elis.adaptor.utilityprovider.eon.devices.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -15,15 +16,18 @@ import org.junit.Test;
 import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.building.api.data.GatewayAddress;
 import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
+import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionObject;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionStatus;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
+import se.mah.elis.auxiliaries.data.ElectricitySample;
 
 public class EonPowerSwitchMeterTest {
 
+	private double DUMMY_KWH = 23.0;
 	private EonPowerSwitchMeter powerSwitchMeter;
 	private EonHttpBridge bridge;
 	private EonGateway gateway;
@@ -41,6 +45,8 @@ public class EonPowerSwitchMeterTest {
 			.thenReturn(mockActionObject);
 		when(bridge.turnOff(anyString(), anyString(), anyString()))
 			.thenReturn(mockActionObject);
+		when(bridge.getPowerMeterKWh(anyString(), anyString(), anyString()))
+			.thenReturn(DUMMY_KWH);
 		
 		DeviceIdentifier psmId = mock(DeviceIdentifier.class);
 		when(psmId.toString()).thenReturn("device");
@@ -87,5 +93,14 @@ public class EonPowerSwitchMeterTest {
 			fail();
 		}
 		assertTrue(powerSwitchMeter.isOnline());
+	}
+	
+	@Test
+	public void testGetSample() throws SensorFailedException{
+		Object powerSample = powerSwitchMeter.getSample();
+		assertTrue(powerSample instanceof ElectricitySample);
+		
+		ElectricitySample sample = (ElectricitySample) powerSample;
+		assertEquals(DUMMY_KWH*1000, sample.getTotalEnergyUsageInWh(), 0.01);
 	}
 }

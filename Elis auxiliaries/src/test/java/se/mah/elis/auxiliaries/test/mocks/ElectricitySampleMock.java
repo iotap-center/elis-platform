@@ -32,9 +32,9 @@ public class ElectricitySampleMock implements ElectricitySample {
 		list.add("getCurrentCurrent");
 		list.add("getCurrentVoltage");
 		list.add("getCurrentPower");
-		list.add("getTopCurrent");
-		list.add("getTopVoltage");
-		list.add("getTopPower");
+		list.add("getMaxCurrent");
+		list.add("getMaxVoltage");
+		list.add("getMaxPower");
 		list.add("getMinCurrent");
 		list.add("getMinVoltage");
 		list.add("getMinPower");
@@ -59,15 +59,15 @@ public class ElectricitySampleMock implements ElectricitySample {
 		return testValue;
 	}
 
-	public double getTopCurrent() {
+	public double getMaxCurrent() {
 		return testValue;
 	}
 
-	public double getTopVoltage() {
+	public double getMaxVoltage() {
 		return testValue;
 	}
 
-	public double getTopPower() {
+	public double getMaxPower() {
 		return testValue * testValue;
 	}
 

@@ -13,8 +13,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import se.mah.elis.adaptor.building.api.entities.devices.Device;
+import se.mah.elis.adaptor.building.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.building.api.entities.devices.PowerSwitch;
 import se.mah.elis.adaptor.building.api.entities.devices.Thermometer;
+import se.mah.elis.adaptor.building.api.entities.devices.Thermostat;
 import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonDeviceFactory;
@@ -25,13 +27,18 @@ public class EonDeviceFactoryTest {
 	private JSONParser parser = new JSONParser();
 	private static JSONObject POWERSWITCH_METER;
 	private static JSONObject THERMOMETER;
-	
+	private static JSONObject POWERMETER;
+	private static JSONObject THERMOSTAT;
+
 	@Before
 	public void setUp() throws ParseException {
 		createSamplePowerSwitchMeter();
 		createSampleThermometer();
+		createSamplePowerMeter();
+		createSampleThermostat();
 	}
-	
+
+
 	@Test
 	public void testCreatePowerSwitchMeter() {
 		Device sample;
@@ -44,9 +51,8 @@ public class EonDeviceFactoryTest {
 			fail();
 		}
 	}
-	
+
 	@Test
-	@Ignore // THIS IS NOT IMPLEMENTED YET
 	public void testCreateThermometer() {
 		Device sample;
 		try {
@@ -58,7 +64,33 @@ public class EonDeviceFactoryTest {
 			fail();
 		}
 	}
-	
+
+	@Test
+	public void testCreateThermostat() {
+		Device sample;
+		try {
+			sample = EonDeviceFactory.createFrom(THERMOSTAT);
+			assertTrue(sample instanceof Thermostat);
+			assertFalse(sample.getId().toString().isEmpty());
+			assertFalse(sample.getName().isEmpty());
+		} catch (MethodNotSupportedException | StaticEntityException e) {
+			fail();
+		}
+	}
+
+	@Test
+	public void testCreatePowerMeter() {
+		Device sample;
+		try {
+			sample = EonDeviceFactory.createFrom(POWERMETER);
+			assertTrue(sample instanceof ElectricitySampler);
+			assertFalse(sample.getId().toString().isEmpty());
+			assertFalse(sample.getName().isEmpty());
+		} catch (MethodNotSupportedException | StaticEntityException e) {
+			fail();
+		}
+	}
+
 	@Test
 	public void testCreateNotSupportedDeviceThrowsException() {
 		long notSupportedType = -1;
@@ -77,10 +109,20 @@ public class EonDeviceFactoryTest {
 	}
 
 	private void createSampleThermometer() throws ParseException {
-		THERMOMETER = (JSONObject) parser.parse(EonParserTest.SAMPLE_TERMOMETER);
+		THERMOMETER = (JSONObject) parser
+				.parse(EonParserTest.SAMPLE_TERMOMETER);
 	}
 
 	private void createSamplePowerSwitchMeter() throws ParseException {
-		POWERSWITCH_METER = (JSONObject) parser.parse(EonParserTest.SAMPLE_POWERSWITCH);
+		POWERSWITCH_METER = (JSONObject) parser
+				.parse(EonParserTest.SAMPLE_POWERSWITCH);
+	}
+
+	private void createSamplePowerMeter() throws ParseException {
+		POWERMETER = (JSONObject) parser.parse(EonParserTest.SAMPLE_POWERMETER);
+	}
+
+	private void createSampleThermostat() throws ParseException {
+		THERMOSTAT = (JSONObject) parser.parse(EonParserTest.SAMPLE_THERMOSTAT);
 	}
 }

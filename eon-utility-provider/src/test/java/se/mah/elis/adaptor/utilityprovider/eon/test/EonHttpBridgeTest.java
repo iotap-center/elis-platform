@@ -146,4 +146,25 @@ public class EonHttpBridgeTest {
 		}
 	}
 	
+	@Test
+	public void testGetTemperature() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		try {
+			String thermometerDeviceId = "b6530784-14da-469b-8a46-36e8e2c0d684";
+			float temperature = bridge.getTemperature(token, TEST_GATEWAY, thermometerDeviceId);
+			assertTrue(temperature == -1f);
+		} catch (Exception ignore) {
+			fail("Temperature not retrieved");
+		}
+	}
+	
+	@Test
+	public void testGetPowerMeterValueKWh() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		try {
+			double value = bridge.getPowerMeterKWh(token, TEST_GATEWAY, TEST_DEVICEID);
+			assertTrue(value >= 0.0);
+		} catch (Exception ignore) { fail("No power meter value received"); }
+	}
+	
 }
