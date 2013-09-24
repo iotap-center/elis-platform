@@ -227,6 +227,7 @@ public class OAuthResource {
 	}
 
 	private boolean isValidClientId(String clientId) {
+		// TODO: should also check if the client id exists somewhere 
 		return !clientId.isEmpty();
 	}
 	
