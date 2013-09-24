@@ -30,38 +30,39 @@ public class UserWebServiceTest {
 	private UserService us;
 	private UserFactory uf;
 	
-	private static String responseStart = "elisApi({\n";
-	private static String responseEnd = "})";
+	private static String envelopeStart = "{\n";
+	private static String envelopeEnd = "}";
+	private static String responseEnd = "  }\n";
 	private static String response200 = "  \"status\": \"OK\",\n"
-			+ "  \"code\": \"200\",\n"
-			+ "  \"response\": ";
-	private static String response201 = "  \"status\": \"CREATED\",\n"
-			+ "  \"code\": \"201\",\n"
-			+ "  \"response\": ";
-	private static String response204 = "  \"status\": \"NO CONTENT\",\n"
-			+ "  \"code\": \"204\",\n"
+			+ "  \"code\": 200,\n"
+			+ "  \"response\": {\n";
+	private static String response201 = "  \"status\": \"Created\",\n"
+			+ "  \"code\": 201,\n"
+			+ "  \"response\": {\n";
+	private static String response204 = "  \"status\": \"No Content\",\n"
+			+ "  \"code\": 204,\n"
 			+ "  \"response\": {}\n";
-	private static String response404 = "  \"status\": \"ERROR\",\n"
-			+ "  \"code\": \"404\",\n"
-			+ "  \"errorType\": \"Not Found\",\n"
+	private static String response404 = "  \"errorType\": \"Not Found\",\n"
 			+ "  \"errorDetail\": \"The requested URL was not found on this server.\",\n"
+			+ "  \"status\": \"Error\",\n"
+			+ "  \"code\": 404,\n"
 			+ "  \"response\": {}\n";
-	private static String response400 = "  \"status\": \"ERROR\",\n"
-			+ "  \"code\": \"400\",\n"
-			+ "  \"errorType\": \"Bad Request\",\n"
+	private static String response400 = "  \"errorType\": \"Bad Request\",\n"
 			+ "  \"errorDetail\": \"The request cannot be fulfilled due to bad syntax.\",\n"
+			+ "  \"status\": \"Error\",\n"
+			+ "  \"code\": 400,\n"
 			+ "  \"response\": {}\n";
-	private static String response409 = "  \"status\": \"CONFLICT\",\n"
-			+ "  \"code\": \"409\",\n"
-			+ "  \"errorType\": \"Conflict\",\n"
+	private static String response409 = "  \"errorType\": \"Conflict\",\n"
 			+ "  \"errorDetail\": \"The proposed URL already exists on this server.\",\n"
+			+ "  \"status\": \"Error\",\n"
+			+ "  \"code\": 409,\n"
 			+ "  \"response\": {}\n";
 
 	@Before
 	public void setUp() throws Exception {
 		us = new UserServiceImpl();
 		uf = new UserFactoryImpl();
-		uws = new UserWebService(us);
+		uws = new UserWebService(us, uf);
 		
 		uf.registerProvider(new MockUserProvider());
 	}
@@ -81,30 +82,32 @@ public class UserWebServiceTest {
 			us.createPlatformUser("3", "1");
 		} catch (UserExistsException e) {}
 		
-		String responseString = responseStart + response200
-				+ "  \"UserList\": [\n"
-				+ "  {\n"
-				+ "    \"userId\": \"1\",\n"
-				+ "    \"username\": \"1\",\n"
-				+ "    \"firstName\": \"\",\n"
-				+ "    \"lastName\": \"\",\n"
-				+ "    \"email\": \"\"\n"
-				+ "  },\n"
-				+ "  {\n"
-				+ "    \"userId\": \"2\",\n"
-				+ "    \"username\": \"2\",\n"
-				+ "    \"firstName\": \"\",\n"
-				+ "    \"lastName\": \"\",\n"
-				+ "    \"email\": \"\"\n"
-				+ "  },\n"
-				+ "  {\n"
-				+ "    \"userId\": \"3\",\n"
-				+ "    \"username\": \"3\",\n"
-				+ "    \"firstName\": \"\",\n"
-				+ "    \"lastName\": \"\",\n"
-				+ "    \"email\": \"\"\n"
-				+ "  }\n"
-				+ "]" + responseEnd;
+		String responseString = envelopeStart + response200
+				+ "    \"userList\": [\n"
+				+ "      {\n"
+				+ "        \"userId\": \"1\",\n"
+				+ "        \"username\": \"1\",\n"
+				+ "        \"firstName\": \"\",\n"
+				+ "        \"lastName\": \"\",\n"
+				+ "        \"email\": \"\"\n"
+				+ "      },\n"
+				+ "      {\n"
+				+ "        \"userId\": \"2\",\n"
+				+ "        \"username\": \"2\",\n"
+				+ "        \"firstName\": \"\",\n"
+				+ "        \"lastName\": \"\",\n"
+				+ "        \"email\": \"\"\n"
+				+ "      },\n"
+				+ "      {\n"
+				+ "        \"userId\": \"3\",\n"
+				+ "        \"username\": \"3\",\n"
+				+ "        \"firstName\": \"\",\n"
+				+ "        \"lastName\": \"\",\n"
+				+ "        \"email\": \"\"\n"
+				+ "      }\n"
+				+ "    ]\n"
+				+ responseEnd
+				+ envelopeEnd;
 		
 		Response r = uws.getUsers();
 		
@@ -119,15 +122,16 @@ public class UserWebServiceTest {
 			us.createPlatformUser("2", "B");
 		} catch (UserExistsException e) {}
 		
-		String responseString = responseStart + response200
-				+ "\"User\": {\n"
-				+ "  \"userId\": \"1\",\n"
-				+ "  \"username\": \"1\",\n"
-				+ "  \"firstName\": \"\",\n"
-				+ "  \"lastName\": \"\",\n"
-				+ "  \"email\": \"\"\n"
-				+ "}"
-				+ responseEnd;
+		String responseString = envelopeStart + response200
+				+ "    \"user\": {\n"
+				+ "      \"userId\": \"1\",\n"
+				+ "      \"username\": \"1\",\n"
+				+ "      \"firstName\": \"\",\n"
+				+ "      \"lastName\": \"\",\n"
+				+ "      \"email\": \"\"\n"
+				+ "    }\n"
+				+ responseEnd
+				+ envelopeEnd;
 		
 		Response r = uws.getUser("1");
 		
@@ -142,7 +146,7 @@ public class UserWebServiceTest {
 			us.createPlatformUser("2", "B");
 		} catch (UserExistsException e) {}
 		
-		String responseString = responseStart + response404 + responseEnd;
+		String responseString = envelopeStart + response404 + envelopeEnd;
 		
 		Response r = uws.getUser("3");
 		
@@ -160,15 +164,16 @@ public class UserWebServiceTest {
 		bean.lastName = "Wayne";
 		bean.email = "batman@batcave.org";
 		
-		String responseString = responseStart + response201
-				+ "  \"User\": {\n"
-				+ "  \"userId\": \"1\",\n"
-				+ "  \"username\": \"1\",\n"
-				+ "  \"firstName\": \"Bruce\",\n"
-				+ "  \"lastName\": \"Wayne\",\n"
-				+ "  \"email\": \"batman@batcave.org\"\n"
-				+ "}"
-				+ responseEnd;
+		String responseString = envelopeStart + response201
+				+ "    \"user\": {\n"
+				+ "      \"userId\": \"1\",\n"
+				+ "      \"username\": \"1\",\n"
+				+ "      \"firstName\": \"Bruce\",\n"
+				+ "      \"lastName\": \"Wayne\",\n"
+				+ "      \"email\": \"batman@batcave.org\"\n"
+				+ "    }\n"
+				+ responseEnd
+				+ envelopeEnd;
 		
 		Response r = uws.addUser(bean);
 				
@@ -186,28 +191,27 @@ public class UserWebServiceTest {
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
 		bean.email = "batman@batcave.org";
-		bean.gatewayUsers = new GatewayUserBean[1];
-		bean.gatewayUsers[0] = gw;
+		bean.gatewayUser = gw;
 		gw.serviceName = "Waynecorp";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
-		gw.id = "1";
 		
-		String responseString = responseStart + response201
-				+ "  \"User\": {\n"
-				+ "  \"id\": \"1\",\n"
-				+ "  \"username\": \"1\",\n"
-				+ "  \"firstName\": \"Bruce\",\n"
-				+ "  \"lastName\": \"Wayne\",\n"
-				+ "  \"email\": \"batman@batcave.org\",\n"
-				+ "  \"GatewayUser\": [\n"
-				+ "    {\n"
-				+ "      \"id\": \"1\",\n"
-				+ "      \"serviceName\": \"Waynecorp\",\n"
-				+ "      \"serviceUserName\": \"batman\",\n"
-				+ "      \"servicePassword\": \"robin\"\n"
-				+ "}]}"
-				+ responseEnd;
+		String responseString = envelopeStart + response201
+				+ "    \"user\": {\n"
+				+ "      \"userId\": \"1\",\n"
+				+ "      \"username\": \"1\",\n"
+				+ "      \"firstName\": \"Bruce\",\n"
+				+ "      \"lastName\": \"Wayne\",\n"
+				+ "      \"email\": \"batman@batcave.org\",\n"
+				+ "      \"gatewayUser\": {\n"
+				+ "        \"id\": \"1\",\n"
+				+ "        \"serviceName\": \"Waynecorp\",\n"
+				+ "        \"serviceUserName\": \"batman\",\n"
+				+ "        \"servicePassword\": \"robin\"\n"
+				+ "      }\n"
+				+ "    }\n"
+				+ responseEnd
+				+ envelopeEnd;
 		
 		Response r = uws.addUser(bean);
 		
@@ -220,7 +224,7 @@ public class UserWebServiceTest {
 		assertNotNull(users);
 		assertNotNull(user);
 		assertEquals(1, users.length);
-		assertThat(user.getClass().getName()).matches("MockUser");
+		assertThat(user.getClass().getName()).matches(MockUser.class.getName());
 		assertThat(((MockUser) user).getServiceUserName()).matches(gw.serviceUserName);
 	}
 
@@ -234,32 +238,16 @@ public class UserWebServiceTest {
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
 		bean.email = "batman@batcave.org";
-		bean.gatewayUsers = new GatewayUserBean[1];
-		bean.gatewayUsers[0] = gw;
-		gw.serviceName = "Waynecorp";
+		bean.gatewayUser = gw;
+		gw.serviceName = "horses";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
-		gw.id = "1";
 		
-		String responseString = responseStart + response201
-				+ "  \"User\": {\n"
-				+ "  \"id\": \"1\",\n"
-				+ "  \"username\": \"1\",\n"
-				+ "  \"firstName\": \"Bruce\",\n"
-				+ "  \"lastName\": \"Wayne\",\n"
-				+ "  \"email\": \"batman@batcave.org\",\n"
-				+ "  \"GatewayUser\": [\n"
-				+ "    {\n"
-				+ "      \"id\": \"1\",\n"
-				+ "      \"serviceName\": \"Waynecorp\",\n"
-				+ "      \"serviceUserName\": \"batman\",\n"
-				+ "      \"servicePassword\": \"robin\"\n"
-				+ "}]}"
-				+ responseEnd;
+		String responseString = envelopeStart + response400 + envelopeEnd;
 		
 		Response r = uws.addUser(bean);
 		
-		assertEquals(201, r.getStatus());
+		assertEquals(400, r.getStatus());
 		assertEquals(responseString, r.getEntity());
 		
 		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
@@ -283,9 +271,8 @@ public class UserWebServiceTest {
 		gw.serviceName = "Waynecorp";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
-		gw.id = "1";
 
-		String responseString = responseStart + response409 + responseEnd;
+		String responseString = envelopeStart + response409 + envelopeEnd;
 		
 		try {
 			us.createPlatformUser("1", "secret");
@@ -313,7 +300,7 @@ public class UserWebServiceTest {
 		gw.servicePassword = "robin";
 		gw.id = "1";
 
-		String responseString = responseStart + response400 + responseEnd;
+		String responseString = envelopeStart + response400 + envelopeEnd;
 		
 		Response r = uws.addUser(bean);
 		
@@ -338,14 +325,15 @@ public class UserWebServiceTest {
 		assertNotNull(users);
 		assertEquals(0, users.length);
 		
-		String responseString = responseStart + response200
-				+ "\"User\": {\n"
-				+ "  \"userId\": \"1\",\n"
-				+ "  \"username\": \"1\",\n"
-				+ "  \"firstName\": \"Bruce\",\n"
-				+ "  \"lastName\": \"Wayne\"\n"
-				+ "}"
-				+ responseEnd;
+		String responseString = envelopeStart + response200
+				+ "    \"user\": {\n"
+				+ "      \"userId\": \"1\",\n"
+				+ "      \"username\": \"1\",\n"
+				+ "      \"firstName\": \"Bruce\",\n"
+				+ "      \"lastName\": \"Wayne\"\n"
+				+ "    }\n"
+				+ responseEnd
+				+ envelopeEnd;
 		
 		Response r = uws.updateUser(bean.userId, bean);
 		
@@ -367,7 +355,7 @@ public class UserWebServiceTest {
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
 		
-		String responseString = responseStart + response404 + responseEnd;
+		String responseString = envelopeStart + response404 + envelopeEnd;
 		
 		Response r = uws.updateUser(bean.userId, bean);
 		
@@ -381,7 +369,7 @@ public class UserWebServiceTest {
 			us.createPlatformUser("1", "2");
 		} catch (UserExistsException e) {}
 		
-		String responseString = responseStart + response204 + responseEnd;
+		String responseString = envelopeStart + response204 + envelopeEnd;
 		
 		Response r = uws.deleteUser("1");
 		
@@ -395,7 +383,7 @@ public class UserWebServiceTest {
 			us.createPlatformUser("1", "2");
 		} catch (UserExistsException e) {}
 		
-		String responseString = responseStart + response404 + responseEnd;
+		String responseString = envelopeStart + response404 + envelopeEnd;
 		
 		Response r = uws.deleteUser("3");
 		
@@ -413,36 +401,34 @@ public class UserWebServiceTest {
 		gw.serviceName = "Waynecorp";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
-		gw.id = "1";
 
-		String responseString = responseStart + response200
-				+ "    \"User\": {\n"
-				+ "      \"id\": \"1\",\n"
+		String responseString = envelopeStart + response200
+				+ "    \"user\": {\n"
+				+ "      \"userId\": \"1\",\n"
 				+ "      \"username\": \"1\",\n"
 				+ "      \"firstName\": \"\",\n"
 				+ "      \"lastName\": \"\",\n"
 				+ "      \"email\": \"\",\n"
-				+ "      \"GatewayUser\": [\n"
-				+ "        {\n"
-				+ "          \"id\": \"1\",\n"
-				+ "          \"serviceName\": \"Waynecorp\",\n"
-				+ "          \"serviceUserName\": \"batman\",\n"
-				+ "          \"servicePassword\": \"robin\"\n"
-				+ "        }\n"
-				+ "      ]\n"
+				+ "      \"gatewayUser\": {\n"
+				+ "        \"id\": \"1\",\n"
+				+ "        \"serviceName\": \"Waynecorp\",\n"
+				+ "        \"serviceUserName\": \"batman\",\n"
+				+ "        \"servicePassword\": \"robin\"\n"
+				+ "      }\n"
 				+ "    }\n"
-				+ responseEnd;
+				+ responseEnd
+				+ envelopeEnd;
 		
-		Response r = uws.coupleGatewayWithUser("1", gw);
+		Response r = uws.coupleGatewayWithUser("gateway", "1", gw);
 		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
 		User user = users[0];
 		
 		assertNotNull(users);
 		assertNotNull(user);
 		assertEquals(1, users.length);
-		assertThat(user.getClass().getName()).matches("MockUser");
+		assertThat(user.getClass().getName()).matches(MockUser.class.getName());
 		assertThat(((MockUser) user).getServiceUserName()).matches(gw.serviceUserName);
-		assertEquals(201, r.getStatus());
+		assertEquals(200, r.getStatus());
 		assertEquals(responseString, r.getEntity());
 	}
 
@@ -457,15 +443,14 @@ public class UserWebServiceTest {
 		gw.serviceName = "Waynecorp";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
-		gw.id = "1";
 		
-		String responseString = responseStart + response404 + responseEnd;
+		String responseString = envelopeStart + response400 + envelopeEnd;
 		
-		Response r = uws.coupleGatewayWithUser("2", gw);
+		Response r = uws.coupleGatewayWithUser("gateway", "2", gw);
 		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
 
 		assertEquals(0, users.length);
-		assertEquals(404, r.getStatus());
+		assertEquals(400, r.getStatus());
 		assertEquals(responseString, r.getEntity());
 	}
 
@@ -486,15 +471,7 @@ public class UserWebServiceTest {
 		gw.servicePassword = "robin";
 		gw.id = "2";
 		
-		String responseString = responseStart + response200
-				+ "    \"User\": {\n"
-				+ "      \"id\": \"1\",\n"
-				+ "      \"username\": \"1\",\n"
-				+ "      \"firstName\": \"\",\n"
-				+ "      \"lastName\": \"\",\n"
-				+ "      \"email\": \"\"\n"
-				+ "    }\n"
-				+ responseEnd;
+		String responseString = envelopeStart + response404 + envelopeEnd;
 		
 		Response r = uws.addUser(bean);
 		
@@ -505,7 +482,7 @@ public class UserWebServiceTest {
 		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
 		
 		assertEquals(0, users.length);
-		assertEquals(200, r.getStatus());
+		assertEquals(404, r.getStatus());
 		assertEquals(responseString, r.getEntity());
 	}
 
@@ -519,23 +496,17 @@ public class UserWebServiceTest {
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
 		bean.email = "batman@batcave.org";
-		bean.gatewayUsers = new GatewayUserBean[1];
-		bean.gatewayUsers[0] = gw;
+		bean.gatewayUser = gw;
 		gw.serviceName = "Waynecorp";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
 		gw.id = "2";
 		
-		String responseString = responseStart + response201 + responseEnd;
+		uws.addUser(bean);
 		
-		Response r = uws.addUser(bean);
-		
-		assertEquals(201, r.getStatus());
-		assertEquals(responseString, r.toString());
-		
-		r = uws.decoupleGatewayFromUser("2", "2");
+		Response r = uws.decoupleGatewayFromUser("2", "2");
 
-		responseString = responseStart + response404 + responseEnd;
+		String responseString = envelopeStart + response404 + envelopeEnd;
 		
 		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
 		
@@ -554,15 +525,14 @@ public class UserWebServiceTest {
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
 		bean.email = "batman@batcave.org";
-		bean.gatewayUsers = new GatewayUserBean[1];
-		bean.gatewayUsers[0] = gw;
+		bean.gatewayUser = gw;
 		gw.serviceName = "Waynecorp";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
 		gw.id = "2";
 		
 		// TODO: This, or a 201?
-		String responseString = responseStart + response404 + responseEnd;
+		String responseString = envelopeStart + response404 + envelopeEnd;
 		
 		Response r = uws.addUser(bean);
 		
