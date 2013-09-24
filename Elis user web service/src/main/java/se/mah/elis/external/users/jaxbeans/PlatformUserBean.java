@@ -31,4 +31,7 @@ public class PlatformUserBean {
 	
 	@XmlElement
 	public GatewayUserBean[] gatewayUsers;
+	
+	@XmlElement
+	public GatewayUserBean gatewayUser;
 }
