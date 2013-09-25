@@ -15,18 +15,21 @@ import org.junit.Test;
 
 import se.mah.elis.authentication.oauth.OAuthCode;
 import se.mah.elis.authentication.oauth.OAuthCodeKey;
+import se.mah.elis.services.users.Role;
 
 public class OAuthInMemoryStorageTest {
 
 	private static OAuthCode ACCESS_TOKEN;
 	private static final String CLIENT_ID = "client_id";
 	private static final String REDIRECT_URI = "redirect_uri";
+	private static Role ROLE;
 	private static OAuthCode CODE;
 	private static final int TTL = 0;
 	private OAuthInMemoryStorage storage; 
 	
 	@Before
 	public void setUp() {
+		ROLE = mock(Role.class);
 		CODE = OAuthCodeImpl.create();
 		ACCESS_TOKEN = OAuthCodeImpl.create();
 		storage = new OAuthInMemoryStorage();
@@ -93,21 +96,34 @@ public class OAuthInMemoryStorageTest {
 	}
 	
 	@Test
+	public void lookupRoleWithToken() {
+		storage.setAccessTokenMap(defaultAccessTokenMap());
+		storage.setAccessTokenRoleMap(defaultRoleMap());
+		assertNotNull(storage.lookupRole(ACCESS_TOKEN.getCode()));
+	}
+	
+	@Test
+	public void lookupRoleWithTokenWhenRoleDoesNotExist() {
+		storage.setAccessTokenMap(defaultAccessTokenMap());
+		assertNull(storage.lookupRole(ACCESS_TOKEN.getCode()));
+	}
+	
+	@Test
 	public void storeAccessToken() {
-		storage.storeAccessToken(CLIENT_ID, ACCESS_TOKEN, TTL);
+		storage.storeAccessToken(CLIENT_ID, ACCESS_TOKEN, TTL, ROLE);
 		assertEquals(1, storage.getAccessTokensMap().size());
 		assertTrue(storage.getAccessTokensMap().containsKey(CLIENT_ID));
 	}
 	
 	@Test
 	public void storeAccessTokenWhenClientIdIsEmpty() {
-		storage.storeAccessToken("", ACCESS_TOKEN, TTL);
+		storage.storeAccessToken("", ACCESS_TOKEN, TTL, ROLE);
 		assertEquals(0, storage.getAccessTokensMap().size());
 	}
 	
 	@Test
 	public void storeAccessTokenWhenClientIdIsNull() {
-		storage.storeAccessToken(null, ACCESS_TOKEN, TTL);
+		storage.storeAccessToken(null, ACCESS_TOKEN, TTL, ROLE);
 		assertEquals(0, storage.getAccessTokensMap().size());
 	}
 	
@@ -115,13 +131,13 @@ public class OAuthInMemoryStorageTest {
 	public void storeAccessTokenWhenTokenIsExpired() throws InterruptedException {
 		OAuthCode token = OAuthCodeImpl.create(0);
 		Thread.sleep(10); // ensure token expires
-		storage.storeAccessToken(CLIENT_ID, token, TTL);
+		storage.storeAccessToken(CLIENT_ID, token, TTL, ROLE);
 		assertEquals(0, storage.getAccessTokensMap().size());
 	}
 	
 	@Test
 	public void storeAccessTokenWhenTokenIsNull() {
-		storage.storeAccessToken(CLIENT_ID, null, TTL);
+		storage.storeAccessToken(CLIENT_ID, null, TTL, ROLE);
 		assertEquals(0, storage.getAccessTokensMap().size());
 	}
 	
@@ -182,6 +198,12 @@ public class OAuthInMemoryStorageTest {
 	private Map<String, OAuthCode> defaultAccessTokenMap() {
 		Map<String, OAuthCode> map = new HashMap<String, OAuthCode>();
 		map.put(CLIENT_ID, ACCESS_TOKEN);
+		return map;
+	}
+	
+	private Map<OAuthCode, Role> defaultRoleMap() {
+		Map<OAuthCode, Role> map = new HashMap<OAuthCode, Role>();
+		map.put(ACCESS_TOKEN, new Role() {});
 		return map;
 	}
 }

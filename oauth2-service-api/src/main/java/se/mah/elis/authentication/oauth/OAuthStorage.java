@@ -1,5 +1,7 @@
 package se.mah.elis.authentication.oauth;
 
+import se.mah.elis.services.users.Role;
+
 /**
  * Elis OAuth 2.0 storage backend
  * 
@@ -45,7 +47,7 @@ public interface OAuthStorage {
 	 * @param timeToLiveInMillis
 	 */
 	public void storeAccessToken(String clientId, OAuthCode token,
-			long timeToLiveInMillis);
+			long timeToLiveInMillis, Role role);
 
 	/**
 	 * Retrieve an access token from storage. 
@@ -62,6 +64,14 @@ public interface OAuthStorage {
 	 * @return the {@link OAuthCode} object
 	 */
 	public OAuthCode lookupAccessToken(String token); 
+	
+	/**
+	 * Look up a user role that is assigned to a specific token
+	 * 
+	 * @param token
+	 * @return the access role which the token is linked to
+	 */
+	public Role lookupRole(String token); 
 	
 	/**
 	 * Remove an access token

@@ -7,6 +7,7 @@ import java.util.Map;
 import se.mah.elis.authentication.oauth.OAuthCode;
 import se.mah.elis.authentication.oauth.OAuthCodeKey;
 import se.mah.elis.authentication.oauth.OAuthStorage;
+import se.mah.elis.services.users.Role;
 
 /**
  * In-memory storage for authorization codes and access tokens.
@@ -23,10 +24,12 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 
 	private Map<OAuthCodeKey, OAuthCode> authorizationCodes;
 	private Map<String, OAuthCode> accessTokens;
+	private Map<OAuthCode, Role> accessTokenRoleMap;
 
 	public OAuthInMemoryStorage() {
 		this.authorizationCodes = new HashMap<OAuthCodeKey, OAuthCode>();
 		this.accessTokens = new HashMap<String, OAuthCode>();
+		this.accessTokenRoleMap = new HashMap<OAuthCode, Role>();
 	}
 
 	@Override
@@ -55,6 +58,15 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 		}
 		return code;
 	}
+	
+	@Override
+	public Role lookupRole(String token) {
+		Role role = null;
+		OAuthCode code = lookupAccessToken(token);
+		if (code != null && isValidString(token))
+			role = accessTokenRoleMap.get(code);
+		return role;
+	}
 
 	@Override
 	synchronized public void removeAccessToken(String clientId) {
@@ -76,9 +88,14 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 	 */
 	@Override
 	synchronized public void storeAccessToken(String clientId,
-			OAuthCode accessToken, long ttl) {
-		if (isValidString(clientId) && isValidCode(accessToken))
+			OAuthCode accessToken, long ttl, Role role) {
+		// make this a transaction
+		if (isValidString(clientId) 
+				&& isValidCode(accessToken)
+				&& isValidRole(role)) {
 			accessTokens.put(clientId, accessToken);
+			accessTokenRoleMap.put(accessToken, role);
+		}
 	}
 
 	@Override
@@ -102,6 +119,11 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 		return code != null && !code.isExpired();
 	}
 	
+	private boolean isValidRole(Role role) {
+		return role != null;
+	}
+
+	
 	/*
 	 * For testing purposes
 	 */
@@ -113,6 +135,10 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 		this.accessTokens = map;
 	}
 
+	void setAccessTokenRoleMap(Map<OAuthCode, Role> map) {
+		this.accessTokenRoleMap = map;
+	}
+
 	Map<OAuthCodeKey, OAuthCode> getAuthorizationCodeMap() {
 		return this.authorizationCodes;
 	}
@@ -120,4 +146,5 @@ public class OAuthInMemoryStorage implements OAuthStorage {
 	Map<String, OAuthCode> getAccessTokensMap() {
 		return this.accessTokens;
 	}
+
 }

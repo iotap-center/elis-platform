@@ -1,5 +1,7 @@
 package se.mah.elis.authentication.oauth;
 
+import se.mah.elis.services.users.Role;
+
 /**
  * Elis OAuth 2 Service 
  * 
@@ -32,9 +34,11 @@ public interface OAuthService {
 	 * @param clientId
 	 * @param redirectUri
 	 * @param authCode
+	 * @param role that access token should be linked to
 	 * @return a hashed access token used by the application
 	 */
-	public String createAccessToken(String clientId, String redirectUri, String authCode);
+	public String createAccessToken(String clientId, String redirectUri, 
+			String authCode, Role role);
 	
 	/**
 	 * Used to create a refresh token if access token is time restricted. This token

@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +22,7 @@ import org.junit.Test;
 
 import se.mah.elis.authentication.oauth.OAuthService;
 import se.mah.elis.external.web.oauth.OAuthResource;
+import se.mah.elis.services.users.Role;
 
 public class OAuthResourceTest {
 
@@ -28,12 +31,15 @@ public class OAuthResourceTest {
 	private static final String TEST_REDIRECT_URI = "http://batcave.mah.se/redirect.php";
 	private static final String TEST_AUTHCODE = "ec0e2603172c73a8b644bb9456c1ff6e";
 	private static final String TEST_ACCESSCODE = "8ee60a2e00c90d7e00d5069188dc115b";
+	private static Role TEST_ROLE;
 	
 	// internals
 	private OAuthResource oauth;
 	
 	@Before
 	public void setUp() {
+		TEST_ROLE = mock(Role.class);
+		
 		OAuthService oauthService = createMockOAuthService();
 		when(oauthService.verifyAuthorizationCode(TEST_CLIENTID,
 				TEST_REDIRECT_URI, TEST_AUTHCODE)).thenReturn(true);
@@ -46,8 +52,8 @@ public class OAuthResourceTest {
 		OAuthService oauthService = mock(OAuthService.class);
 		when(oauthService.createAuthorizationCode(
 				TEST_CLIENTID, TEST_REDIRECT_URI)).thenReturn(TEST_AUTHCODE);
-		when(oauthService.createAccessToken(TEST_CLIENTID, TEST_REDIRECT_URI,  
-				TEST_AUTHCODE)).thenReturn(TEST_ACCESSCODE);
+		when(oauthService.createAccessToken(eq(TEST_CLIENTID), eq(TEST_REDIRECT_URI),  
+				eq(TEST_AUTHCODE), any(Role.class))).thenReturn(TEST_ACCESSCODE);
 		return oauthService;
 	}
 	

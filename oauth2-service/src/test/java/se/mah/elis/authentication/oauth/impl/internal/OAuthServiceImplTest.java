@@ -15,6 +15,7 @@ import org.junit.Test;
 import se.mah.elis.authentication.oauth.OAuthCode;
 import se.mah.elis.authentication.oauth.OAuthCodeKey;
 import se.mah.elis.authentication.oauth.OAuthStorage;
+import se.mah.elis.services.users.Role;
 
 public class OAuthServiceImplTest {
 
@@ -26,9 +27,12 @@ public class OAuthServiceImplTest {
 	private OAuthServiceImpl oauth;
 	private OAuthCode authorizationCode;
 	private OAuthCode accessTokenCode;
+	private Role ROLE;
 
 	@Before
 	public void setUp() {
+		ROLE = mock(Role.class);
+		
 		authorizationCode = mock(OAuthCode.class);
 		when(authorizationCode.toString()).thenReturn(AUTHCODE);
 		when(authorizationCode.getCode()).thenReturn(AUTHCODE);
@@ -58,8 +62,10 @@ public class OAuthServiceImplTest {
 
 	@Test
 	public void createAccessTokenWithClientId() {
-		assertNotNull(oauth.createAccessToken(CLIENT_ID, REDIRECT_URI, AUTHCODE));
-		verify(storage).storeAccessToken(anyString(), any(OAuthCode.class), anyInt());
+		assertNotNull(oauth.createAccessToken(CLIENT_ID, REDIRECT_URI, AUTHCODE, 
+				ROLE));
+		verify(storage).storeAccessToken(anyString(), any(OAuthCode.class), anyInt(), 
+				any(Role.class));
 		verify(storage).removeAuthorizationCode(CLIENT_ID, REDIRECT_URI);
 	}
 

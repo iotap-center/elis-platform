@@ -15,6 +15,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import se.mah.elis.authentication.oauth.OAuthService;
+import se.mah.elis.services.users.Role;
 
 /**
  * Elis HTTP end-point for OAuth authentication for clients and applications
@@ -151,11 +152,14 @@ public class OAuthResource {
 			@DefaultValue("") @QueryParam("redirect_uri") String redirectUri) {
 		Response response;
 		
+		// TODO: This should be replaced for a proper Role implementation
+		Role role = createRole();
+		
 		if (isValidClientId(clientId) 
 			&& isValidRedirectUri(redirectUri)
 			&& isValidClientSecret(clientAuthorizationCode)) {
 			response = createAccessTokenResponse(clientId, 
-					clientAuthorizationCode, redirectUri);
+					clientAuthorizationCode, redirectUri, role);
 		} else {
 			response = generateErrorResponse(clientId, 
 					clientAuthorizationCode, redirectUri);
@@ -165,11 +169,11 @@ public class OAuthResource {
 	}
 
 	private Response createAccessTokenResponse(String clientId, 
-			String clientAuthorizationCode, String redirectUri) {
+			String clientAuthorizationCode, String redirectUri, Role role) {
 		Response response; 
 		if (oauthService != null) {
 			response = doCreateAccessTokenResponse(clientId, 
-					clientAuthorizationCode, redirectUri);
+					clientAuthorizationCode, redirectUri, role);
 		} else {
 			response = generateOAuthServiceError();
 		}
@@ -177,13 +181,13 @@ public class OAuthResource {
 	}
 	
 	private Response doCreateAccessTokenResponse(String clientId, 
-			String clientAuthorizationCode,	String redirectUri) {
+			String clientAuthorizationCode,	String redirectUri, Role role) {
 		Response response; 
 		if (oauthService.verifyAuthorizationCode(clientId, redirectUri, 
 				clientAuthorizationCode)) {
 			String accessTokenJsonResponse = String.format(accessTokenEnvelope, 
 					oauthService.createAccessToken(clientId, redirectUri, 
-							clientAuthorizationCode)); 
+							clientAuthorizationCode, role)); 
 			response = Response.ok(accessTokenJsonResponse).build();
 		} else {
 			response = generateForbiddenClientSecretError(); 
@@ -270,5 +274,11 @@ public class OAuthResource {
 				.entity(invalidClientIdEnvelope)
 				.build();
 		return response;
+	}
+	
+	// avoiding role implementation
+	private Role createRole() {
+		Role role = new Role() {};
+		return role;
 	}
 }
