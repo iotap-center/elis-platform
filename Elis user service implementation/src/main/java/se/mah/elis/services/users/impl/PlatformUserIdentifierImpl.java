@@ -3,7 +3,7 @@
  */
 package se.mah.elis.services.users.impl;
 
-import se.mah.elis.services.users.UserIdentifier;
+import se.mah.elis.services.users.PlatformUserIdentifier;
 
 /**
  * Implements the UserIdentifier interface.
@@ -11,25 +11,25 @@ import se.mah.elis.services.users.UserIdentifier;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public class PlatformUserIdentifier implements UserIdentifier {
+public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 
 	private int id;
 	private String username;
 	private String password;
 	
-	public PlatformUserIdentifier() {
+	public PlatformUserIdentifierImpl() {
 		username = "";
 		password = "";
 	}
 	
-	public PlatformUserIdentifier(String username, String password)
+	public PlatformUserIdentifierImpl(String username, String password)
 			throws IllegalArgumentException {
 		id = 0;
 		setUsername(username);
 		setPassword(password);
 	}
 	
-	public PlatformUserIdentifier(int id, String username, String password)
+	public PlatformUserIdentifierImpl(int id, String username, String password)
 			throws IllegalArgumentException {
 		setId(id);
 		setUsername(username);
@@ -96,7 +96,7 @@ public class PlatformUserIdentifier implements UserIdentifier {
 	@Override
 	public boolean equals(Object o) {
 		if (o.getClass().getName().equals(this.getClass().getName())) {
-			PlatformUserIdentifier oid = (PlatformUserIdentifier) o;
+			PlatformUserIdentifierImpl oid = (PlatformUserIdentifierImpl) o;
 			return (id == oid.getId() || username.equals(oid.getUsername()));
 		}
 		

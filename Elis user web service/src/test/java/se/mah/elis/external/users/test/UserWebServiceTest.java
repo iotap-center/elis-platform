@@ -19,7 +19,7 @@ import se.mah.elis.services.users.exceptions.UserExistsException;
 import se.mah.elis.services.users.factory.UserFactory;
 import se.mah.elis.services.users.factory.impl.UserFactoryImpl;
 import se.mah.elis.services.users.factory.impl.test.mock.MockUserProvider;
-import se.mah.elis.services.users.impl.PlatformUserIdentifier;
+import se.mah.elis.services.users.impl.PlatformUserIdentifierImpl;
 import se.mah.elis.services.users.impl.PlatformUserImpl;
 import se.mah.elis.services.users.impl.UserServiceImpl;
 import se.mah.elis.services.users.impl.test.mock.MockUser;
@@ -218,7 +218,7 @@ public class UserWebServiceTest {
 		assertEquals(201, r.getStatus());
 		assertEquals(responseString, r.getEntity());
 		
-		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "1", "secret")));
 		User user = users[0];
 
 		assertNotNull(users);
@@ -250,7 +250,7 @@ public class UserWebServiceTest {
 		assertEquals(400, r.getStatus());
 		assertEquals(responseString, r.getEntity());
 		
-		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "1", "secret")));
 		
 		assertNotNull(users);
 		assertEquals(0, users.length);
@@ -320,7 +320,7 @@ public class UserWebServiceTest {
 		bean.firstName = "Bruce";
 		bean.lastName = "Wayne";
 		
-		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "1", "secret")));
 		
 		assertNotNull(users);
 		assertEquals(0, users.length);
@@ -420,7 +420,7 @@ public class UserWebServiceTest {
 				+ envelopeEnd;
 		
 		Response r = uws.coupleGatewayWithUser("gateway", "1", gw);
-		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "1", "secret")));
 		User user = users[0];
 		
 		assertNotNull(users);
@@ -447,7 +447,7 @@ public class UserWebServiceTest {
 		String responseString = envelopeStart + response400 + envelopeEnd;
 		
 		Response r = uws.coupleGatewayWithUser("gateway", "2", gw);
-		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "1", "secret")));
 
 		assertEquals(0, users.length);
 		assertEquals(400, r.getStatus());
@@ -479,7 +479,7 @@ public class UserWebServiceTest {
 		
 		r = uws.decoupleGatewayFromUser("1", "2");
 		
-		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "1", "secret")));
 		
 		assertEquals(0, users.length);
 		assertEquals(404, r.getStatus());
@@ -508,7 +508,7 @@ public class UserWebServiceTest {
 
 		String responseString = envelopeStart + response404 + envelopeEnd;
 		
-		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "1", "secret")));
 		
 		assertEquals(1, users.length);
 		assertEquals(404, r.getStatus());
@@ -540,7 +540,7 @@ public class UserWebServiceTest {
 		
 		r = uws.decoupleGatewayFromUser("1", "1");
 		
-		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifier(1, "1", "secret")));
+		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "1", "secret")));
 		
 		assertEquals(1, users.length);
 		assertEquals(404, r.getStatus());

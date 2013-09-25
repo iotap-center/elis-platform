@@ -42,7 +42,7 @@ public class EonGatewayUserFactoryTest {
 			EonGatewayUser user = (EonGatewayUser) factory.getUser(TEST_USER,
 					TEST_PASS, bridge);
 			EonGatewayUserIdentifer userId = (EonGatewayUserIdentifer) user
-					.getId();
+					.getIdentifier();
 			EonGateway gateway = (EonGateway) user.getGateway();
 			assertEquals(gateway.getAuthenticationToken(), TEST_TOKEN);
 			assertNotNull(gateway.getHttpBridge());

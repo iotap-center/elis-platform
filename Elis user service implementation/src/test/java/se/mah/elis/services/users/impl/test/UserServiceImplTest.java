@@ -11,7 +11,7 @@ import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
 import se.mah.elis.services.users.exceptions.UserExistsException;
-import se.mah.elis.services.users.impl.PlatformUserIdentifier;
+import se.mah.elis.services.users.impl.PlatformUserIdentifierImpl;
 import se.mah.elis.services.users.impl.PlatformUserImpl;
 import se.mah.elis.services.users.impl.UserServiceImpl;
 import se.mah.elis.services.users.impl.test.mock.AnotherMockUser;
@@ -116,7 +116,7 @@ public class UserServiceImplTest {
 	public void testGetUserNoSuchPlatformUser() {
 		UserService us = new UserServiceImpl();
 		PlatformUser pu = new PlatformUserImpl(
-				new PlatformUserIdentifier(1, "a", "b"));
+				new PlatformUserIdentifierImpl(1, "a", "b"));
 		User mu = new MockUser();
 		
 		try {
@@ -285,7 +285,7 @@ public class UserServiceImplTest {
 
 		assertEquals(2, us.getNbrOfPlatformUsers());
 		
-		actual = us.getPlatformUser(new PlatformUserIdentifier(3, "arthur", "douglas"));
+		actual = us.getPlatformUser(new PlatformUserIdentifierImpl(3, "arthur", "douglas"));
 		
 		assertNull(actual);
 	}
@@ -397,8 +397,8 @@ public class UserServiceImplTest {
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserTwoPlatformUsers() {
 		UserService us = new UserServiceImpl();
-		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifier("a", "b"));
-		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifier("1", "2"));
+		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
+		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
 		User mu = new MockUser();
 		
 		try {
@@ -424,8 +424,8 @@ public class UserServiceImplTest {
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserNonExistingUser() {
 		UserService us = new UserServiceImpl();
-		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifier("a", "b"));
-		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifier("1", "2"));
+		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
+		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
 		User mu1 = new MockUser();
 		User mu2 = new AnotherMockUser();
 		
@@ -450,8 +450,8 @@ public class UserServiceImplTest {
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserNToMCase() {
 		UserService us = new UserServiceImpl();
-		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifier("a", "b"));
-		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifier("1", "2"));
+		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
+		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
 		User mu1 = new MockUser();
 		User mu2 = new AnotherMockUser();
 		
@@ -537,7 +537,7 @@ public class UserServiceImplTest {
 		PlatformUser pu2 = new PlatformUserImpl();
 		try {
 			pu1 = us.createPlatformUser("batman", "superman");
-			pu2 = new PlatformUserImpl(new PlatformUserIdentifier("1", "a"));
+			pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "a"));
 		} catch (UserExistsException e1) {}
 		
 		
@@ -586,7 +586,7 @@ public class UserServiceImplTest {
 		} catch (UserExistsException e) {}
 
 		try {
-			us.deletePlatformUser(new PlatformUserImpl(new PlatformUserIdentifier(3, "george", "tarzan")));
+			us.deletePlatformUser(new PlatformUserImpl(new PlatformUserIdentifierImpl(3, "george", "tarzan")));
 			fail("Didn't delete the user");
 		} catch (NoSuchUserException e) {
 		}

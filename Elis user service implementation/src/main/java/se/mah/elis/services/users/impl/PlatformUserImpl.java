@@ -29,7 +29,7 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	 * 
 	 */
 	public PlatformUserImpl() {
-		id = new PlatformUserIdentifier();
+		id = new PlatformUserIdentifierImpl();
 		firstName = "";
 		lastName = "";
 		email = "";
@@ -58,14 +58,14 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 		if (id != null) {
 			this.id = id;
 		} else {
-			this.id = new PlatformUserIdentifier();
+			this.id = new PlatformUserIdentifierImpl();
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "PlatformUser " + ((PlatformUserIdentifier) id).getUsername() +
-				" (" + ((PlatformUserIdentifier) id).getId() + ")";
+		return "PlatformUser " + ((PlatformUserIdentifierImpl) id).getUsername() +
+				" (" + ((PlatformUserIdentifierImpl) id).getId() + ")";
 	}
 
 	@Override
@@ -121,8 +121,8 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 
 	@Override
 	public int compareTo(PlatformUserImpl pu) {
-		PlatformUserIdentifier puId = (PlatformUserIdentifier) pu.getIdentifier();
-		PlatformUserIdentifier thisId = (PlatformUserIdentifier) id;
+		PlatformUserIdentifierImpl puId = (PlatformUserIdentifierImpl) pu.getIdentifier();
+		PlatformUserIdentifierImpl thisId = (PlatformUserIdentifierImpl) id;
 		int result = 0;
 		
 		if (!puId.getUsername().equals(thisId.getUsername()) &&

@@ -16,6 +16,7 @@ public class EonGatewayUser implements GatewayUser {
 
 	private Gateway gateway;
 	private EonGatewayUserIdentifer gatewayUserIdentifier;
+	private int id;
 
 	/**
 	 * Will try to initialise the gateway if that has not been done before. 
@@ -34,12 +35,12 @@ public class EonGatewayUser implements GatewayUser {
 	}
 
 	@Override
-	public UserIdentifier getId() {
+	public UserIdentifier getIdentifier() {
 		return gatewayUserIdentifier;
 	}
 
 	@Override
-	public void setId(UserIdentifier userIdentifier) {
+	public void setIdentifier(UserIdentifier userIdentifier) {
 		gatewayUserIdentifier = (EonGatewayUserIdentifer) userIdentifier;
 	}
 
@@ -51,6 +52,16 @@ public class EonGatewayUser implements GatewayUser {
 	@Override
 	public void setGateway(Gateway gateway) {
 		this.gateway = gateway;
+	}
+
+	@Override
+	public int getIdNumber() {
+		return id;
+	}
+
+	@Override
+	public void setIdNumber(int id) {
+		this.id = id;
 	}
 
 }

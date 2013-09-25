@@ -28,6 +28,7 @@ import se.mah.elis.external.users.jaxbeans.PlatformUserBean;
 import se.mah.elis.external.users.jaxbeans.GatewayUserBean;
 import se.mah.elis.external.users.jaxbeans.UserContainerBean;
 import se.mah.elis.services.users.PlatformUser;
+import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
@@ -35,8 +36,6 @@ import se.mah.elis.services.users.exceptions.UserExistsException;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 import se.mah.elis.services.users.factory.UserFactory;
 import se.mah.elis.services.users.factory.UserRecipe;
-import se.mah.elis.services.users.impl.PlatformUserIdentifier;
-import se.mah.elis.services.users.impl.PlatformUserImpl;
 
 /**
  * @author "Johan Holmberg, Malmö University"
@@ -156,7 +155,7 @@ public class UserWebService {
 		response = buildBadRequestResponse(response);
 		
 		if (userService != null && userFactory != null) {
-			pu = new PlatformUserImpl();
+			pu = null;
 			try {
 				pu = userService.createPlatformUser(input.username,
 													input.password);
@@ -230,7 +229,8 @@ public class UserWebService {
 		PlatformUser pu = userService.getPlatformUser(userId);
 		
 		if (pu != null) {
-			PlatformUserIdentifier id = (PlatformUserIdentifier) pu.getIdentifier();
+			PlatformUserIdentifier id =
+					(PlatformUserIdentifier) pu.getIdentifier();
 			PlatformUserBean bean = new PlatformUserBean();
 			
 			bean.userId = Integer.toString(id.getId());
@@ -370,8 +370,8 @@ public class UserWebService {
 						recipe.getServiceName(), properties);
 				userService.registerUserToPlatformUser(u, pu);
 
-				bean.userId = "" + ((PlatformUserIdentifier) pu.getIdentifier())
-						.getId();
+				bean.userId = Integer.toString(((PlatformUserIdentifier) pu
+						.getIdentifier()).getId());
 				bean.username = ((PlatformUserIdentifier) pu.getIdentifier())
 						.getUsername();
 				bean.firstName = pu.getFirstName();

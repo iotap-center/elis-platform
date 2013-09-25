@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public PlatformUser getPlatformUser(String id) {
-		PlatformUserIdentifier identifier = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl identifier = new PlatformUserIdentifierImpl();
 		identifier.setId(Integer.parseInt(id));
 		
 		return getPlatformUser(identifier);
@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
 		
 		if (!map.containsKey(pu)) {
 			list = new ArrayList<User>();
-			((PlatformUserIdentifier) pu.getIdentifier()).setId(++platformUserCounter);
+			((PlatformUserIdentifierImpl) pu.getIdentifier()).setId(++platformUserCounter);
 			map.put(pu, list);
 		} else {
 			list = (ArrayList<User>) map.get(pu);
@@ -149,14 +149,14 @@ public class UserServiceImpl implements UserService {
 		ArrayList<User> list = null;
 		PlatformUser pu = null;
 		try {
-			pu = new PlatformUserImpl(new PlatformUserIdentifier(username,
+			pu = new PlatformUserImpl(new PlatformUserIdentifierImpl(username,
 																 password));
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException();
 		}
 		
 		if (!map.containsKey(pu)) {
-			((PlatformUserIdentifier) pu.getIdentifier()).setId(++platformUserCounter);
+			((PlatformUserIdentifierImpl) pu.getIdentifier()).setId(++platformUserCounter);
 			
 			list = new ArrayList<User>();
 			map.put(pu, list);

@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.mah.elis.services.users.impl.PlatformUserIdentifier;
+import se.mah.elis.services.users.impl.PlatformUserIdentifierImpl;
 import se.mah.elis.services.users.impl.PlatformUserImpl;
 
 public class PlatformUserIdentifierTest {
@@ -21,7 +21,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testPlainObject() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 
 		assertEquals(0, p.getId());
 		assertEquals("", p.getUsername());
@@ -30,7 +30,7 @@ public class PlatformUserIdentifierTest {
 	
 	@Test
 	public void testSetId() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setId(17);
 
 		assertEquals(17, p.getId());
@@ -38,7 +38,7 @@ public class PlatformUserIdentifierTest {
 	
 	@Test
 	public void testSetIdZero() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		
 		try {
 			p.setId(0);
@@ -51,7 +51,7 @@ public class PlatformUserIdentifierTest {
 	
 	@Test
 	public void testSetIdNegativeValue() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		
 		try {
 			p.setId(-1);
@@ -64,7 +64,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetPassword() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setPassword("batman");
 		
 		assertEquals("batman", p.getPassword());
@@ -72,7 +72,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetPasswordWithWhitespaces() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setPassword("  batman ");
 		
 		assertEquals("batman", p.getPassword());
@@ -80,7 +80,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetPasswordNull() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		
 		try {
 			p.setPassword(null);
@@ -90,7 +90,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetEmptyPassword() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setPassword("batman");
 		
 		assertEquals("batman", p.getPassword());
@@ -104,7 +104,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetBlankPassword() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setPassword("batman");
 		
 		assertEquals("batman", p.getPassword());
@@ -118,7 +118,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetPasswordAgain() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setPassword("batman");
 		
 		assertEquals("batman", p.getPassword());
@@ -129,7 +129,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetUsername() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setUsername("batman");
 		
 		assertEquals("batman", p.getUsername());
@@ -137,7 +137,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetUsernameWithWhitespaces() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setUsername(" batman   ");
 		
 		assertEquals("batman", p.getUsername());
@@ -145,7 +145,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetUsernameNull() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		
 		try {
 			p.setUsername(null);
@@ -155,7 +155,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetEmptyUsername() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setUsername("batman");
 		
 		assertEquals("batman", p.getUsername());
@@ -169,7 +169,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetBlankUsername() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setUsername("batman");
 		
 		assertEquals("batman", p.getUsername());
@@ -183,7 +183,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testSetUsernameAgain() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setUsername("batman");
 		
 		assertEquals("batman", p.getUsername());
@@ -194,7 +194,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testExtendedConstructorWithSaneArgument() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier(13, "horses", "martians");
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl(13, "horses", "martians");
 
 		assertEquals(13, p.getId());
 		assertEquals("horses", p.getUsername());
@@ -203,10 +203,10 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testExtendedConstructorWithEmptyPassword() {
-		PlatformUserIdentifier p = null;
+		PlatformUserIdentifierImpl p = null;
 		
 		try {
-			p = new PlatformUserIdentifier(13, "batman", "");
+			p = new PlatformUserIdentifierImpl(13, "batman", "");
 		} catch (IllegalArgumentException e) {
 			assertNull(p);
 		}
@@ -214,10 +214,10 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testExtendedConstructorWithEmptyUsername() {
-		PlatformUserIdentifier p = null;
+		PlatformUserIdentifierImpl p = null;
 		
 		try {
-			p = new PlatformUserIdentifier(13, "", "superman");
+			p = new PlatformUserIdentifierImpl(13, "", "superman");
 		} catch (IllegalArgumentException e) {
 			assertNull(p);
 		}
@@ -225,10 +225,10 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testExtendedConstructorWithNonPositiveId() {
-		PlatformUserIdentifier p = null;
+		PlatformUserIdentifierImpl p = null;
 		
 		try {
-			p = new PlatformUserIdentifier(0, "batman", "superman");
+			p = new PlatformUserIdentifierImpl(0, "batman", "superman");
 		} catch (IllegalArgumentException e) {
 			assertNull(p);
 		}
@@ -236,10 +236,10 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testExtendedConstructorWithEmptyArguments() {
-		PlatformUserIdentifier p = null;
+		PlatformUserIdentifierImpl p = null;
 		
 		try {
-			p = new PlatformUserIdentifier(0, "", "");
+			p = new PlatformUserIdentifierImpl(0, "", "");
 		} catch (IllegalArgumentException e) {
 			assertNull(p);
 		}
@@ -247,7 +247,7 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testConstructorWithSaneArgument() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier("horses", "martians");
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl("horses", "martians");
 
 		assertEquals("horses", p.getUsername());
 		assertEquals("martians", p.getPassword());
@@ -255,10 +255,10 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testConstructorWithEmptyPassword() {
-		PlatformUserIdentifier p = null;
+		PlatformUserIdentifierImpl p = null;
 		
 		try {
-			p = new PlatformUserIdentifier("batman", "");
+			p = new PlatformUserIdentifierImpl("batman", "");
 		} catch (IllegalArgumentException e) {
 			assertNull(p);
 		}
@@ -266,10 +266,10 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testConstructorWithEmptyUsername() {
-		PlatformUserIdentifier p = null;
+		PlatformUserIdentifierImpl p = null;
 		
 		try {
-			p = new PlatformUserIdentifier("", "superman");
+			p = new PlatformUserIdentifierImpl("", "superman");
 		} catch (IllegalArgumentException e) {
 			assertNull(p);
 		}
@@ -277,10 +277,10 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testConstructorWithEmptyArguments() {
-		PlatformUserIdentifier p = null;
+		PlatformUserIdentifierImpl p = null;
 		
 		try {
-			p = new PlatformUserIdentifier("", "");
+			p = new PlatformUserIdentifierImpl("", "");
 		} catch (IllegalArgumentException e) {
 			assertNull(p);
 		}
@@ -288,7 +288,7 @@ public class PlatformUserIdentifierTest {
 	
 	@Test
 	public void testIsEmptyValid() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		p.setUsername("batman");
 		p.setPassword("robin");
 		
@@ -297,7 +297,7 @@ public class PlatformUserIdentifierTest {
 	
 	@Test
 	public void testIsEmptyValidUsername() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		try {
 			p.setUsername("batman");
 			p.setPassword("");
@@ -308,7 +308,7 @@ public class PlatformUserIdentifierTest {
 	
 	@Test
 	public void testIsEmptyValidPassword() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		try {
 			p.setUsername("");
 			p.setPassword("robin");
@@ -319,7 +319,7 @@ public class PlatformUserIdentifierTest {
 	
 	@Test
 	public void testIsEmptyReallyEmpty() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier();
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 		try {
 			p.setUsername("");
 			p.setPassword("");
@@ -330,39 +330,39 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testToString() {
-		PlatformUserIdentifier p = new PlatformUserIdentifier(3, "batman", "superman");
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl(3, "batman", "superman");
 		
 		assertEquals("3: batman, superman", p.toString());
 	}
 
 	@Test
 	public void testEqualsSameId() {
-		PlatformUserIdentifier pu1 = new PlatformUserIdentifier(1, "batman", "superman");
-		PlatformUserIdentifier pu2 = new PlatformUserIdentifier(1, "fred", "barney");
+		PlatformUserIdentifierImpl pu1 = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl pu2 = new PlatformUserIdentifierImpl(1, "fred", "barney");
 		
 		assertTrue(pu1.equals(pu2));
 	}
 
 	@Test
 	public void testEqualsSameUsername() {
-		PlatformUserIdentifier pu1 = new PlatformUserIdentifier("batman", "superman");
-		PlatformUserIdentifier pu2 = new PlatformUserIdentifier("batman", "george");
+		PlatformUserIdentifierImpl pu1 = new PlatformUserIdentifierImpl("batman", "superman");
+		PlatformUserIdentifierImpl pu2 = new PlatformUserIdentifierImpl("batman", "george");
 		
 		assertTrue(pu1.equals(pu2));
 	}
 
 	@Test
 	public void testEqualsSameUsernameAndId() {
-		PlatformUserIdentifier pu1 = new PlatformUserIdentifier(1, "batman", "superman");
-		PlatformUserIdentifier pu2 = new PlatformUserIdentifier(1, "batman", "superman");
+		PlatformUserIdentifierImpl pu1 = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl pu2 = new PlatformUserIdentifierImpl(1, "batman", "superman");
 		
 		assertTrue(pu1.equals(pu2));
 	}
 
 	@Test
 	public void testEqualsDifferentStuff() {
-		PlatformUserIdentifier pu1 = new PlatformUserIdentifier(1, "batman", "superman");
-		PlatformUserIdentifier pu2 = new PlatformUserIdentifier(2, "fred", "barney");
+		PlatformUserIdentifierImpl pu1 = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl pu2 = new PlatformUserIdentifierImpl(2, "fred", "barney");
 		
 		assertFalse(pu1.equals(pu2));
 	}
