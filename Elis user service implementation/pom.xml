@@ -35,6 +35,11 @@
   		<version>1.4</version>
   		<scope>test</scope>
   	</dependency>
+  	<dependency>
+  		<groupId>org.apache.felix</groupId>
+  		<artifactId>org.apache.felix.scr.annotations</artifactId>
+  		<version>1.9.6</version>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>
@@ -46,10 +51,26 @@
         <configuration>
           <instructions>
             <Private-Package>${project.groupId}.*</Private-Package>
-            <Bundle-Activator>${project.groupId}.impl.Activator</Bundle-Activator>
+            <Service-Component>
+            	${project.groupId}.impl.UserServiceImpl,
+            	${project.groupId}.factory.impl.UserFactoryImpl
+            </Service-Component>
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-scr-plugin</artifactId>
+        <version>1.14.0</version>
+        <executions>
+          <execution>
+            <id>generate-scr-scrdescriptor</id>
+            <goals>
+              <goal>scr</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
