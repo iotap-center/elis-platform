@@ -2,9 +2,11 @@ package se.mah.elis.services.users.factory.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Service;
 
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
@@ -12,6 +14,8 @@ import se.mah.elis.services.users.factory.UserFactory;
 import se.mah.elis.services.users.factory.UserProvider;
 import se.mah.elis.services.users.factory.UserRecipe;
 
+@Component(immediate=true)
+@Service(value=UserFactory.class)
 public class UserFactoryImpl implements UserFactory {
 
 	private Map<String, Map<String, UserProvider>> providers;

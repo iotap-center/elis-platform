@@ -10,6 +10,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Service;
+
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
@@ -25,6 +28,8 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
+@Component(immediate=true)
+@Service(value=UserService.class)
 public class UserServiceImpl implements UserService {
 
 	// TODO This is a placeholer. It has to be replaced with a persistent storage at a later stage.
