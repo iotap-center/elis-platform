@@ -3,27 +3,44 @@ package se.mah.elis.console;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.ReferenceCardinality;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.felix.service.command.CommandProcessor;
 import org.apache.felix.service.command.Descriptor;
 import org.osgi.service.log.LogService;
 
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.factory.UserFactory;
-import aQute.bnd.annotation.component.Component;
-import aQute.bnd.annotation.component.Reference;
 
-@Component(properties={
-		CommandProcessor.COMMAND_SCOPE + ":String=elis",
-		CommandProcessor.COMMAND_FUNCTION + ":String=batman",
-		CommandProcessor.COMMAND_FUNCTION + ":String=listloggers",
-		CommandProcessor.COMMAND_FUNCTION + ":String=listuserservices",
-		CommandProcessor.COMMAND_FUNCTION + ":String=listuserfactories"
-	},
-	provide = ConsoleCommands.class)
+@Component
+@Service(value=ConsoleCommands.class)
+@Properties({
+	@Property(name = CommandProcessor.COMMAND_SCOPE, value = "elis"),
+	@Property(name = CommandProcessor.COMMAND_FUNCTION,
+	value = {"batman", "listloggers", "listuserservices", "listuserfactories"})
+})
 public class ConsoleCommands {
 	
+	@Reference(bind = "addLogger",
+			unbind = "removeLogger",
+			referenceInterface = LogService.class,
+			cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE)
 	private Collection<LogService> loggers;
+	
+	@Reference(bind = "addUserService",
+			unbind = "removeUserService",
+					referenceInterface = UserService.class,
+			cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE)
 	private Collection<UserService> userServices;
+	
+	@Reference(bind = "addUserFactory",
+			unbind = "removeUserFactory",
+					referenceInterface = UserFactory.class,
+			cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE)
 	private Collection<UserFactory> userFactories;
 	
 	public ConsoleCommands() {
@@ -69,34 +86,30 @@ public class ConsoleCommands {
 			System.out.println("No user factories yet");
 		}
 	}
-	
-	
-	@Reference(name="loggers", type='*')
-	public void addLogger(LogService l) {
+
+	protected void addLogger(LogService l) {
 		loggers.add(l);
 	}
 
-	public void removeLogger(LogService l) {
+	protected void removeLogger(LogService l) {
 		loggers.remove(l);
 	}
 
-	@Reference(name="userServices", type='*')
-	public void addUserService(UserService us) {
+	protected void addUserService(UserService us) {
 		System.out.println("Adding user service");
 		userServices.add(us);
 	}
 	
-	public void removeUserService(UserService us) {
+	protected void removeUserService(UserService us) {
 		userServices.remove(us);
 	}
 
-	@Reference(name="userFactories", type='*')
-	public void addUserFactory(UserFactory uf) {
+	protected void addUserFactory(UserFactory uf) {
 		System.out.println("Adding user factory");
 		userFactories.add(uf);
 	}
 	
-	public void removeUserFactory(UserFactory uf) {
+	protected void removeUserFactory(UserFactory uf) {
 		userFactories.remove(uf);
 	}
 }
