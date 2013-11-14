@@ -16,7 +16,7 @@ import org.osgi.service.log.LogService;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.factory.UserFactory;
 
-@Component
+@Component(name = "Elis Console commands")
 @Service(value=ConsoleCommands.class)
 @Properties({
 	@Property(name = CommandProcessor.COMMAND_SCOPE, value = "elis"),
