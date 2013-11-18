@@ -5,8 +5,8 @@ package se.mah.elis.data.traversers;
 
 import java.lang.reflect.Method;
 
-import se.mah.elis.auxiliaries.data.Sample;
-import se.mah.elis.auxiliaries.exceptions.MismatchingSampleException;
+import se.mah.elis.data.Sample;
+import se.mah.elis.exceptions.MismatchingSampleException;
 
 /**
  * The SampleTraverser class provides a number of methods for traversing lists

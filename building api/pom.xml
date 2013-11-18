@@ -23,14 +23,20 @@
   		<version>4.3.1</version>
   	</dependency>
   	<dependency>
-  		<groupId>se.mah.elis.auxiliaries</groupId>
-  		<artifactId>auxiliaries</artifactId>
+  		<groupId>se.mah.elis.services.users</groupId>
+  		<artifactId>user-service</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   		<type>bundle</type>
   	</dependency>
   	<dependency>
-  		<groupId>se.mah.elis.services.users</groupId>
-  		<artifactId>user-service</artifactId>
+  		<groupId>se.mah.elis.data</groupId>
+  		<artifactId>elis-data-definitions</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<type>bundle</type>
+  	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.exceptions</groupId>
+  		<artifactId>elis-exceptions</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   		<type>bundle</type>
   	</dependency>
