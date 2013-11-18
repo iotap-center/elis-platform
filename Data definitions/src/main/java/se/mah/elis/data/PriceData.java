@@ -1,4 +1,4 @@
-package se.mah.elis.auxiliaries.data;
+package se.mah.elis.data;
 
 /**
  * The PriceData interface encapsulates pricing data. It maintains three types

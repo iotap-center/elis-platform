@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.mah.elis.auxiliaries;
+package se.mah.elis.data.traversers;
 
 import java.lang.reflect.Method;
 

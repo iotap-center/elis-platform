@@ -1,4 +1,4 @@
-package se.mah.elis.auxiliaries.exceptions;
+package se.mah.elis.exceptions;
 
 /**
  * OutOfDateRangeException is thrown by various methods dealing with historical

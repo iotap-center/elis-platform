@@ -6,11 +6,10 @@
     <relativePath>../super/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>se.mah.elis.exceptions</groupId>
-  <artifactId>elis-exceptions</artifactId>
+  <groupId>se.mah.elis.data</groupId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
-  <name>The Elis exceptions bundle</name>
+  <name>The Elis Data definitions bundle</name>
   
   <build>
     <plugins>
@@ -27,4 +26,13 @@
       </plugin>    <!-- (2) END -->
     </plugins>
   </build>
+  <artifactId>elis-data-definitions</artifactId>
+  <dependencies>
+  	<dependency>
+  		<groupId>se.mah.elis.exceptions</groupId>
+  		<artifactId>elis-exceptions</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<type>bundle</type>
+  	</dependency>
+  </dependencies>
 </project>

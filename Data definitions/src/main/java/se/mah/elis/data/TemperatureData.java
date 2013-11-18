@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.mah.elis.auxiliaries.data;
+package se.mah.elis.data;
 
 /**
  * The Temperature interface is used to store temperature data. The interface

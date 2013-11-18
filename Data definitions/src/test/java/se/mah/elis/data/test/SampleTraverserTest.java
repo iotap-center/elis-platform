@@ -1,4 +1,4 @@
-package se.mah.elis.auxiliaries.test;
+package se.mah.elis.data.test;
 
 import static org.junit.Assert.*;
 
@@ -10,10 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.mah.elis.auxiliaries.SampleTraverser;
-import se.mah.elis.auxiliaries.data.Sample;
 import se.mah.elis.auxiliaries.exceptions.MismatchingSampleException;
-import se.mah.elis.auxiliaries.test.mocks.ElectricitySampleMock;
-import se.mah.elis.auxiliaries.test.mocks.SimpleSampleMock;
+import se.mah.elis.data.Sample;
+import se.mah.elis.data.test.mocks.ElectricitySampleMock;
+import se.mah.elis.data.test.mocks.SimpleSampleMock;
 
 public class SampleTraverserTest {
 	

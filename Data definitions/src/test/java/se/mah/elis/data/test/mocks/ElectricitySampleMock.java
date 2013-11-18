@@ -1,10 +1,10 @@
-package se.mah.elis.auxiliaries.test.mocks;
+package se.mah.elis.data.test.mocks;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import se.mah.elis.auxiliaries.data.ElectricitySample;
+import se.mah.elis.data.ElectricitySample;
 
 public class ElectricitySampleMock implements ElectricitySample {
 

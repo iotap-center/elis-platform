@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.mah.elis.auxiliaries.exceptions;
+package se.mah.elis.exceptions;
 
 /**
  * This exception is thrown by {@link se.mah.elis.auxiliaries.SampleTraverser}

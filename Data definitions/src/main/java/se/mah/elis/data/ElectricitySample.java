@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.mah.elis.auxiliaries.data;
+package se.mah.elis.data;
 
 /**
  * The ElectricitySample interface encapsulates electricity usage data from

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.mah.elis.auxiliaries.data;
+package se.mah.elis.data;
 
 import java.util.Date;
 import java.util.List;

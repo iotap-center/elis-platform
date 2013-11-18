@@ -1,9 +1,9 @@
-package se.mah.elis.auxiliaries.test.mocks;
+package se.mah.elis.data.test.mocks;
 
 import java.util.Date;
 import java.util.List;
 
-import se.mah.elis.auxiliaries.data.Sample;
+import se.mah.elis.data.Sample;
 
 public class SimpleSampleMock implements Sample {
 
