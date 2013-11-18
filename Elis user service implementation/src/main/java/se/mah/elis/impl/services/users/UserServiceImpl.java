@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.mah.elis.services.users.impl;
+package se.mah.elis.impl.services.users;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,8 +28,8 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-@Component(immediate=true)
-@Service(value=UserService.class)
+@Component(name = "Elis User service")
+@Service
 public class UserServiceImpl implements UserService {
 
 	// TODO This is a placeholer. It has to be replaced with a persistent storage at a later stage.

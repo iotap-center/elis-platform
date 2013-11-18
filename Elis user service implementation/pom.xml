@@ -6,7 +6,7 @@
     <relativePath>../super/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>se.mah.elis.services.users</groupId>
+  <groupId>se.mah.elis.impl.services.users</groupId>
   <artifactId>user-service-impl</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
@@ -50,6 +50,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
+            <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
             <Private-Package>${project.groupId}.*</Private-Package>
           </instructions>
         </configuration>

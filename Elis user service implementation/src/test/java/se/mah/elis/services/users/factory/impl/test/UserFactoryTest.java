@@ -12,13 +12,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-
+import se.mah.elis.impl.services.users.factory.UserFactoryImpl;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 import se.mah.elis.services.users.factory.UserFactory;
 import se.mah.elis.services.users.factory.UserProvider;
 import se.mah.elis.services.users.factory.UserRecipe;
-import se.mah.elis.services.users.factory.impl.UserFactoryImpl;
 import se.mah.elis.services.users.factory.impl.test.mock.AnotherMockUserProvider;
 import se.mah.elis.services.users.factory.impl.test.mock.MockUserProvider;
 import se.mah.elis.services.users.impl.test.mock.MockUser;

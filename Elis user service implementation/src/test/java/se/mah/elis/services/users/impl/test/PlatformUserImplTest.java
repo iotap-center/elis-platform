@@ -6,9 +6,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.mah.elis.impl.services.users.PlatformUserIdentifierImpl;
+import se.mah.elis.impl.services.users.PlatformUserImpl;
 import se.mah.elis.services.users.UserIdentifier;
-import se.mah.elis.services.users.impl.PlatformUserIdentifierImpl;
-import se.mah.elis.services.users.impl.PlatformUserImpl;
 
 public class PlatformUserImplTest {
 

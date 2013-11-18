@@ -1,4 +1,4 @@
-package se.mah.elis.services.users.factory.impl;
+package se.mah.elis.impl.services.users.factory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,8 +14,8 @@ import se.mah.elis.services.users.factory.UserFactory;
 import se.mah.elis.services.users.factory.UserProvider;
 import se.mah.elis.services.users.factory.UserRecipe;
 
-@Component(immediate=true)
-@Service(value=UserFactory.class)
+@Component(name = "Elis User factory")
+@Service(value = UserFactory.class)
 public class UserFactoryImpl implements UserFactory {
 
 	private Map<String, Map<String, UserProvider>> providers;

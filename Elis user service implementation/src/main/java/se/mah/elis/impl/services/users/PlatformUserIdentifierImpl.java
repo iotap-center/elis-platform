@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.mah.elis.services.users.impl;
+package se.mah.elis.impl.services.users;
 
 import se.mah.elis.services.users.PlatformUserIdentifier;
 
