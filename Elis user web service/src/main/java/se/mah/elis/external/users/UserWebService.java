@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.felix.service.command.Descriptor;
 
@@ -47,7 +48,7 @@ import se.mah.elis.services.users.factory.UserRecipe;
  * @since 1.0
  */
 @Path("/user")
-@Component
+@Component(name = "Elis User web service")
 @Service(value=UserWebService.class)
 @org.apache.felix.scr.annotations.Properties({
 	@Property(name = CommandProcessor.COMMAND_SCOPE, value = "elis"),

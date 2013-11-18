@@ -33,14 +33,6 @@
   		<groupId>com.eclipsesource.jaxrs.publisher</groupId>
   		<artifactId>osgi-connector</artifactId>
   		<version>0.0.1</version>
-  		<type>bundle</type>
-  	</dependency>
-  	<dependency>
-  		<groupId>se.mah.elis.services.users</groupId>
-  		<artifactId>user-service-impl</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  		<type>bundle</type>
-  		<scope>test</scope>
   	</dependency>
   	<dependency>
   		<groupId>com.google.code.gson</groupId>
