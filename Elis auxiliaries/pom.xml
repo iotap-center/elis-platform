@@ -6,24 +6,12 @@
     <relativePath>../super/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>se.mah.elis.auxiliaries</groupId>
-  <artifactId>auxiliaries</artifactId>
+  <groupId>se.mah.elis.exceptions</groupId>
+  <artifactId>elis-exceptions</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
-  <name>The Elis Auxiliaries bundle</name>
+  <name>The Elis exceptions bundle</name>
   
-  <dependencies>
-  	<dependency>
-  		<groupId>org.osgi</groupId>
-  		<artifactId>org.osgi.core</artifactId>
-  		<version>4.3.1</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.osgi</groupId>
-  		<artifactId>org.osgi.compendium</artifactId>
-  		<version>4.3.1</version>
-  	</dependency>
-  </dependencies>
   <build>
     <plugins>
       <plugin>    <!-- (2) START -->
@@ -34,7 +22,6 @@
         <configuration>
           <instructions>
             <Export-Package>${project.groupId}, ${project.groupId}.*</Export-Package>
-            <!-- <Bundle-Activator>${project.groupId}.Activator</Bundle-Activator> -->
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
