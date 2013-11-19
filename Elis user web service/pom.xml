@@ -52,6 +52,12 @@
   		<version>0.4.0</version>
   		<type>bundle</type>
   	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.impl.services.users</groupId>
+  		<artifactId>user-service-impl</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  		<type>bundle</type>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>
