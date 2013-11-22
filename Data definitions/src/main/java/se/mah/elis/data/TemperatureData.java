@@ -11,7 +11,7 @@ package se.mah.elis.data;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public interface TemperatureData {
+public interface TemperatureData extends ElisDataObject {
 	
 	/**
 	 * Gets the temperature according to the Kelvin scale.

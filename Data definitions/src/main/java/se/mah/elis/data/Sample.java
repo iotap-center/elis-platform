@@ -10,7 +10,7 @@ import java.util.List;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public interface Sample {
+public interface Sample extends ElisDataObject {
 	
 	/**
 	 * Gets the sample length measured in milliseconds.

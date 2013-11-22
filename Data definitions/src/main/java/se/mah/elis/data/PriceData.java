@@ -8,7 +8,7 @@ package se.mah.elis.data;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public interface PriceData {
+public interface PriceData extends ElisDataObject {
 	
 	/**
 	 * Returns the total price, tax portion included.
