@@ -15,6 +15,11 @@ public class StorageException extends Exception {
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = 1907776511239444176L;
+
+	/**
+	 * 
+	 */
 	public StorageException() {
 		// TODO Auto-generated constructor stub
 	}
