@@ -166,6 +166,7 @@
 		
 		<!-- Reference implementation modules -->
 		<module>../Elis user service implementation</module>
+		<module>../storage-impl</module>
 		<!-- <module>../Elis user web service</module> -->
 	</modules>
 </project>
