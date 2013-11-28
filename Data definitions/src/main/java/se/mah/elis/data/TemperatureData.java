@@ -3,6 +3,8 @@
  */
 package se.mah.elis.data;
 
+import se.mah.elis.services.storage.data.ElisDataObject;
+
 /**
  * The Temperature interface is used to store temperature data. The interface
  * exposes functionality to retrieve the data in any of the Kelvin, Celsius, 

@@ -6,6 +6,8 @@ package se.mah.elis.data;
 import java.util.Date;
 import java.util.List;
 
+import se.mah.elis.services.storage.data.ElisDataObject;
+
 /**
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
