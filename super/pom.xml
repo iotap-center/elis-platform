@@ -170,6 +170,6 @@
 		<!-- <module>../Elis user web service</module> -->
 		
 		<!-- Misc modules -->
-		<module>../elis-branding</module>
+		<!-- <module>../elis-branding</module> -->
 	</modules>
 </project>
