@@ -8,5 +8,12 @@ package se.mah.elis.services.storage.query;
  * @since 1.0
  */
 public interface Predicate {
-
+	
+	/**
+	 * Compiles the predicate.
+	 * 
+	 * @return A string holding the compiled predicate.
+	 * @since 1.0
+	 */
+	String compile();
 }

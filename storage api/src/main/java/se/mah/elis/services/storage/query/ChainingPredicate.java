@@ -13,7 +13,8 @@ package se.mah.elis.services.storage.query;
  * self references for method chaining.</p>
  * 
  * <p>Every implementation of ChainingPredicate must include a reference to the
- * {@link ChainingPredicates} enumeration.</p>
+ * {@link ChainingPredicates} enumeration, publicly visible under the name
+ * <i>Predicates</i>.</p>
  * 
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0

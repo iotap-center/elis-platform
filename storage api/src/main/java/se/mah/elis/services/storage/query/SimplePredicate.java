@@ -13,7 +13,8 @@ import se.mah.elis.services.users.UserIdentifier;
  * references for method chaining.</p>
  * 
  * <p>Every implementation of SimplePredicate must include a reference to the
- * {@link SimplePredicates} enumeration.</p>
+ * {@link SimplePredicates} enumeration, publicly visible under the name
+ * <i>Predicates</i>.</p>
  * 
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
