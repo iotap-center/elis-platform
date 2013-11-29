@@ -3,7 +3,7 @@ package se.mah.elis.services.storage;
 import se.mah.elis.services.storage.data.ElisDataObject;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.Query;
-import se.mah.elis.services.storage.query.ResultSet;
+import se.mah.elis.services.storage.result.ResultSet;
 import se.mah.elis.services.users.AbstractUser;
 import se.mah.elis.services.users.UserIdentifier;
 
@@ -126,6 +126,15 @@ public interface Storage {
 	void delete(AbstractUser[] user) throws StorageException;
 	
 	/**
+	 * Deletes data based on a query.
+	 * 
+	 * @param query A query describing what data to delete.
+	 * @throws StorageException if the query wasn't processed.
+	 * @since 1.0
+	 */
+	void delete(Query query) throws StorageException;
+	
+	/**
 	 * Reads out a specific data object from the storage.
 	 * 
 	 * @param id The unique data id.
@@ -150,7 +159,7 @@ public interface Storage {
 	 * 
 	 * @param query The query to run.
 	 * @return A Result object, containing the data found by the currently run
-	 * query.
+	 * 		query.
 	 * @throws StorageException if the query wasn't processed.
 	 * @since 1.0
 	 */

@@ -1,4 +1,4 @@
-package se.mah.elis.services.storage.query;
+package se.mah.elis.services.storage.result;
 
 /**
  * The ResultPayloadTuple interface describes a row in a query result. It

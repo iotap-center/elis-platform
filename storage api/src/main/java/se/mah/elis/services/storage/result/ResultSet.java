@@ -1,4 +1,4 @@
-package se.mah.elis.services.storage.query;
+package se.mah.elis.services.storage.result;
 
 /**
  * <p>The ResultSet interface describes a result from a query to the Elis
