@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>se.mah.elis.impl.services.users</groupId>
   <artifactId>user-service-impl</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>bundle</packaging>
   <name>The Elis User Service Implementation bundle</name>
   
