@@ -168,5 +168,8 @@
 		<module>../Elis user service implementation</module>
 		<module>../storage-impl</module>
 		<!-- <module>../Elis user web service</module> -->
+		
+		<!-- Misc modules -->
+		<module>../elis-branding</module>
 	</modules>
 </project>
