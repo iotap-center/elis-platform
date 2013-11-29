@@ -14,6 +14,14 @@ package se.mah.elis.services.storage.result;
 public interface ResultSet {
 	
 	/**
+	 * Returns the type of the objects in the result set.
+	 * 
+	 * @return The class name of the returned objects.
+	 * @since 1.0
+	 */
+	Class getObjectType();
+	
+	/**
 	 * Counts the number of rows in a result.
 	 * 
 	 * @return The number of rows.
@@ -29,7 +37,7 @@ public interface ResultSet {
 	 * @throws IndexOutOfBoundsException if the index was out of bounds.
 	 * @since 1.0
 	 */
-	ResultPayload get(int index) throws IndexOutOfBoundsException;
+	Object get(int index) throws IndexOutOfBoundsException;
 	
 	/**
 	 * Returns the result set as an array of ResultSets.
@@ -38,7 +46,7 @@ public interface ResultSet {
 	 * returns a null reference.
 	 * @since 1.0
 	 */
-	ResultPayload[] getArray();
+	Object[] getArray();
 	
 	/**
 	 * Resets the internal pointer.
@@ -62,7 +70,7 @@ public interface ResultSet {
 	 * @return The next element in the result set.
 	 * @since 1.0
 	 */
-	ResultPayload next();
+	Object next();
 	
 	/**
 	 * Fetches the first element in the result set.
@@ -70,7 +78,7 @@ public interface ResultSet {
 	 * @return The first element in the result set.
 	 * @since 1.0
 	 */
-	ResultPayload first();
+	Object first();
 	
 	/**
 	 * Fetches the last element in the result set.
@@ -78,5 +86,5 @@ public interface ResultSet {
 	 * @return The last element in the result set.
 	 * @since 1.0
 	 */
-	ResultPayload last();
+	Object last();
 }
