@@ -58,4 +58,14 @@ public interface Query {
 	 * @since 1.0
 	 */
 	Query setOrder(boolean oldestFirst);
+	
+	/**
+	 * Translates a query into a string suitable for the backend database.
+	 * 
+	 * @param translator The QueryTranslator provided by the backend
+	 * 		implementation.
+	 * @return The string representation of the query.
+	 * @since 1.1
+	 */
+	String translate(QueryTranslator translator);
 }
