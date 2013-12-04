@@ -16,7 +16,27 @@ package se.mah.elis.services.storage.query;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public interface Query {
+public class Query {
+
+	private Predicate predicate;
+	private Class dataType;
+	private int start;
+	private int size;
+	private boolean oldestFirst;
+	private QueryTranslator translator;
+	
+	/**
+	 * Creates an instance of the class.
+	 * 
+	 * @since 1.1
+	 */
+	public Query() {
+		predicate = null;
+		dataType = null;
+		start = -1;
+		size = -1;
+		oldestFirst = true;
+	}
 	
 	/**
 	 * Tells the query what kind of data to look for.
@@ -25,7 +45,11 @@ public interface Query {
 	 * @return A reference back to the query object.
 	 * @since 1.0
 	 */
-	Query setDataType(Class c);
+	Query setDataType(Class c) {
+		dataType = c;
+		
+		return this;
+	}
 	
 	/**
 	 * Limits the number of objects returned by the storage.
@@ -36,7 +60,12 @@ public interface Query {
 	 * @return A reference back to the query object.
 	 * @since 1.0
 	 */
-	Query limit(int start, int size);
+	Query limit(int start, int size) {
+		this.start = start;
+		this.size = size;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the predicate telling the storage engine what data to look for. If
@@ -47,7 +76,11 @@ public interface Query {
 	 * @return A reference back to the query object.
 	 * @since 1.0
 	 */
-	Query setPredicate(Predicate p);
+	Query setPredicate(Predicate p) {
+		predicate = p;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the order in which the results will be returned.
@@ -57,15 +90,31 @@ public interface Query {
 	 * @return A reference back to the query object.
 	 * @since 1.0
 	 */
-	Query setOrder(boolean oldestFirst);
+	Query setOrder(boolean oldestFirst) {
+		this.oldestFirst = oldestFirst;
+		
+		return this;
+	}
+	
+	/**
+	 * Sets the translator to be used when translating the query.
+	 * 
+	 * @param translator The QueryTranslator provided by the backend
+	 * 		implementation.
+	 * @since 1.1
+	 */
+	void setTranslator(QueryTranslator translator) {
+		this.translator = translator;
+	}
 	
 	/**
 	 * Translates a query into a string suitable for the backend database.
 	 * 
-	 * @param translator The QueryTranslator provided by the backend
-	 * 		implementation.
 	 * @return The string representation of the query.
 	 * @since 1.1
 	 */
-	String translate(QueryTranslator translator);
+	String compile() {
+		return translator.what(dataType).where(predicate)
+				.limit(start, size).order(oldestFirst).compile();
+	}
 }

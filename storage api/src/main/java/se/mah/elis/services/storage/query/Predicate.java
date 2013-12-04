@@ -16,4 +16,13 @@ public interface Predicate {
 	 * @since 1.0
 	 */
 	String compile();
+	
+	/**
+	 * Sets the translator to be used when translating the query.
+	 * 
+	 * @param translator The QueryTranslator provided by the backend
+	 * 		implementation.
+	 * @since 1.1
+	 */
+	void setTranslator(QueryTranslator translator);
 }

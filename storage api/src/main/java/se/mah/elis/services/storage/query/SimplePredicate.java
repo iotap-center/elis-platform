@@ -19,7 +19,65 @@ import se.mah.elis.services.users.UserIdentifier;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public interface SimplePredicate extends Predicate {
+public enum SimplePredicate implements Predicate {
+	
+	/**
+	 * The field value is strictly lesser than the criterion.
+	 * 
+	 * @since 1.0
+	 */
+	LT,
+	
+	/**
+	 * The field value is lesser than or equal to the criterion.
+	 * 
+	 * @since 1.0
+	 */
+	LTE,
+	
+	/**
+	 * The field value is equal to the criterion.
+	 * 
+	 * @since 1.0
+	 */
+	EQ,
+	
+	/**
+	 * The field value is greater than or equal to the criterion.
+	 * 
+	 * @since 1.0
+	 */
+	GTE,
+	
+	/**
+	 * The field value is strictly greater than the criterion.
+	 * 
+	 * @since 1.0
+	 */
+	GT,
+	
+	/**
+	 * The field value is is not equal to the criterion.
+	 * 
+	 * @since 1.0
+	 */
+	NEQ,
+	
+	/**
+	 * The field value looks like the criterion.
+	 * 
+	 * @since 1.0
+	 */
+	LIKE ;
+
+	private String field;
+	private Object criterion;
+	private QueryTranslator translator;
+
+	private SimplePredicate() {
+		field = null;
+		criterion = null;
+	}
 	
 	/**
 	 * Sets the name of the field to look at. The name is typically given by
@@ -29,7 +87,11 @@ public interface SimplePredicate extends Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setField(String field);
+	SimplePredicate setField(String field) {
+		this.field = field;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the criterion of the predicate.
@@ -38,7 +100,11 @@ public interface SimplePredicate extends Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(boolean criterion);
+	SimplePredicate setCriterion(boolean criterion) {
+		this.criterion = criterion;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the criterion of the predicate.
@@ -47,7 +113,11 @@ public interface SimplePredicate extends Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(float criterion);
+	SimplePredicate setCriterion(float criterion) {
+		this.criterion = criterion;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the criterion of the predicate.
@@ -56,7 +126,11 @@ public interface SimplePredicate extends Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(double criterion);
+	SimplePredicate setCriterion(double criterion) {
+		this.criterion = criterion;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the criterion of the predicate.
@@ -65,7 +139,11 @@ public interface SimplePredicate extends Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(int criterion);
+	SimplePredicate setCriterion(int criterion) {
+		this.criterion = criterion;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the criterion of the predicate.
@@ -74,7 +152,11 @@ public interface SimplePredicate extends Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(long criterion);
+	SimplePredicate setCriterion(long criterion) {
+		this.criterion = criterion;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the criterion of the predicate.
@@ -83,7 +165,11 @@ public interface SimplePredicate extends Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(byte criterion);
+	SimplePredicate setCriterion(byte criterion) {
+		this.criterion = criterion;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the criterion of the predicate.
@@ -92,7 +178,11 @@ public interface SimplePredicate extends Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(String criterion);
+	SimplePredicate setCriterion(String criterion) {
+		this.criterion = criterion;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the criterion of the predicate.
@@ -101,7 +191,11 @@ public interface SimplePredicate extends Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(Date criterion);
+	SimplePredicate setCriterion(Date criterion) {
+		this.criterion = criterion;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the criterion of the predicate.
@@ -110,5 +204,59 @@ public interface SimplePredicate extends Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(UserIdentifier criterion);
+	SimplePredicate setCriterion(UserIdentifier criterion) {
+		this.criterion = criterion;
+		
+		return this;
+	}
+
+	/**
+	 * Compiles the predicate.
+	 * 
+	 * @param translator The QueryTranslator provided by the backend
+	 * 		implementation.
+	 * @return A string holding the compiled predicate.
+	 * @since 1.0
+	 */
+	public String compile() {
+		String compiled = null;
+		
+		switch (this) {
+			case LT:
+				compiled = translator.lt(field, criterion);
+				break;
+			case LTE:
+				compiled = translator.lte(field, criterion);
+				break;
+			case EQ:
+				compiled = translator.eq(field, criterion);
+				break;
+			case GTE:
+				compiled = translator.gte(field, criterion);
+				break;
+			case GT:
+				compiled = translator.gt(field, criterion);
+				break;
+			case NEQ:
+				compiled = translator.neq(field, criterion);
+				break;
+			case LIKE:
+				compiled = translator.like(field, criterion);
+				break;
+		}
+		
+		return compiled;
+	}
+
+	/**
+	 * Sets the translator to be used when translating the query.
+	 * 
+	 * @param translator The QueryTranslator provided by the backend
+	 * 		implementation.
+	 * @since 1.1
+	 */
+	@Override
+	public void setTranslator(QueryTranslator translator) {
+		this.translator = translator;
+	}
 }

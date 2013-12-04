@@ -19,7 +19,33 @@ package se.mah.elis.services.storage.query;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public interface ChainingPredicate extends Predicate {
+public enum ChainingPredicate implements Predicate {
+	
+	/**
+	 * Used to link two predicates by using a logical AND statement.
+	 * 
+	 * @since 1.0
+	 */
+	AND,
+	
+	/**
+	 * Used to link two predicates by using a logical OR statement.
+	 * 
+	 * @since 1.0
+	 */
+	OR;
+
+	private Predicate left;
+	private Predicate right;
+	private QueryTranslator translator;
+	
+	/**
+	 * 
+	 */
+	private ChainingPredicate() {
+		left = null;
+		right = null;
+	}
 	
 	/**
 	 * Sets the left-hand branch of the predicate.
@@ -29,7 +55,11 @@ public interface ChainingPredicate extends Predicate {
 	 * @since 1.0
 	 */
 	
-	ChainingPredicate setLeft(Predicate left);
+	ChainingPredicate setLeft(Predicate left) {
+		this.left = left;
+		
+		return this;
+	}
 	
 	/**
 	 * Sets the right-hand branch of the predicate.
@@ -38,5 +68,46 @@ public interface ChainingPredicate extends Predicate {
 	 * @return A reference back to the ChainingPredicate object.
 	 * @since 1.0
 	 */
-	ChainingPredicate setRight(Predicate right);
+	ChainingPredicate setRight(Predicate right) {
+		this.right = right;
+		
+		return this;
+	}
+
+	/**
+	 * Compiles the predicate.
+	 * 
+	 * @param translator The QueryTranslator provided by the backend
+	 * 		implementation.
+	 * @return A string holding the compiled predicate.
+	 * @since 1.0
+	 */
+	public String compile() {
+		String compiled = " ";
+		
+		left.setTranslator(translator);
+		right.setTranslator(translator);
+		
+		switch (this) {
+			case AND:
+				compiled = translator.and(right, left);
+				break;
+			case OR:
+				compiled = translator.or(right, left);
+		}
+		
+		return compiled;
+	}
+
+	/**
+	 * Sets the translator to be used when translating the query.
+	 * 
+	 * @param translator The QueryTranslator provided by the backend
+	 * 		implementation.
+	 * @since 1.1
+	 */
+	@Override
+	public void setTranslator(QueryTranslator translator) {
+		this.translator = translator;
+	}
 }
