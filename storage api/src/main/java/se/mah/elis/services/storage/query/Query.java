@@ -101,10 +101,13 @@ public class Query {
 	 * 
 	 * @param translator The QueryTranslator provided by the backend
 	 * 		implementation.
+	 * @return A reference back to the query object.
 	 * @since 1.1
 	 */
-	void setTranslator(QueryTranslator translator) {
+	Query setTranslator(QueryTranslator translator) {
 		this.translator = translator;
+		
+		return this;
 	}
 	
 	/**
