@@ -14,12 +14,6 @@
   
   <dependencies>
   	<dependency>
-  		<groupId>se.mah.elis.services.users</groupId>
-  		<artifactId>user-service</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  		<type>bundle</type>
-  	</dependency>
-  	<dependency>
   		<groupId>org.easytesting</groupId>
   		<artifactId>fest-assert</artifactId>
   		<version>1.4</version>
@@ -29,6 +23,12 @@
   		<groupId>org.apache.felix</groupId>
   		<artifactId>org.apache.felix.scr.annotations</artifactId>
   		<version>1.9.6</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.services.users</groupId>
+  		<artifactId>user-service</artifactId>
+  		<version>1.0.0</version>
+  		<type>bundle</type>
   	</dependency>
   </dependencies>
   <build>
@@ -42,6 +42,7 @@
           <instructions>
             <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
             <Private-Package>${project.groupId}.*</Private-Package>
+            <Import-Package>se.mah.elis.services.users;se.mah.elis.services.users.*</Import-Package>
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
