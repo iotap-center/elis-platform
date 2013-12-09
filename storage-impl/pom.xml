@@ -11,7 +11,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>Elis Storage Service API reference implementation</name>
-  <description>Elis Storage Service API reference implementation</description>
+  <description>Elis Storage Service API reference implementation, using SQLJet as its database storage engine.</description>
   <dependencies>
   	<dependency>
   		<groupId>org.apache.felix</groupId>
