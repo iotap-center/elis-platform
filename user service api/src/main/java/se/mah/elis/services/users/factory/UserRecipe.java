@@ -6,7 +6,7 @@ import java.util.Properties;
  * The UserRecipe interface describes a way to build a user, using a
  * UserFactory.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
  */
 public interface UserRecipe {

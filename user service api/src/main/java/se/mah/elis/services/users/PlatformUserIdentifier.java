@@ -10,7 +10,7 @@ import se.mah.elis.services.users.UserIdentifier;
  * PlatformUser is the key to most user interaction, it makes sense to make
  * this particular identifier "open" for the rest of the platform to see. 
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
  */
 public interface PlatformUserIdentifier extends UserIdentifier {

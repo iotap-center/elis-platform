@@ -6,7 +6,7 @@ package se.mah.elis.services.users.exceptions;
 /**
  * The NoSuchUserException is thrown by UserService when a user can't be found.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
  */
 public class NoSuchUserException extends Exception {

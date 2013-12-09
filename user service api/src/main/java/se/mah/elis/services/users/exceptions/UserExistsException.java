@@ -7,7 +7,7 @@ package se.mah.elis.services.users.exceptions;
  * The UserExistsException is thrown by UserService when trying to add an
  * existing user.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
  */
 public class UserExistsException extends Exception {

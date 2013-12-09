@@ -12,7 +12,7 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
  * The UserFactory builds users. A UserProvider can register with a UserFactory
  * so that the factory can produce the user types provided by the UserProvider.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
  */
 public interface UserFactory {

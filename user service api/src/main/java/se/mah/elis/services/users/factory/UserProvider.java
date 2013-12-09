@@ -13,7 +13,7 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
  * a UserFactory. Each service that requires a user of some kind can implement
  * UserProvider and let UserFactory produce users. 
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
  */
 public interface UserProvider {

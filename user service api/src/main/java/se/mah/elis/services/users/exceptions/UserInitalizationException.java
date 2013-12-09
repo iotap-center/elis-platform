@@ -5,7 +5,7 @@ package se.mah.elis.services.users.exceptions;
  * performed for some reason. It holds information on which service that failed
  * and some information on the reason for failing.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
  */
 public class UserInitalizationException extends Exception {

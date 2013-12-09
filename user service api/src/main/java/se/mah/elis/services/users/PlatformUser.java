@@ -6,7 +6,7 @@ package se.mah.elis.services.users;
 /**
  * The PlatformUser interface describes a platform user.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
  */
 public interface PlatformUser extends AbstractUser {
