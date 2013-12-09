@@ -171,5 +171,8 @@
 		
 		<!-- Misc modules -->
 		<!-- <module>../elis-branding</module> -->
+        <!-- <module>../qs-driver</module> -->
+        <!-- <module>../ninjablock</module> -->
+		
 	</modules>
 </project>
