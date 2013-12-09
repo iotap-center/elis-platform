@@ -10,7 +10,7 @@ import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.UserIdentifier;
 
 /**
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
  */
 public class PlatformUserImpl

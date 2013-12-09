@@ -8,7 +8,7 @@ import se.mah.elis.services.users.PlatformUserIdentifier;
 /**
  * Implements the UserIdentifier interface.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
  */
 public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {

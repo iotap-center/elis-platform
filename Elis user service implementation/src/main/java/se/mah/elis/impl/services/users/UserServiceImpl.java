@@ -25,7 +25,7 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
  * An implementation of {@link se.mah.elis.services.users.UserService}. For the
  * time being, all data is stored in memory and isn't persistent in any way.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
  */
 @Component(name = "Elis User service")
