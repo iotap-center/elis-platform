@@ -30,6 +30,7 @@
         <configuration>
           <instructions>
             <Export-Package>${project.groupId}.*</Export-Package>
+            <Import-Package>*</Import-Package>
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->

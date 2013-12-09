@@ -3,7 +3,7 @@ package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 import se.mah.elis.auxiliaries.data.TemperatureData;
 
 public class TemperatureDataImpl implements TemperatureData {
-	
+
 	private float celsius;
 
 	public TemperatureDataImpl(float celsiusInput) {
@@ -12,8 +12,8 @@ public class TemperatureDataImpl implements TemperatureData {
 	
 	@Override
 	public float getKelvin() {
-		// TODO make conversion to Kelvin.
-		return 0;
+		float kelvin = celsius+273.15f;
+		return kelvin;
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public class TemperatureDataImpl implements TemperatureData {
 
 	@Override
 	public float getRankine() {
-		// TODO make conversion to Rankine.
-		return 0;
+		float rankine = (celsius*1.8000f)+491.67f;
+		return rankine;
 	}
 
 }
