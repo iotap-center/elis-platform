@@ -14,16 +14,6 @@
   
   <dependencies>
   	<dependency>
-  		<groupId>org.osgi</groupId>
-  		<artifactId>org.osgi.core</artifactId>
-  		<version>4.3.1</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.osgi</groupId>
-  		<artifactId>org.osgi.compendium</artifactId>
-  		<version>4.3.1</version>
-  	</dependency>
-  	<dependency>
   		<groupId>se.mah.elis.services.users</groupId>
   		<artifactId>user-service</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
@@ -33,14 +23,6 @@
   		<groupId>com.eclipsesource.jaxrs.publisher</groupId>
   		<artifactId>osgi-connector</artifactId>
   		<version>0.0.1</version>
-  		<type>bundle</type>
-  	</dependency>
-  	<dependency>
-  		<groupId>se.mah.elis.services.users</groupId>
-  		<artifactId>user-service-impl</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  		<type>bundle</type>
-  		<scope>test</scope>
   	</dependency>
   	<dependency>
   		<groupId>com.google.code.gson</groupId>
@@ -53,6 +35,29 @@
   		<version>1.4</version>
   		<scope>test</scope>
   	</dependency>
+  	<dependency>
+  		<groupId>org.apache.felix</groupId>
+  		<artifactId>org.apache.felix.gogo.command</artifactId>
+  		<version>0.12.0</version>
+  		<type>bundle</type>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.felix</groupId>
+  		<artifactId>org.apache.felix.scr.annotations</artifactId>
+  		<version>1.9.6</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.felix.gogo</groupId>
+  		<artifactId>org.apache.felix.gogo.runtime</artifactId>
+  		<version>0.4.0</version>
+  		<type>bundle</type>
+  	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.impl.services.users</groupId>
+  		<artifactId>user-service-impl</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  		<type>bundle</type>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>
@@ -64,10 +69,22 @@
         <configuration>
           <instructions>
             <Private-Package>${project.groupId}</Private-Package>
-            <Bundle-Activator>${project.groupId}.Activator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-scr-plugin</artifactId>
+        <version>1.14.0</version>
+        <executions>
+          <execution>
+            <id>generate-scr-scrdescriptor</id>
+            <goals>
+              <goal>scr</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>

@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>se.mah.elis</groupId>
+    <artifactId>super-pom</artifactId>
+    <version>0.0.1</version>
+    <relativePath>../super/pom.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>se.mah.elis.branding</groupId>
+  <artifactId>elis-branding</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+  <name>Elis Web Console Branding</name>
+  <description>Elis Web Console Branding</description>
+  
+  <build>
+    <plugins>
+      <plugin>    <!-- (2) START -->
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.4.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Fragment-Host>org.apache.felix.webconsole;bundle-version=4.2.0</Fragment-Host>
+            <Import-Package>*</Import-Package>
+            <Include-Resource>*</Include-Resource>
+          </instructions>
+        </configuration>
+      </plugin>    <!-- (2) END -->
+    </plugins>
+  </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.apache.felix</groupId>
+  		<artifactId>org.apache.felix.webconsole</artifactId>
+  		<version>4.2.0</version>
+  		<type>bundle</type>
+  	</dependency>
+  </dependencies>
+</project>

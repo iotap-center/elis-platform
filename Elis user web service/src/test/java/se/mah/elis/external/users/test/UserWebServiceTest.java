@@ -17,11 +17,11 @@ import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.UserExistsException;
 import se.mah.elis.services.users.factory.UserFactory;
-import se.mah.elis.services.users.factory.impl.UserFactoryImpl;
 import se.mah.elis.services.users.factory.impl.test.mock.MockUserProvider;
-import se.mah.elis.services.users.impl.PlatformUserIdentifierImpl;
-import se.mah.elis.services.users.impl.PlatformUserImpl;
-import se.mah.elis.services.users.impl.UserServiceImpl;
+import se.mah.elis.impl.services.users.factory.UserFactoryImpl;
+import se.mah.elis.impl.services.users.PlatformUserIdentifierImpl;
+import se.mah.elis.impl.services.users.PlatformUserImpl;
+import se.mah.elis.impl.services.users.UserServiceImpl;
 import se.mah.elis.services.users.impl.test.mock.MockUser;
 
 public class UserWebServiceTest {

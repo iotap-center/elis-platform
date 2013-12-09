@@ -16,8 +16,17 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.ReferencePolicy;
+import org.apache.felix.scr.annotations.Service;
+import org.apache.felix.service.command.Descriptor;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.osgi.service.command.CommandProcessor;
 
 import se.mah.elis.external.users.jaxbeans.EnvelopeBean;
 import se.mah.elis.external.users.jaxbeans.ErrorBean;
@@ -39,9 +48,18 @@ import se.mah.elis.services.users.factory.UserRecipe;
  * @since 1.0
  */
 @Path("/user")
+@Component(name = "Elis User web service")
+@Service(value=UserWebService.class)
+@org.apache.felix.scr.annotations.Properties({
+	@Property(name = CommandProcessor.COMMAND_SCOPE, value = "elis"),
+	@Property(name = CommandProcessor.COMMAND_FUNCTION, value = "uws") 
+})
 public class UserWebService {
 	
+	@Reference
 	private UserService userService;
+	
+	@Reference
 	private UserFactory userFactory;
 	
 	/**
@@ -66,6 +84,22 @@ public class UserWebService {
 		userService = us;
 		userFactory = uf;
 	}
+	
+	@Descriptor("Lists current User Web Service configuration")
+	public void uws() {
+		String us = null, uf = null;
+
+		if (null != userService) {
+			us = userService.toString();
+		}
+		if (null != userFactory) {
+			uf = userFactory.toString();
+		}
+		
+		System.out.println("User Web Service running with:");
+		System.out.println("UserService: " + us);
+		System.out.println("UserFactory: " + uf);
+	}
 
 	/**
 	 * Sets the user service.
@@ -77,6 +111,16 @@ public class UserWebService {
 		userService = us;
 	}
 	
+	public void bindUserService(UserService us) {
+		System.out.println("Binding UserService");
+		setUserService(us);
+	}
+	
+	public void unbindUserService(UserService us) {
+		System.out.println("Unbinding UserService");
+		setUserService(null);
+	}
+	
 	/**
 	 * Sets the user factory.
 	 * 
@@ -85,6 +129,16 @@ public class UserWebService {
 	 */
 	public void setUserFactory(UserFactory uf) {
 		userFactory = uf;
+	}
+	
+	public void bindUserFactory(UserFactory uf) {
+		System.out.println("Binding UserFactory");
+		setUserFactory(uf);
+	}
+	
+	public void unbindUserFactory(UserFactory uf) {
+		System.out.println("Unbinding UserFactory");
+		setUserFactory(null);
 	}
 	
 	/**
