@@ -9,24 +9,35 @@ import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.TemperatureDataI
 
 public class TemperatureDataImplTest {
 	
+	TemperatureDataImpl tempDataImpl;
+	
 	float celsius = 25.0f;
 	float fahrenheit = 77f;
+	float kelvin = 298.15f;
+	float rankine = 536.67f;
 	
 	@Before
-	public void setUp() { }
+	public void setUp() { 
+		tempDataImpl = new TemperatureDataImpl(celsius);
+	}
 	
 	@Test
 	public void testGetCelsius(){
-		TemperatureDataImpl tempDataImpl = new TemperatureDataImpl(celsius);
 		assertEquals(celsius, tempDataImpl.getCelsius(), 0.01);
 	}
 	
 	@Test
 	public void testGetFahrenheit() {
-		TemperatureDataImpl tempDataImpl = new TemperatureDataImpl(celsius);
 		assertEquals(fahrenheit, tempDataImpl.getFahrenheit(), 0.01);
 	}
 
-	// TODO Make test for getKelvin()
-	// TODO Make test for getRankine()
+	@Test
+	public void testGetKelvin() {
+		assertEquals(kelvin, tempDataImpl.getKelvin(), 0.01);
+	}
+	
+	@Test
+	public void testGetRankine() {
+		assertEquals(rankine, tempDataImpl.getRankine(), 0.01);
+	}
 }

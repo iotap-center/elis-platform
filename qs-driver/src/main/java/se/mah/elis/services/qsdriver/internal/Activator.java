@@ -6,6 +6,7 @@ import org.osgi.framework.ServiceRegistration;
 
 import se.mah.elis.external.web.qsdriver.QuantifiedSelfDeviceResource;
 import se.mah.elis.external.web.qsdriver.QuantifiedSelfDevicesetResource;
+import se.mah.elis.external.web.qsdriver.QuantifiedSelfUsageResource;
 import se.mah.elis.external.web.qsdriver.QuantifiedSelfUserResource;
 
 
@@ -24,6 +25,9 @@ public class Activator implements BundleActivator {
 		// Deviceset
 		this.qsDriverServiceRegistration = context.registerService(
 				QuantifiedSelfDevicesetResource.class.getName(), new QuantifiedSelfDevicesetResource(),null);
+		// Usage
+		this.qsDriverServiceRegistration = context.registerService(
+				QuantifiedSelfUsageResource.class.getName(), new QuantifiedSelfUsageResource(),null);
 		
 	}
 

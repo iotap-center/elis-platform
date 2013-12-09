@@ -170,5 +170,6 @@
 		<module>../electricity-usage</module>
 		<module>../temp-utility-provider-api</module>
 		<module>../qs-driver</module>
+		<module>../ninjablock</module>
 	</modules>
 </project>
