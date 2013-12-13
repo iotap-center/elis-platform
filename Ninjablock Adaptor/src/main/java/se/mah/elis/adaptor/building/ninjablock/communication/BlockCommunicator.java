@@ -23,7 +23,7 @@ public class BlockCommunicator {
 	 * @return json response(String)
 	 * @throws Exception
 	 */
-	public String getBlock(String nodeid) throws Exception {
+	public String getSpecificBlock(String nodeid) throws Exception {
 		return com.httpGet("https://api.ninja.is/rest/v0/block/" + nodeid);
 	}
 	

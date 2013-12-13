@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import se.mah.elis.adaptor.building.api.exceptions.GatewayCommunicationException;
+import se.mah.elis.adaptor.building.ninjablock.NinjablockGateway;
 import se.mah.elis.adaptor.building.ninjablock.NinjablockGatewayUserIdentifer;
 
 public class NinjablockGatewayUserIdentiferTest {
@@ -27,5 +29,7 @@ public class NinjablockGatewayUserIdentiferTest {
 		ninjaGwIdent = new NinjablockGatewayUserIdentifer();
 		assertEquals("marcus.ljungblad@mah.se",ninjaGwIdent.getUserEmail());
 	}
+	
+
 
 }

@@ -4,13 +4,13 @@
 package se.mah.elis.adaptor.building.api.entities.devices;
 
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
-import se.mah.elis.auxiliaries.data.ElectricitySample;
+import se.mah.elis.data.ElectricitySample;
 
 /**
  * The ElectricitySampler interface describes a sensor with electricity
  * sampling capabilities.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm�� University"
  * @since 1.0
  */
 public interface ElectricitySampler extends Sampler {

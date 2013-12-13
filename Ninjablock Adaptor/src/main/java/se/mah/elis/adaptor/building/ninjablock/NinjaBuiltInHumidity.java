@@ -5,8 +5,6 @@ import java.text.ParseException;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.building.ninjablock.communication.Communicator;
 import se.mah.elis.adaptor.building.ninjablock.communication.DeviceCommunicator;
-import se.mah.elis.auxiliaries.data.TemperatureData;
-
 public class NinjaBuiltInHumidity {
 
 

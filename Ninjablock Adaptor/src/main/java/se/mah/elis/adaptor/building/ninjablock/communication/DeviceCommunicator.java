@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 
+import se.mah.elis.adaptor.building.api.entities.devices.Device;
+
 public class DeviceCommunicator {
 	
 	private Communicator com;
