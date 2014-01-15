@@ -18,12 +18,12 @@ package se.mah.elis.services.storage.query;
  */
 public class Query {
 
-	private Predicate predicate;
-	private Class dataType;
-	private int start;
-	private int size;
-	private boolean oldestFirst;
-	private QueryTranslator translator;
+	protected Predicate predicate;
+	protected Class dataType;
+	protected int start;
+	protected int size;
+	protected boolean oldestFirst;
+	protected QueryTranslator translator;
 	
 	/**
 	 * Creates an instance of the class.

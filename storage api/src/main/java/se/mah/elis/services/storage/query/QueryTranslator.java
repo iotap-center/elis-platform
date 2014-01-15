@@ -15,7 +15,7 @@ public interface QueryTranslator {
 	 * Tells the query what kind of data to look for.
 	 * 
 	 * @param c The class of the data to look for.
-	 * @return A reference back to the query object.
+	 * @return A reference back to the query translator object.
 	 * @since 1.1
 	 */
 	QueryTranslator what(Class dataType);
@@ -26,7 +26,7 @@ public interface QueryTranslator {
 	 * @param start The number of objects in the full list that will be
 	 * 		ignored in the result from the storage engine.
 	 * @param size The size of the returned list.
-	 * @return A reference back to the query object.
+	 * @return A reference back to the query translator object.
 	 * @since 1.1
 	 */
 	QueryTranslator where(Predicate predicate);
@@ -37,20 +37,17 @@ public interface QueryTranslator {
 	 * visible to the current user will be returned.
 	 * 
 	 * @param p The predicate to match against.
-	 * @return A reference back to the query object.
+	 * @return A reference back to the query translator object.
 	 * @since 1.1
 	 */
 	QueryTranslator limit(int start, int limit);
-//	if (start > -1 && size > -1) {
-//		translator.limit(start, size);
-//	}
 	
 	/**
 	 * Sets the order in which the results will be returned.
 	 * 
 	 * @param oldestFirst True if the oldest data objects should be returned
 	 * 		first (i.e. list[0] is the oldest object), otherwise false.
-	 * @return A reference back to the query object.
+	 * @return A reference back to the query translator object.
 	 * @since 1.1
 	 */
 	QueryTranslator order(boolean oldestFirst);

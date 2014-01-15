@@ -1,5 +1,7 @@
 package se.mah.elis.services.storage;
 
+import java.util.UUID;
+
 import se.mah.elis.services.storage.data.ElisDataObject;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.Query;
@@ -135,6 +137,20 @@ public interface Storage {
 	void delete(Query query) throws StorageException;
 	
 	/**
+	 * <p>Reads out a specific data object from the storage.</p>
+	 * 
+	 * <p>This method was deprecated in version 1.1, and is replaced by the
+	 * readData(UUID) method.</p>
+	 * 
+	 * @param id The unique data id.
+	 * @return An ElisDataObject containing the wanted data.
+	 * @throws StorageException if the data wasn't found.
+	 * @deprecated
+	 * @since 1.0
+	 */
+	ElisDataObject readData(long id) throws StorageException;
+	
+	/**
 	 * Reads out a specific data object from the storage.
 	 * 
 	 * @param id The unique data id.
@@ -142,7 +158,7 @@ public interface Storage {
 	 * @throws StorageException if the data wasn't found.
 	 * @since 1.0
 	 */
-	ElisDataObject readData(long id) throws StorageException;
+	ElisDataObject readData(UUID id) throws StorageException;
 	
 	/**
 	 * Reads out a specific user from the storage.
