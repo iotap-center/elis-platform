@@ -45,7 +45,7 @@ public class Query {
 	 * @return A reference back to the query object.
 	 * @since 1.0
 	 */
-	Query setDataType(Class c) {
+	public Query setDataType(Class c) {
 		dataType = c;
 		
 		return this;
@@ -60,7 +60,7 @@ public class Query {
 	 * @return A reference back to the query object.
 	 * @since 1.0
 	 */
-	Query limit(int start, int size) {
+	public Query limit(int start, int size) {
 		this.start = start;
 		this.size = size;
 		
@@ -76,7 +76,7 @@ public class Query {
 	 * @return A reference back to the query object.
 	 * @since 1.0
 	 */
-	Query setPredicate(Predicate p) {
+	public Query setPredicate(Predicate p) {
 		predicate = p;
 		
 		return this;
@@ -90,7 +90,7 @@ public class Query {
 	 * @return A reference back to the query object.
 	 * @since 1.0
 	 */
-	Query setOrder(boolean oldestFirst) {
+	public Query setOrder(boolean oldestFirst) {
 		this.oldestFirst = oldestFirst;
 		
 		return this;
@@ -104,7 +104,7 @@ public class Query {
 	 * @return A reference back to the query object.
 	 * @since 1.1
 	 */
-	Query setTranslator(QueryTranslator translator) {
+	public Query setTranslator(QueryTranslator translator) {
 		this.translator = translator;
 		
 		return this;
@@ -116,7 +116,7 @@ public class Query {
 	 * @return The string representation of the query.
 	 * @since 1.1
 	 */
-	String compile() {
+	public String compile() {
 		return translator.what(dataType).where(predicate)
 				.limit(start, size).order(oldestFirst).compile();
 	}
