@@ -2,7 +2,7 @@ package se.mah.elis.services.storage;
 
 import java.util.UUID;
 
-import se.mah.elis.services.storage.data.ElisDataObject;
+import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.Query;
 import se.mah.elis.services.storage.result.ResultSet;

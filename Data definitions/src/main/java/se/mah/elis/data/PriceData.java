@@ -1,7 +1,5 @@
 package se.mah.elis.data;
 
-import se.mah.elis.services.storage.data.ElisDataObject;
-
 /**
  * The PriceData interface encapsulates pricing data. It maintains three types
  * of data: the pricing information itself (as a decimal value), the tax rate

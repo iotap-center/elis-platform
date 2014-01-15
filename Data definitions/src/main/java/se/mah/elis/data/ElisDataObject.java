@@ -1,4 +1,4 @@
-package se.mah.elis.services.storage.data;
+package se.mah.elis.data;
 
 import java.io.Serializable;
 import java.util.Properties;
@@ -83,7 +83,7 @@ public interface ElisDataObject extends Serializable {
 	 * particular value (except for Strings, (explained below), as the storage
 	 * engine only cares about the object type.</p>
 	 * 
-	 * <p>Some storage engine, e.g. some SQL dialects, support both variable
+	 * <p>Some storage engines, e.g. some SQL dialects, support both variable
 	 * and fixed length strings to be stored. By assigning a String an integer
 	 * value greater than zero, it is possible to tell the storage how much
 	 * space it should reserve for the value. For storage engines that don't

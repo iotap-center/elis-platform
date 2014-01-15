@@ -9,11 +9,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.mah.elis.auxiliaries.SampleTraverser;
-import se.mah.elis.auxiliaries.exceptions.MismatchingSampleException;
 import se.mah.elis.data.Sample;
 import se.mah.elis.data.test.mocks.ElectricitySampleMock;
 import se.mah.elis.data.test.mocks.SimpleSampleMock;
+import se.mah.elis.data.traversers.SampleTraverser;
+import se.mah.elis.exceptions.MismatchingSampleException;
 
 public class SampleTraverserTest {
 	
