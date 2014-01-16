@@ -1,5 +1,6 @@
 package se.mah.elis.services.users;
 
+import java.util.Properties;
 import java.util.UUID;
 
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
@@ -64,7 +65,8 @@ public interface User extends AbstractUser {
 	void setUserId(UUID id);
 
 	/**
-	 * Initializes this user and fetches data associated with this user.
+	 * Initializes this user and fetches data associated with this user. The
+	 * identifier must be set in order for this method to work.
 	 * 
 	 * @throws UserInitalizationException if the initialization didn't succeed.
 	 * @since 1.0

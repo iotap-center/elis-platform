@@ -67,4 +67,16 @@ public interface AbstractUser {
 	 * @since 1.1
 	 */
 	Properties getPropertiesTemplate();
+	
+	/**
+	 * <p>Populate the values of an AbstractUser instance by providing a set of
+	 * properties, e.g. from a persistent storage retrieval.</p>
+	 * 
+	 * <p>The Properties object may or may not contain a UserIdentifier object.
+	 * If not, the method will try to create a UserIdentifier of its own.</p>
+	 * 
+	 * @param props The properties to populate the object with.
+	 * @since 1.1
+	 */
+	void populate(Properties props);
 }
