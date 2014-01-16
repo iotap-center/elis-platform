@@ -25,7 +25,7 @@ public interface ElisDataObject extends Serializable {
 	 * <p>This method was replaced by the getUUID() method in version 1.1.</p>
 	 * 
 	 * @return The identifier number.
-	 * @deprecated
+	 * @deprecated As of version 1.1, replaced by {@link #getUUID()}.
 	 * @since 1.0
 	 */
 	long getDataId();

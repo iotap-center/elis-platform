@@ -20,7 +20,7 @@ public interface User extends AbstractUser {
 	 * <p>This method was superseded by getUserId() in version 1.1</p>
 	 * 
 	 * @return The id number.
-	 * @deprecated
+	 * @deprecated As of version 1.1, replaced by {@link #getUserid()}.
 	 * @since 1.0
 	 */
 	int getIdNumber();
@@ -34,7 +34,7 @@ public interface User extends AbstractUser {
 	 * <p>This method was superseded by setUserId(UUID) in version 1.1</p>
 	 * 
 	 * @param id The id number.
-	 * @deprecated
+	 * @deprecated As of version 1.1, replaced by {@link #getUserId(UUID)}.
 	 * @since 1.0
 	 */
 	void setIdNumber(int id);
