@@ -93,4 +93,13 @@ public interface ElisDataObject extends Serializable {
 	 * @since 1.1
 	 */
 	Properties getPropertiesTemplate();
+	
+	/**
+	 * Populate the values of an ElisDataObject instance by providing a set of
+	 * properties, e.g. from a persistent storage retrieval.
+	 * 
+	 * @param props The properties to populate the object with.
+	 * @since 1.1
+	 */
+	void populate(Properties props);
 }
