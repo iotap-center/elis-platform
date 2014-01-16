@@ -171,6 +171,15 @@ public interface Storage {
 	AbstractUser readUser(UserIdentifier id) throws StorageException;
 	
 	/**
+	 * Reads out a specific user from the storage.
+	 * 
+	 * @param id An AbstractUser object containing a UserIdentifier.
+	 * @throws StorageException if the user wasn't found.
+	 * @since 1.0
+	 */
+	void readUser(AbstractUser user) throws StorageException;
+	
+	/**
 	 * Runs a select query on the Elis storage.
 	 * 
 	 * @param query The query to run.
