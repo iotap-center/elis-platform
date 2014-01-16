@@ -3,7 +3,10 @@
  */
 package se.mah.elis.impl.services.users;
 
+import java.util.Properties;
+
 import se.mah.elis.services.users.PlatformUserIdentifier;
+import se.mah.elis.services.users.PlatformUser;
 
 /**
  * Implements the UserIdentifier interface.
@@ -101,5 +104,33 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public Properties getProperties() {
+		Properties p = new Properties();
+		
+		p.put("id", id);
+		p.put("username", username);
+		p.put("password", password);
+		
+		return p;
+	}
+
+	@Override
+	public Properties getPropertiesTemplate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Class identifies() {
+		return se.mah.elis.services.users.PlatformUser.class;
+	}
+
+	@Override
+	public void identifies(Class clazz) {
+		// Don't do anything at all. This is not applicable for the
+		// PlatformUserIdentifier.
 	}
 }

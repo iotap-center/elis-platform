@@ -7,6 +7,7 @@ import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.Query;
 import se.mah.elis.services.storage.result.ResultSet;
 import se.mah.elis.services.users.AbstractUser;
+import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
 
 /**
@@ -161,6 +162,18 @@ public interface Storage {
 	ElisDataObject readData(UUID id) throws StorageException;
 	
 	/**
+	 * Reads out a specific user from the storage. This method will not look
+	 * for any PlatformUsers. Instead, use {@link #readUser(AbstractUser)} or
+	 * {@link #readUser(UserIdentifier)} for that.
+	 * 
+	 * @param id The unique data id.
+	 * @return A User object.
+	 * @throws StorageException if the user wasn't found.
+	 * @since 1.1
+	 */
+	User readUser(UUID id) throws StorageException;
+	
+	/**
 	 * Reads out a specific user from the storage.
 	 * 
 	 * @param id The user's user identifier.
@@ -175,7 +188,7 @@ public interface Storage {
 	 * 
 	 * @param id An AbstractUser object containing a UserIdentifier.
 	 * @throws StorageException if the user wasn't found.
-	 * @since 1.0
+	 * @since 1.1
 	 */
 	void readUser(AbstractUser user) throws StorageException;
 	

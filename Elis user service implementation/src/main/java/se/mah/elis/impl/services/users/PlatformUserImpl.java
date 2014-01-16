@@ -3,10 +3,12 @@
  */
 package se.mah.elis.impl.services.users;
 
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import se.mah.elis.services.users.PlatformUser;
+import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.UserIdentifier;
 
 /**
@@ -26,7 +28,7 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	private String email;
 
 	/**
-	 * 
+	 * Create a brand new, empty platform user.
 	 */
 	public PlatformUserImpl() {
 		id = new PlatformUserIdentifierImpl();
@@ -35,11 +37,33 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 		email = "";
 	}
 	
-	public PlatformUserImpl(UserIdentifier id) {
+	/**
+	 * Create a platform user with a given user identifier.
+	 * 
+	 * @param id The user identifier.
+	 */
+	public PlatformUserImpl(PlatformUserIdentifier id) {
 		this.id = id;
 		firstName = "";
 		lastName = "";
 		email = "";
+	}
+	
+	/**
+	 * Create a platform user from the info stored in the persistent storage.
+	 * 
+	 * @param p The user information stored in the database.
+	 */
+	public PlatformUserImpl(Properties p) {
+		PlatformUserIdentifier id = new PlatformUserIdentifierImpl();
+		id.setId((Integer) p.get("id"));
+		id.setUsername(p.getProperty("username"));
+		// We won't set the password form the storage
+		// id.setPassword((String) p.get("password"));
+		this.id = id;
+		this.firstName = p.getProperty("first_name");
+		this.lastName = p.getProperty("last_name");
+		
 	}
 
 	/* (non-Javadoc)
@@ -141,5 +165,30 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 		Matcher matcher = VALID_EMAIL.matcher(address);
 		
 		return matcher.find();
+	}
+
+	@Override
+	public Properties getProperties() {
+		Properties p = new Properties();
+		Properties ip = id.getProperties();
+		
+		p.put("identifier", ip);
+		p.put("first_name", firstName);
+		p.put("last_name", lastName);
+		p.put("email", email);
+		
+		return p;
+	}
+
+	@Override
+	public Properties getPropertiesTemplate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void populate(Properties props) {
+		// TODO Auto-generated method stub
+		
 	}
 }
