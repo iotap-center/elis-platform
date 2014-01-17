@@ -34,10 +34,19 @@ public interface ElisDataObject extends Serializable {
 	 * Returns the data object's identifier. The identifier is globally unique,
 	 * making the data object traceable.
 	 * 
-	 * @return
+	 * @return The data object's identifier.
 	 * @since 1.1
 	 */
 	UUID getUUID();
+	
+	/**
+	 * Sets the data object's identifier. The identifier is globally unique,
+	 * making the data object traceable.
+	 * 
+	 * @param uuid The object's identifier.
+	 * @since 1.1
+	 */
+	void setUUID(UUID uuid);
 	
 	/**
 	 * Sets the owner of this data object.
