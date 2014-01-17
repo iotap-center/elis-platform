@@ -79,4 +79,12 @@ public interface AbstractUser {
 	 * @since 1.1
 	 */
 	void populate(Properties props);
+	
+	/**
+	 * Gets the service name associated with the user type.
+	 * 
+	 * @return The name of the service associated with the user.
+	 * @since 1.1
+	 */
+	String getServiceName();
 }

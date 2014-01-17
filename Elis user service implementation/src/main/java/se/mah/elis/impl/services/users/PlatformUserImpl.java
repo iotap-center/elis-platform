@@ -191,4 +191,9 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String getServiceName() {
+		return "se.mah.elis.services.users.PlatformUser";
+	}
 }
