@@ -52,6 +52,16 @@ public class Query {
 	}
 	
 	/**
+	 * Tells the user what kind of data this query will look for.
+	 * 
+	 * @return The class of data that the query will look for.
+	 * @since 1.1
+	 */
+	public Class getDataType() {
+		return dataType;
+	}
+	
+	/**
 	 * Limits the number of objects returned by the storage.
 	 * 
 	 * @param start The number of objects in the full list that will be
