@@ -2,6 +2,8 @@ package se.mah.elis.services.storage.query;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.services.users.UserIdentifier;
 
 /**
@@ -190,8 +192,23 @@ public enum SimplePredicate implements Predicate {
 	 * @param criterion A Date value.
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
+	 * @deprecated As of version 1.1, replaced by
+	 * 		{@link #setCriterion(DateTime)}.
 	 */
 	SimplePredicate setCriterion(Date criterion) {
+		this.criterion = criterion;
+		
+		return this;
+	}
+	
+	/**
+	 * Sets the criterion of the predicate.
+	 * 
+	 * @param criterion A DateTime value.
+	 * @return A reference back to the SimplePredicate object.
+	 * @since 1.1
+	 */
+	SimplePredicate setCriterion(DateTime criterion) {
 		this.criterion = criterion;
 		
 		return this;
