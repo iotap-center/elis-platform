@@ -3,14 +3,14 @@ package se.mah.elis.impl.services.storage.query;
 import se.mah.elis.services.storage.query.Predicate;
 import se.mah.elis.services.storage.query.QueryTranslator;
 
-public class SQLJetQueryTranslator implements QueryTranslator {
+public class MySQLQueryTranslator implements QueryTranslator {
 
 	private Class what;
 	private Predicate where;
 	private int start, limit;
 	private boolean oldestFirst;
 	
-	public SQLJetQueryTranslator() {
+	public MySQLQueryTranslator() {
 		what = null;
 		where = null;
 		start = limit = -1;
@@ -18,6 +18,14 @@ public class SQLJetQueryTranslator implements QueryTranslator {
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.query.QueryTranslator#what(Class) what(Class)}.
+	 * 
+	 * @param c The class of the data to look for.
+	 * @return A reference back to the query translator object.
+	 * @since 1.1
+	 */
 	public QueryTranslator what(Class dataType) {
 		what = dataType;
 		
@@ -25,6 +33,16 @@ public class SQLJetQueryTranslator implements QueryTranslator {
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.query.QueryTranslator#where(Predicate) where(Predicate)}.
+	 * 
+	 * @param start The number of objects in the full list that will be
+	 * 		ignored in the result from the storage engine.
+	 * @param size The size of the returned list.
+	 * @return A reference back to the query translator object.
+	 * @since 1.1
+	 */
 	public QueryTranslator where(Predicate predicate) {
 		where = predicate;
 		where.setTranslator(this);
@@ -114,6 +132,16 @@ public class SQLJetQueryTranslator implements QueryTranslator {
 			compiled += " ASC;";
 		} else {
 			compiled += " DESC;";
+		}
+		
+		return compiled;
+	}
+	
+	public String compileDeleteQuery() {
+		String compiled = "DELETE FROM `" + what.getSimpleName();
+		
+		if (where != null) {
+			compiled += "` WHERE " + where.compile();
 		}
 		
 		return compiled;

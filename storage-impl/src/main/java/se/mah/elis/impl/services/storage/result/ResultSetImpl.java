@@ -20,6 +20,13 @@ public class ResultSetImpl implements ResultSet {
 			rows = new Object[0];
 		}
 	}
+	
+	public ResultSetImpl(Class objectType, java.sql.ResultSet results) {
+		pointer = -1;
+		this.objectType = objectType;
+		
+		// TODO: Mappa resultatinnehållet till objektets guckerier.
+	}
 
 	@Override
 	public int size() {

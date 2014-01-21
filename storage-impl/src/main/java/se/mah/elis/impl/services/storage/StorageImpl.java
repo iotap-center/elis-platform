@@ -1,118 +1,1324 @@
 package se.mah.elis.impl.services.storage;
 
-import se.mah.elis.impl.services.storage.query.SQLJetQueryTranslator;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.UUID;
+
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
+
+import se.mah.elis.data.ElisDataObject;
+import se.mah.elis.impl.services.storage.query.DeleteQuery;
+import se.mah.elis.impl.services.storage.query.MySQLQueryTranslator;
+import se.mah.elis.impl.services.storage.result.ResultSetImpl;
 import se.mah.elis.services.storage.Storage;
-import se.mah.elis.services.storage.data.ElisDataObject;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.Query;
 import se.mah.elis.services.storage.query.QueryTranslator;
 import se.mah.elis.services.storage.result.ResultSet;
 import se.mah.elis.services.users.AbstractUser;
+import se.mah.elis.services.users.PlatformUser;
+import se.mah.elis.services.users.PlatformUserIdentifier;
+import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
+import se.mah.elis.services.users.exceptions.UserInitalizationException;
+import se.mah.elis.services.users.factory.UserFactory;
 
+/**
+ * The Elis reference implementation of the
+ * {@link se.mah.elis.services.storage.Storage Storage} interface in the
+ * Persistent Storage API.
+ * 
+ * @author "Johan Holmberg, Malmö University"
+ * @since 1.0
+ */
+@Component(name = "Elis Persistent Storage")
+@Service(value=Storage.class)
 public class StorageImpl implements Storage {
 	
+	// The MySQL query translator
 	private QueryTranslator translator;
 
+	// The user factory
+	@Reference
+	private UserFactory factory;
+	
+	// The database connection
+	private Connection connection;
+	
+	// Some storage utilities
+	private StorageUtils utils;
+	
+	// Some error messages
+	private static String OBJECT_NOT_FOUND = "Couldn't find object in data store";
+	private static String INSTANCE_OBJECT_ERROR = "Couldn't instantiate object";
+	private static String INSTANCE_USER_ERROR = "Couldn't instantiate user";
+	private static String STORAGE_ERROR = "Couldn't access storage";
+	private static String DELETE_QUERY = "This storage engine requires a DeleteQuery.";
+
+	/**
+	 * Creates an instance of this class.
+	 * 
+	 * @since 1.0
+	 */
 	public StorageImpl() {
-		translator = new SQLJetQueryTranslator();
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			// TODO: Replace with non-static stuff later on
+			connection = DriverManager
+					.getConnection("jdbc:mysql://localhost/feedback?"
+						+	"user=elis&password=notallthatsecret");
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		translator = new MySQLQueryTranslator();
+		utils = new StorageUtils(connection);
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#insert(ElisDataObject) insert(ElisDataObject)}.
+	 * 
+	 * @param data The data object to be stored.
+	 * @throws StorageException Thrown when the object couldn't be stored.
+	 * @since 1.1
+	 */
 	public void insert(ElisDataObject data) throws StorageException {
-		// TODO Auto-generated method stub
-
+		insert(data, false);
+	}
+	
+	/**
+	 * This method is called by the public insert(ElisDataObject) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param data The data object to be stored.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the object couldn't be stored.
+	 * @since 1.1
+	 */
+	private void insert(ElisDataObject data, boolean finalRun)
+			throws StorageException {
+		// TODO: It might be possible to create a version of this method that
+		//		 also takes a PreparedStatement as a parameter, thereby
+		//		 minimizing execution time and DB load.
+		
+		// Yes, checking data and id for nullness twice is strictly speaking
+		// unnecessary, but makes the code somewhat easier to read.
+		
+		if (data != null && data.getUUID() == null) {
+			// Basically, this is a new object. Let's insert it.
+			
+			// Generate the table name
+			String tableName = data.getClass().getCanonicalName();
+			
+			// Generate the UUID
+			UUID uuid = UUID.randomUUID();
+			data.setUUID(uuid);
+			
+			// Create a query to be run as a prepared statement and do some
+			// magic MySQL stuff to it.
+			String query = "INSERT INTO `" + utils.mysqlifyName(tableName) +
+					"` VALUES (" + utils.generateQMarks(data.getProperties()) + ");";
+			Properties props = data.getProperties();
+			
+			// This will be used by the parameter loop below
+			int i = 1;
+			
+			try {
+				// Let's take command of the commit ship ourselves.
+				// Forward, mateys!
+				connection.setAutoCommit(false);
+				PreparedStatement stmt = connection.prepareStatement(query);
+				
+				// Add the parameters to the query. We don't know what we'll
+				// run into. Better let someone else, i.e. addParameter() take
+				// care of that for us.
+				for (Entry<Object, Object> prop : props.entrySet()) {
+					utils.addParameter(stmt, prop.getValue(), i++);
+				}
+				
+				// Run the statement and end the transaction
+				stmt.executeUpdate();
+				stmt.close();
+				
+				utils.pairUUIDWithTable(uuid, tableName);
+			} catch (SQLException e) {
+				// Try to create a non-existing table, but only once.
+				if (e.getErrorCode() == 1146 && !finalRun) {
+					utils.createTableIfNotExisting(
+							utils.mysqlifyName(tableName),
+							data.getPropertiesTemplate());
+					insert(data, true);
+				} else {
+					// Well, that didn't work too well. Give up and die.
+					throw new StorageException(STORAGE_ERROR);
+				}
+			}
+		} else if (data != null && data.getUUID() != null) {
+			// This object should already exist. Let's try to update it.
+			update(data);
+		}
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#insert(ElisDataObject[]) insert(ElisDataObject[])}.
+	 * 
+	 * @param data The data objects to be stored.
+	 * @throws StorageException Thrown when the objects couldn't be stored.
+	 * @since 1.1
+	 */
 	public void insert(ElisDataObject[] data) throws StorageException {
-		// TODO Auto-generated method stub
-
+		insert(data, false);
+	}
+	
+	/**
+	 * This method is called by the public insert(ElisDataObject[]) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param data The data objects to be stored.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the object couldn't be stored.
+	 * @since 1.1
+	 */
+	private void insert(ElisDataObject[] data, boolean finalRun) throws StorageException {
+		if (data != null && data.length > 0) {
+			// Just delegate this to the insert(AbstractUser, false) method.
+			for (ElisDataObject dataParticle : data) {
+				insert(dataParticle, false);
+			}
+		}
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#insert(AbstractUser) insert(AbstractUser)}.
+	 * 
+	 * @param user The user object to be stored.
+	 * @throws StorageException Thrown when the object couldn't be stored.
+	 * @since 1.1
+	 */
 	public void insert(AbstractUser user) throws StorageException {
-		// TODO Auto-generated method stub
+		insert(user, false);
+	}
 
+	/**
+	 * This method is called by the public insert(AbstractUser) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param user The user object to be stored.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the object couldn't be stored.
+	 * @since 1.1
+	 */
+	private void insert(AbstractUser user, boolean finalRun)
+			throws StorageException {
+		// TODO: It might be possible to create a version of this method that
+		//		 also takes a PreparedStatement as a parameter, thereby
+		//		 minimizing execution time and DB load.
+		
+		String query = null;
+		String tableName = null;
+		Properties props = user.getProperties();
+		
+		if (user != null) {
+			// Platform users are handled differently from any other user type.
+			if (user instanceof PlatformUser) {
+				PlatformUser pu = (PlatformUser) user;
+				PlatformUserIdentifier pid =
+						(PlatformUserIdentifier) pu.getIdentifier();
+				
+				if (pid.getId() > 0) {
+					// This is indeed a new object. Insert it.
+					
+					// Generate the table name and bestow MySQL magic onto it
+					tableName = utils.mysqlifyName("se.mah.elis.services.users.PlatformUser");
+					
+					/*
+					 * PlatformUser objects are stored as
+					 * |int id|String username|String password|String first_name|
+					 * 		String last_name|String e-mail|
+					 */
+					query = "INSERT INTO `" + tableName + "` VALUES "
+						+	"(?, ?, PASSWORD(?), ?, ?, ?)";
+					
+					try {
+						// Let's take command of the commit ship ourselves.
+						// Forward, mateys!
+						connection.setAutoCommit(false);
+						PreparedStatement stmt =
+								connection.prepareStatement(query);
+						
+						// Has this user been stored before?
+						if (pid.getId() > 0) {
+							stmt.setInt(1, pid.getId());
+						} else {
+							stmt.setNull(1, Types.NULL);
+						}
+						stmt.setString(2, pid.getUsername());
+						stmt.setString(3, pid.getPassword());
+						stmt.setString(4, pu.getFirstName());
+						stmt.setString(5, pu.getLastName());
+						stmt.setString(6, pu.getEmail());
+						stmt.executeUpdate();
+					} catch (SQLException e) {
+						// Try to create a non-existing table, but only once.
+						if (e.getErrorCode() == 1146 && !finalRun) {
+							// Flatten the user properties
+							Properties template = new Properties();
+							template.putAll(user.getIdentifier()
+									.getPropertiesTemplate());
+							template.putAll(user.getPropertiesTemplate());
+							template.remove("identifier");
+							utils.createTableIfNotExisting(tableName,
+									user.getPropertiesTemplate());
+							insert(user, true);
+						} else {
+							// Well, that didn't work too well. Give up
+							// and die.
+							throw new StorageException(STORAGE_ERROR);
+						}
+					}
+				} else {
+					// This object should already exist. Let's just update it.
+					update(user);
+				}
+			} else {
+				// Just a generic User object.
+				
+				if (((User) user).getUserId() == null) {
+					// This is indeed a new user. Insert it.
+					
+					// Generate the UUID
+					UUID uuid = UUID.randomUUID();
+					((User) user).setUserId(uuid);
+					
+					// This will be used by the parameter loop below
+					int i = 1;
+					
+					// Flatten the properties
+					Properties merged = new Properties();
+					merged.putAll(user.getIdentifier().getProperties());
+					merged.putAll(user.getProperties());
+					merged.remove("identifier");
+					
+					// Generate the table name
+					tableName = user.getClass().getCanonicalName();
+					
+					// Create a query to be run as a prepared statement and do
+					// some magic MySQL stuff to it.
+					query = "INSERT INTO " + utils.mysqlifyName(tableName) + 
+							" VALUES (" + utils.generateQMarks(merged) + ");";
+	
+					try {
+						// Let's take command of the commit ship ourselves.
+						// Forward, mateys!
+						connection.setAutoCommit(false);
+						PreparedStatement stmt =
+								connection.prepareStatement(query);
+					
+						// Add the parameters to the query. We don't know what
+						// we'll run into. Better let someone else, i.e.
+						// addParameter() take care of that for us.
+						for (Entry<Object, Object> prop : merged.entrySet()) {
+							utils.addParameter(stmt, prop.getValue(), i++);
+						}
+						
+						// Run the statement and end the transaction
+						stmt.executeUpdate();
+						stmt.close();
+						
+						utils.pairUUIDWithTable(uuid, tableName);
+					} catch (SQLException e) {
+						// Try to create a non-existing table, but only once.
+						if (e.getErrorCode() == 1146 && !finalRun) {
+							Properties template = new Properties();
+							template.putAll(user.getIdentifier()
+									.getPropertiesTemplate());
+							template.putAll(user.getPropertiesTemplate());
+							template.remove("identifier");
+							utils.createTableIfNotExisting(tableName,
+									user.getPropertiesTemplate());
+							insert(user, true);
+						} else {
+							// Well, that didn't work too well. Give up
+							// and die.
+							throw new StorageException(STORAGE_ERROR);
+						}
+					}
+				} else {
+					// This might be an existing object. Just update it.
+					update(user);
+				}
+			}
+		}
 	}
 
 	@Override
-	public void insert(AbstractUser[] user) throws StorageException {
-		// TODO Auto-generated method stub
-
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#insert(AbstractUser[]) insert(AbstractUser[])}.
+	 * 
+	 * @param users The user objects to be stored.
+	 * @throws StorageException Thrown when the objects couldn't be stored.
+	 * @since 1.1
+	 */
+	public void insert(AbstractUser[] users) throws StorageException {
+		insert(users, false);
+	}
+	
+	/**
+	 * This method is called by the public insert(AbstractUser[]) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param users The user objects to be stored.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the object couldn't be stored.
+	 * @since 1.1
+	 */
+	private void insert(AbstractUser[] users, boolean finalRun)
+			throws StorageException {
+		if (users != null && users.length > 0) {
+			// Just delegate this to the insert(AbstractUser, false) method.
+			for (AbstractUser user : users) {
+				insert(user, false);
+			}
+		}
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#update(ElisDataObject) update(ElisDataObject)}.
+	 * 
+	 * @param data The data object to be stored.
+	 * @throws StorageException Thrown when the object couldn't be stored.
+	 * @since 1.1
+	 */
 	public void update(ElisDataObject data) throws StorageException {
-		// TODO Auto-generated method stub
+		update(data, false);
+	}
 
+	/**
+	 * This method is called by the public update(ElisDataObject) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param data The data object to be updated.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the object couldn't be updated.
+	 * @since 1.1
+	 */
+	private void update(ElisDataObject data, boolean finalRun) throws StorageException {
+		// TODO: It might be possible to create a version of this method that
+		//		 also takes a PreparedStatement as a parameter, thereby
+		//		 minimizing execution time and DB load.
+		
+		if (data != null) {
+			// Generate the table name
+			String tableName = data.getClass().getCanonicalName();
+			
+			// Create a query to be run as a prepared statement and do some
+			// magic MySQL stuff to it.
+			Properties props = data.getProperties();
+			String query = "UPDATE `" + utils.mysqlifyName(tableName) +
+					"` SET " + utils.pairUp(data.getProperties()) +
+					" WHERE id = " + props.getProperty("id").toString() + ";";
+			
+			// This will be used by the parameter loop below
+			int i = 1;
+			
+			try {
+				// Let's take command of the commit ship ourselves.
+				// Forward, mateys!
+				connection.setAutoCommit(false);
+				PreparedStatement stmt = connection.prepareStatement(query);
+				
+				// Add the parameters to the query. We don't know what we'll
+				// run into. Better let someone else, i.e. addParameter() take
+				// care of that for us.
+				for (Entry<Object, Object> prop : props.entrySet()) {
+					utils.addParameter(stmt, prop.getValue(), i++);
+				}
+				
+				// Run the statement and end the transaction
+				stmt.executeUpdate();
+				stmt.close();
+			} catch (SQLException e) {
+				// Try to create a non-existing table, but only once.
+				if (e.getErrorCode() == 1146 && !finalRun) {
+					utils.createTableIfNotExisting(
+							utils.mysqlifyName(tableName),
+							data.getPropertiesTemplate());
+					update(data, true);
+				} else {
+					// Well, that didn't work too well. Give up and die.
+					throw new StorageException(STORAGE_ERROR);
+				}
+			}
+		}
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#update(ElisDataObject[]) update(ElisDataObject[])}.
+	 * 
+	 * @param data The data objects to be updated.
+	 * @throws StorageException Thrown when the objects couldn't be updated.
+	 * @since 1.1
+	 */
 	public void update(ElisDataObject[] data) throws StorageException {
-		// TODO Auto-generated method stub
+		update(data, false);
+	}
 
+	/**
+	 * This method is called by the public update(ElisDataObject[]) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param data The data objects to be stored.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the objects couldn't be stored.
+	 * @since 1.1
+	 */
+	private void update(ElisDataObject[] data, boolean finalRun) throws StorageException {
+		if (data != null && data.length > 0) {
+			// Just delegate this to the insert(AbstractUser, false) method.
+			for (ElisDataObject dataParticle : data) {
+				update(dataParticle, false);
+			}
+		}
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#update(AbstractUser) update(AbstractUser)}.
+	 * 
+	 * @param user The user object to be updated.
+	 * @throws StorageException Thrown when the object couldn't be updated.
+	 * @since 1.1
+	 */
 	public void update(AbstractUser user) throws StorageException {
-		// TODO Auto-generated method stub
+		update(user, false);
+	}
 
+	/**
+	 * This method is called by the public update(AbstractUser) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param user The user object to be updated.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the object couldn't be updated.
+	 * @since 1.1
+	 */
+	private void update(AbstractUser user, boolean finalRun) throws StorageException {
+		// TODO: It might be possible to create a version of this method that
+		//		 also takes a PreparedStatement as a parameter, thereby
+		//		 minimizing execution time and DB load.
+		
+		String query = null;
+		String tableName = null;
+		Properties props = user.getProperties();
+		
+		if (user != null) {
+			// Platform users are handled differently from any other user type.
+			if (user instanceof PlatformUser) {
+				PlatformUser pu = (PlatformUser) user;
+				PlatformUserIdentifier pid =
+						(PlatformUserIdentifier) pu.getIdentifier();
+				
+				// Generate the table name and bestow MySQL magic onto it
+				tableName = utils.mysqlifyName("se.mah.elis.services.users.PlatformUser");
+				
+				/*
+				 * PlatformUser objects are stored as
+				 * |int id|String username|String password|String first_name|
+				 * 		String last_name|String e-mail|
+				 */
+				if (pid.getPassword().length() > 0) {
+					// Only update the password if it is being changed
+					query = "UPDATE `" + tableName + "` SET " +
+							"id = ?,  username = ?, " +
+							"`password` = PASSWORD(?), first_name = ?, " +
+							"last_name = ?, `e-mail` = ? WHERE id = " +
+							pid.getId() + ";";
+				} else {
+					query = "UPDATE `" + tableName + "` SET " +
+							"id = ?,  username = ?, " +
+							"first_name = ?, last_name = ?, `e-mail` = ? " + 
+							"WHERE id = " + pid.getId() + ";";
+				}
+				
+				
+				try {
+					// Let's take command of the commit ship ourselves.
+					// Forward, mateys!
+					connection.setAutoCommit(false);
+					PreparedStatement stmt = connection.prepareStatement(query);
+					
+					stmt.setInt(1, pid.getId());
+					stmt.setString(2, pid.getUsername());
+					if (pid.getPassword().length() > 0) {
+						// Only update the password if it is being changed
+						stmt.setString(3, pid.getPassword());
+					}
+					stmt.setString(4, pu.getFirstName());
+					stmt.setString(5, pu.getLastName());
+					stmt.setString(6, pu.getEmail());
+					stmt.executeUpdate();
+				} catch (SQLException e) {
+					// Try to create a non-existing table, but only once.
+					if (e.getErrorCode() == 1146 && !finalRun) {
+						// Flatten the user properties
+						Properties template = new Properties();
+						template.putAll(user.getIdentifier()
+								.getPropertiesTemplate());
+						template.putAll(user.getPropertiesTemplate());
+						utils.createTableIfNotExisting(tableName,
+								user.getPropertiesTemplate());
+						insert(user, true);
+					} else {
+						// Well, that didn't work too well. Give up and die.
+						throw new StorageException(STORAGE_ERROR);
+					}
+				}	
+			} else {
+				// Just a generic AbstractUser object.
+				
+				// This will be used by the parameter loop below
+				int i = 1;
+				
+				// Generate the table name
+				tableName = user.getClass().getCanonicalName();
+				
+				// Flatten the properties
+				Properties merged = new Properties();
+				merged.putAll(user.getIdentifier().getProperties());
+				merged.putAll(user.getProperties());
+				merged.remove("identifier");
+				
+				// Create a query to be run as a prepared statement and do
+				// some magic MySQL stuff to it.
+				query = "UPDATE `" + utils.mysqlifyName(tableName) +
+						"` SET " + utils.pairUp(user.getProperties()) +
+						" WHERE id = " + props.getProperty("id").toString() + ";";
+
+				try {
+					// Let's take command of the commit ship ourselves.
+					// Forward, mateys!
+					connection.setAutoCommit(false);
+					PreparedStatement stmt = connection.prepareStatement(query);
+				
+					// Add the parameters to the query. We don't know what
+					// we'll run into. Better let someone else, i.e.
+					// addParameter() take care of that for us.
+					for (Entry<Object, Object> prop : merged.entrySet()) {
+						utils.addParameter(stmt, prop.getValue(), i++);
+					}
+					
+					// Run the statement and end the transaction
+					stmt.executeUpdate();
+					stmt.close();
+				} catch (SQLException e) {
+					// Try to create a non-existing table, but only once.
+					if (e.getErrorCode() == 1146 && !finalRun) {
+						// Flatten the user properties
+						Properties template = new Properties();
+						template.putAll(user.getIdentifier()
+								.getPropertiesTemplate());
+						template.putAll(user.getPropertiesTemplate());
+						template.remove("identifier");
+						utils.createTableIfNotExisting(tableName,
+								user.getPropertiesTemplate());
+						update(user, true);
+					} else {
+						// Well, that didn't work too well. Give up and die.
+						throw new StorageException(STORAGE_ERROR);
+					}
+				}
+			}
+		}
 	}
 
 	@Override
-	public void update(AbstractUser[] user) throws StorageException {
-		// TODO Auto-generated method stub
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#update(AbstractUser[]) update(AbstractUser[])}.
+	 * 
+	 * @param users The user objects to be updated.
+	 * @throws StorageException Thrown when the objects couldn't be updated.
+	 * @since 1.1
+	 */
+	public void update(AbstractUser[] users) throws StorageException {
+		update(users, false);
+	}
 
+	/**
+	 * This method is called by the public update(AbstractUser[]) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param users The user objects to be updated.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the objects couldn't be updated.
+	 * @since 1.1
+	 */
+	private void update(AbstractUser[] users, boolean finalRun) throws StorageException {
+		if (users != null && users.length > 0) {
+			// Just delegate this to the insert(AbstractUser, false) method.
+			for (AbstractUser user : users) {
+				update(user, false);
+			}
+		}
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#delete(ElisDataObject) update(ElisDataObject)}.
+	 * 
+	 * @param data The data object to be deleted.
+	 * @throws StorageException Thrown when the object couldn't be deleted.
+	 * @since 1.1
+	 */
 	public void delete(ElisDataObject data) throws StorageException {
-		// TODO Auto-generated method stub
-
+		delete(data, false);
+	}
+	
+	/**
+	 * This method is called by the public delete(ElisDataObject) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param data The data object to be deleted.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the object couldn't be deleted.
+	 * @since 1.1
+	 */
+	private void delete(ElisDataObject data, boolean finalRun) throws StorageException {
+		if (data != null) {
+			// TODO: It might be possible to create a version of this method that
+			//		 also takes a PreparedStatement as a parameter, thereby
+			//		 minimizing execution time and DB load.
+			
+			// Generate the table name
+			String tableName = data.getClass().getCanonicalName();
+			
+			// Create a query to be run as a prepared statement and do some
+			// magic MySQL stuff to it.
+			Properties props = data.getProperties();
+			String query = "DELETE FROM `" + utils.mysqlifyName(tableName) +
+					" WHERE id = " + props.getProperty("id").toString() + ";";
+			
+			try {
+				// Let's take command of the commit ship ourselves.
+				// Forward, mateys!
+				connection.setAutoCommit(false);
+				PreparedStatement stmt = connection.prepareStatement(query);
+				
+				// Run the statement and end the transaction
+				stmt.executeUpdate();
+				stmt.close();
+			} catch (SQLException e) {
+				throw new StorageException(STORAGE_ERROR);
+			}
+		}
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#delete(ElisDataObject[]) update(ElisDataObject[])}.
+	 * 
+	 * @param data The data objects to be deleted.
+	 * @throws StorageException Thrown when the objects couldn't be deleted.
+	 * @since 1.1
+	 */
 	public void delete(ElisDataObject[] data) throws StorageException {
-		// TODO Auto-generated method stub
+		delete(data, false);
+	}
 
+	/**
+	 * This method is called by the public delete(ElisDataObject[]) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param data The data objects to be deleted.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the objects couldn't be deleted.
+	 * @since 1.1
+	 */
+	private void delete(ElisDataObject[] data, boolean finalRun) throws StorageException {
+		if (data != null && data.length > 0) {
+			// Just delegate this to the insert(AbstractUser, false) method.
+			for (ElisDataObject dataParticle : data) {
+				delete(dataParticle, false);
+			}
+		}
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#delete(AbstractUser) update(AbstractUser)}.
+	 * 
+	 * @param user The user object to be deleted.
+	 * @throws StorageException Thrown when the object couldn't be deleted.
+	 * @since 1.1
+	 */
 	public void delete(AbstractUser user) throws StorageException {
-		// TODO Auto-generated method stub
+		delete(user, false);
+	}
 
+	/**
+	 * This method is called by the public delete(ElisDataObject[]) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param user The user object to be deleted.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the user couldn't be deleted.
+	 * @since 1.1
+	 */
+	private void delete(AbstractUser user, boolean finalRun) throws StorageException {
+		// TODO: It might be possible to create a version of this method that
+		//		 also takes a PreparedStatement as a parameter, thereby
+		//		 minimizing execution time and DB load.
+		
+		if (user != null) {
+			// Generate the table name
+			String tableName = user.getClass().getCanonicalName();
+			
+			// Create a query to be run as a prepared statement and do some
+			// magic MySQL stuff to it.
+			Properties props = user.getProperties();
+			String query = "DELETE FROM `" + utils.mysqlifyName(tableName) +
+					" WHERE id = " + props.getProperty("id").toString() + ";";
+			
+			try {
+				// Let's take command of the commit ship ourselves.
+				// Forward, mateys!
+				connection.setAutoCommit(false);
+				PreparedStatement stmt = connection.prepareStatement(query);
+				
+				// Run the statement and end the transaction
+				stmt.executeUpdate();
+				stmt.close();
+			} catch (SQLException e) {
+				throw new StorageException(STORAGE_ERROR);
+			}
+		}
 	}
 
 	@Override
-	public void delete(AbstractUser[] user) throws StorageException {
-		// TODO Auto-generated method stub
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#delete(AbstractUser[]) update(AbstractUser[])}.
+	 * 
+	 * @param user The user objects to be deleted.
+	 * @throws StorageException Thrown when the objects couldn't be deleted.
+	 * @since 1.1
+	 */
+	public void delete(AbstractUser[] users) throws StorageException {
+		delete(users, false);
+	}
 
+	/**
+	 * This method is called by the public delete(AbstractUser[]) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param users The user objects to be deleted.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the users couldn't be deleted.
+	 * @since 1.1
+	 */
+	private void delete(AbstractUser[] users, boolean finalRun) throws StorageException {
+		if (users != null && users.length > 0) {
+			// Just delegate this to the insert(AbstractUser, false) method.
+			for (AbstractUser user : users) {
+				delete(user, false);
+			}
+		}
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#delete(Query) update(Query)}.
+	 * 
+	 * @param query The query to be run.
+	 * @throws StorageException Thrown when query couldn't be run.
+	 * @since 1.1
+	 */
 	public void delete(Query query) throws StorageException {
-		// TODO Auto-generated method stub
+		delete(query, false);
+	}
 
+	/**
+	 * This method is called by the public delete(Query) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param query The query to be run.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the query couldn't be run.
+	 * @since 1.1
+	 */
+	private void delete(Query query, boolean finalRun) throws StorageException {
+		if (query != null) {
+			try {
+				DeleteQuery dq = (DeleteQuery) query;
+				
+				// Let's take command of the commit ship ourselves.
+				// Forward, mateys!
+				connection.setAutoCommit(false);
+				Statement stmt = connection.createStatement();
+				stmt.execute(dq.compile());
+				stmt.close();
+			} catch (SQLException e) {
+				throw new StorageException(STORAGE_ERROR);
+			} catch (ClassCastException ce) {
+				throw new StorageException(DELETE_QUERY);
+			}
+		}
 	}
 
 	@Override
+	/**
+	 * Mock implementation of
+	 * {@link se.mah.elis.services.storage.Storage#readData(long) readData(long)}.
+	 * 
+	 * @param query The query to be run.
+	 * @throws StorageException Thrown when query couldn't be run.
+	 * @deprecated As of version 1.1, replaced by {@link #readData(UUID)}.
+	 * @since 1.0
+	 */
 	public ElisDataObject readData(long id) throws StorageException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new StorageException(OBJECT_NOT_FOUND);
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#readData(UUID) readData(UUID)}.
+	 * 
+	 * @param UUID The object to be read.
+	 * @return The data object we're looking for.
+	 * @throws StorageException Thrown when object couldn't be read.
+	 * @since 1.0
+	 */
+	public ElisDataObject readData(UUID id) throws StorageException {
+		return readData(id, false);
+	}
+
+	/**
+	 * This method is called by the public readData(UUID) method.
+	 * 
+	 * @param UUID The object to be read.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @return The data object we're looking for.
+	 * @throws StorageException Thrown when the object couldn't be read.
+	 * @since 1.1
+	 */
+	private ElisDataObject readData(UUID id, boolean finalRun)
+			throws StorageException {
+		ElisDataObject edo = null;
+		String tableName = utils.lookupUUIDTable(id);
+		String className = null;
+		String query = null;
+		Properties props = null;
+		
+		if (tableName != null) {
+			className = utils.demysqlifyName(tableName);
+			try {
+				edo = (ElisDataObject) Class.forName(className).newInstance();
+				
+				query = "SELECT * FROM `" + tableName +
+						"` WHERE id = '" + utils.uuidToBytes(id) + "';";
+				
+				// Let's take command of the commit ship ourselves.
+				// Forward, mateys!
+				connection.setAutoCommit(false);
+				Statement stmt = connection.createStatement();
+				java.sql.ResultSet rs = stmt.executeQuery(query);
+				props = utils.resultSetRowToProperties(rs);
+				rs.close();
+				stmt.close();
+				
+				// Populate the object, then we're pretty much done.
+				edo.populate(props);
+			} catch (InstantiationException | IllegalAccessException
+					| ClassNotFoundException e) {
+				throw new StorageException(INSTANCE_OBJECT_ERROR);
+			} catch (SQLException e) {
+				throw new StorageException(OBJECT_NOT_FOUND);
+			}
+		}
+		
+		return edo;
+	}
+
+	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#readUser(UserIdentifier) readUser(UserIdentifier)}.
+	 * 
+	 * @param id The unique data id.
+	 * @return A User object.
+	 * @throws StorageException if the user wasn't found.
+	 * @since 1.1
+	 */
+	public User readUser(UUID id) throws StorageException {
+		return readUser(id, false);
+	}
+
+	/**
+	 * This method is called by the public readUser(UUID) method.
+	 * 
+	 * @param id The user to be read.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @return The user we're looking for.
+	 * @throws StorageException Thrown when the user couldn't be read.
+	 * @since 1.1
+	 */
+	private User readUser(UUID id, boolean finalRun) throws StorageException {
+		User user = null;
+		String tableName = utils.lookupUUIDTable(id);
+		String className = null;
+		
+		if (tableName != null) {
+			className = utils.demysqlifyName(tableName);
+			String query = null;
+			Properties props = null;
+			
+			query = "SELECT table_name FROM `" + tableName + "` WHERE id = '" +
+					utils.uuidToBytes(id) + "';";
+			
+			try {
+				// Let's take command of the commit ship ourselves.
+				// Forward, mateys!
+				connection.setAutoCommit(false);
+				Statement stmt = connection.createStatement();
+				java.sql.ResultSet rs = stmt.executeQuery(query);
+				props = utils.resultSetRowToProperties(rs);
+				rs.close();
+				stmt.close();
+				
+				user = factory.build(className,
+						(String) props.get("serviceName"), props);
+			} catch (SQLException e) {
+				throw new StorageException(OBJECT_NOT_FOUND);
+			} catch (UserInitalizationException e) {
+				throw new StorageException(INSTANCE_USER_ERROR);
+			}
+		}
+		
+		return user;
+	}
+
+	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#readUser(UserIdentifier) readUser(UserIdentifier)}.
+	 * 
+	 * @param UserIdentifier The user to be read.
+	 * @return The user we're looking for.
+	 * @throws StorageException Thrown when user couldn't be read.
+	 * @since 1.0
+	 */
 	public AbstractUser readUser(UserIdentifier id) throws StorageException {
-		// TODO Auto-generated method stub
-		return null;
+		return readUser(id, false);
+	}
+
+	/**
+	 * This method is called by the public readUser(UserIdentifier) method.
+	 * 
+	 * @param UserIdentifier The user to be read.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @return The user we're looking for.
+	 * @throws StorageException Thrown when the user couldn't be read.
+	 * @since 1.1
+	 */
+	private AbstractUser readUser(UserIdentifier id, boolean finalRun)
+			throws StorageException {
+		AbstractUser user = null;
+		Class clazz = id.identifies();
+		String className = clazz.toString();
+		String tableName = utils.mysqlifyName(className);
+		String query = null;
+
+		if (clazz == se.mah.elis.services.users.PlatformUser.class) {
+			// This is a platform user.
+			String userType = "se.mah.elis.services.users.PlatformUser";
+			String serviceName = userType;
+			int puid = ((PlatformUserIdentifier) id).getId();
+			Properties props = null;
+			
+			query = "SELECT * FROM `" + tableName + "` WHERE id = " + puid;
+			
+			try {
+				// Let's take command of the commit ship ourselves.
+				// Forward, mateys!
+				connection.setAutoCommit(false);
+				Statement stmt = connection.createStatement();
+				java.sql.ResultSet rs = stmt.executeQuery(query);
+				props = utils.resultSetRowToProperties(rs);
+				rs.close();
+				stmt.close();
+				
+				// Create a PlatformUser object
+				user = factory.build(userType, serviceName, props);
+			} catch (SQLException e) {
+				throw new StorageException(OBJECT_NOT_FOUND);
+			} catch (UserInitalizationException e) {
+				throw new StorageException(INSTANCE_USER_ERROR);
+			}
+		} else {
+			// This is a generic user.
+			String userType = "se.mah.elis.services.users.PlatformUser";
+			String serviceName = userType;
+			Properties props = null;
+			
+			// We'll run this as a prepared statement, since we don't know what
+			// we'll run into.
+			query = "SELECT * FROM `" + tableName + "` WHERE " +
+					utils.pairUp(id.getProperties()) + ";";
+			
+			try {
+				PreparedStatement stmt = connection.prepareStatement(query);
+				
+				int i = 1;
+				for (Entry<Object, Object> entry : id.getProperties().entrySet()) {
+					utils.addParameter(stmt, entry.getValue(), i++);
+				}
+				
+				java.sql.ResultSet rs = stmt.executeQuery();
+				
+				props = utils.resultSetRowToProperties(rs);
+				user = factory.build(className,
+						(String) props.get("serviceName"), props);
+				rs.close();
+				stmt.close();
+			} catch (SQLException e) {
+				throw new StorageException(OBJECT_NOT_FOUND);
+			} catch (UserInitalizationException e) {
+				throw new StorageException(INSTANCE_USER_ERROR);
+			}
+		}
+		
+		return user;
 	}
 
 	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#readUser(AbstractUser) readUser(AbstractUser)}.
+	 * 
+	 * @param UserIdentifier The user to be read.
+	 * @throws StorageException Thrown when user couldn't be read.
+	 * @since 1.1
+	 */
+	public void readUser(AbstractUser user) throws StorageException {
+		readUser(user, false);
+	}
+
+	/**
+	 * This method is called by the public readUser(UserIdentifier) method.
+	 * 
+	 * @param UserIdentifier The user to be read.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @throws StorageException Thrown when the user couldn't be read.
+	 * @since 1.1
+	 */
+	private void readUser(AbstractUser user, boolean finalRun)
+			throws StorageException {
+		if (user != null) {
+			// Generate the table name
+			String tableName = user.getClass().getCanonicalName();
+			
+			String id = null;
+			
+			if (user instanceof User) {
+				id = utils.uuidToBytes(((User) user).getUserId()).toString();
+			} else {
+				id = "" + ((PlatformUserIdentifier) ((PlatformUser) user)
+						.getIdentifier()).getId();
+			}
+			
+			String query = "SELECT * FROM `" + utils.mysqlifyName(tableName) +
+					"` WHERE id = " + id;
+
+			// * Build query from identifier
+			try {
+				// Let's take command of the commit ship ourselves.
+				// Forward, mateys!
+				connection.setAutoCommit(false);
+				Statement stmt = connection.createStatement();
+				Properties props =
+						utils.resultSetRowToProperties(stmt.executeQuery(query));
+				user.populate(props);
+				stmt.close();
+			} catch (SQLException e) {
+				// Try to create a non-existing table, but only once.
+				if (e.getErrorCode() == 1146 && !finalRun) {
+					// Flatten the user properties
+					Properties template = new Properties();
+					template.putAll(user.getIdentifier()
+							.getPropertiesTemplate());
+					template.putAll(user.getPropertiesTemplate());
+					utils.createTableIfNotExisting(tableName,
+							user.getPropertiesTemplate());
+					insert(user, true);
+				} else {
+					// That didn't go too well. Just give up and die, already.
+					throw new StorageException(STORAGE_ERROR);
+				}
+			}
+		}
+	}
+
+	@Override
+	/**
+	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#select(Query) select(Query)}.
+	 * 
+	 * @param Query The query to be run.
+	 * @throws StorageException Thrown when user couldn't be read.
+	 * @since 1.0
+	 */
 	public ResultSet select(Query query) throws StorageException {
+		return select(query, false);
+	}
+
+	/**
+	 * This method is called by the public select(Query) method. It
+	 * tries to create the table needed to store the data object if it doesn't
+	 * already exist. However, it will only try once. If it doesn't succeed on
+	 * its first try, it will stop trying by throwing an exception.
+	 * 
+	 * @param Query The query to be run.
+	 * @param finalRun True if this method has been run before. Any method
+	 * 		which isn't in fact this very method should call the method by
+	 * 		setting this parameter to false.
+	 * @return A ResultSet object containing all found values.
+	 * @throws StorageException Thrown when the query couldn't be run.
+	 * @since 1.1
+	 */
+	private ResultSet select(Query query, boolean finalRun) throws StorageException {
 		ResultSet result = null;
+		Class clazz = query.getDataType();
+		
+		if (query != null) {
+			try {
+				// Let's take command of the commit ship ourselves.
+				// Forward, mateys!
+				connection.setAutoCommit(false);
+				Statement stmt = connection.createStatement();
+				
+				// Fetch the results and convert them to readable objects.
+				java.sql.ResultSet rs = stmt.executeQuery(query.compile());
+				ArrayList<Properties> propList = utils.resultSetToProperties(rs);
+				ArrayList<Object> objs = new ArrayList<Object>();
+				Object instance = null;
+				
+				// Let's convert the raw data to ElisDataObject or AbstractUser
+				// objects. That will be fun.
+				for (Properties props : propList) {
+					instance = clazz.newInstance();
+					
+					// Here, we'll try to populate the created objects.
+					if (instance instanceof ElisDataObject) {
+						((ElisDataObject) instance).populate(props);
+					} else if (instance instanceof AbstractUser) {
+						((AbstractUser) instance).populate(props);
+					} else {
+						// Well, this was awkward. We don't know what this is.
+						// Rather than trying to guess and potentially destroy
+						// things, just give up and die.
+						throw new StorageException(INSTANCE_OBJECT_ERROR);
+					}
+					objs.add(props);
+				}
+				
+				// Close the database stuff gracefully
+				rs.close();
+				stmt.close();
+				
+				// Aaand we're done. Finish this up, then move on.
+				result = new ResultSetImpl(clazz, objs.toArray());
+			} catch (SQLException | IllegalAccessException e) {
+				throw new StorageException(STORAGE_ERROR);
+			} catch (InstantiationException e) {
+				throw new StorageException(INSTANCE_OBJECT_ERROR);
+			}
+		}
 				
 		return result;
 	}
-
 }
