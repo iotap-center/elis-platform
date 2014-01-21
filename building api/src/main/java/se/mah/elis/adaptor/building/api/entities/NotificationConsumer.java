@@ -3,7 +3,7 @@
  */
 package se.mah.elis.adaptor.building.api.entities;
 
-import se.mah.elis.adaptor.building.api.events.DetectorEvent;
+import se.mah.elis.adaptor.building.api.events.SensorEvent;
 
 /**
  * The NotificationConsumer interface is used by services that wish to
@@ -20,5 +20,5 @@ public interface NotificationConsumer {
 	 * @param event The event to be consumed.
 	 * @since 1.0
 	 */
-	void triggerEvent(DetectorEvent event);
+	void triggerEvent(SensorEvent event);
 }

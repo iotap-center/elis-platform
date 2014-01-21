@@ -3,26 +3,17 @@
  */
 package se.mah.elis.adaptor.building.api.events;
 
-import java.util.Date;
-
-import se.mah.elis.adaptor.building.api.entities.NotificationConsumer;
 import se.mah.elis.adaptor.building.api.entities.devices.Detector;
 
 /**
- * The DetectorEvent interface is a baseline interface for events triggered by
- * various detectors. DetectorEvents are consumed by
- * {@link se.mah.elis.adaptor.building.api.entities.NotificationConsumer}
- * objects.
+ * The DetectorEvent class is a baseline class for events triggered by various
+ * detectors. It is very similar to {@link SensorEvent}, but can only be
+ * created by Detector objects.
  * 
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
- * @see NotificationConsumer
  */
-public class DetectorEvent {
-	
-	private Detector detector;
-	private String message;
-	private static final Date triggered = new Date();
+public class DetectorEvent extends SensorEvent {
 
 	/**
 	 * Creates a DetectorEvent object with a message.
@@ -32,8 +23,7 @@ public class DetectorEvent {
 	 * @since 1.0
 	 */
 	public DetectorEvent(Detector detector, String message) {
-		this.detector = detector;
-		this.message = message;
+		super(detector, message);
 	}
 	
 	/**
@@ -43,8 +33,7 @@ public class DetectorEvent {
 	 * @since 1.0
 	 */
 	public DetectorEvent(Detector detector) {
-		this.detector = detector;
-		this.message = "";
+		super(detector);
 	}
 	
 	/**
@@ -53,27 +42,8 @@ public class DetectorEvent {
 	 * @return The detector that triggered the event.
 	 * @since 1.0
 	 */
+	@Override
 	public Detector getOrigin() {
-		return detector;
-	}
-	
-	/**
-	 * Gets the status message from the event.
-	 * 
-	 * @return The message
-	 * @since 1.0
-	 */
-	public String getMessage() {
-		return message;
-	}
-	
-	/**
-	 * Gets the time when the event was triggered.
-	 * 
-	 * @return The time when the event was triggered.
-	 * @since 1.0
-	 */
-	public Date getTriggerTime() {
-		return triggered;
+		return (Detector) sensor;
 	}
 }

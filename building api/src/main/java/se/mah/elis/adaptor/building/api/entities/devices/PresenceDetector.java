@@ -4,14 +4,14 @@
 package se.mah.elis.adaptor.building.api.entities.devices;
 
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
-import se.mah.elis.auxiliaries.exceptions.UnsupportedFunctionalityException;
+import se.mah.elis.exceptions.UnsupportedFunctionalityException;
 
 /**
  * The PresenceDetector interface describes a sensor that can detect presence
  * in its immediate surroundings. It is somewhat similar to the
  * {@link Tripwire} interface.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm�� University"
  * @since 1.0
  * @see Tripwire
  */

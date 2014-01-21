@@ -4,14 +4,14 @@
 package se.mah.elis.adaptor.building.api.entities.devices;
 
 import se.mah.elis.adaptor.building.api.entities.NotificationConsumer;
-import se.mah.elis.auxiliaries.exceptions.UnsupportedFunctionalityException;
+import se.mah.elis.exceptions.UnsupportedFunctionalityException;
 
 /**
  * A detector is a sensor that can trigger alarms and notifications. It is used
  * by {@link se.mah.elis.adaptor.building.api.entities.NotificationConsumer} to
  * collect data in semi-real time.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm�� University"
  * @since 1.0
  * @see NotificationConsumer
  */

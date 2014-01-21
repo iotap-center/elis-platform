@@ -15,9 +15,26 @@ import se.mah.elis.adaptor.building.api.entities.devices.Detector;
  */
 public class PresenceEvent extends DetectorEvent {
 
+	/**
+	 * Denotes a detected presence.
+	 * 
+	 * @since 1.0
+	 */
 	public static int PRESENCE_DETECTED = 0;
+	
+	/**
+	 * Denotes a detected absence.
+	 * 
+	 * @since 1.0
+	 */
 	public static int ABSENCE_DETECTED = 1;
 	
+	/**
+	 * Denotes whether an absence or presence was detected.
+	 * 
+	 * @since 1.0
+	 * @serial
+	 */
 	private int type;
 	
 	/**
