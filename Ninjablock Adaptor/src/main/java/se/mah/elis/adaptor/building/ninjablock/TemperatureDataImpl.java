@@ -1,6 +1,7 @@
 package se.mah.elis.adaptor.building.ninjablock;
 
-import se.mah.elis.auxiliaries.data.TemperatureData;
+import se.mah.elis.data.TemperatureData;
+
 
 public class TemperatureDataImpl implements TemperatureData {
 	

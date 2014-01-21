@@ -6,7 +6,7 @@ import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.building.api.entities.devices.Tripwire;
 import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
-import se.mah.elis.auxiliaries.exceptions.UnsupportedFunctionalityException;
+import se.mah.elis.exceptions.UnsupportedFunctionalityException;
 
 public class NinjablockTripwire implements Tripwire {
 

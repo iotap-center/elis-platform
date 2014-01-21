@@ -48,6 +48,12 @@
   		<artifactId>httpcore</artifactId>
   		<version>4.3</version>
   	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.exceptions</groupId>
+  		<artifactId>elis-exceptions</artifactId>
+  		<version>1.0.0</version>
+  		<type>bundle</type>
+  	</dependency>
   </dependencies>
   
   <build>

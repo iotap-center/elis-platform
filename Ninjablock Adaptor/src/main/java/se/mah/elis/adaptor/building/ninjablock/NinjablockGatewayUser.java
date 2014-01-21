@@ -1,23 +1,23 @@
 package se.mah.elis.adaptor.building.ninjablock;
 
-import org.osgi.service.useradmin.User;
-
-import com.google.gson.Gson;
-
 import se.mah.elis.adaptor.building.api.entities.GatewayUser;
 import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
-import se.mah.elis.adaptor.building.ninjablock.beans.UserBean;
-import se.mah.elis.adaptor.building.ninjablock.communication.Communicator;
-import se.mah.elis.adaptor.building.ninjablock.communication.UserCommunicator;
+import se.mah.elis.adaptor.building.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
+
+/**
+ * Representation of a gateway user for Ninjablock
+ * @author Joakim Lithell
+ * @version 1.0.0
+ * @since 1.0
+ */
 
 public class NinjablockGatewayUser implements GatewayUser {
 
 	private Gateway gateway;
 	private NinjablockGatewayUserIdentifer gatewayUserIdentifier;
 	private int id;
-	private String response;
 	
 	@Override
 	public int getIdNumber() {
@@ -29,10 +29,6 @@ public class NinjablockGatewayUser implements GatewayUser {
 		this.id = id;
 	}
 
-	@Override
-	public void initialize() throws UserInitalizationException {
-	
-	}
 
 	@Override
 	public UserIdentifier getIdentifier() {
@@ -54,6 +50,17 @@ public class NinjablockGatewayUser implements GatewayUser {
 	public void setGateway(Gateway gateway) {
 		this.gateway = gateway;
 		
+	}
+
+	@Override
+	public void initialize() throws UserInitalizationException {
+		if (!gateway.hasConnected()) {
+			try {
+				gateway.connect();
+			} catch (GatewayCommunicationException e) {
+				throw new UserInitalizationException();
+			}
+		}
 	}
 
 

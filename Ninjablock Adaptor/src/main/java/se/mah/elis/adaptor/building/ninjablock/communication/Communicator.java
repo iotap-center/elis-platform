@@ -2,6 +2,8 @@ package se.mah.elis.adaptor.building.ninjablock.communication;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -15,7 +17,11 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import se.mah.elis.adaptor.building.api.entities.devices.Device;
+import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
+import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
 import se.mah.elis.adaptor.building.ninjablock.beans.NinjaEyeBean;
+
 
 import com.google.gson.Gson;
 
@@ -34,6 +40,7 @@ public class Communicator	{
 		
 		return responseToString(response);
 	}
+	
 	
 	public String httpPut(String url,List<NameValuePair> urlParam) throws Exception {
 		

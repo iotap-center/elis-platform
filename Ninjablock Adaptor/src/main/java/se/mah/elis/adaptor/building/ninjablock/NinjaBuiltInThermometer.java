@@ -12,7 +12,7 @@ import se.mah.elis.adaptor.building.ninjablock.TemperatureDataImpl;
 import se.mah.elis.adaptor.building.ninjablock.communication.Communicator;
 import se.mah.elis.adaptor.building.ninjablock.communication.DeviceCommunicator;
 import se.mah.elis.adaptor.building.ninjablock.internal.NinjaDeviceIdentifier;
-import se.mah.elis.auxiliaries.data.TemperatureData;
+import se.mah.elis.data.TemperatureData;
 import static org.hamcrest.CoreMatchers.instanceOf;
 
 
