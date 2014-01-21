@@ -3,6 +3,10 @@ package se.mah.elis.data.test.mocks;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
+
+import org.joda.time.DateTime;
 
 import se.mah.elis.data.ElectricitySample;
 
@@ -22,8 +26,8 @@ public class ElectricitySampleMock implements ElectricitySample {
 		return 100;
 	}
 
-	public Date getSampleTimestamp() {
-		return new Date();
+	public DateTime getSampleTimestamp() {
+		return new DateTime();
 	}
 
 	public List<String> getTraversableMethods() {
@@ -101,6 +105,54 @@ public class ElectricitySampleMock implements ElectricitySample {
 
 	public double getTotalEnergyUsageInWh() {
 		return testValue * testValue * 10;
+	}
+
+	@Override
+	public long getDataId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public UUID getUUID() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setUUID(UUID uuid) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setUniqueUserId(int userId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getUniqueUserId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Properties getProperties() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Properties getPropertiesTemplate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void populate(Properties props) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

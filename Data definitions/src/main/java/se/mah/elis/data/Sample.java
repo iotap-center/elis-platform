@@ -3,8 +3,9 @@
  */
 package se.mah.elis.data;
 
-import java.util.Date;
 import java.util.List;
+
+import org.joda.time.DateTime;
 
 /**
  * @author "Johan Holmberg, Malmö University"
@@ -28,7 +29,7 @@ public interface Sample extends ElisDataObject {
 	 * @return The time when the sample was taken.
 	 * @since 1.0
 	 */
-	Date getSampleTimestamp();
+	DateTime getSampleTimestamp();
 	
 	/**
 	 * Gets a list of names of all methods that are traversable by a
