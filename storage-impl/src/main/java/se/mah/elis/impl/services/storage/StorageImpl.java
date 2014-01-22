@@ -83,7 +83,6 @@ public class StorageImpl implements Storage {
 		utils = new StorageUtils(connection);
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#insert(ElisDataObject) insert(ElisDataObject)}.
@@ -92,6 +91,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the object couldn't be stored.
 	 * @since 1.1
 	 */
+	@Override
 	public void insert(ElisDataObject data) throws StorageException {
 		insert(data, false);
 	}
@@ -173,7 +173,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#insert(ElisDataObject[]) insert(ElisDataObject[])}.
@@ -182,6 +181,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the objects couldn't be stored.
 	 * @since 1.1
 	 */
+	@Override
 	public void insert(ElisDataObject[] data) throws StorageException {
 		insert(data, false);
 	}
@@ -208,7 +208,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#insert(AbstractUser) insert(AbstractUser)}.
@@ -217,6 +216,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the object couldn't be stored.
 	 * @since 1.1
 	 */
+	@Override
 	public void insert(AbstractUser user) throws StorageException {
 		insert(user, false);
 	}
@@ -377,7 +377,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#insert(AbstractUser[]) insert(AbstractUser[])}.
@@ -386,6 +385,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the objects couldn't be stored.
 	 * @since 1.1
 	 */
+	@Override
 	public void insert(AbstractUser[] users) throws StorageException {
 		insert(users, false);
 	}
@@ -413,7 +413,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#update(ElisDataObject) update(ElisDataObject)}.
@@ -422,6 +421,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the object couldn't be stored.
 	 * @since 1.1
 	 */
+	@Override
 	public void update(ElisDataObject data) throws StorageException {
 		update(data, false);
 	}
@@ -489,7 +489,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#update(ElisDataObject[]) update(ElisDataObject[])}.
@@ -498,6 +497,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the objects couldn't be updated.
 	 * @since 1.1
 	 */
+	@Override
 	public void update(ElisDataObject[] data) throws StorageException {
 		update(data, false);
 	}
@@ -524,7 +524,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#update(AbstractUser) update(AbstractUser)}.
@@ -533,6 +532,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the object couldn't be updated.
 	 * @since 1.1
 	 */
+	@Override
 	public void update(AbstractUser user) throws StorageException {
 		update(user, false);
 	}
@@ -679,7 +679,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#update(AbstractUser[]) update(AbstractUser[])}.
@@ -688,6 +687,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the objects couldn't be updated.
 	 * @since 1.1
 	 */
+	@Override
 	public void update(AbstractUser[] users) throws StorageException {
 		update(users, false);
 	}
@@ -714,7 +714,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#delete(ElisDataObject) update(ElisDataObject)}.
@@ -723,6 +722,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the object couldn't be deleted.
 	 * @since 1.1
 	 */
+	@Override
 	public void delete(ElisDataObject data) throws StorageException {
 		delete(data, false);
 	}
@@ -770,7 +770,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#delete(ElisDataObject[]) update(ElisDataObject[])}.
@@ -779,6 +778,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the objects couldn't be deleted.
 	 * @since 1.1
 	 */
+	@Override
 	public void delete(ElisDataObject[] data) throws StorageException {
 		delete(data, false);
 	}
@@ -805,7 +805,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#delete(AbstractUser) update(AbstractUser)}.
@@ -814,6 +813,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the object couldn't be deleted.
 	 * @since 1.1
 	 */
+	@Override
 	public void delete(AbstractUser user) throws StorageException {
 		delete(user, false);
 	}
@@ -861,7 +861,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#delete(AbstractUser[]) update(AbstractUser[])}.
@@ -870,6 +869,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the objects couldn't be deleted.
 	 * @since 1.1
 	 */
+	@Override
 	public void delete(AbstractUser[] users) throws StorageException {
 		delete(users, false);
 	}
@@ -896,7 +896,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#delete(Query) update(Query)}.
@@ -905,6 +904,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when query couldn't be run.
 	 * @since 1.1
 	 */
+	@Override
 	public void delete(Query query) throws StorageException {
 		delete(query, false);
 	}
@@ -941,7 +941,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Mock implementation of
 	 * {@link se.mah.elis.services.storage.Storage#readData(long) readData(long)}.
@@ -951,11 +950,11 @@ public class StorageImpl implements Storage {
 	 * @deprecated As of version 1.1, replaced by {@link #readData(UUID)}.
 	 * @since 1.0
 	 */
+	@Override
 	public ElisDataObject readData(long id) throws StorageException {
 		throw new StorageException(OBJECT_NOT_FOUND);
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#readData(UUID) readData(UUID)}.
@@ -965,6 +964,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when object couldn't be read.
 	 * @since 1.0
 	 */
+	@Override
 	public ElisDataObject readData(UUID id) throws StorageException {
 		return readData(id, false);
 	}
@@ -1018,7 +1018,6 @@ public class StorageImpl implements Storage {
 		return edo;
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#readUser(UserIdentifier) readUser(UserIdentifier)}.
@@ -1028,6 +1027,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException if the user wasn't found.
 	 * @since 1.1
 	 */
+	@Override
 	public User readUser(UUID id) throws StorageException {
 		return readUser(id, false);
 	}
@@ -1078,7 +1078,6 @@ public class StorageImpl implements Storage {
 		return user;
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#readUser(UserIdentifier) readUser(UserIdentifier)}.
@@ -1088,6 +1087,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when user couldn't be read.
 	 * @since 1.0
 	 */
+	@Override
 	public AbstractUser readUser(UserIdentifier id) throws StorageException {
 		return readUser(id, false);
 	}
@@ -1173,7 +1173,6 @@ public class StorageImpl implements Storage {
 		return user;
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#readUser(AbstractUser) readUser(AbstractUser)}.
@@ -1182,6 +1181,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when user couldn't be read.
 	 * @since 1.1
 	 */
+	@Override
 	public void readUser(AbstractUser user) throws StorageException {
 		readUser(user, false);
 	}
@@ -1243,7 +1243,6 @@ public class StorageImpl implements Storage {
 		}
 	}
 
-	@Override
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#select(Query) select(Query)}.
@@ -1252,6 +1251,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when user couldn't be read.
 	 * @since 1.0
 	 */
+	@Override
 	public ResultSet select(Query query) throws StorageException {
 		return select(query, false);
 	}

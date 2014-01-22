@@ -43,7 +43,7 @@ public interface ResultSet {
 	 * Returns the result set as an array of ResultSets.
 	 * 
 	 * @return The results as an array. If no results are found, the method
-	 * returns a null reference.
+	 * 		returns a null reference.
 	 * @since 1.0
 	 */
 	Object[] getArray();

@@ -75,16 +75,18 @@ public interface QueryTranslator {
 	/**
 	 * Compiles an Equals predicate.
 	 * 
-	 * @param predicate The predicate to compile.
+	 * @param field The field to match.
+	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
 	 * @since 1.1
 	 */
 	String eq(String field, Object criterion);
 	
 	/**
-	 * Compiles a Neq predicate.
+	 * Compiles a Neq (not equals) predicate.
 	 * 
-	 * @param predicate The predicate to compile.
+	 * @param field The field to match.
+	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
 	 * @since 1.1
 	 */
@@ -93,43 +95,48 @@ public interface QueryTranslator {
 	/**
 	 * Compiles a Like predicate.
 	 * 
-	 * @param predicate The predicate to compile.
+	 * @param field The field to match.
+	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
 	 * @since 1.1
 	 */
 	String like(String field, Object criterion);
 	
 	/**
-	 * Compiles an Lt predicate.
+	 * Compiles an Lt (less than) predicate.
 	 * 
-	 * @param predicate The predicate to compile.
+	 * @param field The field to match.
+	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
 	 * @since 1.1
 	 */
 	String lt(String field, Object criterion);
 	
 	/**
-	 * Compiles an Lte predicate.
+	 * Compiles an Lte (less than or equal) predicate.
 	 * 
-	 * @param predicate The predicate to compile.
+	 * @param field The field to match.
+	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
 	 * @since 1.1
 	 */
 	String lte(String field, Object criterion);
 	
 	/**
-	 * Compiles a Gt predicate.
+	 * Compiles a Gt (greater than) predicate.
 	 * 
-	 * @param predicate The predicate to compile.
+	 * @param field The field to match.
+	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
 	 * @since 1.1
 	 */
 	String gt(String field, Object criterion);
 	
 	/**
-	 * Compiles a Gte predicate.
+	 * Compiles a Gte (greater than or equal) predicate.
 	 * 
-	 * @param predicate The predicate to compile.
+	 * @param field The field to match.
+	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
 	 * @since 1.1
 	 */
