@@ -65,7 +65,7 @@ public class StorageUtils {
 	 * @return A string with a list of column names.
 	 * @since 1.1
 	 */
-	public String generateKeyList(Properties p) {
+	public static String generateKeyList(Properties p) {
 		Iterator<Entry<Object, Object>> entries = p.entrySet().iterator();
 		Entry<Object, Object> entry = entries.next();
 		StringBuffer keys = new StringBuffer();
@@ -90,7 +90,7 @@ public class StorageUtils {
 	 * @return A string with a list of question marks.
 	 * @since 1.1
 	 */
-	public String generateQMarks(Properties p) {
+	public static String generateQMarks(Properties p) {
 		Iterator<Entry<Object, Object>> entries = p.entrySet().iterator();
 		Entry<Object, Object> entry = entries.next();
 		StringBuffer keys = new StringBuffer();
@@ -114,7 +114,7 @@ public class StorageUtils {
 	 * @return A decent table name.
 	 * @since 1.1
 	 */
-	public String mysqlifyName(String name) {
+	public static String mysqlifyName(String name) {
 		return name.replace('.', '-');
 	}
 
@@ -126,7 +126,7 @@ public class StorageUtils {
 	 * @return A canonical class name.
 	 * @since 1.1
 	 */
-	public String demysqlifyName(String name) {
+	public static String demysqlifyName(String name) {
 		return name.replace('-', '.');
 	}
 
@@ -238,7 +238,7 @@ public class StorageUtils {
 	 * Creates an array list of Properties objects from a (possibly)
 	 * multi-rowed SQL result set.
 	 * 
-	 * @param The result set
+	 * @param rs The result set.
 	 * @return A newly created array list of Properties objects.
 	 * @since 1.1
 	 */
