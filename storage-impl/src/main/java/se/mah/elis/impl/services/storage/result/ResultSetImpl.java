@@ -99,7 +99,7 @@ public class ResultSetImpl implements ResultSet {
 	 * @since 1.1
 	 */
 	@Override
-	public boolean hasNext() {
+	public synchronized boolean hasNext() {
 		return (pointer + 2) < rows.length;
 	}
 
@@ -112,7 +112,7 @@ public class ResultSetImpl implements ResultSet {
 	 * @since 1.1
 	 */
 	@Override
-	public Object next() {
+	public synchronized Object next() {
 		return rows[++pointer];
 	}
 
@@ -142,7 +142,7 @@ public class ResultSetImpl implements ResultSet {
 	 * @since 1.1
 	 */
 	@Override
-	public Object last() {
+	public synchronized Object last() {
 		if (rows.length > 0) {
 			return rows[rows.length - 1];
 		}
