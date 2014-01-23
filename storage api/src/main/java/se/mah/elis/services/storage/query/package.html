@@ -1,6 +1,43 @@
 <html>
 <body>
-This package contains interfaces for queries as used by the storage API.
+<p>The Elis Persistent Query language is a simplistic language, built entirely
+of Java objects. Its main class is {@link Query}. A Query can look for data in
+one data collection (e.g. a table in a relational database) at a time. Hence,
+it is nowhere as flexible nor as powerful as e.g. SQL.</p>
+
+<p>Queries are compiled using an implementation of the {link QueryTranslator}
+interface, meaning that the data management is a black box towards the rest
+of the Elis platform. Translators can be written to facilitate relational
+databases, NoSQL databases, file-based storage or just whatever is desired by a
+developer. It is also possible for a single Persistent Storage implementation
+to provide several translators.</p>
+
+<p>A query consists of {@link Predicate Predicates}, which can be of the
+{@link SimplePredicate} type, providing functionality for value matching, or of
+the {@link ChainingPredicate} type, providing functionality for combinational
+matching. By chaining several ChainingPredicates, it is possible to build
+rather complex queries.</p>
+
+<p>Queries can, if they are simple select-type queries, be limited and
+paginated using {@link Query# limit()}. It is also possible to choose the order
+in which the result is ordered.</p>
+
+<p>Building a query, one uses the various methods of Query. Since almost all
+methods return a reference pointer back to the calling object, it is possible
+to daisy chain the query calls, making things like the query below possible.
+</p>
+
+<p>
+  <code>
+    Query q = new Query();<br>
+    q.setDataType("java.lang.String")<br>
+      .setPredicate(new ChainingPredicate.OR<br>
+      	.setLeft(new SimplePredicate.EQ("id", 5)<br>
+      	.setRight(new SimplePredicate.LIKE("name","Lukas"))
+      )
+      .limit(100, 10);
+  </code>
+</p>
 
 @since 1.0
 </body>
