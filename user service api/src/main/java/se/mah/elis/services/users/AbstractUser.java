@@ -76,9 +76,10 @@ public interface AbstractUser {
 	 * If not, the method will try to create a UserIdentifier of its own.</p>
 	 * 
 	 * @param props The properties to populate the object with.
+	 * @throws IllegalArgumentException if the properties aren't correct.
 	 * @since 1.1
 	 */
-	void populate(Properties props);
+	void populate(Properties props) throws IllegalArgumentException;
 	
 	/**
 	 * Gets the service name associated with the user type.

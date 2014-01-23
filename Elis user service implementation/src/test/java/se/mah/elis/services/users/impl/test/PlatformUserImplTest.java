@@ -2,6 +2,8 @@ package se.mah.elis.services.users.impl.test;
 
 import static org.junit.Assert.*;
 
+import java.util.Properties;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -262,5 +264,282 @@ public class PlatformUserImplTest {
 		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "fred", "barney"));
 		
 		assertEquals(0, pu1.compareTo(pu2));
+	}
+	
+	@Test
+	public void testGetServiceName() {
+		PlatformUserImpl pu = new PlatformUserImpl();
+		String expected = "se.mah.elis.services.users.PlatformUser";
+		String actual = pu.getServiceName();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetPropertiesTemplate() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl(puid);
+		Properties expected = new Properties();
+		Properties actual = pu.getPropertiesTemplate();
+		
+		expected.put("id", 0);
+		expected.put("username", "256");
+		expected.put("password", "256");
+		expected.put("first_name", "32");
+		expected.put("last_name", "32");
+		expected.put("email", "256");
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetProperties() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl(puid);
+		Properties expected = new Properties();
+		Properties actual = null;
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "Bruce");
+		expected.put("last_name", "Wayne");
+		expected.put("email", "batman@gotham.gov");
+
+		pu.setFirstName("Bruce");
+		pu.setLastName("Wayne");
+		pu.setEmail("batman@gotham.gov");
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetPropertiesEmptyIdentifier() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl();
+		PlatformUserImpl pu = new PlatformUserImpl();
+		Properties expected = new Properties();
+		Properties actual = null;
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "Bruce");
+		expected.put("last_name", "Wayne");
+		expected.put("email", "batman@gotham.gov");
+
+		pu.setFirstName("Bruce");
+		pu.setLastName("Wayne");
+		pu.setEmail("batman@gotham.gov");
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetPropertiesEmptyFirstName() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl(puid);
+		Properties expected = new Properties();
+		Properties actual = null;
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "");
+		expected.put("last_name", "Wayne");
+		expected.put("email", "batman@gotham.gov");
+
+		pu.setLastName("Wayne");
+		pu.setEmail("batman@gotham.gov");
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetPropertiesEmptyLastName() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl(puid);
+		Properties expected = new Properties();
+		Properties actual = null;
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "Bruce");
+		expected.put("last_name", "");
+		expected.put("email", "batman@gotham.gov");
+
+		pu.setFirstName("Bruce");
+		pu.setEmail("batman@gotham.gov");
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetPropertiesEmptyEmail() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl(puid);
+		Properties expected = new Properties();
+		Properties actual = null;
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "Bruce");
+		expected.put("last_name", "Wayne");
+		expected.put("email", "");
+
+		pu.setFirstName("Bruce");
+		pu.setLastName("Wayne");
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testPopulate() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl();
+		Properties props = new Properties();
+		Properties expected = new Properties();
+		Properties actual = null;
+		
+		props.put("identifier", puid);
+		props.put("first_name", "Bruce");
+		props.put("last_name", "Wayne");
+		props.put("email", "batman@gotham.gov");
+		
+		pu.populate(props);
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "Bruce");
+		expected.put("last_name", "Wayne");
+		expected.put("email", "batman@gotham.gov");
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testPopulateFlatIdentifier() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl();
+		Properties props = new Properties();
+		Properties expected = new Properties();
+		Properties actual = null;
+
+		props.put("id", 1);
+		props.put("username", "batman");
+		props.put("password", "superman");
+		props.put("first_name", "Bruce");
+		props.put("last_name", "Wayne");
+		props.put("email", "batman@gotham.gov");
+		
+		pu.populate(props);
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "Bruce");
+		expected.put("last_name", "Wayne");
+		expected.put("email", "batman@gotham.gov");
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testPopulateMissingIdentifier() {
+		PlatformUserImpl pu = new PlatformUserImpl();
+		Properties props = new Properties();
+
+		props.put("first_name", "Bruce");
+		props.put("last_name", "Wayne");
+		props.put("email", "batman@gotham.gov");
+		
+		try {
+			pu.populate(props);
+			fail("Shouldn't get this far.");
+		} catch (IllegalArgumentException e) {
+			// This should happen.
+		}
+	}
+	
+	@Test
+	public void testPopulateMissingFirstName() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl();
+		Properties props = new Properties();
+
+		props.put("identifier", puid);
+		props.put("last_name", "Wayne");
+		props.put("email", "batman@gotham.gov");
+		
+		try {
+			pu.populate(props);
+			fail("Shouldn't get this far.");
+		} catch (IllegalArgumentException e) {
+			// This should happen.
+		}
+	}
+	
+	@Test
+	public void testPopulateMissingLastName() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl();
+		Properties props = new Properties();
+
+		props.put("identifier", puid);
+		props.put("first_name", "Bruce");
+		props.put("email", "batman@gotham.gov");
+		
+		try {
+			pu.populate(props);
+			fail("Shouldn't get this far.");
+		} catch (IllegalArgumentException e) {
+			// This should happen.
+		}
+	}
+	
+	@Test
+	public void testPopulateMissingEmail() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl();
+		Properties props = new Properties();
+
+		props.put("identifier", puid);
+		props.put("first_name", "Bruce");
+		props.put("last_name", "Wayne");
+		
+		try {
+			pu.populate(props);
+			fail("Shouldn't get this far.");
+		} catch (IllegalArgumentException e) {
+			// This should happen.
+		}
+	}
+	
+	@Test
+	public void testPopulateExcessiveProperties() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl();
+		Properties props = new Properties();
+		Properties expected = new Properties();
+		Properties actual = null;
+		
+		props.put("identifier", puid);
+		props.put("first_name", "Bruce");
+		props.put("last_name", "Wayne");
+		props.put("email", "batman@gotham.gov");
+		props.put("horses", "Sleipnir, Shadowfax, Brunte");
+		
+		pu.populate(props);
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "Bruce");
+		expected.put("last_name", "Wayne");
+		expected.put("email", "batman@gotham.gov");
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
 	}
 }

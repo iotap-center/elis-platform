@@ -170,9 +170,8 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	@Override
 	public Properties getProperties() {
 		Properties p = new Properties();
-		Properties ip = id.getProperties();
 		
-		p.put("identifier", ip);
+		p.put("identifier", id);
 		p.put("first_name", firstName);
 		p.put("last_name", lastName);
 		p.put("email", email);
@@ -182,14 +181,57 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 
 	@Override
 	public Properties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		Properties p = id.getPropertiesTemplate();
+		
+		p.put("first_name", "32");
+		p.put("last_name", "32");
+		p.put("email", "256");
+		
+		return p;
 	}
 
 	@Override
-	public void populate(Properties props) {
-		// TODO Auto-generated method stub
+	public void populate(Properties props) throws IllegalArgumentException {
+		// Check the properties. Are they OK?
+		if (!props.containsKey("first_name") ||
+				props.get("first_name").getClass() != java.lang.String.class ||
+				!props.containsKey("last_name") ||
+				props.get("last_name").getClass() != java.lang.String.class ||
+				!props.containsKey("email") ||
+				props.get("email").getClass() != java.lang.String.class) {
+			// Apparently not. Let's bail out.
+			throw new IllegalArgumentException();
+		}
+		// The identifier part can be of two kinds: either a full Identifier
+		// object or a flattened version.
+		if (!((props.containsKey("identifier") &&
+				props.get("identifier").getClass() ==
+					PlatformUserIdentifierImpl.class) ||
+				(props.containsKey("id")) &&
+				props.get("id").getClass() == java.lang.Integer.class &&
+				props.containsKey("username") &&
+				props.get("username").getClass() == java.lang.String.class &&
+				props.containsKey("password") &&
+				props.get("password").getClass() == java.lang.String.class)) {
+			// Apparently not. Let's bail out.
+			throw new IllegalArgumentException();
+		}
 		
+		// OK, all properties are fine. Let's start with taking care of the
+		// identifier and add that to the object.
+		if (props.containsKey("identifier")) {
+			id = (UserIdentifier) props.get("identifier");
+		} else {
+			int idNumber = (int) props.get("id");
+			String username = (String) props.get("username");
+			String password = (String) props.get("password");
+			id = new PlatformUserIdentifierImpl(idNumber, username, password);
+		}
+		
+		// Set the rest of the object's properties.
+		firstName = (String) props.get("first_name");
+		lastName = (String) props.get("last_name");
+		email = (String) props.get("email");
 	}
 
 	@Override
