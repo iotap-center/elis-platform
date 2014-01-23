@@ -2,6 +2,8 @@ package se.mah.elis.services.users.impl.test;
 
 import static org.junit.Assert.*;
 
+import java.util.Properties;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -365,5 +367,66 @@ public class PlatformUserIdentifierTest {
 		PlatformUserIdentifierImpl pu2 = new PlatformUserIdentifierImpl(2, "fred", "barney");
 		
 		assertFalse(pu1.equals(pu2));
+	}
+	
+	@Test
+	public void testIdentifies() {
+		PlatformUserIdentifierImpl pu = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		Class expected = se.mah.elis.services.users.PlatformUser.class;
+		Class actual = pu.identifies();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetProperties() {
+		PlatformUserIdentifierImpl pu = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		Properties expected = new Properties();
+		Properties actual = pu.getProperties();
+		
+		expected.put("id", 1);
+		expected.put("username", "batman");
+		expected.put("password", "superman");
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetPropertiesEmtpyUsernameAndPassword() {
+		PlatformUserIdentifierImpl pu = new PlatformUserIdentifierImpl();
+		Properties expected = new Properties();
+		Properties actual = pu.getProperties();
+		
+		expected.put("id", 0);
+		expected.put("username", "");
+		expected.put("password", "");
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetPropertiesNoId() {
+		PlatformUserIdentifierImpl pu = new PlatformUserIdentifierImpl("batman", "superman");
+		Properties expected = new Properties();
+		Properties actual = pu.getProperties();
+		
+		expected.put("id", 0);
+		expected.put("username", "batman");
+		expected.put("password", "superman");
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void getGetPropertiesTemplate() {
+		PlatformUserIdentifierImpl pu = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		Properties expected = new Properties();
+		Properties actual = pu.getPropertiesTemplate();
+		
+		expected.put("id", 0);
+		expected.put("username", "256");
+		expected.put("password", "256");
+		
+		assertEquals(expected, actual);
 	}
 }

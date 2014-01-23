@@ -119,8 +119,13 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 
 	@Override
 	public Properties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		Properties p = new Properties();
+		
+		p.put("id", new Integer(0));
+		p.put("username", "256");
+		p.put("password", "256");
+		
+		return p;
 	}
 
 	@Override
