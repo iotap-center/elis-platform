@@ -100,7 +100,7 @@ public class ResultSetImpl implements ResultSet {
 	 */
 	@Override
 	public synchronized boolean hasNext() {
-		return (pointer + 2) < rows.length;
+		return (pointer + 1) < rows.length;
 	}
 
 
@@ -113,7 +113,16 @@ public class ResultSetImpl implements ResultSet {
 	 */
 	@Override
 	public synchronized Object next() {
-		return rows[++pointer];
+		Object returnValue = null;
+		++pointer;
+		
+		try {
+			returnValue = rows[pointer];
+		} catch (IndexOutOfBoundsException e) {
+			returnValue = null;
+		}
+		
+		return returnValue;
 	}
 
 
