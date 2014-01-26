@@ -21,62 +21,76 @@ import se.mah.elis.services.users.UserIdentifier;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public enum SimplePredicate implements Predicate {
+public class SimplePredicate implements Predicate {
 	
 	/**
-	 * The field value is strictly lesser than the criterion.
+	 * The Type Enum tells what kind of predicate this is.
 	 * 
-	 * @since 1.0
+	 * @since 1.1
 	 */
-	LT,
-	
-	/**
-	 * The field value is lesser than or equal to the criterion.
-	 * 
-	 * @since 1.0
-	 */
-	LTE,
-	
-	/**
-	 * The field value is equal to the criterion.
-	 * 
-	 * @since 1.0
-	 */
-	EQ,
-	
-	/**
-	 * The field value is greater than or equal to the criterion.
-	 * 
-	 * @since 1.0
-	 */
-	GTE,
-	
-	/**
-	 * The field value is strictly greater than the criterion.
-	 * 
-	 * @since 1.0
-	 */
-	GT,
-	
-	/**
-	 * The field value is is not equal to the criterion.
-	 * 
-	 * @since 1.0
-	 */
-	NEQ,
-	
-	/**
-	 * The field value looks like the criterion.
-	 * 
-	 * @since 1.0
-	 */
-	LIKE ;
+	public enum Type {
+		/**
+		 * The field value is strictly lesser than the criterion.
+		 * 
+		 * @since 1.0
+		 */
+		LT,
+		
+		/**
+		 * The field value is lesser than or equal to the criterion.
+		 * 
+		 * @since 1.0
+		 */
+		LTE,
+		
+		/**
+		 * The field value is equal to the criterion.
+		 * 
+		 * @since 1.0
+		 */
+		EQ,
+		
+		/**
+		 * The field value is greater than or equal to the criterion.
+		 * 
+		 * @since 1.0
+		 */
+		GTE,
+		
+		/**
+		 * The field value is strictly greater than the criterion.
+		 * 
+		 * @since 1.0
+		 */
+		GT,
+		
+		/**
+		 * The field value is is not equal to the criterion.
+		 * 
+		 * @since 1.0
+		 */
+		NEQ,
+		
+		/**
+		 * The field value looks like the criterion.
+		 * 
+		 * @since 1.0
+		 */
+		LIKE;
+	}
 
+	private Type type;
 	private String field;
 	private Object criterion;
 	private QueryTranslator translator;
 
-	private SimplePredicate() {
+	/**
+	 * Creates an instance of SimplePredicate.
+	 * 
+	 * @param type The type of chaining to be used.
+	 * @since 1.1
+	 */
+	public SimplePredicate(Type type) {
 		field = null;
 		criterion = null;
 	}
@@ -238,7 +252,7 @@ public enum SimplePredicate implements Predicate {
 	public String compile() {
 		String compiled = null;
 		
-		switch (this) {
+		switch (type) {
 			case LT:
 				compiled = translator.lt(field, criterion);
 				break;
@@ -285,9 +299,9 @@ public enum SimplePredicate implements Predicate {
 	 */
 	@Override
 	public String toString() {
-String state;
+		String state;
 		
-		switch (this) {
+		switch (type) {
 			case LT: state = "LT: ";
 				break;
 			case LTE: state = "LTE :";

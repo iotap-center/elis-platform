@@ -19,30 +19,42 @@ package se.mah.elis.services.storage.query;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public enum ChainingPredicate implements Predicate {
+public class ChainingPredicate implements Predicate {
 	
 	/**
-	 * Used to link two predicates by using a logical AND statement.
+	 * The Type Enum tells what kind of chaining will be used.
 	 * 
-	 * @since 1.0
+	 * @since 1.1
 	 */
-	AND,
-	
-	/**
-	 * Used to link two predicates by using a logical OR statement.
-	 * 
-	 * @since 1.0
-	 */
-	OR;
+	public enum Type {
+		/**
+		 * Used to link two predicates by using a logical AND statement.
+		 * 
+		 * @since 1.0
+		 */
+		AND,
+		
+		/**
+		 * Used to link two predicates by using a logical OR statement.
+		 * 
+		 * @since 1.0
+		 */
+		OR;
+	}
 
+	private Type type;
 	private Predicate left;
 	private Predicate right;
 	private QueryTranslator translator;
 	
 	/**
+	 * Creates an instance of ChainingPredicate.
 	 * 
+	 * @param type The type of chaining to be used.
+	 * @since 1.1
 	 */
-	private ChainingPredicate() {
+	public ChainingPredicate(Type type) {
+		this.type = type;
 		left = null;
 		right = null;
 	}
@@ -88,7 +100,7 @@ public enum ChainingPredicate implements Predicate {
 		left.setTranslator(translator);
 		right.setTranslator(translator);
 		
-		switch (this) {
+		switch (type) {
 			case AND:
 				compiled = translator.and(right, left);
 				break;
@@ -121,7 +133,7 @@ public enum ChainingPredicate implements Predicate {
 	public String toString() {
 		String state;
 		
-		switch (this) {
+		switch (type) {
 			case AND: state = "AND:\n";
 				break;
 			case OR: state = "OR:\n";
