@@ -271,7 +271,11 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 */
 	@Override
 	public String compile() {
-		String compiled = "SELECT * FROM " + what.getSimpleName();
+		String compiled = "SELECT * FROM ";
+		
+		if (what != null) {
+			compiled += what.getSimpleName();
+		}
 		
 		if (where != null) {
 			compiled += " WHERE " + where.compile();
