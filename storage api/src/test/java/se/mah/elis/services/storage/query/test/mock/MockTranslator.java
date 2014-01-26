@@ -13,7 +13,7 @@ public class MockTranslator implements QueryTranslator {
 	public MockTranslator() {
 		clazz = null;
 		predicate = null;
-		start = limit = 0;
+		start = limit = -1;
 		oFirst = false;
 	}
 	
@@ -102,8 +102,10 @@ public class MockTranslator implements QueryTranslator {
 		if (predicate != null) {
 			compiled += "  where: " + predicate.compile() + "\n";
 		}
-		compiled += "  limits: " + start + ", " + limit + "\n" +
-					"  oldestFirst: " + oFirst;
+		if (start >= 0 && limit > 0) {
+			compiled += "  limits: " + start + ", " + limit + "\n";
+		}
+		compiled += "  oldestFirst: " + oFirst;
 				
 		return compiled;
 	}
