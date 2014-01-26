@@ -55,7 +55,7 @@ public enum ChainingPredicate implements Predicate {
 	 * @since 1.0
 	 */
 	
-	ChainingPredicate setLeft(Predicate left) {
+	public ChainingPredicate setLeft(Predicate left) {
 		this.left = left;
 		
 		return this;
@@ -68,7 +68,7 @@ public enum ChainingPredicate implements Predicate {
 	 * @return A reference back to the ChainingPredicate object.
 	 * @since 1.0
 	 */
-	ChainingPredicate setRight(Predicate right) {
+	public ChainingPredicate setRight(Predicate right) {
 		this.right = right;
 		
 		return this;

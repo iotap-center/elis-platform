@@ -89,7 +89,7 @@ public enum SimplePredicate implements Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setField(String field) {
+	public SimplePredicate setField(String field) {
 		this.field = field;
 		
 		return this;
@@ -102,7 +102,7 @@ public enum SimplePredicate implements Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(boolean criterion) {
+	public SimplePredicate setCriterion(boolean criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -115,7 +115,7 @@ public enum SimplePredicate implements Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(float criterion) {
+	public SimplePredicate setCriterion(float criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -128,7 +128,7 @@ public enum SimplePredicate implements Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(double criterion) {
+	public SimplePredicate setCriterion(double criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -141,7 +141,7 @@ public enum SimplePredicate implements Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(int criterion) {
+	public SimplePredicate setCriterion(int criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -154,7 +154,7 @@ public enum SimplePredicate implements Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(long criterion) {
+	public SimplePredicate setCriterion(long criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -167,7 +167,7 @@ public enum SimplePredicate implements Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(byte criterion) {
+	public SimplePredicate setCriterion(byte criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -180,7 +180,7 @@ public enum SimplePredicate implements Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(String criterion) {
+	public SimplePredicate setCriterion(String criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -195,7 +195,7 @@ public enum SimplePredicate implements Predicate {
 	 * @deprecated As of version 1.1, replaced by
 	 * 		{@link #setCriterion(DateTime)}.
 	 */
-	SimplePredicate setCriterion(Date criterion) {
+	public SimplePredicate setCriterion(Date criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -208,7 +208,7 @@ public enum SimplePredicate implements Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.1
 	 */
-	SimplePredicate setCriterion(DateTime criterion) {
+	public SimplePredicate setCriterion(DateTime criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -221,7 +221,7 @@ public enum SimplePredicate implements Predicate {
 	 * @return A reference back to the SimplePredicate object.
 	 * @since 1.0
 	 */
-	SimplePredicate setCriterion(UserIdentifier criterion) {
+	public SimplePredicate setCriterion(UserIdentifier criterion) {
 		this.criterion = criterion;
 		
 		return this;
