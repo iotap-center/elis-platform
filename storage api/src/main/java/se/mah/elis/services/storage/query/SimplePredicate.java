@@ -321,7 +321,7 @@ public class SimplePredicate implements Predicate {
 		
 		state += "  field: " + field + "\n" +
 				 "  criterion: " + criterion + "\n" +
-				 "  translator: " + translator.toString();
+				 "  translator: " + translator;
 		
 		return state;
 	}
