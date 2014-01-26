@@ -122,16 +122,16 @@ public enum ChainingPredicate implements Predicate {
 		String state;
 		
 		switch (this) {
-			case AND: state = "AND: ";
+			case AND: state = "AND:\n";
 				break;
-			case OR: state = "OR :";
+			case OR: state = "OR:\n";
 				break;
-			default: state = "UNDEFINED: ";
+			default: state = "UNDEFINED:\n";
 		}
 		
-		state += "  left: " + left.toString() + "\n" +
-				 "  right: " + right.toString() + "\n" +
-				 "  translator: " + translator.toString();
+		state += "  left: " + left + "\n" +
+				 "  right: " + right + "\n" +
+				 "  translator: " + translator;
 		
 		return state;
 	}
