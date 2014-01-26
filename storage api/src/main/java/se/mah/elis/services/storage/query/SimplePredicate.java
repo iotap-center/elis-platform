@@ -91,6 +91,7 @@ public class SimplePredicate implements Predicate {
 	 * @since 1.1
 	 */
 	public SimplePredicate(Type type) {
+		this.type = type;
 		field = null;
 		criterion = null;
 	}
