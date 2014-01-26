@@ -276,4 +276,39 @@ public enum SimplePredicate implements Predicate {
 	public void setTranslator(QueryTranslator translator) {
 		this.translator = translator;
 	}
+	
+	/**
+	 * Returns a representation of this object as a string.
+	 * 
+	 * @return A representation of the current state of this object.
+	 * @since 1.1
+	 */
+	@Override
+	public String toString() {
+String state;
+		
+		switch (this) {
+			case LT: state = "LT: ";
+				break;
+			case LTE: state = "LTE :";
+				break;
+			case EQ: state = "EQ: ";
+				break;
+			case NEQ: state = "NEQ:";
+				break;
+			case GT: state = "GT: ";
+				break;
+			case GTE: state = "GTE :";
+				break;
+			case LIKE: state = "LIKE: ";
+				break;
+			default: state = "UNDEFINED: ";
+		}
+		
+		state += "  field: " + field + "\n" +
+				 "  criterion: " + criterion + "\n" +
+				 "  translator: " + translator.toString();
+		
+		return state;
+	}
 }

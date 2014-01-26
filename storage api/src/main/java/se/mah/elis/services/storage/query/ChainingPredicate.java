@@ -110,4 +110,29 @@ public enum ChainingPredicate implements Predicate {
 	public void setTranslator(QueryTranslator translator) {
 		this.translator = translator;
 	}
+	
+	/**
+	 * Returns a representation of this object as a string.
+	 * 
+	 * @return A representation of the current state of this object.
+	 * @since 1.1
+	 */
+	@Override
+	public String toString() {
+		String state;
+		
+		switch (this) {
+			case AND: state = "AND: ";
+				break;
+			case OR: state = "OR :";
+				break;
+			default: state = "UNDEFINED: ";
+		}
+		
+		state += "  left: " + left.toString() + "\n" +
+				 "  right: " + right.toString() + "\n" +
+				 "  translator: " + translator.toString();
+		
+		return state;
+	}
 }
