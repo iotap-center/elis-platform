@@ -20,5 +20,7 @@ public class DeleteQueryTest {
 	public void test() {
 		fail("Not yet implemented");
 	}
+	
+	// delete()
 
 }

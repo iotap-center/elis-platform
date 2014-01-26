@@ -15,10 +15,12 @@ public class MySQLQueryTranslatorTest {
 	@After
 	public void tearDown() throws Exception {
 	}
-
+	
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void testCompileEmptyQuery() {
+		
 	}
 
+	// what(), where(), limit(), order(), or(), and(), eq(), neq(), like()
+	// lt(), lte(), gt(), gte(), compile(), compileDeleteQuery()
 }
