@@ -303,21 +303,21 @@ public class SimplePredicate implements Predicate {
 		String state;
 		
 		switch (type) {
-			case LT: state = "LT: ";
+			case LT: state = "LT:\n";
 				break;
-			case LTE: state = "LTE :";
+			case LTE: state = "LTE:\n";
 				break;
-			case EQ: state = "EQ: ";
+			case EQ: state = "EQ:\n";
 				break;
-			case NEQ: state = "NEQ:";
+			case NEQ: state = "NEQ:\n";
 				break;
-			case GT: state = "GT: ";
+			case GT: state = "GT:\n";
 				break;
-			case GTE: state = "GTE :";
+			case GTE: state = "GTE:\n";
 				break;
-			case LIKE: state = "LIKE: ";
+			case LIKE: state = "LIKE:\n";
 				break;
-			default: state = "UNDEFINED: ";
+			default: state = "UNDEFINED:\n";
 		}
 		
 		state += "  field: " + field + "\n" +
