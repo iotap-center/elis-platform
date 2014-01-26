@@ -108,4 +108,8 @@ public class MockTranslator implements QueryTranslator {
 		return compiled;
 	}
 
+	@Override
+	public String toString() {
+		return compile();
+	}
 }
