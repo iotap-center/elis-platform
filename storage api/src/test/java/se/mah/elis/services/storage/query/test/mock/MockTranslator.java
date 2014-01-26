@@ -97,7 +97,7 @@ public class MockTranslator implements QueryTranslator {
 		String compiled = "Translate:\n";
 		
 		if (clazz != null) {
-			compiled += "  what: " + clazz.toString() + "\n";
+			compiled += "  what: " + clazz.getName() + "\n";
 		}
 		if (predicate != null) {
 			compiled += "  where: " + predicate.compile() + "\n";
