@@ -22,4 +22,8 @@ public class MockPredicate implements Predicate {
 
 	}
 
+	@Override
+	public String toString() {
+		return compile();
+	}
 }
