@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 
+import se.mah.elis.exceptions.TypeMismatchException;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.UserIdentifier;
 
@@ -112,23 +113,21 @@ public class SimplePredicate implements Predicate {
 	}
 	
 	/**
-	 * Sets the criterion of the predicate.
+	 * Sets the criterion of the predicate. Booleans are permitted criteria for
+	 * EQ and NEQ predicates.
 	 * 
 	 * @param criterion A boolean value.
 	 * @return A reference back to the SimplePredicate object.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(boolean criterion)
-			throws StorageException {
+	public SimplePredicate setCriterion(boolean criterion) {
 		switch (type) {
 			case EQ:
 			case NEQ:
 				this.criterion = criterion;
 				break;
 			default:
-				throw new StorageException("Boolean not allowed with this criterion");
+				throw new TypeMismatchException("Boolean not allowed with this criterion");
 		}
 		
 		return this;
@@ -139,12 +138,9 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A float value.
 	 * @return A reference back to the SimplePredicate object.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(float criterion)
-			throws StorageException {
+	public SimplePredicate setCriterion(float criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -155,12 +151,9 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A double value.
 	 * @return A reference back to the SimplePredicate object.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(double criterion)
-			throws StorageException {
+	public SimplePredicate setCriterion(double criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -171,12 +164,9 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion An int value.
 	 * @return A reference back to the SimplePredicate object.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(int criterion)
-			throws StorageException {
+	public SimplePredicate setCriterion(int criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -187,12 +177,9 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A long value.
 	 * @return A reference back to the SimplePredicate object.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(long criterion)
-			throws StorageException {
+	public SimplePredicate setCriterion(long criterion) {
 		this.criterion = criterion;
 		
 		return this;
@@ -203,28 +190,23 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A byte value.
 	 * @return A reference back to the SimplePredicate object.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(byte criterion)
-			throws StorageException {
+	public SimplePredicate setCriterion(byte criterion) {
 		this.criterion = criterion;
 		
 		return this;
 	}
 	
 	/**
-	 * Sets the criterion of the predicate.
+	 * Sets the criterion of the predicate. Strings are permitted criteria for
+	 * EQ, NEQ and LIKE predicates.
 	 * 
 	 * @param criterion A String value.
 	 * @return A reference back to the SimplePredicate object.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(String criterion)
-			throws StorageException {
+	public SimplePredicate setCriterion(String criterion) {
 		switch (type) {
 			case EQ:
 			case NEQ:
@@ -232,7 +214,7 @@ public class SimplePredicate implements Predicate {
 				this.criterion = criterion;
 				break;
 			default:
-				throw new StorageException("String not allowed with this criterion");
+				throw new TypeMismatchException("String not allowed with this criterion");
 		}
 		
 		return this;
@@ -243,53 +225,51 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A Date value.
 	 * @return A reference back to the SimplePredicate object.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 * @deprecated As of version 1.1, replaced by
 	 * 		{@link #setCriterion(DateTime)}.
 	 */
-	public SimplePredicate setCriterion(Date criterion)
-			throws StorageException {
+	public SimplePredicate setCriterion(Date criterion) {
 		this.criterion = criterion;
 		
 		return this;
 	}
 	
 	/**
-	 * Sets the criterion of the predicate.
+	 * Sets the criterion of the predicate. DateTimes are permitted criteria
+	 * for all predicates but LIKE.
 	 * 
 	 * @param criterion A DateTime value.
 	 * @return A reference back to the SimplePredicate object.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	public SimplePredicate setCriterion(DateTime criterion)
-			throws StorageException {
-		this.criterion = criterion;
+	public SimplePredicate setCriterion(DateTime criterion) {
+		switch (type) {
+			case LIKE:
+				throw new TypeMismatchException("DateTimes are not allowed for this criterion");
+			default:
+				this.criterion = criterion;
+		}
 		
 		return this;
 	}
 	
 	/**
-	 * Sets the criterion of the predicate.
+	 * Sets the criterion of the predicate. UserIdentifiers are permitted
+	 * criteria for EQ and NEQ criteria.
 	 * 
 	 * @param criterion A UserIdentifier value.
 	 * @return A reference back to the SimplePredicate object.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(UserIdentifier criterion)
-			throws StorageException {
+	public SimplePredicate setCriterion(UserIdentifier criterion) {
 		switch (type) {
 			case EQ:
 			case NEQ:
 				this.criterion = criterion;
 				break;
 			default:
-				throw new StorageException("UserIdentifier not allowed with this criterion.");
+				throw new TypeMismatchException("UserIdentifier not allowed with this criterion.");
 		}
 		
 		return this;

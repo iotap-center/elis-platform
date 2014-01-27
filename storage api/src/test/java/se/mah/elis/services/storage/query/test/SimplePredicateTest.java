@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.mah.elis.exceptions.TypeMismatchException;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.SimplePredicate;
 import se.mah.elis.services.storage.query.SimplePredicate.CriterionType;
@@ -165,7 +166,7 @@ public class SimplePredicateTest {
 		
 		try {
 			assertEquals(sp, sp.setCriterion(true));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -183,7 +184,7 @@ public class SimplePredicateTest {
 		try {
 			assertEquals(sp, sp.setCriterion(true));
 			assertEquals(sp, sp.setCriterion(false));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -200,7 +201,7 @@ public class SimplePredicateTest {
 	
 		try {
 			assertEquals(sp, sp.setCriterion(1.1));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 	
@@ -218,7 +219,7 @@ public class SimplePredicateTest {
 		try {
 			assertEquals(sp, sp.setCriterion(1.1));
 			assertEquals(sp, sp.setCriterion(1.2));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -235,7 +236,7 @@ public class SimplePredicateTest {
 		
 		try {
 			assertEquals(sp, sp.setCriterion(Double.MAX_VALUE));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -253,7 +254,7 @@ public class SimplePredicateTest {
 		try {
 			assertEquals(sp, sp.setCriterion(Double.MAX_VALUE));
 			assertEquals(sp, sp.setCriterion(Double.MAX_VALUE - 1));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -270,7 +271,7 @@ public class SimplePredicateTest {
 		
 		try {
 			assertEquals(sp, sp.setCriterion(13));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -288,7 +289,7 @@ public class SimplePredicateTest {
 		try {
 			assertEquals(sp, sp.setCriterion(13));
 			assertEquals(sp, sp.setCriterion(42));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -305,7 +306,7 @@ public class SimplePredicateTest {
 		
 		try {
 			assertEquals(sp, sp.setCriterion(Long.MAX_VALUE));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -323,7 +324,7 @@ public class SimplePredicateTest {
 		try {
 			assertEquals(sp, sp.setCriterion(Long.MAX_VALUE));
 			assertEquals(sp, sp.setCriterion(Long.MIN_VALUE));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -340,7 +341,7 @@ public class SimplePredicateTest {
 		
 		try {
 			assertEquals(sp, sp.setCriterion('A'));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -358,7 +359,7 @@ public class SimplePredicateTest {
 		try {
 			assertEquals(sp, sp.setCriterion('A'));
 			assertEquals(sp, sp.setCriterion('B'));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -375,7 +376,7 @@ public class SimplePredicateTest {
 		
 		try {
 			assertEquals(sp, sp.setCriterion("foo"));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -393,7 +394,7 @@ public class SimplePredicateTest {
 		try {
 			assertEquals(sp, sp.setCriterion("foo"));
 			assertEquals(sp, sp.setCriterion("bar"));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -411,7 +412,7 @@ public class SimplePredicateTest {
 		
 		try {
 			assertEquals(sp, sp.setCriterion(dt));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -431,7 +432,7 @@ public class SimplePredicateTest {
 		try {
 			assertEquals(sp, sp.setCriterion(dt));
 			assertEquals(sp, sp.setCriterion(dt2));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -452,7 +453,7 @@ public class SimplePredicateTest {
 			sp.setCriterion(DateTime.now()); // DateTime
 			sp.setCriterion("foo"); // String
 			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 	}
@@ -471,7 +472,7 @@ public class SimplePredicateTest {
 			sp.setCriterion(DateTime.now()); // DateTime
 			sp.setCriterion("foo"); // String
 			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 	}
@@ -486,17 +487,17 @@ public class SimplePredicateTest {
 			sp.setCriterion(1.1); // Float
 			sp.setCriterion(Double.MAX_VALUE); // Double
 			sp.setCriterion(Byte.SIZE); // Byte
-			sp.setCriterion(DateTime.now()); // DateTime
 			sp.setCriterion("foo"); // String
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
 		try {
+			sp.setCriterion(DateTime.now()); // DateTime
 			sp.setCriterion(true); // Boolean
 			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 			fail("This shouldn't happen");
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 		}
 	}
 	
@@ -511,7 +512,7 @@ public class SimplePredicateTest {
 			sp.setCriterion(Double.MAX_VALUE); // Double
 			sp.setCriterion(Byte.SIZE); // Byte
 			sp.setCriterion(DateTime.now()); // DateTime
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -520,7 +521,7 @@ public class SimplePredicateTest {
 			sp.setCriterion("foo"); // String
 			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 			fail("This shouldn't happen");
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 		}
 	}
 	
@@ -535,7 +536,7 @@ public class SimplePredicateTest {
 			sp.setCriterion(Double.MAX_VALUE); // Double
 			sp.setCriterion(Byte.SIZE); // Byte
 			sp.setCriterion(DateTime.now()); // DateTime
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -544,7 +545,7 @@ public class SimplePredicateTest {
 			sp.setCriterion("foo"); // String
 			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 			fail("This shouldn't happen");
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 		}
 	}
 	
@@ -559,7 +560,7 @@ public class SimplePredicateTest {
 			sp.setCriterion(Double.MAX_VALUE); // Double
 			sp.setCriterion(Byte.SIZE); // Byte
 			sp.setCriterion(DateTime.now()); // DateTime
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -568,7 +569,7 @@ public class SimplePredicateTest {
 			sp.setCriterion("foo"); // String
 			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 			fail("This shouldn't happen");
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 		}
 	}
 	
@@ -583,7 +584,7 @@ public class SimplePredicateTest {
 			sp.setCriterion(Double.MAX_VALUE); // Double
 			sp.setCriterion(Byte.SIZE); // Byte
 			sp.setCriterion(DateTime.now()); // DateTime
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		
@@ -592,7 +593,7 @@ public class SimplePredicateTest {
 			sp.setCriterion("foo"); // String
 			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 			fail("This shouldn't happen");
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 		}
 	}
 
@@ -622,7 +623,7 @@ public class SimplePredicateTest {
 		assertEquals(sp, sp.setField("Foo"));
 		try {
 			assertEquals(sp, sp.setCriterion("Bar"));
-		} catch (StorageException e) {
+		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
 		sp.setTranslator(new MockTranslator());

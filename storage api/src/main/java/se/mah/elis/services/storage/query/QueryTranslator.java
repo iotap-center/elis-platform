@@ -80,11 +80,9 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String eq(String field, Object criterion) throws StorageException;
+	String eq(String field, Object criterion);
 	
 	/**
 	 * Compiles a Neq (not equals) predicate.
@@ -92,71 +90,64 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String neq(String field, Object criterion) throws StorageException;
+	String neq(String field, Object criterion);
 	
 	/**
-	 * Compiles a Like predicate.
+	 * Compiles a Like predicate. Any Number or String is permitted as a
+	 * criterion for this method.
 	 * 
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String like(String field, Object criterion) throws StorageException;
+	String like(String field, Object criterion);
 	
 	/**
-	 * Compiles an Lt (less than) predicate.
+	 * Compiles an Lt (less than) predicate. Any Number or DateTime is
+	 * permitted as a criterion for this method. 
 	 * 
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String lt(String field, Object criterion) throws StorageException;
+	String lt(String field, Object criterion);
 	
 	/**
-	 * Compiles an Lte (less than or equal) predicate.
+	 * Compiles an Lte (less than or equal) predicate. Any Number or DateTime
+	 * is permitted as a criterion for this method.
 	 * 
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String lte(String field, Object criterion) throws StorageException;
+	String lte(String field, Object criterion);
 	
 	/**
-	 * Compiles a Gt (greater than) predicate.
+	 * Compiles a Gt (greater than) predicate. Any Number or DateTime is
+	 * permitted as a criterion for this method.
 	 * 
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String gt(String field, Object criterion) throws StorageException;
+	String gt(String field, Object criterion);
 	
 	/**
-	 * Compiles a Gte (greater than or equal) predicate.
+	 * Compiles a Gte (greater than or equal) predicate. Any Number or DateTime
+	 * is permitted as a criterion for this method.
 	 * 
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @throws StorageException if the criterion doesn't make sense in
-	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String gte(String field, Object criterion) throws StorageException;
+	String gte(String field, Object criterion);
 	
 	/**
 	 * Translates a query into a string suitable for the backend database.
