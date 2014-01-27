@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 
+import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.UserIdentifier;
 
 /**
@@ -115,10 +116,20 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A boolean value.
 	 * @return A reference back to the SimplePredicate object.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(boolean criterion) {
-		this.criterion = criterion;
+	public SimplePredicate setCriterion(boolean criterion)
+			throws StorageException {
+		switch (type) {
+			case EQ:
+			case NEQ:
+				this.criterion = criterion;
+				break;
+			default:
+				throw new StorageException("Boolean not allowed with this criterion");
+		}
 		
 		return this;
 	}
@@ -128,9 +139,12 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A float value.
 	 * @return A reference back to the SimplePredicate object.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(float criterion) {
+	public SimplePredicate setCriterion(float criterion)
+			throws StorageException {
 		this.criterion = criterion;
 		
 		return this;
@@ -141,9 +155,12 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A double value.
 	 * @return A reference back to the SimplePredicate object.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(double criterion) {
+	public SimplePredicate setCriterion(double criterion)
+			throws StorageException {
 		this.criterion = criterion;
 		
 		return this;
@@ -154,9 +171,12 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion An int value.
 	 * @return A reference back to the SimplePredicate object.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(int criterion) {
+	public SimplePredicate setCriterion(int criterion)
+			throws StorageException {
 		this.criterion = criterion;
 		
 		return this;
@@ -167,9 +187,12 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A long value.
 	 * @return A reference back to the SimplePredicate object.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(long criterion) {
+	public SimplePredicate setCriterion(long criterion)
+			throws StorageException {
 		this.criterion = criterion;
 		
 		return this;
@@ -180,9 +203,12 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A byte value.
 	 * @return A reference back to the SimplePredicate object.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(byte criterion) {
+	public SimplePredicate setCriterion(byte criterion)
+			throws StorageException {
 		this.criterion = criterion;
 		
 		return this;
@@ -193,10 +219,21 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A String value.
 	 * @return A reference back to the SimplePredicate object.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(String criterion) {
-		this.criterion = criterion;
+	public SimplePredicate setCriterion(String criterion)
+			throws StorageException {
+		switch (type) {
+			case EQ:
+			case NEQ:
+			case LIKE:
+				this.criterion = criterion;
+				break;
+			default:
+				throw new StorageException("String not allowed with this criterion");
+		}
 		
 		return this;
 	}
@@ -206,11 +243,14 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A Date value.
 	 * @return A reference back to the SimplePredicate object.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 * @deprecated As of version 1.1, replaced by
 	 * 		{@link #setCriterion(DateTime)}.
 	 */
-	public SimplePredicate setCriterion(Date criterion) {
+	public SimplePredicate setCriterion(Date criterion)
+			throws StorageException {
 		this.criterion = criterion;
 		
 		return this;
@@ -221,9 +261,12 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A DateTime value.
 	 * @return A reference back to the SimplePredicate object.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	public SimplePredicate setCriterion(DateTime criterion) {
+	public SimplePredicate setCriterion(DateTime criterion)
+			throws StorageException {
 		this.criterion = criterion;
 		
 		return this;
@@ -234,10 +277,20 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param criterion A UserIdentifier value.
 	 * @return A reference back to the SimplePredicate object.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.0
 	 */
-	public SimplePredicate setCriterion(UserIdentifier criterion) {
-		this.criterion = criterion;
+	public SimplePredicate setCriterion(UserIdentifier criterion)
+			throws StorageException {
+		switch (type) {
+			case EQ:
+			case NEQ:
+				this.criterion = criterion;
+				break;
+			default:
+				throw new StorageException("UserIdentifier not allowed with this criterion.");
+		}
 		
 		return this;
 	}
@@ -248,9 +301,10 @@ public class SimplePredicate implements Predicate {
 	 * @param translator The QueryTranslator provided by the backend
 	 * 		implementation.
 	 * @return A string holding the compiled predicate.
+	 * @throws StorageException if the predicate couldn't be compiled.
 	 * @since 1.0
 	 */
-	public String compile() {
+	public String compile() throws StorageException {
 		String compiled = null;
 		
 		switch (type) {

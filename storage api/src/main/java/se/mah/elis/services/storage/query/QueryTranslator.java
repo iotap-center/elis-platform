@@ -1,5 +1,7 @@
 package se.mah.elis.services.storage.query;
 
+import se.mah.elis.services.storage.exceptions.StorageException;
+
 /**
  * A QueryTranslator is needed to convert a Query object into a query that can
  * be run by the backend of the storage service. Any vendor providing or
@@ -78,9 +80,11 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String eq(String field, Object criterion);
+	String eq(String field, Object criterion) throws StorageException;
 	
 	/**
 	 * Compiles a Neq (not equals) predicate.
@@ -88,9 +92,11 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String neq(String field, Object criterion);
+	String neq(String field, Object criterion) throws StorageException;
 	
 	/**
 	 * Compiles a Like predicate.
@@ -98,9 +104,11 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String like(String field, Object criterion);
+	String like(String field, Object criterion) throws StorageException;
 	
 	/**
 	 * Compiles an Lt (less than) predicate.
@@ -108,9 +116,11 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String lt(String field, Object criterion);
+	String lt(String field, Object criterion) throws StorageException;
 	
 	/**
 	 * Compiles an Lte (less than or equal) predicate.
@@ -118,9 +128,11 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String lte(String field, Object criterion);
+	String lte(String field, Object criterion) throws StorageException;
 	
 	/**
 	 * Compiles a Gt (greater than) predicate.
@@ -128,9 +140,11 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String gt(String field, Object criterion);
+	String gt(String field, Object criterion) throws StorageException;
 	
 	/**
 	 * Compiles a Gte (greater than or equal) predicate.
@@ -138,15 +152,18 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
+	 * @throws StorageException if the criterion doesn't make sense in
+	 * 		conjunction with the predicate's CriterionType.
 	 * @since 1.1
 	 */
-	String gte(String field, Object criterion);
+	String gte(String field, Object criterion) throws StorageException;
 	
 	/**
 	 * Translates a query into a string suitable for the backend database.
 	 * 
 	 * @return The string representation of the query.
+	 * @throws StorageException if the predicate couldn't be compiled.
 	 * @since 1.1
 	 */
-	String compile();
+	String compile() throws StorageException;
 }

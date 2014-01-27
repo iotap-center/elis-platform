@@ -1,5 +1,6 @@
 package se.mah.elis.services.storage.query.test.mock;
 
+import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.Predicate;
 import se.mah.elis.services.storage.query.QueryTranslator;
 
@@ -54,7 +55,11 @@ public class MockTranslator implements QueryTranslator {
 
 	@Override
 	public String and(Predicate right, Predicate left) {
-		return right.compile() + " and " + left.compile();
+		try {
+			return right.compile() + " and " + left.compile();
+		} catch (StorageException e) {
+			return "";
+		}
 	}
 
 	@Override
@@ -93,7 +98,7 @@ public class MockTranslator implements QueryTranslator {
 	}
 
 	@Override
-	public String compile() {
+	public String compile() throws StorageException {
 		String compiled = "Translate:\n";
 		
 		if (clazz != null) {
@@ -112,6 +117,10 @@ public class MockTranslator implements QueryTranslator {
 
 	@Override
 	public String toString() {
-		return compile();
+		try {
+			return compile();
+		} catch (StorageException e) {
+			return "";
+		}
 	}
 }

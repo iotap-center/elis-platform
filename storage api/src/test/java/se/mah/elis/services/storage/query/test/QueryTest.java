@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.Predicate;
 import se.mah.elis.services.storage.query.Query;
 import se.mah.elis.services.storage.query.QueryTranslator;
@@ -56,7 +57,12 @@ public class QueryTest {
 		assertEquals(query, query.setPredicate(p));
 		assertEquals(query, query.limit(start, limit));
 		assertEquals(query, query.setDataType(what));
-		actual = query.compile();
+		try {
+			actual = query.compile();
+		} catch (StorageException e) {
+			actual = "";
+			fail("This shouldn't happen");
+		}
 		
 		expected = "Translate:\n" +
 				   "  what: java.lang.String\n" +
@@ -65,6 +71,27 @@ public class QueryTest {
 				   "  oldestFirst: true";
 		
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testCompileBadQuery() {
+		Query query = new Query();
+		QueryTranslator translator = new MockTranslator();
+		Class what = java.lang.String.class;
+		int start = 0;
+		int limit = 10;
+		Predicate p = new MockPredicate(1);
+		String actual, expected;
+		
+		assertEquals(query, query.setPredicate(p));
+		assertEquals(query, query.limit(start, limit));
+		assertEquals(query, query.setDataType(what));
+		
+		try {
+			actual = query.compile();
+			fail("This shouldn't happen");
+		} catch (StorageException e) {
+		}
 	}
 
 }

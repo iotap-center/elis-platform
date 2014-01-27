@@ -7,9 +7,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.SimplePredicate;
 import se.mah.elis.services.storage.query.SimplePredicate.CriterionType;
 import se.mah.elis.services.storage.query.test.mock.MockTranslator;
+import se.mah.elis.services.storage.query.test.mock.MockUserIdentifier;
 
 public class SimplePredicateTest {
 
@@ -161,7 +163,11 @@ public class SimplePredicateTest {
 						  "  criterion: true\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion(true));
+		try {
+			assertEquals(sp, sp.setCriterion(true));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -174,8 +180,12 @@ public class SimplePredicateTest {
 						  "  criterion: false\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion(true));
-		assertEquals(sp, sp.setCriterion(false));
+		try {
+			assertEquals(sp, sp.setCriterion(true));
+			assertEquals(sp, sp.setCriterion(false));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -188,7 +198,11 @@ public class SimplePredicateTest {
 						  "  criterion: 1.1\n" +
 						  "  translator: null";
 	
-		assertEquals(sp, sp.setCriterion(1.1));
+		try {
+			assertEquals(sp, sp.setCriterion(1.1));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 	
 		assertEquals(expected, sp.toString());
 	}
@@ -201,8 +215,12 @@ public class SimplePredicateTest {
 						  "  criterion: 1.2\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion(1.1));
-		assertEquals(sp, sp.setCriterion(1.2));
+		try {
+			assertEquals(sp, sp.setCriterion(1.1));
+			assertEquals(sp, sp.setCriterion(1.2));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -215,7 +233,11 @@ public class SimplePredicateTest {
 						  "  criterion: " + Double.MAX_VALUE + "\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion(Double.MAX_VALUE));
+		try {
+			assertEquals(sp, sp.setCriterion(Double.MAX_VALUE));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -228,8 +250,12 @@ public class SimplePredicateTest {
 						  "  criterion: " + (Double.MAX_VALUE - 1) + "\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion(Double.MAX_VALUE));
-		assertEquals(sp, sp.setCriterion(Double.MAX_VALUE - 1));
+		try {
+			assertEquals(sp, sp.setCriterion(Double.MAX_VALUE));
+			assertEquals(sp, sp.setCriterion(Double.MAX_VALUE - 1));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -242,7 +268,11 @@ public class SimplePredicateTest {
 						  "  criterion: 13\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion(13));
+		try {
+			assertEquals(sp, sp.setCriterion(13));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -255,8 +285,12 @@ public class SimplePredicateTest {
 						  "  criterion: 42\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion(13));
-		assertEquals(sp, sp.setCriterion(42));
+		try {
+			assertEquals(sp, sp.setCriterion(13));
+			assertEquals(sp, sp.setCriterion(42));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -269,7 +303,11 @@ public class SimplePredicateTest {
 						  "  criterion: " +  Long.MAX_VALUE + "\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion(Long.MAX_VALUE));
+		try {
+			assertEquals(sp, sp.setCriterion(Long.MAX_VALUE));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -282,8 +320,12 @@ public class SimplePredicateTest {
 						  "  criterion: " + Long.MIN_VALUE + "\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion(Long.MAX_VALUE));
-		assertEquals(sp, sp.setCriterion(Long.MIN_VALUE));
+		try {
+			assertEquals(sp, sp.setCriterion(Long.MAX_VALUE));
+			assertEquals(sp, sp.setCriterion(Long.MIN_VALUE));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -296,7 +338,11 @@ public class SimplePredicateTest {
 						  "  criterion: 65\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion('A'));
+		try {
+			assertEquals(sp, sp.setCriterion('A'));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -309,8 +355,12 @@ public class SimplePredicateTest {
 						  "  criterion: 66\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion('A'));
-		assertEquals(sp, sp.setCriterion('B'));
+		try {
+			assertEquals(sp, sp.setCriterion('A'));
+			assertEquals(sp, sp.setCriterion('B'));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -323,7 +373,11 @@ public class SimplePredicateTest {
 						  "  criterion: foo\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion("foo"));
+		try {
+			assertEquals(sp, sp.setCriterion("foo"));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -336,8 +390,12 @@ public class SimplePredicateTest {
 						  "  criterion: bar\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion("foo"));
-		assertEquals(sp, sp.setCriterion("bar"));
+		try {
+			assertEquals(sp, sp.setCriterion("foo"));
+			assertEquals(sp, sp.setCriterion("bar"));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -351,7 +409,11 @@ public class SimplePredicateTest {
 						  "  criterion: " + dt.toString() + "\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion(dt));
+		try {
+			assertEquals(sp, sp.setCriterion(dt));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -366,10 +428,172 @@ public class SimplePredicateTest {
 						  "  criterion: " + dt2.toString() + "\n" +
 						  "  translator: null";
 		
-		assertEquals(sp, sp.setCriterion(dt));
-		assertEquals(sp, sp.setCriterion(dt2));
+		try {
+			assertEquals(sp, sp.setCriterion(dt));
+			assertEquals(sp, sp.setCriterion(dt2));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(expected, sp.toString());
+	}
+	
+	@Test
+	public void testEqSetCriterion() {
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
+		
+		try {
+			sp.setCriterion(1); // Integer
+			sp.setCriterion(Long.MAX_VALUE); // Long
+			sp.setCriterion(1.1); // Float
+			sp.setCriterion(Double.MAX_VALUE); // Double
+			sp.setCriterion(Byte.SIZE); // Byte
+			sp.setCriterion(true); // Boolean
+			sp.setCriterion(DateTime.now()); // DateTime
+			sp.setCriterion("foo"); // String
+			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+	}
+	
+	@Test
+	public void testNeqSetCriterion() {
+		SimplePredicate sp = new SimplePredicate(CriterionType.NEQ);
+		
+		try {
+			sp.setCriterion(1); // Integer
+			sp.setCriterion(Long.MAX_VALUE); // Long
+			sp.setCriterion(1.1); // Float
+			sp.setCriterion(Double.MAX_VALUE); // Double
+			sp.setCriterion(Byte.SIZE); // Byte
+			sp.setCriterion(true); // Boolean
+			sp.setCriterion(DateTime.now()); // DateTime
+			sp.setCriterion("foo"); // String
+			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+	}
+	
+	@Test
+	public void testLikeSetCriterion() {
+		SimplePredicate sp = new SimplePredicate(CriterionType.LIKE);
+		
+		try {
+			sp.setCriterion(1); // Integer
+			sp.setCriterion(Long.MAX_VALUE); // Long
+			sp.setCriterion(1.1); // Float
+			sp.setCriterion(Double.MAX_VALUE); // Double
+			sp.setCriterion(Byte.SIZE); // Byte
+			sp.setCriterion(DateTime.now()); // DateTime
+			sp.setCriterion("foo"); // String
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		try {
+			sp.setCriterion(true); // Boolean
+			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
+			fail("This shouldn't happen");
+		} catch (StorageException e) {
+		}
+	}
+	
+	@Test
+	public void testLtSetCriterion() {
+		SimplePredicate sp = new SimplePredicate(CriterionType.LT);
+		
+		try {
+			sp.setCriterion(1); // Integer
+			sp.setCriterion(Long.MAX_VALUE); // Long
+			sp.setCriterion(1.1); // Float
+			sp.setCriterion(Double.MAX_VALUE); // Double
+			sp.setCriterion(Byte.SIZE); // Byte
+			sp.setCriterion(DateTime.now()); // DateTime
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		try {
+			sp.setCriterion(true); // Boolean
+			sp.setCriterion("foo"); // String
+			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
+			fail("This shouldn't happen");
+		} catch (StorageException e) {
+		}
+	}
+	
+	@Test
+	public void testLteSetCriterion() {
+		SimplePredicate sp = new SimplePredicate(CriterionType.LTE);
+		
+		try {
+			sp.setCriterion(1); // Integer
+			sp.setCriterion(Long.MAX_VALUE); // Long
+			sp.setCriterion(1.1); // Float
+			sp.setCriterion(Double.MAX_VALUE); // Double
+			sp.setCriterion(Byte.SIZE); // Byte
+			sp.setCriterion(DateTime.now()); // DateTime
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		try {
+			sp.setCriterion(true); // Boolean
+			sp.setCriterion("foo"); // String
+			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
+			fail("This shouldn't happen");
+		} catch (StorageException e) {
+		}
+	}
+	
+	@Test
+	public void testGtSetCriterion() {
+		SimplePredicate sp = new SimplePredicate(CriterionType.GT);
+		
+		try {
+			sp.setCriterion(1); // Integer
+			sp.setCriterion(Long.MAX_VALUE); // Long
+			sp.setCriterion(1.1); // Float
+			sp.setCriterion(Double.MAX_VALUE); // Double
+			sp.setCriterion(Byte.SIZE); // Byte
+			sp.setCriterion(DateTime.now()); // DateTime
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		try {
+			sp.setCriterion(true); // Boolean
+			sp.setCriterion("foo"); // String
+			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
+			fail("This shouldn't happen");
+		} catch (StorageException e) {
+		}
+	}
+	
+	@Test
+	public void testGteSetCriterion() {
+		SimplePredicate sp = new SimplePredicate(CriterionType.GTE);
+		
+		try {
+			sp.setCriterion(1); // Integer
+			sp.setCriterion(Long.MAX_VALUE); // Long
+			sp.setCriterion(1.1); // Float
+			sp.setCriterion(Double.MAX_VALUE); // Double
+			sp.setCriterion(Byte.SIZE); // Byte
+			sp.setCriterion(DateTime.now()); // DateTime
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		try {
+			sp.setCriterion(true); // Boolean
+			sp.setCriterion("foo"); // String
+			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
+			fail("This shouldn't happen");
+		} catch (StorageException e) {
+		}
 	}
 
 	@Test
@@ -396,7 +620,11 @@ public class SimplePredicateTest {
 						  "  oldestFirst: false";
 		
 		assertEquals(sp, sp.setField("Foo"));
-		assertEquals(sp, sp.setCriterion("Bar"));
+		try {
+			assertEquals(sp, sp.setCriterion("Bar"));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		sp.setTranslator(new MockTranslator());
 		
 		assertEquals(expected, sp.toString());
