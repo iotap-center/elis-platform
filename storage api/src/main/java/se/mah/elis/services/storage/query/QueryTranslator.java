@@ -57,22 +57,22 @@ public interface QueryTranslator {
 	/**
 	 * Compiles an Or predicate.
 	 * 
-	 * @param right The right-hand predicate.
 	 * @param left The left-hand predicate.
+	 * @param right The right-hand predicate.
 	 * @return The string representing the predicate.
 	 * @since 1.1
 	 */
-	String or(Predicate right, Predicate left);
+	String or(Predicate left, Predicate right);
 	
 	/**
 	 * Compiles an And predicate.
 	 * 
-	 * @param right The right-hand predicate.
 	 * @param left The left-hand predicate.
+	 * @param right The right-hand predicate.
 	 * @return The string representing the predicate.
 	 * @since 1.1
 	 */
-	String and(Predicate right, Predicate left);
+	String and(Predicate left, Predicate right);
 	
 	/**
 	 * Compiles an Equals predicate.

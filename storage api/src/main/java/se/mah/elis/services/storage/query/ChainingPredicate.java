@@ -102,10 +102,10 @@ public class ChainingPredicate implements Predicate {
 		
 		switch (type) {
 			case AND:
-				compiled = translator.and(right, left);
+				compiled = translator.and(left, right);
 				break;
 			case OR:
-				compiled = translator.or(right, left);
+				compiled = translator.or(left, right);
 		}
 		
 		return compiled;
