@@ -291,7 +291,7 @@ public class ResultSetImplTest {
 	@Test
 	public void testHasNextOnlyOne() {
 		Class clazz = java.lang.String.class;
-		String[] strings = {"abc", "123", "chocolate"};
+		String[] strings = {"abc"};
 		ResultSet rs = new ResultSetImpl(clazz, strings);
 		
 		assertTrue(rs.hasNext());
@@ -412,7 +412,7 @@ public class ResultSetImplTest {
 		
 		rs.reset();
 		actual = rs.next();
-		expected = "123";
+		expected = "abc";
 		assertEquals(expected, actual);
 	}
 	
