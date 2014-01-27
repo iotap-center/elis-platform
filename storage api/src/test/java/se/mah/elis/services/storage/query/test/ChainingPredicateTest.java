@@ -52,7 +52,7 @@ public class ChainingPredicateTest {
 						  "  right: null\n" +
 						  "  translator: null";
 		
-		cp.setLeft(new MockPredicate(1));
+		assertEquals(cp, cp.setLeft(new MockPredicate(1)));
 		
 		assertEquals(expected, cp.toString());
 	}
@@ -65,8 +65,8 @@ public class ChainingPredicateTest {
 						  "  right: null\n" +
 						  "  translator: null";
 
-		cp.setLeft(new MockPredicate(1));
-		cp.setLeft(new MockPredicate(2));
+		assertEquals(cp, cp.setLeft(new MockPredicate(1)));
+		assertEquals(cp, cp.setLeft(new MockPredicate(2)));
 		
 		assertEquals(expected, cp.toString());
 	}
@@ -79,7 +79,7 @@ public class ChainingPredicateTest {
 						  "  right: MockPredicate 1\n" +
 						  "  translator: null";
 		
-		cp.setRight(new MockPredicate(1));
+		assertEquals(cp, cp.setRight(new MockPredicate(1)));
 		
 		assertEquals(expected, cp.toString());
 	}
@@ -92,8 +92,8 @@ public class ChainingPredicateTest {
 						  "  right: MockPredicate 2\n" +
 						  "  translator: null";
 
-		cp.setRight(new MockPredicate(1));
-		cp.setRight(new MockPredicate(2));
+		assertEquals(cp, cp.setRight(new MockPredicate(1)));
+		assertEquals(cp, cp.setRight(new MockPredicate(2)));
 		
 		assertEquals(expected, cp.toString());
 	}
@@ -106,8 +106,8 @@ public class ChainingPredicateTest {
 						  "  right: MockPredicate 2\n" +
 						  "  translator: null";
 
-		cp.setLeft(new MockPredicate(1));
-		cp.setRight(new MockPredicate(2));
+		assertEquals(cp, cp.setLeft(new MockPredicate(1)));
+		assertEquals(cp, cp.setRight(new MockPredicate(2)));
 		
 		assertEquals(expected, cp.toString());
 	}
@@ -135,8 +135,8 @@ public class ChainingPredicateTest {
 						  "  translator: Translate:\n" +
 						  "  oldestFirst: false";
 
-		cp.setLeft(new MockPredicate(1));
-		cp.setRight(new MockPredicate(2));
+		assertEquals(cp, cp.setLeft(new MockPredicate(1)));
+		assertEquals(cp, cp.setRight(new MockPredicate(2)));
 		cp.setTranslator(new MockTranslator());
 		
 		assertEquals(expected, cp.toString());

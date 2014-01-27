@@ -27,7 +27,7 @@ public class QueryTest {
 		Query query = new Query();
 		Class expected = java.lang.Number.class;
 		
-		query.setDataType(java.lang.Number.class);
+		assertEquals(query, query.setDataType(java.lang.Number.class));
 		
 		assertEquals(expected, query.getDataType());
 	}
@@ -36,8 +36,8 @@ public class QueryTest {
 		Query query = new Query();
 		Class expected = java.lang.Number.class;
 
-		query.setDataType(java.lang.String.class);
-		query.setDataType(java.lang.Number.class);
+		assertEquals(query, query.setDataType(java.lang.String.class));
+		assertEquals(query, query.setDataType(java.lang.Number.class));
 		
 		assertEquals(expected, query.getDataType());
 	}
@@ -52,10 +52,10 @@ public class QueryTest {
 		Predicate p = new MockPredicate(1);
 		String actual, expected;
 		
-		query.setTranslator(translator);
-		query.setPredicate(p);
-		query.limit(start, limit);
-		query.setDataType(what);
+		assertEquals(query, query.setTranslator(translator));
+		assertEquals(query, query.setPredicate(p));
+		assertEquals(query, query.limit(start, limit));
+		assertEquals(query, query.setDataType(what));
 		actual = query.compile();
 		
 		expected = "Translate:\n" +

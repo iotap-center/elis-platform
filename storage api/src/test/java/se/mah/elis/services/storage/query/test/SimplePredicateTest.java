@@ -106,7 +106,7 @@ public class SimplePredicateTest {
 						  "  criterion: null\n" +
 						  "  translator: null";
 		
-		sp.setField("TEST");
+		assertEquals(sp, sp.setField("TEST"));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -119,8 +119,8 @@ public class SimplePredicateTest {
 						  "  criterion: null\n" +
 						  "  translator: null";
 		
-		sp.setField("TEST");
-		sp.setField("RESET");
+		assertEquals(sp, sp.setField("TEST"));
+		assertEquals(sp, sp.setField("RESET"));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -133,8 +133,8 @@ public class SimplePredicateTest {
 						  "  criterion: null\n" +
 						  "  translator: null";
 		
-		sp.setField("TEST");
-		sp.setField("");
+		assertEquals(sp, sp.setField("TEST"));
+		assertEquals(sp, sp.setField(""));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -147,8 +147,8 @@ public class SimplePredicateTest {
 						  "  criterion: null\n" +
 						  "  translator: null";
 		
-		sp.setField("TEST");
-		sp.setField(null);
+		assertEquals(sp, sp.setField("TEST"));
+		assertEquals(sp, sp.setField(null));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -161,7 +161,7 @@ public class SimplePredicateTest {
 						  "  criterion: true\n" +
 						  "  translator: null";
 		
-		sp.setCriterion(true);
+		assertEquals(sp, sp.setCriterion(true));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -174,8 +174,8 @@ public class SimplePredicateTest {
 						  "  criterion: false\n" +
 						  "  translator: null";
 		
-		sp.setCriterion(true);
-		sp.setCriterion(false);
+		assertEquals(sp, sp.setCriterion(true));
+		assertEquals(sp, sp.setCriterion(false));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -188,7 +188,7 @@ public class SimplePredicateTest {
 						  "  criterion: 1.1\n" +
 						  "  translator: null";
 	
-		sp.setCriterion(1.1);
+		assertEquals(sp, sp.setCriterion(1.1));
 	
 		assertEquals(expected, sp.toString());
 	}
@@ -201,8 +201,8 @@ public class SimplePredicateTest {
 						  "  criterion: 1.2\n" +
 						  "  translator: null";
 		
-		sp.setCriterion(1.1);
-		sp.setCriterion(1.2);
+		assertEquals(sp, sp.setCriterion(1.1));
+		assertEquals(sp, sp.setCriterion(1.2));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -215,7 +215,7 @@ public class SimplePredicateTest {
 						  "  criterion: " + Double.MAX_VALUE + "\n" +
 						  "  translator: null";
 		
-		sp.setCriterion(Double.MAX_VALUE);
+		assertEquals(sp, sp.setCriterion(Double.MAX_VALUE));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -228,8 +228,8 @@ public class SimplePredicateTest {
 						  "  criterion: " + (Double.MAX_VALUE - 1) + "\n" +
 						  "  translator: null";
 		
-		sp.setCriterion(Double.MAX_VALUE);
-		sp.setCriterion(Double.MAX_VALUE - 1);
+		assertEquals(sp, sp.setCriterion(Double.MAX_VALUE));
+		assertEquals(sp, sp.setCriterion(Double.MAX_VALUE - 1));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -242,7 +242,7 @@ public class SimplePredicateTest {
 						  "  criterion: 13\n" +
 						  "  translator: null";
 		
-		sp.setCriterion(13);
+		assertEquals(sp, sp.setCriterion(13));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -255,8 +255,8 @@ public class SimplePredicateTest {
 						  "  criterion: 42\n" +
 						  "  translator: null";
 		
-		sp.setCriterion(13);
-		sp.setCriterion(42);
+		assertEquals(sp, sp.setCriterion(13));
+		assertEquals(sp, sp.setCriterion(42));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -269,7 +269,7 @@ public class SimplePredicateTest {
 						  "  criterion: " +  Long.MAX_VALUE + "\n" +
 						  "  translator: null";
 		
-		sp.setCriterion(Long.MAX_VALUE);
+		assertEquals(sp, sp.setCriterion(Long.MAX_VALUE));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -282,8 +282,8 @@ public class SimplePredicateTest {
 						  "  criterion: " + Long.MIN_VALUE + "\n" +
 						  "  translator: null";
 		
-		sp.setCriterion(Long.MAX_VALUE);
-		sp.setCriterion(Long.MIN_VALUE);
+		assertEquals(sp, sp.setCriterion(Long.MAX_VALUE));
+		assertEquals(sp, sp.setCriterion(Long.MIN_VALUE));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -296,7 +296,7 @@ public class SimplePredicateTest {
 						  "  criterion: 65\n" +
 						  "  translator: null";
 		
-		sp.setCriterion('A');
+		assertEquals(sp, sp.setCriterion('A'));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -309,8 +309,8 @@ public class SimplePredicateTest {
 						  "  criterion: 66\n" +
 						  "  translator: null";
 		
-		sp.setCriterion('A');
-		sp.setCriterion('B');
+		assertEquals(sp, sp.setCriterion('A'));
+		assertEquals(sp, sp.setCriterion('B'));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -323,7 +323,7 @@ public class SimplePredicateTest {
 						  "  criterion: foo\n" +
 						  "  translator: null";
 		
-		sp.setCriterion("foo");
+		assertEquals(sp, sp.setCriterion("foo"));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -336,8 +336,8 @@ public class SimplePredicateTest {
 						  "  criterion: bar\n" +
 						  "  translator: null";
 		
-		sp.setCriterion("foo");
-		sp.setCriterion("bar");
+		assertEquals(sp, sp.setCriterion("foo"));
+		assertEquals(sp, sp.setCriterion("bar"));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -351,7 +351,7 @@ public class SimplePredicateTest {
 						  "  criterion: " + dt.toString() + "\n" +
 						  "  translator: null";
 		
-		sp.setCriterion(dt);
+		assertEquals(sp, sp.setCriterion(dt));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -366,8 +366,8 @@ public class SimplePredicateTest {
 						  "  criterion: " + dt2.toString() + "\n" +
 						  "  translator: null";
 		
-		sp.setCriterion(dt);
-		sp.setCriterion(dt2);
+		assertEquals(sp, sp.setCriterion(dt));
+		assertEquals(sp, sp.setCriterion(dt2));
 		
 		assertEquals(expected, sp.toString());
 	}
@@ -395,8 +395,8 @@ public class SimplePredicateTest {
 						  "  translator: Translate:\n" +
 						  "  oldestFirst: false";
 		
-		sp.setField("Foo");
-		sp.setCriterion("Bar");
+		assertEquals(sp, sp.setField("Foo"));
+		assertEquals(sp, sp.setCriterion("Bar"));
 		sp.setTranslator(new MockTranslator());
 		
 		assertEquals(expected, sp.toString());
