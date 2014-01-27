@@ -10,11 +10,29 @@ package se.mah.elis.exceptions;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.1
  */
-public class TypeMismatchException extends Exception {
-
+public class TypeMismatchException extends RuntimeException {
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8465305841743803074L;
 
+	/**
+	 * Creates an instance of this exception.
+	 * 
+	 * @since 1.1
+	 */
+	public TypeMismatchException() {
+		
+	}
+	
+	/**
+	 * Creates an instance of this exception with a description of the error.
+	 * 
+	 * @param message A message to be passed with the exception.
+	 * @since 1.1
+	 */
+	public TypeMismatchException(String message) {
+		super(message);
+	}
 }
