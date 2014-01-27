@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import se.mah.elis.services.storage.query.Predicate;
 import se.mah.elis.services.storage.query.QueryTranslator;
 
@@ -19,38 +21,6 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	private Predicate where;
 	private int start, limit;
 	private boolean oldestFirst;
-	
-	/*
-	 * This is part of a MySQL string escaping mechanism. It was graciousy
-	 * borrowed from
-	 * http://stackoverflow.com/questions/881194/how-to-escape-special-character-in-mysql.
-	 */
-	private static final HashMap<String,String> sqlTokens;
-	private static Pattern sqlTokenPattern;
-
-	static {     
-		String[][] mysqlMagicChars = new String[][] {
-		  // In string   In regex   In SQL
-			{"\u0000",   "\\x00",   "\\\\0"},
-			{"'",        "'",       "\\\\'"},
-			{"\"",       "\"",      "\\\\\""},
-			{"\b",       "\\x08",   "\\\\b"},
-			{"\n",       "\n",      "\\\\n"},
-			{"\r",       "\\r",     "\\\\r"},
-			{"\t",       "\\t",     "\\\\t"},
-			{"\u001A",   "\\xA",    "\\\\Z"},
-			{"\\",       "\\\\",    "\\\\\\\\"}
-		};
-		
-		sqlTokens = new HashMap<String,String>();
-	    String patternStr = "";
-	    for (String[] srr : mysqlMagicChars)
-	    {
-	        sqlTokens.put(srr[0], srr[2]);
-	        patternStr += (patternStr.isEmpty() ? "" : "|") + srr[1];            
-	    }
-	    sqlTokenPattern = Pattern.compile('(' + patternStr + ')');
-	}
 	
 	/**
 	 * Creates an instance of this class.
@@ -337,28 +307,9 @@ public class MySQLQueryTranslator implements QueryTranslator {
 		} else if (criterion == null) {
 			processed = "NULL";
 		} else {
-			processed = "'" + escape(criterion.toString()) + "'";
+			processed = "'" + StringEscapeUtils.escapeSql(criterion.toString()) + "'";
 		}
 		
 		return processed;
-	}
-	
-	/**
-	 * Escapes a string prior to insertion in a MySQL query.
-	 * 
-	 * @param criterion The criterion string to escape.
-	 * @return An escaped string.
-	 * @since 1.1
-	 */
-	private String escape(String criterion) {
-		Matcher matcher = null;
-		StringBuffer sb = new StringBuffer();
-		
-		while (matcher.find()) {
-			matcher.appendReplacement(sb, null);
-		}
-		matcher.appendTail(sb);
-		
-		return sb.toString();
 	}
 }
