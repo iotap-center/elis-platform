@@ -26,7 +26,7 @@ public class ChainingPredicate implements Predicate {
 	 * 
 	 * @since 1.1
 	 */
-	public enum Type {
+	public enum ChainingType {
 		/**
 		 * Used to link two predicates by using a logical AND statement.
 		 * 
@@ -42,7 +42,7 @@ public class ChainingPredicate implements Predicate {
 		OR;
 	}
 
-	private Type type;
+	private ChainingType type;
 	private Predicate left;
 	private Predicate right;
 	private QueryTranslator translator;
@@ -53,7 +53,7 @@ public class ChainingPredicate implements Predicate {
 	 * @param type The type of chaining to be used.
 	 * @since 1.1
 	 */
-	public ChainingPredicate(Type type) {
+	public ChainingPredicate(ChainingType type) {
 		this.type = type;
 		left = null;
 		right = null;

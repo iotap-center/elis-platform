@@ -28,7 +28,7 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @since 1.1
 	 */
-	public enum Type {
+	public enum CriterionType {
 		/**
 		 * The field value is strictly lesser than the criterion.
 		 * 
@@ -79,7 +79,7 @@ public class SimplePredicate implements Predicate {
 		LIKE;
 	}
 
-	private Type type;
+	private CriterionType type;
 	private String field;
 	private Object criterion;
 	private QueryTranslator translator;
@@ -90,7 +90,7 @@ public class SimplePredicate implements Predicate {
 	 * @param type The type of chaining to be used.
 	 * @since 1.1
 	 */
-	public SimplePredicate(Type type) {
+	public SimplePredicate(CriterionType type) {
 		this.type = type;
 		field = null;
 		criterion = null;

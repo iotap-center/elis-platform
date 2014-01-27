@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.mah.elis.services.storage.query.SimplePredicate;
-import se.mah.elis.services.storage.query.SimplePredicate.Type;
+import se.mah.elis.services.storage.query.SimplePredicate.CriterionType;
 import se.mah.elis.services.storage.query.test.mock.MockTranslator;
 
 public class SimplePredicateTest {
@@ -23,7 +23,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testEQ() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: null\n" +
@@ -34,7 +34,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testNEQ() {
-		SimplePredicate sp = new SimplePredicate(Type.NEQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.NEQ);
 		String expected = "NEQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: null\n" +
@@ -45,7 +45,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testLIKE() {
-		SimplePredicate sp = new SimplePredicate(Type.LIKE);
+		SimplePredicate sp = new SimplePredicate(CriterionType.LIKE);
 		String expected = "LIKE:\n" +
 						  "  field: null\n" +
 						  "  criterion: null\n" +
@@ -56,7 +56,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testLT() {
-		SimplePredicate sp = new SimplePredicate(Type.LT);
+		SimplePredicate sp = new SimplePredicate(CriterionType.LT);
 		String expected = "LT:\n" +
 						  "  field: null\n" +
 						  "  criterion: null\n" +
@@ -67,7 +67,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testLTE() {
-		SimplePredicate sp = new SimplePredicate(Type.LTE);
+		SimplePredicate sp = new SimplePredicate(CriterionType.LTE);
 		String expected = "LTE:\n" +
 						  "  field: null\n" +
 						  "  criterion: null\n" +
@@ -78,7 +78,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testGT() {
-		SimplePredicate sp = new SimplePredicate(Type.GT);
+		SimplePredicate sp = new SimplePredicate(CriterionType.GT);
 		String expected = "GT:\n" +
 						  "  field: null\n" +
 						  "  criterion: null\n" +
@@ -89,7 +89,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testGTE() {
-		SimplePredicate sp = new SimplePredicate(Type.GTE);
+		SimplePredicate sp = new SimplePredicate(CriterionType.GTE);
 		String expected = "GTE:\n" +
 						  "  field: null\n" +
 						  "  criterion: null\n" +
@@ -100,7 +100,7 @@ public class SimplePredicateTest {
 	
 	@Test
 	public void testSetField() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: TEST\n" +
 						  "  criterion: null\n" +
@@ -113,7 +113,7 @@ public class SimplePredicateTest {
 	
 	@Test
 	public void testSetFieldReset() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: RESET\n" +
 						  "  criterion: null\n" +
@@ -127,7 +127,7 @@ public class SimplePredicateTest {
 	
 	@Test
 	public void testSetFieldEmptyString() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: \n" +
 						  "  criterion: null\n" +
@@ -141,7 +141,7 @@ public class SimplePredicateTest {
 	
 	@Test
 	public void testSetFieldNull() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: null\n" +
@@ -155,7 +155,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionBoolean() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: true\n" +
@@ -168,7 +168,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionBooleanReset() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: false\n" +
@@ -182,7 +182,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionFloat() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: 1.1\n" +
@@ -195,7 +195,7 @@ public class SimplePredicateTest {
 	
 	@Test
 	public void testSetCriterionFloatReset() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: 1.2\n" +
@@ -209,7 +209,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionDouble() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: " + Double.MAX_VALUE + "\n" +
@@ -222,7 +222,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionDoubleReset() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: " + (Double.MAX_VALUE - 1) + "\n" +
@@ -236,7 +236,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionInt() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: 13\n" +
@@ -249,7 +249,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionIntReset() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: 42\n" +
@@ -263,7 +263,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionLong() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: " +  Long.MAX_VALUE + "\n" +
@@ -276,7 +276,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionLongReset() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: " + Long.MIN_VALUE + "\n" +
@@ -290,7 +290,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionByte() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: 65\n" +
@@ -303,7 +303,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionByteReset() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: 66\n" +
@@ -317,7 +317,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionString() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: foo\n" +
@@ -330,7 +330,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionStringReset() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: bar\n" +
@@ -344,7 +344,7 @@ public class SimplePredicateTest {
 	
 	@Test
 	public void testSetCriterionDateTime() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		DateTime dt = DateTime.now();
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
@@ -358,7 +358,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetCriterionDateTimeReset() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		DateTime dt = DateTime.now();
 		DateTime dt2 = dt.plusHours(1);
 		String expected = "EQ:\n" +
@@ -374,7 +374,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testSetTranslator() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: null\n" +
 						  "  criterion: null\n" +
@@ -388,7 +388,7 @@ public class SimplePredicateTest {
 
 	@Test
 	public void testCompile() {
-		SimplePredicate sp = new SimplePredicate(Type.EQ);
+		SimplePredicate sp = new SimplePredicate(CriterionType.EQ);
 		String expected = "EQ:\n" +
 						  "  field: Foo\n" +
 						  "  criterion: Bar\n" +

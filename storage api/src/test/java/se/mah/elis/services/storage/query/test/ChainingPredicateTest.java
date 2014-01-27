@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.mah.elis.services.storage.query.ChainingPredicate;
-import se.mah.elis.services.storage.query.ChainingPredicate.Type;
+import se.mah.elis.services.storage.query.ChainingPredicate.ChainingType;
 import se.mah.elis.services.storage.query.test.mock.MockPredicate;
 import se.mah.elis.services.storage.query.test.mock.MockTranslator;
 
@@ -24,7 +24,7 @@ public class ChainingPredicateTest {
 	
 	@Test
 	public void testAnd() {
-		ChainingPredicate cp = new ChainingPredicate(Type.AND);
+		ChainingPredicate cp = new ChainingPredicate(ChainingType.AND);
 		String expected = "AND:\n" +
 						  "  left: null\n" +
 						  "  right: null\n" +
@@ -35,7 +35,7 @@ public class ChainingPredicateTest {
 	
 	@Test
 	public void testOr() {
-		ChainingPredicate cp = new ChainingPredicate(Type.OR);
+		ChainingPredicate cp = new ChainingPredicate(ChainingType.OR);
 		String expected = "OR:\n" +
 						  "  left: null\n" +
 						  "  right: null\n" +
@@ -46,7 +46,7 @@ public class ChainingPredicateTest {
 
 	@Test
 	public void testSetLeft() {
-		ChainingPredicate cp = new ChainingPredicate(Type.AND);
+		ChainingPredicate cp = new ChainingPredicate(ChainingType.AND);
 		String expected = "AND:\n" +
 						  "  left: MockPredicate 1\n" +
 						  "  right: null\n" +
@@ -59,7 +59,7 @@ public class ChainingPredicateTest {
 
 	@Test
 	public void testSetLeftReset() {
-		ChainingPredicate cp = new ChainingPredicate(Type.AND);
+		ChainingPredicate cp = new ChainingPredicate(ChainingType.AND);
 		String expected = "AND:\n" +
 						  "  left: MockPredicate 2\n" +
 						  "  right: null\n" +
@@ -73,7 +73,7 @@ public class ChainingPredicateTest {
 
 	@Test
 	public void testSetRight() {
-		ChainingPredicate cp = new ChainingPredicate(Type.AND);
+		ChainingPredicate cp = new ChainingPredicate(ChainingType.AND);
 		String expected = "AND:\n" +
 						  "  left: null\n" +
 						  "  right: MockPredicate 1\n" +
@@ -86,7 +86,7 @@ public class ChainingPredicateTest {
 
 	@Test
 	public void testSetRightReset() {
-		ChainingPredicate cp = new ChainingPredicate(Type.AND);
+		ChainingPredicate cp = new ChainingPredicate(ChainingType.AND);
 		String expected = "AND:\n" +
 						  "  left: null\n" +
 						  "  right: MockPredicate 2\n" +
@@ -100,7 +100,7 @@ public class ChainingPredicateTest {
 
 	@Test
 	public void testSetRightAndSetLeft() {
-		ChainingPredicate cp = new ChainingPredicate(Type.AND);
+		ChainingPredicate cp = new ChainingPredicate(ChainingType.AND);
 		String expected = "AND:\n" +
 						  "  left: MockPredicate 1\n" +
 						  "  right: MockPredicate 2\n" +
@@ -114,7 +114,7 @@ public class ChainingPredicateTest {
 
 	@Test
 	public void testSetTranslator() {
-		ChainingPredicate cp = new ChainingPredicate(Type.AND);
+		ChainingPredicate cp = new ChainingPredicate(ChainingType.AND);
 		String expected = "AND:\n" +
 						  "  left: null\n" +
 						  "  right: null\n" +
@@ -128,7 +128,7 @@ public class ChainingPredicateTest {
 
 	@Test
 	public void testCompile() {
-		ChainingPredicate cp = new ChainingPredicate(Type.AND);
+		ChainingPredicate cp = new ChainingPredicate(ChainingType.AND);
 		String expected = "AND:\n" +
 						  "  left: MockPredicate 1\n" +
 						  "  right: MockPredicate 2\n" +
