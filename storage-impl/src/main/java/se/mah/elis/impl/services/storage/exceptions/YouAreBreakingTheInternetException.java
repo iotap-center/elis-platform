@@ -1,0 +1,21 @@
+package se.mah.elis.impl.services.storage.exceptions;
+
+import se.mah.elis.services.storage.exceptions.StorageException;
+
+/**
+ * This exception is thrown when an empty DeleteQuery is "accidentally" run.
+ * 
+ * @author "Johan Holmberg, Malmö University"
+ * @since 1.1
+ */
+public class YouAreBreakingTheInternetException extends StorageException {
+	
+	/**
+	 * Initializes an instance of this exception.
+	 * 
+	 * @since 1.1
+	 */
+	public YouAreBreakingTheInternetException() {
+		super("Deletion with empty query is not permitted.");
+	}
+}
