@@ -8,11 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.mah.elis.exceptions.TypeMismatchException;
-import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.SimplePredicate;
 import se.mah.elis.services.storage.query.SimplePredicate.CriterionType;
 import se.mah.elis.services.storage.query.test.mock.MockTranslator;
-import se.mah.elis.services.storage.query.test.mock.MockUserIdentifier;
 
 public class SimplePredicateTest {
 
@@ -452,7 +450,6 @@ public class SimplePredicateTest {
 			sp.setCriterion(true); // Boolean
 			sp.setCriterion(DateTime.now()); // DateTime
 			sp.setCriterion("foo"); // String
-			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
@@ -471,7 +468,6 @@ public class SimplePredicateTest {
 			sp.setCriterion(true); // Boolean
 			sp.setCriterion(DateTime.now()); // DateTime
 			sp.setCriterion("foo"); // String
-			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
@@ -495,7 +491,6 @@ public class SimplePredicateTest {
 		try {
 			sp.setCriterion(DateTime.now()); // DateTime
 			sp.setCriterion(true); // Boolean
-			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 			fail("This shouldn't happen");
 		} catch (TypeMismatchException e) {
 		}
@@ -519,7 +514,6 @@ public class SimplePredicateTest {
 		try {
 			sp.setCriterion(true); // Boolean
 			sp.setCriterion("foo"); // String
-			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 			fail("This shouldn't happen");
 		} catch (TypeMismatchException e) {
 		}
@@ -543,7 +537,6 @@ public class SimplePredicateTest {
 		try {
 			sp.setCriterion(true); // Boolean
 			sp.setCriterion("foo"); // String
-			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 			fail("This shouldn't happen");
 		} catch (TypeMismatchException e) {
 		}
@@ -567,7 +560,6 @@ public class SimplePredicateTest {
 		try {
 			sp.setCriterion(true); // Boolean
 			sp.setCriterion("foo"); // String
-			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 			fail("This shouldn't happen");
 		} catch (TypeMismatchException e) {
 		}
@@ -591,7 +583,6 @@ public class SimplePredicateTest {
 		try {
 			sp.setCriterion(true); // Boolean
 			sp.setCriterion("foo"); // String
-			sp.setCriterion(new MockUserIdentifier()); // UserIdentifier
 			fail("This shouldn't happen");
 		} catch (TypeMismatchException e) {
 		}

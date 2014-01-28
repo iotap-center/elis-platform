@@ -140,7 +140,7 @@ public interface Storage {
 	/**
 	 * <p>Reads out a specific data object from the storage.</p>
 	 * 
-	 * <p>This method was deprecated in version 1.1, and is replaced by the
+	 * <p>This method was deprecated in version 2.0, and is replaced by the
 	 * readData(UUID) method.</p>
 	 * 
 	 * @param id The unique data id.
@@ -169,7 +169,7 @@ public interface Storage {
 	 * @param id The unique data id.
 	 * @return A User object.
 	 * @throws StorageException if the user wasn't found.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	User readUser(UUID id) throws StorageException;
 	
@@ -188,7 +188,7 @@ public interface Storage {
 	 * 
 	 * @param id An AbstractUser object containing a UserIdentifier.
 	 * @throws StorageException if the user wasn't found.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	void readUser(AbstractUser user) throws StorageException;
 	

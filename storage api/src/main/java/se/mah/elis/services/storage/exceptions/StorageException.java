@@ -27,7 +27,7 @@ public class StorageException extends Exception {
 	 * nature of the error.
 	 * 
 	 * @param message The error message.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public StorageException(String message) {
 		super(message);

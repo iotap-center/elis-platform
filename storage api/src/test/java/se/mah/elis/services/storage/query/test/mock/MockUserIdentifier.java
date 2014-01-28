@@ -40,4 +40,11 @@ public class MockUserIdentifier implements UserIdentifier {
 		this.clazz = clazz;
 	}
 
+	@Override
+	public String toString() {
+		String output = this.getClass().getSimpleName() +
+						": id_number: 42";
+		
+		return output;
+	}
 }

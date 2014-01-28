@@ -16,10 +16,6 @@ import se.mah.elis.services.users.UserIdentifier;
  * <p>As all interfaces extending Predicate, SimplePredicate makes use of self
  * references for method chaining.</p>
  * 
- * <p>Every implementation of SimplePredicate must include a reference to the
- * {@link SimplePredicates} enumeration, publicly visible under the name
- * <i>Predicates</i>.</p>
- * 
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
@@ -28,7 +24,7 @@ public class SimplePredicate implements Predicate {
 	/**
 	 * The Type Enum tells what kind of predicate this is.
 	 * 
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public enum CriterionType {
 		/**
@@ -90,7 +86,7 @@ public class SimplePredicate implements Predicate {
 	 * Creates an instance of SimplePredicate.
 	 * 
 	 * @param type The type of chaining to be used.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public SimplePredicate(CriterionType type) {
 		this.type = type;
@@ -221,27 +217,12 @@ public class SimplePredicate implements Predicate {
 	}
 	
 	/**
-	 * Sets the criterion of the predicate.
-	 * 
-	 * @param criterion A Date value.
-	 * @return A reference back to the SimplePredicate object.
-	 * @since 1.0
-	 * @deprecated As of version 1.1, replaced by
-	 * 		{@link #setCriterion(DateTime)}.
-	 */
-	public SimplePredicate setCriterion(Date criterion) {
-		this.criterion = criterion;
-		
-		return this;
-	}
-	
-	/**
 	 * Sets the criterion of the predicate. DateTimes are permitted criteria
 	 * for all predicates but LIKE.
 	 * 
 	 * @param criterion A DateTime value.
 	 * @return A reference back to the SimplePredicate object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public SimplePredicate setCriterion(DateTime criterion) {
 		switch (type) {
@@ -249,27 +230,6 @@ public class SimplePredicate implements Predicate {
 				throw new TypeMismatchException("DateTimes are not allowed for this criterion");
 			default:
 				this.criterion = criterion;
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Sets the criterion of the predicate. UserIdentifiers are permitted
-	 * criteria for EQ and NEQ criteria.
-	 * 
-	 * @param criterion A UserIdentifier value.
-	 * @return A reference back to the SimplePredicate object.
-	 * @since 1.0
-	 */
-	public SimplePredicate setCriterion(UserIdentifier criterion) {
-		switch (type) {
-			case EQ:
-			case NEQ:
-				this.criterion = criterion;
-				break;
-			default:
-				throw new TypeMismatchException("UserIdentifier not allowed with this criterion.");
 		}
 		
 		return this;
@@ -319,7 +279,7 @@ public class SimplePredicate implements Predicate {
 	 * 
 	 * @param translator The QueryTranslator provided by the backend
 	 * 		implementation.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void setTranslator(QueryTranslator translator) {
@@ -330,7 +290,7 @@ public class SimplePredicate implements Predicate {
 	 * Returns a representation of this object as a string.
 	 * 
 	 * @return A representation of the current state of this object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String toString() {

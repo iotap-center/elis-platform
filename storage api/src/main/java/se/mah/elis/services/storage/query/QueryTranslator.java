@@ -1,6 +1,7 @@
 package se.mah.elis.services.storage.query;
 
 import se.mah.elis.services.storage.exceptions.StorageException;
+import se.mah.elis.services.users.UserIdentifier;
 
 /**
  * A QueryTranslator is needed to convert a Query object into a query that can
@@ -9,7 +10,7 @@ import se.mah.elis.services.storage.exceptions.StorageException;
  * will have to implement a QueryTranslator of their own.
  * 
  * @author "Johan Holmberg, Malmö University"
- * @since 1.1
+ * @since 2.0
  */
 public interface QueryTranslator {
 	
@@ -18,7 +19,7 @@ public interface QueryTranslator {
 	 * 
 	 * @param c The class of the data to look for.
 	 * @return A reference back to the query translator object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	QueryTranslator what(Class dataType);
 	
@@ -29,7 +30,7 @@ public interface QueryTranslator {
 	 * 		ignored in the result from the storage engine.
 	 * @param size The size of the returned list.
 	 * @return A reference back to the query translator object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	QueryTranslator where(Predicate predicate);
 	
@@ -40,7 +41,7 @@ public interface QueryTranslator {
 	 * 
 	 * @param p The predicate to match against.
 	 * @return A reference back to the query translator object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	QueryTranslator limit(int start, int limit);
 	
@@ -50,7 +51,7 @@ public interface QueryTranslator {
 	 * @param oldestFirst True if the oldest data objects should be returned
 	 * 		first (i.e. list[0] is the oldest object), otherwise false.
 	 * @return A reference back to the query translator object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	QueryTranslator order(boolean oldestFirst);
 	
@@ -60,7 +61,7 @@ public interface QueryTranslator {
 	 * @param left The left-hand predicate.
 	 * @param right The right-hand predicate.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	String or(Predicate left, Predicate right);
 	
@@ -70,7 +71,7 @@ public interface QueryTranslator {
 	 * @param left The left-hand predicate.
 	 * @param right The right-hand predicate.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	String and(Predicate left, Predicate right);
 	
@@ -80,7 +81,7 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	String eq(String field, Object criterion);
 	
@@ -90,7 +91,7 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	String neq(String field, Object criterion);
 	
@@ -101,7 +102,7 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	String like(String field, Object criterion);
 	
@@ -112,7 +113,7 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	String lt(String field, Object criterion);
 	
@@ -123,7 +124,7 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	String lte(String field, Object criterion);
 	
@@ -134,7 +135,7 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	String gt(String field, Object criterion);
 	
@@ -145,16 +146,25 @@ public interface QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	String gte(String field, Object criterion);
+	
+	/**
+	 * Compiles a user predicate.
+	 * 
+	 * @param user The user to match.
+	 * @return The string representing the predicate.
+	 * @since 2.0
+	 */
+	String user(UserIdentifier user);
 	
 	/**
 	 * Translates a query into a string suitable for the backend database.
 	 * 
 	 * @return The string representation of the query.
 	 * @throws StorageException if the predicate couldn't be compiled.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	String compile() throws StorageException;
 }

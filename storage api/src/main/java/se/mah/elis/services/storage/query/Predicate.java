@@ -25,7 +25,7 @@ public interface Predicate {
 	 * 
 	 * @param translator The QueryTranslator provided by the backend
 	 * 		implementation.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	void setTranslator(QueryTranslator translator);
 }

@@ -24,7 +24,7 @@ public class ChainingPredicate implements Predicate {
 	/**
 	 * The Type Enum tells what kind of chaining will be used.
 	 * 
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public enum ChainingType {
 		/**
@@ -51,7 +51,7 @@ public class ChainingPredicate implements Predicate {
 	 * Creates an instance of ChainingPredicate.
 	 * 
 	 * @param type The type of chaining to be used.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public ChainingPredicate(ChainingType type) {
 		this.type = type;
@@ -116,7 +116,7 @@ public class ChainingPredicate implements Predicate {
 	 * 
 	 * @param translator The QueryTranslator provided by the backend
 	 * 		implementation.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void setTranslator(QueryTranslator translator) {
@@ -127,7 +127,7 @@ public class ChainingPredicate implements Predicate {
 	 * Returns a representation of this object as a string.
 	 * 
 	 * @return A representation of the current state of this object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String toString() {

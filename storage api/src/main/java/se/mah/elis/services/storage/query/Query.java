@@ -30,7 +30,7 @@ public class Query {
 	/**
 	 * Creates an instance of the class.
 	 * 
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public Query() {
 		predicate = null;
@@ -57,7 +57,7 @@ public class Query {
 	 * Tells the user what kind of data this query will look for.
 	 * 
 	 * @return The class of data that the query will look for.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public Class getDataType() {
 		return dataType;
@@ -114,7 +114,7 @@ public class Query {
 	 * @param translator The QueryTranslator provided by the backend
 	 * 		implementation.
 	 * @return A reference back to the query object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public Query setTranslator(QueryTranslator translator) {
 		this.translator = translator;
@@ -127,7 +127,7 @@ public class Query {
 	 * 
 	 * @return The string representation of the query.
 	 * @throws StorageException if the query couldn't be compiled.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public String compile() throws StorageException {
 		try {

@@ -3,6 +3,7 @@ package se.mah.elis.services.storage.query.test.mock;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.Predicate;
 import se.mah.elis.services.storage.query.QueryTranslator;
+import se.mah.elis.services.users.UserIdentifier;
 
 public class MockTranslator implements QueryTranslator {
 	
@@ -94,7 +95,12 @@ public class MockTranslator implements QueryTranslator {
 
 	@Override
 	public String gte(String field, Object criterion) {
-		return " gte :" + field + ", " + criterion;
+		return " gte: " + field + ", " + criterion;
+	}
+
+	@Override
+	public String user(UserIdentifier user) {
+		return " user: " + user.toString();
 	}
 
 	@Override
