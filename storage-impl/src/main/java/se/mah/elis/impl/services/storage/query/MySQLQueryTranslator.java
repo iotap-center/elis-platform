@@ -4,8 +4,12 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.joda.time.DateTime;
 
+import se.mah.elis.impl.services.storage.exceptions.YouAreBreakingTheInternetException;
+import se.mah.elis.impl.services.storage.exceptions.YouAreDoingItWrongException;
+import se.mah.elis.services.storage.exceptions.StorageException;
+import se.mah.elis.services.storage.query.ChainingPredicate;
 import se.mah.elis.services.storage.query.Predicate;
 import se.mah.elis.services.storage.query.QueryTranslator;
 
@@ -21,6 +25,38 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	private Predicate where;
 	private int start, limit;
 	private boolean oldestFirst;
+	
+	/*
+	 * This is part of a MySQL string escaping mechanism. It was graciousy
+	 * borrowed from
+	 * http://stackoverflow.com/questions/881194/how-to-escape-special-character-in-mysql.
+	 */
+	private static final HashMap<String,String> sqlTokens;
+	private static Pattern sqlTokenPattern;
+
+	static {     
+		String[][] mysqlMagicChars = new String[][] {
+		  // In string   In regex   In SQL
+			{"\u0000",   "\\x00",   "\\\\0"},
+			{"'",        "'",       "\\\\'"},
+			{"\"",       "\"",      "\\\\\""},
+			{"\b",       "\\x08",   "\\\\b"},
+			{"\n",       "\n",      "\\\\n"},
+			{"\r",       "\\r",     "\\\\r"},
+			{"\t",       "\\t",     "\\\\t"},
+			{"\u001A",   "\\x1A",    "\\\\Z"},
+			{"\\",       "\\\\",    "\\\\\\\\"}
+		};
+		
+		sqlTokens = new HashMap<String,String>();
+	    String patternStr = "";
+	    for (String[] srr : mysqlMagicChars)
+	    {
+	        sqlTokens.put(srr[0], srr[2]);
+	        patternStr += (patternStr.isEmpty() ? "" : "|") + srr[1];            
+	    }
+	    sqlTokenPattern = Pattern.compile('(' + patternStr + ')');
+	}
 	
 	/**
 	 * Creates an instance of this class.
@@ -103,34 +139,42 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.query.QueryTranslator#or(Predicate, Predicate) or(Predicate, Predicate)}.
 	 * 
-	 * @param right The right-hand predicate.
 	 * @param left The left-hand predicate.
+	 * @param right The right-hand predicate.
 	 * @return The string representing the predicate.
 	 * @since 1.1
 	 */
 	@Override
-	public String or(Predicate right, Predicate left) {
+	public String or(Predicate left, Predicate right) {
 		right.setTranslator(this);
 		left.setTranslator(this);
 		
-		return left.compile() + " OR " + right.compile();
+		try {
+			return encapsulate(left) + " OR " + encapsulate(right);
+		} catch (StorageException e) {
+			throw new YouAreDoingItWrongException();
+		}
 	}
 
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.query.QueryTranslator#and(Predicate, Predicate) and(Predicate, Predicate)}.
 	 * 
-	 * @param right The right-hand predicate.
 	 * @param left The left-hand predicate.
+	 * @param right The right-hand predicate.
 	 * @return The string representing the predicate.
 	 * @since 1.1
 	 */
 	@Override
-	public String and(Predicate right, Predicate left) {
+	public String and(Predicate left, Predicate right) {
 		right.setTranslator(this);
 		left.setTranslator(this);
 		
-		return "(" + left.compile() + " AND " + right.compile() + ")";
+		try {
+			return encapsulate(left) + " AND " + encapsulate(right);
+		} catch (StorageException e) {
+			throw new YouAreDoingItWrongException();
+		}
 	}
 
 	/**
@@ -144,7 +188,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 */
 	@Override
 	public String eq(String field, Object criterion) {
-		return field + " = " + process(criterion);
+		return quoteField(field) + " = " + process(criterion);
 	}
 
 	/**
@@ -158,7 +202,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 */
 	@Override
 	public String neq(String field, Object criterion) {
-		return field + " <> " + process(criterion);
+		return quoteField(field) + " <> " + process(criterion);
 	}
 
 	/**
@@ -172,7 +216,11 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 */
 	@Override
 	public String like(String field, Object criterion) {
-		return field + " LIKE \"%" + criterion + "%\"";
+		if (!(criterion instanceof Number || criterion instanceof String)) {
+			throw new YouAreDoingItWrongException();
+		}
+		
+		return quoteField(field) + " LIKE '%" + criterion + "%'";
 	}
 
 	/**
@@ -186,7 +234,11 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 */
 	@Override
 	public String lt(String field, Object criterion) {
-		return field + " < " + process(criterion);
+		if (!(criterion instanceof Number || criterion instanceof DateTime)) {
+			throw new YouAreDoingItWrongException();
+		}
+		
+		return quoteField(field) + " < " + process(criterion);
 	}
 
 	/**
@@ -200,7 +252,11 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 */
 	@Override
 	public String lte(String field, Object criterion) {
-		return field + " <= " + process(criterion);
+		if (!(criterion instanceof Number || criterion instanceof DateTime)) {
+			throw new YouAreDoingItWrongException();
+		}
+		
+		return quoteField(field) + " <= " + process(criterion);
 	}
 
 	/**
@@ -214,7 +270,11 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 */
 	@Override
 	public String gt(String field, Object criterion) {
-		return field + " > " + process(criterion);
+		if (!(criterion instanceof Number || criterion instanceof DateTime)) {
+			throw new YouAreDoingItWrongException();
+		}
+		
+		return quoteField(field) + " > " + process(criterion);
 	}
 
 	/**
@@ -228,7 +288,11 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 */
 	@Override
 	public String gte(String field, Object criterion) {
-		return field + " >= " + process(criterion);
+		if (!(criterion instanceof Number || criterion instanceof DateTime)) {
+			throw new YouAreDoingItWrongException();
+		}
+		
+		return quoteField(field) + " >= " + process(criterion);
 	}
 
 	/**
@@ -244,11 +308,14 @@ public class MySQLQueryTranslator implements QueryTranslator {
 		String compiled = "SELECT * FROM ";
 		
 		if (what != null) {
-			compiled += what.getSimpleName();
+			compiled += quoteField(mysqlifyName(what.getName()));
 		}
 		
 		if (where != null) {
-			compiled += " WHERE " + where.compile();
+			try {
+				compiled += " WHERE " + where.compile();
+			} catch (StorageException e) {
+			}
 		}
 		
 		if (start > -1 && limit > -1) {
@@ -271,14 +338,16 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
+	 * @throws StorageException 
 	 * @since 1.1
 	 */
-	public String compileDeleteQuery() {
-		String compiled = "DELETE FROM `" + what.getSimpleName();
-		
-		if (where != null) {
-			compiled += "` WHERE " + where.compile();
+	public String compileDeleteQuery() throws StorageException {
+		if (what == null || where == null) {
+			throw new YouAreBreakingTheInternetException();
 		}
+		
+		String compiled = "DELETE FROM " + quoteField(mysqlifyName(what.getName())) +
+						  " WHERE " + where.compile() + ";";
 		
 		return compiled;
 	}
@@ -299,17 +368,88 @@ public class MySQLQueryTranslator implements QueryTranslator {
 		if (criterion instanceof Number) {
 			processed = criterion.toString();
 		} else if (criterion instanceof Boolean) {
-			if ((Boolean) criterion) {
-				processed = "1";
-			} else {
-				processed = "0";
-			}
+			processed = ((Boolean) criterion).toString();
+		} else if (criterion instanceof DateTime) {
+			processed = "" + ((DateTime) criterion).getMillis();
 		} else if (criterion == null) {
 			processed = "NULL";
 		} else {
-			processed = "'" + StringEscapeUtils.escapeSql(criterion.toString()) + "'";
+			processed = "'" + escape(criterion.toString()) + "'";
 		}
 		
 		return processed;
+	}
+	
+	/**
+	 * Escapes a string prior to insertion in a MySQL query.
+	 * 
+	 * @param criterion The criterion string to escape.
+	 * @return An escaped string.
+	 * @since 1.1
+	 */
+	private String escape(String criterion) {
+		Matcher matcher = sqlTokenPattern.matcher(criterion);
+		StringBuffer sb = new StringBuffer();
+		
+		while (matcher.find()) {
+			matcher.appendReplacement(sb, null);
+		}
+		matcher.appendTail(sb);
+		
+		return sb.toString();
+	}
+	
+	/**
+	 * Quotes a field name prior to MySQL usage.
+	 * 
+	 * @param field The field name to quote.
+	 * @return A quoted string.
+	 * @since 1.1
+	 */
+	private String quoteField(String field) {
+		return "`" + field + "`";
+	}
+
+	/**
+	 * Make a class name possible to use as a table name. In practice, this
+	 * means that we're replacing all periods with hyphens.
+	 * 
+	 * @param name The class name to convert to a table name.
+	 * @return A decent table name.
+	 * @since 1.1
+	 */
+	private String mysqlifyName(String name) {
+		return name.replace('.', '-');
+	}
+
+	/**
+	 * Make a class name possible to use as a table name. In practice, this
+	 * means that we're replacing all periods with hyphens.
+	 * 
+	 * @param name The table name to convert to a class name.
+	 * @return A canonical class name.
+	 * @since 1.1
+	 */
+	private String demysqlifyName(String name) {
+		return name.replace('-', '.');
+	}
+	
+	/**
+	 * Checks if a predicate is a chaining predicate. If it is, the compiled
+	 * predicate gets encapsulated in a pair of parentheses.
+	 * 
+	 * @param predicate The predicate to potentially encapsulate.
+	 * @return A string. 
+	 * @throws StorageException If the predicates couldn't be compiled.
+	 * @since 1.1
+	 */
+	private String encapsulate(Predicate predicate) throws StorageException {
+		String encapsulated = predicate.compile();
+		
+		if (predicate instanceof ChainingPredicate) {
+			encapsulated = "(" + encapsulated + ")";
+		}
+		
+		return encapsulated;
 	}
 }
