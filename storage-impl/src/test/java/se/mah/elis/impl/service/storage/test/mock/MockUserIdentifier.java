@@ -2,6 +2,7 @@ package se.mah.elis.impl.service.storage.test.mock;
 
 import java.util.Properties;
 
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.UserIdentifier;
 
 public class MockUserIdentifier implements UserIdentifier {
@@ -25,7 +26,7 @@ public class MockUserIdentifier implements UserIdentifier {
 
 	@Override
 	public Properties getPropertiesTemplate() {
-		Properties props = new Properties();
+		Properties props = new OrderedProperties();
 		
 		props.put("id_number", new Integer(0));
 		props.put("username", "32");
