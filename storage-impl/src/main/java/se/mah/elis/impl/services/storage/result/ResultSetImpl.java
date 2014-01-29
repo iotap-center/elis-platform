@@ -11,7 +11,7 @@ import se.mah.elis.services.storage.result.ResultSet;
  * Implementation of {@link ResultSet}.
  * 
  * @author "Johan Holmberg, Malmö University"
- * @since 1.1
+ * @since 2.0
  */
 public class ResultSetImpl implements ResultSet {
 
@@ -29,7 +29,7 @@ public class ResultSetImpl implements ResultSet {
 	 * 
 	 * @param objectType The class declaration of the result elements.
 	 * @param results The result elements.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public ResultSetImpl(Class objectType, Object[] results) {
 		pointer = -1;
@@ -46,7 +46,7 @@ public class ResultSetImpl implements ResultSet {
 	 * {@link se.mah.elis.services.storage.result.ResultSet#size() size()}.
 	 * 
 	 * @return The number of rows.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public int size() {
@@ -60,7 +60,7 @@ public class ResultSetImpl implements ResultSet {
 	 * @param index The position of the desired object.
 	 * @return The desired object.
 	 * @throws IndexOutOfBoundsException if the index was out of bounds.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public Object get(int index) throws IndexOutOfBoundsException {
@@ -73,7 +73,7 @@ public class ResultSetImpl implements ResultSet {
 	 * 
 	 * @return The results as an array. If no results are found, the method
 	 * 		returns a null reference.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public Object[] getArray() {
@@ -84,7 +84,7 @@ public class ResultSetImpl implements ResultSet {
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.result.ResultSet#reset() reset()}.
 	 * 
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void reset() {
@@ -96,7 +96,7 @@ public class ResultSetImpl implements ResultSet {
 	 * {@link se.mah.elis.services.storage.result.ResultSet#hasNext() hasNext()}.
 	 * 
 	 * @return True if there are more rows, otherwise false.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public synchronized boolean hasNext() {
@@ -109,7 +109,7 @@ public class ResultSetImpl implements ResultSet {
 	 * {@link se.mah.elis.services.storage.result.ResultSet#next() next()}.
 	 * 
 	 * @return The next element in the result set.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public synchronized Object next() {
@@ -131,7 +131,7 @@ public class ResultSetImpl implements ResultSet {
 	 * {@link se.mah.elis.services.storage.result.ResultSet#first() first()}.
 	 * 
 	 * @return The first element in the result set.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public Object first() {
@@ -148,7 +148,7 @@ public class ResultSetImpl implements ResultSet {
 	 * 
 	 * @param data The data object to be stored.
 	 * @throws StorageException Thrown when the object couldn't be stored.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public synchronized Object last() {
@@ -164,7 +164,7 @@ public class ResultSetImpl implements ResultSet {
 	 * {@link se.mah.elis.services.storage.result.ResultSet#getObjectType() getObjectType()}.
 	 * 
 	 * @return The last element in the result set.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public Class getObjectType() {

@@ -7,14 +7,14 @@ import se.mah.elis.services.storage.exceptions.StorageException;
  * This exception is thrown when an impossible predicate is created.
  * 
  * @author "Johan Holmberg, Malmö University"
- * @since 1.1
+ * @since 2.0
  */
 public class YouAreDoingItWrongException extends TypeMismatchException {
 
 	/**
 	 * Initializes an instance of this exception.
 	 * 
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public YouAreDoingItWrongException() {
 		super("This combination of predicate and condition isn't permitted.");

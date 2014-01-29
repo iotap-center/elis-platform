@@ -18,7 +18,7 @@ public class MockUserIdentifier implements UserIdentifier {
 
 		props.put("id_number", 42);
 		props.put("username", "batman");
-		props.put("password", null);
+		props.put("password", "");
 		
 		return props;
 	}

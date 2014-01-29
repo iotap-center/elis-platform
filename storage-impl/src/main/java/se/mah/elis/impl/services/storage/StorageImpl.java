@@ -89,7 +89,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param data The data object to be stored.
 	 * @throws StorageException Thrown when the object couldn't be stored.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void insert(ElisDataObject data) throws StorageException {
@@ -107,7 +107,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the object couldn't be stored.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void insert(ElisDataObject data, boolean finalRun)
 			throws StorageException {
@@ -179,7 +179,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param data The data objects to be stored.
 	 * @throws StorageException Thrown when the objects couldn't be stored.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void insert(ElisDataObject[] data) throws StorageException {
@@ -197,7 +197,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the object couldn't be stored.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void insert(ElisDataObject[] data, boolean finalRun) throws StorageException {
 		if (data != null && data.length > 0) {
@@ -214,7 +214,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param user The user object to be stored.
 	 * @throws StorageException Thrown when the object couldn't be stored.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void insert(AbstractUser user) throws StorageException {
@@ -232,7 +232,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the object couldn't be stored.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void insert(AbstractUser user, boolean finalRun)
 			throws StorageException {
@@ -383,7 +383,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param users The user objects to be stored.
 	 * @throws StorageException Thrown when the objects couldn't be stored.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void insert(AbstractUser[] users) throws StorageException {
@@ -401,7 +401,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the object couldn't be stored.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void insert(AbstractUser[] users, boolean finalRun)
 			throws StorageException {
@@ -419,7 +419,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param data The data object to be stored.
 	 * @throws StorageException Thrown when the object couldn't be stored.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void update(ElisDataObject data) throws StorageException {
@@ -437,7 +437,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the object couldn't be updated.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void update(ElisDataObject data, boolean finalRun) throws StorageException {
 		// TODO: It might be possible to create a version of this method that
@@ -495,7 +495,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param data The data objects to be updated.
 	 * @throws StorageException Thrown when the objects couldn't be updated.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void update(ElisDataObject[] data) throws StorageException {
@@ -513,7 +513,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the objects couldn't be stored.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void update(ElisDataObject[] data, boolean finalRun) throws StorageException {
 		if (data != null && data.length > 0) {
@@ -530,7 +530,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param user The user object to be updated.
 	 * @throws StorageException Thrown when the object couldn't be updated.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void update(AbstractUser user) throws StorageException {
@@ -548,7 +548,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the object couldn't be updated.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void update(AbstractUser user, boolean finalRun) throws StorageException {
 		// TODO: It might be possible to create a version of this method that
@@ -685,7 +685,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param users The user objects to be updated.
 	 * @throws StorageException Thrown when the objects couldn't be updated.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void update(AbstractUser[] users) throws StorageException {
@@ -703,7 +703,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the objects couldn't be updated.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void update(AbstractUser[] users, boolean finalRun) throws StorageException {
 		if (users != null && users.length > 0) {
@@ -720,7 +720,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param data The data object to be deleted.
 	 * @throws StorageException Thrown when the object couldn't be deleted.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void delete(ElisDataObject data) throws StorageException {
@@ -738,7 +738,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the object couldn't be deleted.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void delete(ElisDataObject data, boolean finalRun) throws StorageException {
 		if (data != null) {
@@ -776,7 +776,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param data The data objects to be deleted.
 	 * @throws StorageException Thrown when the objects couldn't be deleted.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void delete(ElisDataObject[] data) throws StorageException {
@@ -794,7 +794,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the objects couldn't be deleted.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void delete(ElisDataObject[] data, boolean finalRun) throws StorageException {
 		if (data != null && data.length > 0) {
@@ -811,7 +811,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param user The user object to be deleted.
 	 * @throws StorageException Thrown when the object couldn't be deleted.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void delete(AbstractUser user) throws StorageException {
@@ -829,7 +829,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the user couldn't be deleted.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void delete(AbstractUser user, boolean finalRun) throws StorageException {
 		// TODO: It might be possible to create a version of this method that
@@ -867,7 +867,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param user The user objects to be deleted.
 	 * @throws StorageException Thrown when the objects couldn't be deleted.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void delete(AbstractUser[] users) throws StorageException {
@@ -885,7 +885,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the users couldn't be deleted.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void delete(AbstractUser[] users, boolean finalRun) throws StorageException {
 		if (users != null && users.length > 0) {
@@ -902,7 +902,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param query The query to be run.
 	 * @throws StorageException Thrown when query couldn't be run.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void delete(Query query) throws StorageException {
@@ -920,7 +920,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the query couldn't be run.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void delete(Query query, boolean finalRun) throws StorageException {
 		if (query != null) {
@@ -978,7 +978,7 @@ public class StorageImpl implements Storage {
 	 * 		setting this parameter to false.
 	 * @return The data object we're looking for.
 	 * @throws StorageException Thrown when the object couldn't be read.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private ElisDataObject readData(UUID id, boolean finalRun)
 			throws StorageException {
@@ -1025,7 +1025,7 @@ public class StorageImpl implements Storage {
 	 * @param id The unique data id.
 	 * @return A User object.
 	 * @throws StorageException if the user wasn't found.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public User readUser(UUID id) throws StorageException {
@@ -1041,7 +1041,7 @@ public class StorageImpl implements Storage {
 	 * 		setting this parameter to false.
 	 * @return The user we're looking for.
 	 * @throws StorageException Thrown when the user couldn't be read.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private User readUser(UUID id, boolean finalRun) throws StorageException {
 		User user = null;
@@ -1101,7 +1101,7 @@ public class StorageImpl implements Storage {
 	 * 		setting this parameter to false.
 	 * @return The user we're looking for.
 	 * @throws StorageException Thrown when the user couldn't be read.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private AbstractUser readUser(UserIdentifier id, boolean finalRun)
 			throws StorageException {
@@ -1179,7 +1179,7 @@ public class StorageImpl implements Storage {
 	 * 
 	 * @param UserIdentifier The user to be read.
 	 * @throws StorageException Thrown when user couldn't be read.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public void readUser(AbstractUser user) throws StorageException {
@@ -1194,7 +1194,7 @@ public class StorageImpl implements Storage {
 	 * 		which isn't in fact this very method should call the method by
 	 * 		setting this parameter to false.
 	 * @throws StorageException Thrown when the user couldn't be read.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void readUser(AbstractUser user, boolean finalRun)
 			throws StorageException {
@@ -1268,7 +1268,7 @@ public class StorageImpl implements Storage {
 	 * 		setting this parameter to false.
 	 * @return A ResultSet object containing all found values.
 	 * @throws StorageException Thrown when the query couldn't be run.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private ResultSet select(Query query, boolean finalRun) throws StorageException {
 		ResultSet result = null;

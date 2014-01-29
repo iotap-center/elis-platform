@@ -12,7 +12,7 @@ import org.joda.time.DateTime;
  * models for on-the-fly table creation.
  * 
  * @author "Johan Holmberg, Malmö University"
- * @since 1.1
+ * @since 2.0
  */
 public class TableBuilder {
 	
@@ -22,7 +22,7 @@ public class TableBuilder {
 	 * @param tableName The name of the table that we wish to create.
 	 * @param p The parameters that describe the table columns.
 	 * @return A MySQL create statement.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public static String buildModel(String tableName, Properties p) {
 		StringBuffer query = new StringBuffer();
@@ -40,7 +40,7 @@ public class TableBuilder {
 	 * 
 	 * @param p The properties that describe the table layout.
 	 * @return The table model, as a String.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private static String generateDataModel(Properties p) {
 		Iterator<Entry<Object, Object>> entries = p.entrySet().iterator();
@@ -67,7 +67,7 @@ public class TableBuilder {
 	 * @param value This is the object that, whose SQL data type we're trying
 	 * 		to find out.
 	 * @return The SQL data type.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private static String dataType(Object value) {
 		String dataType = null;

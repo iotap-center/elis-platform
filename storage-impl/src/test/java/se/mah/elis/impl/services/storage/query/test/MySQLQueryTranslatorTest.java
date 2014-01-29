@@ -17,6 +17,7 @@ import se.mah.elis.services.storage.query.Query;
 import se.mah.elis.services.storage.query.QueryTranslator;
 import se.mah.elis.services.storage.query.SimplePredicate;
 import se.mah.elis.services.storage.query.SimplePredicate.CriterionType;
+import se.mah.elis.services.storage.query.UserPredicate;
 import se.mah.elis.services.users.UserIdentifier;
 
 public class MySQLQueryTranslatorTest {
@@ -392,21 +393,6 @@ public class MySQLQueryTranslatorTest {
 		assertEquals(expected, actual);
 	}
 	
-	@Test
-	public void testEqUserIdentifier() {
-		QueryTranslator translator = new MySQLQueryTranslator();
-		UserIdentifier id = new MockUserIdentifier();
-		String expected = "`foo` = " + null;
-		String actual = "";
-		
-		try {
-			actual = translator.eq("foo", id);
-		} catch (TypeMismatchException e) {
-			fail("This shouldn't happen");
-		}
-		
-		assertEquals(expected, actual);
-	}
 	
 	@Test
 	public void testNeqInt() {
@@ -530,11 +516,6 @@ public class MySQLQueryTranslatorTest {
 	}
 	
 	@Test
-	public void testNeqUserIdentifier() {
-		fail("Need to figure this one out");
-	}
-	
-	@Test
 	public void testLikeInt() {
 		QueryTranslator translator = new MySQLQueryTranslator();
 		String expected = "`foo` LIKE '%1%'";
@@ -644,17 +625,6 @@ public class MySQLQueryTranslatorTest {
 		
 		try {
 			translator.like("foo", dt);
-			fail("This shouldn't happen");
-		} catch (TypeMismatchException e) {
-		}
-	}
-	
-	@Test
-	public void testLikeUserIdentifier() {
-		QueryTranslator translator = new MySQLQueryTranslator();
-		
-		try {
-			translator.gte("foo", new MockUserIdentifier());
 			fail("This shouldn't happen");
 		} catch (TypeMismatchException e) {
 		}
@@ -774,17 +744,6 @@ public class MySQLQueryTranslatorTest {
 	}
 	
 	@Test
-	public void testLtUserIdentifier() {
-		QueryTranslator translator = new MySQLQueryTranslator();
-		
-		try {
-			translator.gte("foo", new MockUserIdentifier());
-			fail("This shouldn't happen");
-		} catch (TypeMismatchException e) {
-		}
-	}
-	
-	@Test
 	public void testLteInt() {
 		QueryTranslator translator = new MySQLQueryTranslator();
 		String expected = "`foo` <= 1";
@@ -895,17 +854,6 @@ public class MySQLQueryTranslatorTest {
 		}
 		
 		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void testLteUserIdentifier() {
-		QueryTranslator translator = new MySQLQueryTranslator();
-		
-		try {
-			translator.gte("foo", new MockUserIdentifier());
-			fail("This shouldn't happen");
-		} catch (TypeMismatchException e) {
-		}
 	}
 	
 	@Test
@@ -1022,17 +970,6 @@ public class MySQLQueryTranslatorTest {
 	}
 	
 	@Test
-	public void testGtUserIdentifier() {
-		QueryTranslator translator = new MySQLQueryTranslator();
-		
-		try {
-			translator.gte("foo", new MockUserIdentifier());
-			fail("This shouldn't happen");
-		} catch (TypeMismatchException e) {
-		}
-	}
-	
-	@Test
 	public void testGteInt() {
 		QueryTranslator translator = new MySQLQueryTranslator();
 		String expected = "`foo` >= 1";
@@ -1146,14 +1083,19 @@ public class MySQLQueryTranslatorTest {
 	}
 	
 	@Test
-	public void testGteUserIdentifier() {
+	public void testUser() {
 		QueryTranslator translator = new MySQLQueryTranslator();
+		UserIdentifier uid = new MockUserIdentifier();
+		String expected = "(`id_number` = 42 AND `username` = 'batman')";
+		String actual = "";
 		
 		try {
-			translator.gte("foo", new MockUserIdentifier());
-			fail("This shouldn't happen");
+			actual = translator.user(uid);
 		} catch (TypeMismatchException e) {
+			fail("This shouldn't happen");
 		}
+		
+		assertEquals(expected, actual);
 	}
 	
 	@Test
@@ -1239,6 +1181,57 @@ public class MySQLQueryTranslatorTest {
 	}
 	
 	@Test
+	public void testCompileQueryWithUser() {
+		Query query = new Query();
+		QueryTranslator translator = new MySQLQueryTranslator();
+		Class what = java.lang.String.class;
+		ChainingPredicate or = new ChainingPredicate(ChainingType.OR);
+		ChainingPredicate or2 = new ChainingPredicate(ChainingType.OR);
+		ChainingPredicate or3 = new ChainingPredicate(ChainingType.OR);
+		ChainingPredicate and = new ChainingPredicate(ChainingType.AND);
+		SimplePredicate eq = new SimplePredicate(CriterionType.EQ);
+		SimplePredicate neq = new SimplePredicate(CriterionType.NEQ);
+		SimplePredicate gt = new SimplePredicate(CriterionType.GT);
+		UserPredicate up = new UserPredicate();
+		UserIdentifier uid = new MockUserIdentifier();
+		String expected = "SELECT * FROM `java-lang-String` WHERE " +
+						  "(`foo` = 'bar' OR `a` <> 1) AND " +
+						  "((`id_number` = 42 AND `username` = 'batman') OR " +
+						  "(`b` > 0 OR `foo` = 'bar')) LIMIT 0, 10 DESC;";
+		String actual = "";
+		
+		try {
+			eq.setField("foo");
+			eq.setCriterion("bar");
+			or.setLeft(eq);
+			neq.setField("a");
+			neq.setCriterion(1);
+			or.setRight(neq);
+			gt.setField("b");
+			gt.setCriterion(0);
+			or2.setLeft(gt);
+			or2.setRight(eq);
+			up.setUser(uid);
+			or3.setLeft(up);
+			or3.setRight(or2);
+			and.setLeft(or);
+			and.setRight(or3);
+			assertEquals(translator, translator.where(and));
+			assertEquals(translator, translator.what(what));
+			query.setTranslator(translator);
+			query.setDataType(what);
+			query.setPredicate(and);
+			query.limit(0, 10);
+			query.setOrder(false);
+			actual = query.compile();
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
 	public void testCompileDeleteQuery() {
 		MySQLQueryTranslator translator = new MySQLQueryTranslator();
 		Class what = java.lang.String.class;
@@ -1251,6 +1244,29 @@ public class MySQLQueryTranslatorTest {
 		eq.setCriterion("bar");
 		translator.what(what);
 		translator.where(eq);
+		try {
+			actual = translator.compileDeleteQuery();
+		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
+		}
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testCompileDeleteQueryWithUser() {
+		MySQLQueryTranslator translator = new MySQLQueryTranslator();
+		Class what = java.lang.String.class;
+		UserIdentifier uid = new MockUserIdentifier();
+		UserPredicate up = new UserPredicate(uid);
+		String actual = null;
+		String expected = "DELETE FROM `java-lang-String` WHERE " +
+						  "(`id_number` = 42 AND `username` = 'batman');";
+		
+		
+		translator.what(what);
+		translator.where(up);
 		try {
 			actual = translator.compileDeleteQuery();
 		} catch (StorageException e) {

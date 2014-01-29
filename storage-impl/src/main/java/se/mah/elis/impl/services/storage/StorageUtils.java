@@ -24,7 +24,7 @@ import org.joda.time.DateTime;
  * moved out in the name of separation of concerns and readability.
  * 
  * @author "Johan Holmberg, Malmö University"
- * @since 1.1
+ * @since 2.0
  */
 public class StorageUtils {
 	
@@ -36,7 +36,7 @@ public class StorageUtils {
 	 * Creates an instance of StorageUtils.
 	 * 
 	 * @param connection The MySQL connection to use.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public StorageUtils(Connection connection) {
 		this.connection = connection;
@@ -47,7 +47,7 @@ public class StorageUtils {
 	 * 
 	 * @param tableName The name of the table to be created.
 	 * @param p The properties describing the table to be created.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public void createTableIfNotExisting(String tableName, Properties p) {
 		try {
@@ -63,7 +63,7 @@ public class StorageUtils {
 	 * 
 	 * @param p The properties to generate the key list from.
 	 * @return A string with a list of column names.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public static String generateKeyList(Properties p) {
 		Iterator<Entry<Object, Object>> entries = p.entrySet().iterator();
@@ -88,7 +88,7 @@ public class StorageUtils {
 	 * 
 	 * @param p The properties to generate the question mark list from.
 	 * @return A string with a list of question marks.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public static String generateQMarks(Properties p) {
 		Iterator<Entry<Object, Object>> entries = p.entrySet().iterator();
@@ -112,7 +112,7 @@ public class StorageUtils {
 	 * 
 	 * @param name The class name to convert to a table name.
 	 * @return A decent table name.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public static String mysqlifyName(String name) {
 		return name.replace('.', '-');
@@ -124,7 +124,7 @@ public class StorageUtils {
 	 * 
 	 * @param name The table name to convert to a class name.
 	 * @return A canonical class name.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public static String demysqlifyName(String name) {
 		return name.replace('-', '.');
@@ -137,7 +137,7 @@ public class StorageUtils {
 	 * @param value The value to be analyzed and added to the statement.
 	 * @param index The position of the parameter in the statement.
 	 * @throws SQLException When the parameter couldn't be set.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public void addParameter(PreparedStatement stmt, Object value, int index)
 			throws SQLException {
@@ -174,7 +174,7 @@ public class StorageUtils {
 	 * 
 	 * @param properties The properties to list.
 	 * @return A string as described above.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public String pairUp(Properties properties) {
 		StringBuffer pairs = new StringBuffer();
@@ -194,7 +194,7 @@ public class StorageUtils {
 	 * 
 	 * @param uuid The UUID to convert.
 	 * @return A byte array.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public byte[] uuidToBytes(UUID uuid) {
 		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
@@ -211,7 +211,7 @@ public class StorageUtils {
 	 * 
 	 * @param rs The result set
 	 * @return A newly created Properties object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public Properties resultSetRowToProperties(ResultSet rs) {
 		ResultSetMetaData meta = null;
@@ -240,7 +240,7 @@ public class StorageUtils {
 	 * 
 	 * @param rs The result set.
 	 * @return A newly created array list of Properties objects.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public ArrayList<Properties> resultSetToProperties(ResultSet rs) {
 		ArrayList<Properties> propArray = new ArrayList<Properties>();
@@ -275,7 +275,7 @@ public class StorageUtils {
 	 * @param uuid The UUID to look up.
 	 * @return The name of the table in which the UUID-identifed entry is to be
 	 * 		found.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public String lookupUUIDTable(UUID uuid) {
 		Properties props = null;
@@ -307,7 +307,7 @@ public class StorageUtils {
 	 * 
 	 * @param uuid The UUID.
 	 * @param table The table name.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public void pairUUIDWithTable(UUID uuid, String table) {
 		// TODO: It might be possible to create a version of this method that
@@ -343,7 +343,7 @@ public class StorageUtils {
 	 * 		{@link java.sql.ResultSetMetaData#getColumnClassName(int)}.
 	 * @param colName The name of the column in the database.
 	 * @param value The object that we want to add to the Properties object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private void addValueToProps(Properties props, String clazz,
 			String colName, Object value) {

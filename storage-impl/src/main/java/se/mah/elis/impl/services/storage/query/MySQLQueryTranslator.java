@@ -1,6 +1,8 @@
 package se.mah.elis.impl.services.storage.query;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,12 +14,13 @@ import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.ChainingPredicate;
 import se.mah.elis.services.storage.query.Predicate;
 import se.mah.elis.services.storage.query.QueryTranslator;
+import se.mah.elis.services.users.UserIdentifier;
 
 /**
  * The MySQLQueryTranslator translates Query objects to runnable MySQL queries.
  * 
  * @author "Johan Holmberg, Malmö University"
- * @since 1.1
+ * @since 2.0
  */
 public class MySQLQueryTranslator implements QueryTranslator {
 
@@ -61,7 +64,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	/**
 	 * Creates an instance of this class.
 	 * 
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public MySQLQueryTranslator() {
 		what = null;
@@ -76,7 +79,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * 
 	 * @param c The class of the data to look for.
 	 * @return A reference back to the query translator object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public QueryTranslator what(Class dataType) {
@@ -93,7 +96,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * 		ignored in the result from the storage engine.
 	 * @param size The size of the returned list.
 	 * @return A reference back to the query translator object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public QueryTranslator where(Predicate predicate) {
@@ -109,7 +112,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * 
 	 * @param p The predicate to match against.
 	 * @return A reference back to the query translator object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public QueryTranslator limit(int start, int limit) {
@@ -126,7 +129,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param oldestFirst True if the oldest data objects should be returned
 	 * 		first (i.e. list[0] is the oldest object), otherwise false.
 	 * @return A reference back to the query translator object.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public QueryTranslator order(boolean oldestFirst) {
@@ -142,7 +145,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param left The left-hand predicate.
 	 * @param right The right-hand predicate.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String or(Predicate left, Predicate right) {
@@ -163,7 +166,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param left The left-hand predicate.
 	 * @param right The right-hand predicate.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String and(Predicate left, Predicate right) {
@@ -184,7 +187,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String eq(String field, Object criterion) {
@@ -198,7 +201,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String neq(String field, Object criterion) {
@@ -212,7 +215,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String like(String field, Object criterion) {
@@ -230,7 +233,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String lt(String field, Object criterion) {
@@ -248,7 +251,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String lte(String field, Object criterion) {
@@ -266,7 +269,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String gt(String field, Object criterion) {
@@ -284,7 +287,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param field The field to match.
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String gte(String field, Object criterion) {
@@ -297,11 +300,59 @@ public class MySQLQueryTranslator implements QueryTranslator {
 
 	/**
 	 * Implementation of
+	 * {@link se.mah.elis.services.storage.query.QueryTranslator#user(UserIdentifier) user(UserIdentifier)}.
+	 * 
+	 * @param user The user to match.
+	 * @return The string representing the predicate.
+	 * @since 2.0
+	 */
+	@Override
+	public String user(UserIdentifier user) {
+		String compiled = "";
+		Properties props = user.getProperties();
+		int i = 0;
+		
+		for (Entry<Object, Object> e : props.entrySet()) {
+			if (!isEmpty(e.getValue())) {
+				if (++i > 1) {
+					compiled += " AND ";
+				}
+				compiled += quoteField((String) e.getKey()) + " = " +
+					process(e.getValue());
+			}
+		}
+		if (i > 1) {
+			compiled = "(" + compiled + ")";
+		}
+		
+		return compiled;
+	}
+
+	/**
+	 * Checks whether an object is empty or not. An object is considered empty
+	 * if the object is null or if the object is an empty string.
+	 * 
+	 * @param o The object to evaluate.
+	 * @return True if the object is considered empty, otherwise false;
+	 * @since 2.0
+	 */
+	private boolean isEmpty(Object o) {
+		if (o == null) {
+			return true;
+		} else if (o instanceof String) {
+			return ((String) o).length() < 1;
+		}
+		
+		return false;
+	}
+
+	/**
+	 * Implementation of
 	 * {@link se.mah.elis.services.storage.query.QueryTranslator#compile() compile()}.
 	 * 
 	 * @return A string representation of the query, suitable for MySQL
 	 * 		execution.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	@Override
 	public String compile() {
@@ -339,7 +390,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param Object The criterion to match against.
 	 * @return The string representing the predicate.
 	 * @throws StorageException 
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public String compileDeleteQuery() throws StorageException {
 		if (what == null || where == null) {
@@ -360,7 +411,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * 
 	 * @param criterion The criterion to analyze.
 	 * @return A String The MySQLified criterion.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private String process(Object criterion) {
 		String processed = null;
@@ -385,7 +436,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * 
 	 * @param criterion The criterion string to escape.
 	 * @return An escaped string.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private String escape(String criterion) {
 		Matcher matcher = sqlTokenPattern.matcher(criterion);
@@ -404,7 +455,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * 
 	 * @param field The field name to quote.
 	 * @return A quoted string.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private String quoteField(String field) {
 		return "`" + field + "`";
@@ -416,7 +467,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * 
 	 * @param name The class name to convert to a table name.
 	 * @return A decent table name.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private String mysqlifyName(String name) {
 		return name.replace('.', '-');
@@ -428,7 +479,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * 
 	 * @param name The table name to convert to a class name.
 	 * @return A canonical class name.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private String demysqlifyName(String name) {
 		return name.replace('-', '.');
@@ -441,7 +492,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @param predicate The predicate to potentially encapsulate.
 	 * @return A string. 
 	 * @throws StorageException If the predicates couldn't be compiled.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	private String encapsulate(Predicate predicate) throws StorageException {
 		String encapsulated = predicate.compile();

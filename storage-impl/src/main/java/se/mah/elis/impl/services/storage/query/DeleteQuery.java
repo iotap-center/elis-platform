@@ -8,7 +8,7 @@ import se.mah.elis.services.storage.query.Query;
  * class, catering for delete queries in MySQL. 
  * 
  * @author "Johan Holmberg, Malmö University"
- * @since 1.1
+ * @since 2.0
  */
 public class DeleteQuery extends Query {
 	
@@ -17,7 +17,7 @@ public class DeleteQuery extends Query {
 	 * 
 	 * @return The string representation of the query.
 	 * @throws StorageException if the query couldn't be compiled.
-	 * @since 1.1
+	 * @since 2.0
 	 */
 	public String compile() throws StorageException {
 		return ((MySQLQueryTranslator) translator
