@@ -101,7 +101,7 @@ public interface ElisDataObject extends Serializable {
 	 * @return A Properties object with all of the object's properties.
 	 * @since 1.1
 	 */
-	Properties getPropertiesTemplate();
+	OrderedProperties getPropertiesTemplate();
 	
 	/**
 	 * Populate the values of an ElisDataObject instance by providing a set of
