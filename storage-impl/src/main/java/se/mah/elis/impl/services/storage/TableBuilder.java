@@ -1,11 +1,17 @@
 package se.mah.elis.impl.services.storage;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
+
+import se.mah.elis.exceptions.TypeMismatchException;
+import se.mah.elis.impl.services.storage.exceptions.YouAreBreakingTheInternetException;
+import se.mah.elis.impl.services.storage.exceptions.YouAreDoingItWrongException;
+import se.mah.elis.services.storage.exceptions.StorageException;
 
 /**
  * TableBuilder is a helper class used by {@link StorageImpl} to build table
@@ -22,17 +28,28 @@ public class TableBuilder {
 	 * @param tableName The name of the table that we wish to create.
 	 * @param p The parameters that describe the table columns.
 	 * @return A MySQL create statement.
+	 * @throws StorageException if the model couldn't be built.
 	 * @since 2.0
 	 */
-	public static String buildModel(String tableName, Properties p) {
-		StringBuffer query = new StringBuffer();
-
-		query.append("CREATE TABLE `" +
-				StorageUtils.mysqlifyName(tableName) + "` (");
-		query.append(generateDataModel(p));
-		query.append(") TYPE=innodb;");
+	public static String buildModel(String tableName, Properties p)
+			throws StorageException {
+		if (tableName == null || tableName.length() < 1 ||
+			p == null || p.isEmpty()) {
+			throw new YouAreBreakingTheInternetException();
+		}
 		
-		return query.toString();
+		StringBuffer query = new StringBuffer();
+		
+		try {
+			query.append("CREATE TABLE `" +
+					StorageUtils.mysqlifyName(tableName) + "` (");
+			query.append(generateDataModel(p));
+			query.append(");");
+			
+			return query.toString();
+		} catch (TypeMismatchException e) {
+			throw new YouAreBreakingTheInternetException();
+		}
 	}
 	
 	/**
@@ -43,18 +60,25 @@ public class TableBuilder {
 	 * @since 2.0
 	 */
 	private static String generateDataModel(Properties p) {
-		Iterator<Entry<Object, Object>> entries = p.entrySet().iterator();
-		Entry<Object, Object> entry = entries.next();
 		StringBuffer columns = new StringBuffer();
+		Enumeration<Object> keys = p.keys();
+		String key = null;
+		int i = 0;
 		
-		while (entry != null) {
+		while (keys.hasMoreElements()) {
+			key = (String) keys.nextElement();
+			
+			
 			if (columns.length() > 0) {
 				columns.append(", ");
 			}
 			
-			columns.append(entry.getKey() + " " + dataType(entry.getValue()));
-			
-			entry = entries.next();
+			columns.append("`" +
+					StorageUtils.mysqlifyName(key) + "` " +
+					dataType(p.get(key)));
+			if (i++ == 0) {
+				columns.append(" PRIMARY KEY");
+			}
 		}
 		
 		return columns.toString();
@@ -87,14 +111,18 @@ public class TableBuilder {
 		} else if (value instanceof Character) {
 			dataType = "CHAR(1)";
 		} else if (value instanceof String) {
-			int size = Integer.parseInt((String) value);
-			if (size > 0) {
-				dataType = "VARCHAR(" + size + ")";
-			} else {
+			try {
+				int size = Integer.parseInt((String) value);
+				if (size > 0) {
+					dataType = "VARCHAR(" + size + ")";
+				} else {
+					throw new YouAreDoingItWrongException();
+				}
+			} catch (NumberFormatException e) {
 				dataType = "TEXT";
 			}
 		} else if (value instanceof DateTime) {
-			dataType = "DATETIME";
+			dataType = "TIMESTAMP";
 		} else {
 			dataType = "BLOB";
 		}

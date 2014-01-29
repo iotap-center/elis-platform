@@ -18,6 +18,8 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 
+import se.mah.elis.services.storage.exceptions.StorageException;
+
 /**
  * This class contains a bunch of helper methods to be used by StorageImpl.
  * The methods could easily have been in StorageImpl itself, but have been
@@ -53,7 +55,7 @@ public class StorageUtils {
 		try {
 			Statement stmt = connection.createStatement();
 			stmt.execute(TableBuilder.buildModel(tableName, p));
-		} catch (SQLException e) {
+		} catch (SQLException | StorageException e) {
 			// Skip this like we just don't care.
 		}
 	}
@@ -115,7 +117,7 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public static String mysqlifyName(String name) {
-		return name.replace('.', '-');
+		return name.replace('.', '-').replaceAll(" ", "_");
 	}
 
 	/**
