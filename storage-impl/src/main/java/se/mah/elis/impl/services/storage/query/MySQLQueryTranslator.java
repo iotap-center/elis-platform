@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 
+import se.mah.elis.impl.services.storage.StorageUtils;
 import se.mah.elis.impl.services.storage.exceptions.YouAreBreakingTheInternetException;
 import se.mah.elis.impl.services.storage.exceptions.YouAreDoingItWrongException;
 import se.mah.elis.services.storage.exceptions.StorageException;
@@ -329,24 +330,6 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	}
 
 	/**
-	 * Checks whether an object is empty or not. An object is considered empty
-	 * if the object is null or if the object is an empty string.
-	 * 
-	 * @param o The object to evaluate.
-	 * @return True if the object is considered empty, otherwise false;
-	 * @since 2.0
-	 */
-	private boolean isEmpty(Object o) {
-		if (o == null) {
-			return true;
-		} else if (o instanceof String) {
-			return ((String) o).length() < 1;
-		}
-		
-		return false;
-	}
-
-	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.query.QueryTranslator#compile() compile()}.
 	 * 
@@ -359,7 +342,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 		String compiled = "SELECT * FROM ";
 		
 		if (what != null) {
-			compiled += quoteField(mysqlifyName(what.getName()));
+			compiled += quoteField(StorageUtils.mysqlifyName(what.getName()));
 		}
 		
 		if (where != null) {
@@ -397,10 +380,29 @@ public class MySQLQueryTranslator implements QueryTranslator {
 			throw new YouAreBreakingTheInternetException();
 		}
 		
-		String compiled = "DELETE FROM " + quoteField(mysqlifyName(what.getName())) +
+		String compiled = "DELETE FROM " +
+				quoteField(StorageUtils.mysqlifyName(what.getName())) +
 						  " WHERE " + where.compile() + ";";
 		
 		return compiled;
+	}
+
+	/**
+	 * Checks whether an object is empty or not. An object is considered empty
+	 * if the object is null or if the object is an empty string.
+	 * 
+	 * @param o The object to evaluate.
+	 * @return True if the object is considered empty, otherwise false;
+	 * @since 2.0
+	 */
+	private boolean isEmpty(Object o) {
+		if (o == null) {
+			return true;
+		} else if (o instanceof String) {
+			return ((String) o).length() < 1;
+		}
+		
+		return false;
 	}
 
 	/**
@@ -459,30 +461,6 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 */
 	private String quoteField(String field) {
 		return "`" + field + "`";
-	}
-
-	/**
-	 * Make a class name possible to use as a table name. In practice, this
-	 * means that we're replacing all periods with hyphens.
-	 * 
-	 * @param name The class name to convert to a table name.
-	 * @return A decent table name.
-	 * @since 2.0
-	 */
-	private String mysqlifyName(String name) {
-		return name.replace('.', '-');
-	}
-
-	/**
-	 * Make a class name possible to use as a table name. In practice, this
-	 * means that we're replacing all periods with hyphens.
-	 * 
-	 * @param name The table name to convert to a class name.
-	 * @return A canonical class name.
-	 * @since 2.0
-	 */
-	private String demysqlifyName(String name) {
-		return name.replace('-', '.');
 	}
 	
 	/**
