@@ -5,6 +5,8 @@ package se.mah.elis.services.users;
 
 import java.util.Properties;
 
+import se.mah.elis.data.OrderedProperties;
+
 /**
  * The User interface describes a generic user in the platform.
  * 
@@ -66,7 +68,7 @@ public interface AbstractUser {
 	 * @return A Properties object with all of the object's properties.
 	 * @since 1.1
 	 */
-	Properties getPropertiesTemplate();
+	OrderedProperties getPropertiesTemplate();
 	
 	/**
 	 * <p>Populate the values of an AbstractUser instance by providing a set of
