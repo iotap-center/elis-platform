@@ -5,7 +5,7 @@ package se.mah.elis.adaptor.building.api.plan;
 
 import java.util.Collection;
 
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * The Building interface describes a logical building, which consists of

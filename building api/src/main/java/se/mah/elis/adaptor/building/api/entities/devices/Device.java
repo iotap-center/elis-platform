@@ -4,7 +4,7 @@
 package se.mah.elis.adaptor.building.api.entities.devices;
 
 import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * The Device interface is a base interface for all device types, the Gateway

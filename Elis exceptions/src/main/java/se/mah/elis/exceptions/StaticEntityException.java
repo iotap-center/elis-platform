@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.mah.elis.adaptor.building.api.exceptions;
+package se.mah.elis.exceptions;
 
 /**
  * This exception is thrown when somebody tries to alter the properties of an

@@ -7,7 +7,7 @@ import java.util.Properties;
 
 import se.mah.elis.adaptor.building.api.data.Image;
 import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * This interface describes a camera object.

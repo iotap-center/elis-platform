@@ -5,7 +5,7 @@ package se.mah.elis.adaptor.building.api.entities.devices;
 
 import java.util.Collection;
 
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * The DeviceSet interface describes a logical set of devices. It is used to

@@ -4,7 +4,7 @@
 package se.mah.elis.adaptor.building.api.plan;
 
 import se.mah.elis.adaptor.building.api.entities.devices.Device;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * The Room interface describes a logical room in a house. A room can contain a number of devices.

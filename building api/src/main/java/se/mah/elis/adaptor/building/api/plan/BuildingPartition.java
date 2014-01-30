@@ -8,7 +8,7 @@ import java.util.Iterator;
 import se.mah.elis.adaptor.building.api.data.PartitionIdentifier;
 import se.mah.elis.adaptor.building.api.entities.devices.Device;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * The BuildingPartition interface describes an abstract part of a building. It
