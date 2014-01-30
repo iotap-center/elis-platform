@@ -4,6 +4,7 @@
 package se.mah.elis.adaptor.device.api.entities.devices;
 
 import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
+import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.exceptions.StaticEntityException;
 
 /**
@@ -13,7 +14,7 @@ import se.mah.elis.exceptions.StaticEntityException;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public interface Device {
+public interface Device extends ElisDataObject {
 	
 	/**
 	 * This method is used to get the id number of the device.

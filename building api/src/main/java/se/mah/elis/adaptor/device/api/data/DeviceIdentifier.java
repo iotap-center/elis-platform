@@ -10,5 +10,4 @@ package se.mah.elis.adaptor.device.api.data;
  * @since 1.0
  */
 public interface DeviceIdentifier {
-
 }

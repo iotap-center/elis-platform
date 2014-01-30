@@ -5,6 +5,7 @@ package se.mah.elis.adaptor.device.api.entities.devices;
 
 import java.util.Collection;
 
+import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.exceptions.StaticEntityException;
 
 /**
@@ -15,7 +16,7 @@ import se.mah.elis.exceptions.StaticEntityException;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public interface DeviceSet extends Collection<Device> {
+public interface DeviceSet extends Collection<Device>, ElisDataObject {
 	
 	/**
 	 * This method is used to get the id number of the set.
