@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>se.mah.elis.adaptor.device.api</groupId>
-  <artifactId>building-api</artifactId>
+  <artifactId>device-api</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   
