@@ -1,7 +1,7 @@
 eclipse.preferences.version=1
-encoding//src/main/java/se/mah/elis/adaptor/building/api/entities/devices/Detector.java=UTF-8
-encoding//src/main/java/se/mah/elis/adaptor/building/api/entities/devices/ElectricitySampler.java=UTF-8
-encoding//src/main/java/se/mah/elis/adaptor/building/api/entities/devices/PresenceDetector.java=UTF-8
-encoding//src/main/java/se/mah/elis/adaptor/building/api/entities/devices/Thermometer.java=UTF-8
-encoding//src/main/java/se/mah/elis/adaptor/building/api/entities/devices/Thermostat.java=UTF-8
-encoding//src/main/java/se/mah/elis/adaptor/building/api/entities/devices/Tripwire.java=UTF-8
+encoding//src/main/java/se/mah/elis/adaptor/device/api/entities/devices/Detector.java=UTF-8
+encoding//src/main/java/se/mah/elis/adaptor/device/api/entities/devices/ElectricitySampler.java=UTF-8
+encoding//src/main/java/se/mah/elis/adaptor/device/api/entities/devices/PresenceDetector.java=UTF-8
+encoding//src/main/java/se/mah/elis/adaptor/device/api/entities/devices/Thermometer.java=UTF-8
+encoding//src/main/java/se/mah/elis/adaptor/device/api/entities/devices/Thermostat.java=UTF-8
+encoding//src/main/java/se/mah/elis/adaptor/device/api/entities/devices/Tripwire.java=UTF-8
