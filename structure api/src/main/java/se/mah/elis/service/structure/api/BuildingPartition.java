@@ -1,11 +1,11 @@
 /**
  * 
  */
-package se.mah.elis.adaptor.building.api.plan;
+package se.mah.elis.service.structure.api;
 
 import java.util.Iterator;
 
-import se.mah.elis.adaptor.building.api.data.PartitionIdentifier;
+import se.mah.elis.service.structure.api.data.PartitionIdentifier;
 import se.mah.elis.adaptor.building.api.entities.devices.Device;
 import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
 import se.mah.elis.exceptions.StaticEntityException;

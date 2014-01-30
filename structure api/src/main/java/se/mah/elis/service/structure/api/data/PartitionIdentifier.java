@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.mah.elis.adaptor.building.api.data;
+package se.mah.elis.service.structure.api.data;
 
 /**
  * The PartitionIdentifer interface is used to address a partition of a

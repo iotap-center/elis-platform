@@ -1,11 +1,9 @@
 /**
  * 
  */
-package se.mah.elis.adaptor.building.api.plan;
+package se.mah.elis.service.structure.api;
 
 import java.util.Collection;
-
-import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * The RoomCollection interface describes a collection or a set of rooms within

@@ -6,7 +6,7 @@
     <relativePath>../super</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>se.mah.elis.adaptor.structure.api</groupId>
+  <groupId>se.mah.elis.service.structure.api</groupId>
   <artifactId>structure-api</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
@@ -28,6 +28,12 @@
   		<groupId>se.mah.elis.data</groupId>
   		<artifactId>elis-data-definitions</artifactId>
   		<version>1.0.0-SNAPSHOT</version>
+  		<type>bundle</type>
+  	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.adaptor.building.api</groupId>
+  		<artifactId>building-api</artifactId>
+  		<version>0.0.2</version>
   		<type>bundle</type>
   	</dependency>
   </dependencies>
