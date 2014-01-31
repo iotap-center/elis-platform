@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.joda.time.DateTime;
 
 import se.mah.elis.data.ElectricitySample;
+import se.mah.elis.data.OrderedProperties;
 
 public class ElectricitySampleMock implements ElectricitySample {
 
@@ -144,7 +145,7 @@ public class ElectricitySampleMock implements ElectricitySample {
 	}
 
 	@Override
-	public Properties getPropertiesTemplate() {
+	public OrderedProperties getPropertiesTemplate() {
 		// TODO Auto-generated method stub
 		return null;
 	}

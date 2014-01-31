@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.data.Sample;
 
 public class SimpleSampleMock implements Sample {
@@ -67,7 +68,7 @@ public class SimpleSampleMock implements Sample {
 	}
 
 	@Override
-	public Properties getPropertiesTemplate() {
+	public OrderedProperties getPropertiesTemplate() {
 		// TODO Auto-generated method stub
 		return null;
 	}
