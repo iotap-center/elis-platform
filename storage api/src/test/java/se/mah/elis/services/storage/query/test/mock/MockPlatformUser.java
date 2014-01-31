@@ -2,6 +2,7 @@ package se.mah.elis.services.storage.query.test.mock;
 
 import java.util.Properties;
 
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.UserIdentifier;
 
@@ -24,7 +25,7 @@ public class MockPlatformUser implements PlatformUser {
 	}
 
 	@Override
-	public Properties getPropertiesTemplate() {
+	public OrderedProperties getPropertiesTemplate() {
 		// TODO Auto-generated method stub
 		return null;
 	}
