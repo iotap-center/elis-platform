@@ -10,10 +10,12 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 public class AnotherMockUser implements User {
 	
+	public static final String MOCK_UUID = "54947df8-0e9e-4471-a2f9-9af509fb5889";
 	private int id;
+	private UUID uuid;
 
 	public AnotherMockUser() {
-		// TODO Auto-generated constructor stub
+		uuid = UUID.fromString(MOCK_UUID);
 	}
 
 	@Override
@@ -70,14 +72,12 @@ public class AnotherMockUser implements User {
 
 	@Override
 	public UUID getUserId() {
-		// TODO Auto-generated method stub
-		return null;
+		return uuid;
 	}
 
 	@Override
 	public void setUserId(UUID id) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = id;
 	}
 
 }

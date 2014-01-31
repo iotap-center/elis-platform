@@ -2,6 +2,7 @@ package se.mah.elis.services.users.impl.test.mock;
 
 import java.util.Properties;
 
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.UserIdentifier;
 
 public class AnotherMockUserIdentifier implements UserIdentifier {

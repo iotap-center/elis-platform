@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
@@ -72,13 +73,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User getUser(PlatformUser pu, int uid) {
+	public User getUser(PlatformUser pu, UUID uuid) {
 		User user = null;
 		ArrayList<User> users = map.get(pu);
 		
 		if (users != null) {
 			for (User u : users) {
-				if (u.getIdNumber() == uid) {
+				if (u.getUserId() == uuid) {
 					user = u;
 				}
 			}
@@ -110,25 +111,25 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public synchronized void registerUserToPlatformUser(User u, PlatformUser pu)
+	public synchronized void registerUserToPlatformUser(User user, PlatformUser platformUser)
 			throws NoSuchUserException {
 		// TODO This isn't kosher
 		
 		ArrayList<User> list = null;
 		
-		if (u.getIdNumber() < 1) {
-			u.setIdNumber(++userCounter);
+		if (user.getUserId() == null) {
+			user.setUserId(UUID.randomUUID());
 		}
 		
-		if (!map.containsKey(pu)) {
+		if (!map.containsKey(platformUser)) {
 			list = new ArrayList<User>();
-			((PlatformUserIdentifierImpl) pu.getIdentifier()).setId(++platformUserCounter);
-			map.put(pu, list);
+			((PlatformUserIdentifierImpl) platformUser.getIdentifier()).setId(++platformUserCounter);
+			map.put(platformUser, list);
 		} else {
-			list = (ArrayList<User>) map.get(pu);
+			list = (ArrayList<User>) map.get(platformUser);
 		}
 		
-		list.add(u);
+		list.add(user);
 	}
 
 	@Override

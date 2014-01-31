@@ -2,6 +2,8 @@ package se.mah.elis.services.users.impl.test;
 
 import static org.junit.Assert.*;
 
+import java.util.UUID;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,11 +52,11 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, 1);
+		User user = us.getUser(pu, mu.getUserId());
 		
 		assertNotNull(user);
 		assertEquals(user, mu);
-		assertEquals(1, user.getIdNumber());
+		assertEquals(mu.getUserId(), user.getUserId());
 	}
 	
 	@Test
@@ -70,7 +72,7 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, 1);
+		User user = us.getUser(pu, mu.getUserId());
 		
 		assertNotNull(user);
 		assertEquals(user, mu);
@@ -89,7 +91,7 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, 1);
+		User user = us.getUser(pu, mu.getUserId());
 		
 		assertNotNull(user);
 		assertEquals(user, mu);
@@ -99,7 +101,7 @@ public class UserServiceImplTest {
 	public void testGetUserNoSuchUser() {
 		UserService us = new UserServiceImpl();
 		PlatformUser pu = new PlatformUserImpl();
-		User mu = new MockUser();
+		User nonRegisteredUser = new MockUser();
 		
 		try {
 			us.registerUserToPlatformUser(new AnotherMockUser(), pu);
@@ -107,7 +109,7 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, 3);
+		User user = us.getUser(pu, nonRegisteredUser.getUserId());
 		
 		assertNull(user);
 	}
@@ -125,29 +127,29 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(new PlatformUserImpl(), 1);
+		User user = us.getUser(new PlatformUserImpl(), mu.getUserId());
 		
 		assertNull(user);
 	}
 
 	@Test
 	public void testRegisterUserToPlatformUser() {
-		UserService us = new UserServiceImpl();
-		PlatformUser pu = new PlatformUserImpl();
-		User mu = new MockUser();
+		UserService userService = new UserServiceImpl();
+		PlatformUser platformUser = new PlatformUserImpl();
+		User mockUser = new MockUser();
 		
 		try {
-			us.registerUserToPlatformUser(mu, pu);
+			userService.registerUserToPlatformUser(mockUser, platformUser);
 		} catch (NoSuchUserException e) {
 			fail("Register no workie");
 		}
 		
-		User[] users = us.getUsers(pu);
+		User[] users = userService.getUsers(platformUser);
 		
 		assertNotNull(users);
 		assertEquals(1, users.length);
 		assertEquals("I'm a MockUserIndentifier", users[0].getIdentifier().toString());
-		assertEquals(1, users[0].getIdNumber());
+		assertEquals(UUID.fromString(MockUser.MOCK_UUID), users[0].getUserId());
 	}
 
 	@Test
@@ -170,8 +172,6 @@ public class UserServiceImplTest {
 		assertEquals(2, users.length);
 		assertEquals("I'm a MockUserIndentifier", users[0].getIdentifier().toString());
 		assertEquals("I'm an AnotherMockUserIndentifier", users[1].getIdentifier().toString());
-		assertEquals(1, users[0].getIdNumber());
-		assertEquals(2, users[1].getIdNumber());
 	}
 
 	@Test
@@ -194,7 +194,7 @@ public class UserServiceImplTest {
 		assertNotNull(users);
 		assertEquals(1, users.length);
 		assertEquals("I'm an AnotherMockUserIndentifier", users[0].getIdentifier().toString());
-		assertEquals(2, users[0].getIdNumber());
+		assertEquals(UUID.fromString(AnotherMockUser.MOCK_UUID), users[0].getUserId());
 	}
 
 	@Test
@@ -481,7 +481,7 @@ public class UserServiceImplTest {
 		try {
 			PlatformUser pu1 = us.createPlatformUser("batman", "superman");
 			PlatformUser pu2 = us.createPlatformUser("bilbo", "baggins");
-			PlatformUser pu3 = us.createPlatformUser("orvar", "säfström");
+			PlatformUser pu3 = us.createPlatformUser("orvar", "s��fstr��m");
 		} catch (UserExistsException e) {}
 		PlatformUser[] pus = us.getPlatformUsers();
 		assertNotNull(pus);

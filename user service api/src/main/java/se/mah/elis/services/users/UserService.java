@@ -1,5 +1,7 @@
 package se.mah.elis.services.users;
 
+import java.util.UUID;
+
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
 import se.mah.elis.services.users.exceptions.UserExistsException;
 
@@ -7,7 +9,8 @@ import se.mah.elis.services.users.exceptions.UserExistsException;
  * The UserBroker interface describes a user service.
  * 
  * @author "Johan Holmberg, Malm\u00f6 University"
- * @since 1.0
+ * @author "Marcus Ljungblad, Malmo University"
+ * @since 2.0
  */
 public interface UserService {
 	
@@ -28,9 +31,9 @@ public interface UserService {
 	 * @param pu The platform user.
 	 * @param uid The user object's id number.
 	 * @return A User object. If no user is found, null is returned.
-	 * @since 1.0
+	 * @since 2.0
 	 */
-	User getUser(PlatformUser pu, int uid);
+	User getUser(PlatformUser pu, UUID uuid);
 	
 	/**
 	 * Fetches all platform users.
