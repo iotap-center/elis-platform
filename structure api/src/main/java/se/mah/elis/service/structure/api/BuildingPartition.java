@@ -6,15 +6,15 @@ package se.mah.elis.service.structure.api;
 import java.util.Iterator;
 
 import se.mah.elis.service.structure.api.data.PartitionIdentifier;
-import se.mah.elis.adaptor.building.api.entities.devices.Device;
-import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * The BuildingPartition interface describes an abstract part of a building. It
  * is the base interface for the Apartment, RoomCollection and Room interfaces.
  * 
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm�� University"
  * @since 1.0
  */
 public interface BuildingPartition {
