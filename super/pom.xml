@@ -154,20 +154,21 @@
 		</plugins>
 	</reporting>
 	<modules>
-		<!-- API modules -->
+		<!-- Internal API modules -->
 		<module>../Elis exceptions</module>
+		<module>../Data definitions</module>
 		<module>../user service api</module>
 		<module>../storage api</module>
 		<!-- <module>../building api</module> -->
-		<!-- <module>../Data definitions</module> -->
+		<!-- <module>../structure api</module> -->
 		
-		<!-- Northbound API modules -->
+		<!-- External API modules -->
 		<!-- <module>../northbound-api/com.eclipsesource.jaxrs.publisher</module> -->
 		
 		<!-- Reference implementation modules -->
 		<module>../Elis user service implementation</module>
 		<module>../storage-impl</module>
-		<!-- <module>../Elis user web service</module> -->
+		<module>../Elis user web service</module>
 		
 		<!-- Misc modules -->
 		<!-- <module>../elis-branding</module> -->
