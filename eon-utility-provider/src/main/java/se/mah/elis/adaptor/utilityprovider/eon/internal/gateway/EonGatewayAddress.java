@@ -1,6 +1,6 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.gateway;
 
-import se.mah.elis.adaptor.building.api.data.GatewayAddress;
+import se.mah.elis.adaptor.device.api.data.GatewayAddress;
 
 /**
  * Representation of a gateway address for E.On 

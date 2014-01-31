@@ -1,16 +1,20 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
-import org.json.simple.parser.ParseException;
+import org.joda.time.DateTime;
 
-import se.mah.elis.adaptor.utilityprovider.eon.internal.EonParser;
-import se.mah.elis.auxiliaries.data.ElectricitySample;
+import se.mah.elis.data.ElectricitySample;
+import se.mah.elis.data.OrderedProperties;
 
-public class ElectricitySampleImpl implements ElectricitySample{
+public class ElectricitySampleImpl implements ElectricitySample {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1127379585566280397L;
 	private double currentKwh;
 	
 	public ElectricitySampleImpl(double sample){
@@ -24,7 +28,7 @@ public class ElectricitySampleImpl implements ElectricitySample{
 	}
 
 	@Override
-	public Date getSampleTimestamp() {
+	public DateTime getSampleTimestamp() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -118,5 +122,53 @@ public class ElectricitySampleImpl implements ElectricitySample{
 		int timeInHours = 1;
 		double watts = 1000*currentKwh/timeInHours;
 		return watts;
+	}
+
+	@Override
+	public long getDataId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public UUID getUUID() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setUUID(UUID uuid) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setUniqueUserId(int userId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getUniqueUserId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Properties getProperties() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public OrderedProperties getPropertiesTemplate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void populate(Properties props) {
+		// TODO Auto-generated method stub
+		
 	}
 }

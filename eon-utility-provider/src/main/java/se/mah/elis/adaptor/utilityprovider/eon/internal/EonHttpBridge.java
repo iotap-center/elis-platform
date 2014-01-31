@@ -19,8 +19,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import se.mah.elis.adaptor.building.api.entities.devices.Device;
-import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.exceptions.ActuatorFailedException;
 
 /**
  * HTTP bridge to communicate with the E.On HTTP API using JSON.

@@ -4,10 +4,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
-import se.mah.elis.adaptor.building.api.providers.GatewayUserProvider;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
+import se.mah.elis.adaptor.device.api.providers.GatewayUserProvider;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGatewayUserFactory;
-import se.mah.elis.services.users.UserService;
 
 public class Activator implements BundleActivator {
 

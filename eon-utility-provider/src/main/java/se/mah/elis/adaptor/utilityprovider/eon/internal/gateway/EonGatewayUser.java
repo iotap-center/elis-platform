@@ -1,8 +1,12 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.gateway;
 
-import se.mah.elis.adaptor.building.api.entities.GatewayUser;
-import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
-import se.mah.elis.adaptor.building.api.exceptions.GatewayCommunicationException;
+import java.util.Properties;
+import java.util.UUID;
+
+import se.mah.elis.adaptor.device.api.entities.GatewayUser;
+import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
+import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
@@ -62,6 +66,42 @@ public class EonGatewayUser implements GatewayUser {
 	@Override
 	public void setIdNumber(int id) {
 		this.id = id;
+	}
+
+	@Override
+	public UUID getUserId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setUserId(UUID id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Properties getProperties() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public OrderedProperties getPropertiesTemplate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void populate(Properties props) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getServiceName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -1,12 +1,10 @@
 package se.mah.elis.adaptor.utilityprovider.eon.devices.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.ws.rs.client.ResponseProcessingException;
 
@@ -14,14 +12,14 @@ import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
-import se.mah.elis.adaptor.building.api.data.GatewayAddress;
-import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
+import se.mah.elis.adaptor.device.api.data.GatewayAddress;
+import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerMeter;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
-import se.mah.elis.auxiliaries.data.ElectricitySample;
+import se.mah.elis.data.ElectricitySample;
+import se.mah.elis.exceptions.StaticEntityException;
 
 public class EonPowerMeterTest {
 

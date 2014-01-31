@@ -1,6 +1,9 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.gateway;
 
-import se.mah.elis.adaptor.building.api.data.GatewayUserIdentifier;
+import java.util.Properties;
+
+import se.mah.elis.adaptor.device.api.data.GatewayUserIdentifier;
+import se.mah.elis.data.OrderedProperties;
 
 /**
  * Representation of an E.On user id
@@ -28,6 +31,30 @@ public class EonGatewayUserIdentifer implements GatewayUserIdentifier {
 	
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	@Override
+	public Class identifies() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void identifies(Class clazz) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Properties getProperties() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public OrderedProperties getPropertiesTemplate() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

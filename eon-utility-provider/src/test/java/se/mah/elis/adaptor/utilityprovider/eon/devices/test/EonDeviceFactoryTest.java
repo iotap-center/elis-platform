@@ -1,6 +1,9 @@
 package se.mah.elis.adaptor.utilityprovider.eon.devices.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -9,18 +12,17 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import se.mah.elis.adaptor.building.api.entities.devices.Device;
-import se.mah.elis.adaptor.building.api.entities.devices.ElectricitySampler;
-import se.mah.elis.adaptor.building.api.entities.devices.PowerSwitch;
-import se.mah.elis.adaptor.building.api.entities.devices.Thermometer;
-import se.mah.elis.adaptor.building.api.entities.devices.Thermostat;
-import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
+import se.mah.elis.adaptor.device.api.entities.devices.PowerSwitch;
+import se.mah.elis.adaptor.device.api.entities.devices.Thermometer;
+import se.mah.elis.adaptor.device.api.entities.devices.Thermostat;
+import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonDeviceFactory;
 import se.mah.elis.adaptor.utilityprovider.eon.test.EonParserTest;
+import se.mah.elis.exceptions.StaticEntityException;
 
 public class EonDeviceFactoryTest {
 

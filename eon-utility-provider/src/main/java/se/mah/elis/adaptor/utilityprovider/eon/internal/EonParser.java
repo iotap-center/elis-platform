@@ -11,9 +11,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import se.mah.elis.adaptor.building.api.entities.devices.Device;
-import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
+import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * Used to parse E.On HTTP response messages 

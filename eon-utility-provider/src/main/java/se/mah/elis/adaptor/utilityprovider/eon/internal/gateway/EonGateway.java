@@ -5,22 +5,24 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 import javax.ws.rs.client.ResponseProcessingException;
 
 import org.json.simple.parser.ParseException;
 
-import se.mah.elis.adaptor.building.api.data.GatewayAddress;
-import se.mah.elis.adaptor.building.api.entities.GatewayUser;
-import se.mah.elis.adaptor.building.api.entities.devices.Device;
-import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
-import se.mah.elis.adaptor.building.api.exceptions.GatewayCommunicationException;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
-import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
+import se.mah.elis.adaptor.device.api.data.GatewayAddress;
+import se.mah.elis.adaptor.device.api.entities.GatewayUser;
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
+import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDevice;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDeviceIdentifier;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
+import se.mah.elis.data.OrderedProperties;
+import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * Implementation of an E.On panel (in Elis terms: gateway)
@@ -246,6 +248,54 @@ public class EonGateway implements Gateway {
 	public boolean isOnline() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public long getDataId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public UUID getUUID() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setUUID(UUID uuid) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setUniqueUserId(int userId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getUniqueUserId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Properties getProperties() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public OrderedProperties getPropertiesTemplate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void populate(Properties props) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

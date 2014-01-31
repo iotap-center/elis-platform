@@ -2,15 +2,15 @@ package se.mah.elis.adaptor.utilityprovider.eon.internal;
 
 import org.json.simple.JSONObject;
 
-import se.mah.elis.adaptor.building.api.entities.devices.Device;
-import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDevice;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDeviceIdentifier;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerMeter;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonThermometer;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonThermostat;
+import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * Factory to create java representations of E.On devices from JSON responses
