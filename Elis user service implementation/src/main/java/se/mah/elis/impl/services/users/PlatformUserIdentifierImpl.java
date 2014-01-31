@@ -5,6 +5,7 @@ package se.mah.elis.impl.services.users;
 
 import java.util.Properties;
 
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.PlatformUser;
 
@@ -118,8 +119,8 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	}
 
 	@Override
-	public Properties getPropertiesTemplate() {
-		Properties p = new Properties();
+	public OrderedProperties getPropertiesTemplate() {
+		OrderedProperties p = new OrderedProperties();
 		
 		p.put("id", new Integer(0));
 		p.put("username", "256");

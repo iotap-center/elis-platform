@@ -3,6 +3,7 @@ package se.mah.elis.services.users.impl.test.mock;
 import java.util.Properties;
 import java.util.UUID;
 
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
@@ -50,7 +51,7 @@ public class AnotherMockUser implements User {
 	}
 
 	@Override
-	public Properties getPropertiesTemplate() {
+	public OrderedProperties getPropertiesTemplate() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -66,7 +66,7 @@ public class MockUser implements User {
 	}
 
 	@Override
-	public Properties getPropertiesTemplate() {
+	public OrderedProperties getPropertiesTemplate() {
 		// TODO Auto-generated method stub
 		return null;
 	}

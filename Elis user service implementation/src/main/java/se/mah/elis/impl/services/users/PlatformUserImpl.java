@@ -7,6 +7,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.UserIdentifier;
@@ -180,8 +181,8 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	}
 
 	@Override
-	public Properties getPropertiesTemplate() {
-		Properties p = id.getPropertiesTemplate();
+	public OrderedProperties getPropertiesTemplate() {
+		OrderedProperties p = id.getPropertiesTemplate();
 		
 		p.put("first_name", "32");
 		p.put("last_name", "32");
