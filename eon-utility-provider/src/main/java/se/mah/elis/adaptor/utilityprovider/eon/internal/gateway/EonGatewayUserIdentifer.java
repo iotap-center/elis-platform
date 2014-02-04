@@ -56,5 +56,12 @@ public class EonGatewayUserIdentifer implements GatewayUserIdentifier {
 		props.put("password", this.password);
 		return props;
 	}
+
+	@Override
+	public void populate(Properties props) {
+		this.username = (String) props.get("username");
+		if (props.contains("password"))
+			this.password = (String) props.get("password");
+	}
 	
 }

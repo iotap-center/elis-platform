@@ -39,6 +39,9 @@ public class EonDeviceIdentifier implements DeviceIdentifier {
 		props.put("id", this.id);
 		return props;
 	}
-	
-	// TODO: populate?
+
+	@Override
+	public void populate(Properties props) {
+		this.id = (String) props.get("id");
+	}
 }

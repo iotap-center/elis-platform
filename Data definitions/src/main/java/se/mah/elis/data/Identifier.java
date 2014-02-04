@@ -41,4 +41,13 @@ public interface Identifier {
 	 * @since 1.1
 	 */
 	OrderedProperties getPropertiesTemplate();
+	
+	/**
+	 * Populate the values of an Identifier instance by providing a set of
+	 * properties, e.g. from a persistent storage retrieval.
+	 * 
+	 * @param props The properties to populate the object with.
+	 * @since 1.1
+	 */
+	void populate(Properties props);
 }
