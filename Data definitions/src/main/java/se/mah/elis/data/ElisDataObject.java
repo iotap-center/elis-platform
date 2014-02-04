@@ -51,7 +51,8 @@ public interface ElisDataObject extends Serializable {
 	/**
 	 * Sets the owner of this data object.
 	 * 
-	 * @param userId 
+	 * @param userId
+	 * @deprecated 
 	 * @since 1.0
 	 */
 	void setUniqueUserId(int userId);
@@ -62,6 +63,7 @@ public interface ElisDataObject extends Serializable {
 	 * associated with the system that provided it.
 	 * 
 	 * @return the unique user id.
+	 * @deprecated
 	 * @since 1.0
 	 */
 	int getUniqueUserId();
