@@ -32,11 +32,13 @@ import se.mah.elis.exceptions.StaticEntityException;
  */
 public class EonPowerSwitchMeter extends EonDevice implements PowerSwitch, ElectricitySampler {
 
+	private static final long serialVersionUID = 7361404151615176359L;
 	private static final int FAIL_COUNT = 3;
 	private boolean isOnline;
 	private EonGateway gateway;
 	private DeviceIdentifier deviceId;
 	private String deviceName;
+	private UUID uuid;
 
 	/**
 	 * Used to set initial device status when instantiating the device
@@ -233,44 +235,41 @@ public class EonPowerSwitchMeter extends EonDevice implements PowerSwitch, Elect
 
 	@Override
 	public UUID getUUID() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.uuid;
 	}
 
 	@Override
 	public void setUUID(UUID uuid) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = uuid;
 	}
 
 	@Override
 	public void setUniqueUserId(int userId) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public int getUniqueUserId() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		return getPropertiesTemplate();
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", this.uuid.toString());
+		props.put("name", this.deviceName);
+		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = UUID.fromString((String) props.get("uuid"));
+		this.deviceName = (String) props.get("name");
 	}
 
 }

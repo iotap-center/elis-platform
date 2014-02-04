@@ -26,10 +26,12 @@ import se.mah.elis.exceptions.StaticEntityException;
 
 public class EonThermometer extends EonDevice implements Thermometer {
 
+	private static final long serialVersionUID = 4511570832087418074L;
 	private EonGateway gateway;
 	private DeviceIdentifier deviceId;
 	private String deviceName;
 	private boolean isOnline;
+	private UUID uuid;
 
 	@Override
 	public DeviceIdentifier getId() {
@@ -110,50 +112,46 @@ public class EonThermometer extends EonDevice implements Thermometer {
 
 	@Override
 	public long getDataId() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public UUID getUUID() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.uuid;
 	}
 
 	@Override
 	public void setUUID(UUID uuid) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = uuid;
 	}
 
 	@Override
 	public void setUniqueUserId(int userId) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public int getUniqueUserId() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		return getPropertiesTemplate();
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", this.uuid.toString());
+		props.put("name", this.deviceName);
+		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = UUID.fromString((String) props.get("uuid"));
+		this.deviceName = (String) props.get("uuid");
 	}
 
 }

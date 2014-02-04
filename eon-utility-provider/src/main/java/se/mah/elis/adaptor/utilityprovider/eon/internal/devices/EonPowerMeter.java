@@ -145,20 +145,21 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		return getPropertiesTemplate();
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", this.uuid.toString());
+		props.put("deviceName", this.deviceName);
+		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		// TODO Auto-generated method stub
-		
+		this.deviceName = (String) props.get("deviceName");
+		this.uuid = UUID.fromString((String) props.get("uuid"));
 	}
 
 }

@@ -8,7 +8,9 @@ import se.mah.elis.data.TemperatureData;
 
 public class TemperatureDataImpl implements TemperatureData {
 
+	private static final long serialVersionUID = 512051193886837620L;
 	private float celsius;
+	private UUID uuid;
 
 	public TemperatureDataImpl(float celsiusInput) {
 		celsius = celsiusInput;
@@ -45,44 +47,41 @@ public class TemperatureDataImpl implements TemperatureData {
 
 	@Override
 	public UUID getUUID() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.uuid;
 	}
 
 	@Override
 	public void setUUID(UUID uuid) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = uuid;
 	}
 
 	@Override
 	public void setUniqueUserId(int userId) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public int getUniqueUserId() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		return getPropertiesTemplate();
 	}
 
 	@Override
-	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
+	public OrderedProperties getPropertiesTemplate() {	
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", this.uuid);
+		props.put("celsius", this.celsius);
 		return null;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = UUID.fromString((String) props.get("uuid"));
+		this.celsius = (Float) props.get("celsius");
 	}
 
 }

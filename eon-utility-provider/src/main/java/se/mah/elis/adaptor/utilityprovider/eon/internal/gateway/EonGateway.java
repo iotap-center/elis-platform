@@ -296,14 +296,7 @@ public class EonGateway implements Gateway {
 	public void populate(Properties props) {
 		setUUID(UUID.fromString((String) props.get("uuid")));
 		setUniqueUserId((int) props.get("uniqueUserId"));
-		
-		try {
-			setId((int) props.get("gatewayId"));
-			setName((String) props.get("gatewayName"));
-		} catch (StaticEntityException see) {
-			// log?
-			see.printStackTrace();
-		}
+		gatewayId = (int) props.get("gatewayId");
+		name = (String) props.get("gatewayName");
 	}
-
 }

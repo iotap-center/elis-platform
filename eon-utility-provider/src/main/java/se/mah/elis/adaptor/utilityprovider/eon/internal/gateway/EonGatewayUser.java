@@ -90,7 +90,7 @@ public class EonGatewayUser implements GatewayUser {
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("uuid", getUserId());
+		props.put("uuid", getUserId().toString());
 		props.put("gateway", gateway.getId());
 		props.put("gatewayUserIdentifier", gatewayUserIdentifier);
 		return props;
@@ -99,13 +99,13 @@ public class EonGatewayUser implements GatewayUser {
 	@Override
 	public void populate(Properties props) throws IllegalArgumentException {
 		this.uuid = UUID.fromString((String) props.get("uuid"));
-		// this.gateway = Gateway.create(props.get("gateway"));
+		// this.gateway = Gateway.create((Integer) props.get("gateway"));
 		 
 		if (props.contains("gatewayUserIdentifier")) {
 			// this wont work (or in this case happen)
 			this.gatewayUserIdentifier = (EonGatewayUserIdentifer) props.get("gatewayUserIdentifier");
 		} else {
-			// TODO: Test this
+			// TODO: this is not complete
 			Properties subprops = new Properties(); 
 			subprops.put("username", (String) props.get("username"));
 			subprops.put("password", (String) props.get("password"));
