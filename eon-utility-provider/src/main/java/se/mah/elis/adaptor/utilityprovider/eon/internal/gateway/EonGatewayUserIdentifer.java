@@ -16,6 +16,7 @@ public class EonGatewayUserIdentifer implements GatewayUserIdentifier {
 
 	private String username; 
 	private String password;
+	private Class clazz;
 	
 	public String getUsername() {
 		return username;
@@ -35,26 +36,25 @@ public class EonGatewayUserIdentifer implements GatewayUserIdentifier {
 
 	@Override
 	public Class identifies() {
-		// TODO Auto-generated method stub
-		return null;
+		return clazz;
 	}
 
 	@Override
 	public void identifies(Class clazz) {
-		// TODO Auto-generated method stub
-		
+		this.clazz = clazz;
 	}
 
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		return getPropertiesTemplate();
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		props.put("username", this.username);
+		props.put("password", this.password);
+		return props;
 	}
 	
 }

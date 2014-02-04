@@ -30,13 +30,15 @@ public class EonDeviceIdentifier implements DeviceIdentifier {
 
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		return getPropertiesTemplate();
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		props.put("id", this.id);
+		return props;
 	}
+	
+	// TODO: populate?
 }

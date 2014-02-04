@@ -19,8 +19,6 @@ import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDevice;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDeviceIdentifier;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.exceptions.StaticEntityException;
 
@@ -41,6 +39,7 @@ import se.mah.elis.exceptions.StaticEntityException;
  */
 public class EonGateway implements Gateway {
 
+	private static final long serialVersionUID = 4987546440772318353L;
 	private String authenticationToken;
 	private EonHttpBridge httpBridge;
 	private List<Device> devices;
@@ -49,6 +48,8 @@ public class EonGateway implements Gateway {
 	private GatewayUser gatewayUser;
 	private boolean gatewayHasConnected;
 	private int gatewayId;
+	private UUID uuid;
+	private int uniqueUserId;
 
 	public EonGateway() {
 		this.devices = new ArrayList<Device>();
@@ -258,44 +259,51 @@ public class EonGateway implements Gateway {
 
 	@Override
 	public UUID getUUID() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.uuid;
 	}
 
 	@Override
 	public void setUUID(UUID uuid) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = uuid;
 	}
 
 	@Override
 	public void setUniqueUserId(int userId) {
-		// TODO Auto-generated method stub
-		
+		this.uniqueUserId = userId;
 	}
 
 	@Override
 	public int getUniqueUserId() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.uniqueUserId;
 	}
 
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		return getPropertiesTemplate();
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", this.uuid);
+		props.put("gatewayId", this.gatewayId);
+		props.put("gatewayName", this.name);
+		props.put("uniqueUserId", this.uniqueUserId);
+		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		// TODO Auto-generated method stub
+		setUUID(UUID.fromString((String) props.get("uuid")));
+		setUniqueUserId((int) props.get("uniqueUserId"));
 		
+		try {
+			setId((int) props.get("gatewayId"));
+			setName((String) props.get("gatewayName"));
+		} catch (StaticEntityException see) {
+			// log?
+			see.printStackTrace();
+		}
 	}
 
 }

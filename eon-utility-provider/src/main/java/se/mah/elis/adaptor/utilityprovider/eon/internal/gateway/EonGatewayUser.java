@@ -13,14 +13,15 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 /**
  * Representation of a gateway user for E.On 
  * @author Marcus Ljungblad
- * @version 1.0.0
+ * @version 1.1.0
  * @since 1.0
  */
 public class EonGatewayUser implements GatewayUser {
 
 	private Gateway gateway;
 	private EonGatewayUserIdentifer gatewayUserIdentifier;
-	private int id;
+	private int id; // TODO: remove
+	private UUID uuid;
 
 	/**
 	 * Will try to initialise the gateway if that has not been done before. 
@@ -46,6 +47,7 @@ public class EonGatewayUser implements GatewayUser {
 	@Override
 	public void setIdentifier(UserIdentifier userIdentifier) {
 		gatewayUserIdentifier = (EonGatewayUserIdentifer) userIdentifier;
+		gatewayUserIdentifier.identifies(this.getClass());
 	}
 
 	@Override
@@ -59,49 +61,64 @@ public class EonGatewayUser implements GatewayUser {
 	}
 
 	@Override
+	@Deprecated
 	public int getIdNumber() {
 		return id;
 	}
 
 	@Override
+	@Deprecated
 	public void setIdNumber(int id) {
 		this.id = id;
 	}
 
 	@Override
 	public UUID getUserId() {
-		// TODO Auto-generated method stub
-		return null;
+		return uuid;
 	}
 
 	@Override
 	public void setUserId(UUID id) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = id;
 	}
 
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		return getPropertiesTemplate();
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", getUserId());
+		props.put("gateway", gateway.getId());
+		props.put("gatewayUserIdentifier", gatewayUserIdentifier);
+		return props;
 	}
 
 	@Override
 	public void populate(Properties props) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		
+		this.uuid = UUID.fromString((String) props.get("uuid"));
+		// this.gateway = Gateway.create(props.get("gateway"));
+		 
+		if (props.contains("gatewayUserIdentifier")) {
+			// this wont work (or in this case happen)
+			this.gatewayUserIdentifier = (EonGatewayUserIdentifer) props.get("gatewayUserIdentifier");
+		} else {
+			// TODO: Test this
+			Properties subprops = new Properties(); 
+			subprops.put("username", (String) props.get("username"));
+			subprops.put("password", (String) props.get("password"));
+			EonGatewayUserIdentifer eguid = new EonGatewayUserIdentifer();
+			//eguid.populate(subprops);
+			this.gatewayUserIdentifier = eguid;
+		}
+			
 	}
 
 	@Override
 	public String getServiceName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "eon-gateway-user";
 	}
 
 }

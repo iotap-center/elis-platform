@@ -42,6 +42,7 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 		EonGatewayUser user = createGatewayUser(username, password);
 		EonGateway gateway = createGateway(username, password, bridge);
 		user.setGateway(gateway);
+		gateway.setUser(user);
 		return user;
 	}
 

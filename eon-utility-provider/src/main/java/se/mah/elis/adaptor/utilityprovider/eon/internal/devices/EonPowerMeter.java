@@ -20,7 +20,8 @@ import se.mah.elis.exceptions.StaticEntityException;
  * A virtual representation of the E.On power meter
  * 
  * @author Joakim Lithell
- * @version 1.0.0
+ * @author Marcus Ljungblad
+ * @version 1.1.0
  * @since 1.0
  */
 
@@ -30,6 +31,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 	private EonGateway gateway;
 	private DeviceIdentifier deviceId;
 	private String deviceName;
+	private UUID uuid;
 	
 	@Override
 	public DeviceIdentifier getId() {
@@ -121,14 +123,12 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 
 	@Override
 	public UUID getUUID() {
-		// TODO Auto-generated method stub
-		return null;
+		return uuid;
 	}
 
 	@Override
 	public void setUUID(UUID uuid) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = uuid;
 	}
 
 	@Override
