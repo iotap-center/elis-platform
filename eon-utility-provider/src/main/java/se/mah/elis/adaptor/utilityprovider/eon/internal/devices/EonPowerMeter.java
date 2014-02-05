@@ -27,6 +27,7 @@ import se.mah.elis.exceptions.StaticEntityException;
 
 public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 
+	private static final long serialVersionUID = -437085412909829501L;
 	private boolean isOnline;
 	private EonGateway gateway;
 	private DeviceIdentifier deviceId;
@@ -145,14 +146,17 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 
 	@Override
 	public Properties getProperties() {
-		return getPropertiesTemplate();
+		Properties props = new Properties();
+		props.put("uuid", this.uuid.toString());
+		props.put("deviceName", this.deviceName);
+		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("uuid", this.uuid.toString());
-		props.put("deviceName", this.deviceName);
+		props.put("uuid", "256");
+		props.put("deviceName", "256");
 		return props;
 	}
 

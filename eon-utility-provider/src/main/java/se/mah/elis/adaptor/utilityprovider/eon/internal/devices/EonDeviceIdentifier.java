@@ -30,13 +30,15 @@ public class EonDeviceIdentifier implements DeviceIdentifier {
 
 	@Override
 	public Properties getProperties() {
-		return getPropertiesTemplate();
+		Properties props = new Properties();
+		props.put("id", this.id);
+		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("id", this.id);
+		props.put("id", "256");
 		return props;
 	}
 

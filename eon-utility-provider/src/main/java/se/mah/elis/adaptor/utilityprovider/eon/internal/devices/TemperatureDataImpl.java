@@ -67,15 +67,18 @@ public class TemperatureDataImpl implements TemperatureData {
 
 	@Override
 	public Properties getProperties() {
-		return getPropertiesTemplate();
+		Properties props = new Properties();
+		props.put("uuid", this.uuid.toString());
+		props.put("celsius", this.celsius);
+		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {	
 		OrderedProperties props = new OrderedProperties();
-		props.put("uuid", this.uuid);
-		props.put("celsius", this.celsius);
-		return null;
+		props.put("uuid", "256");
+		props.put("celsius", new Float(0.0));
+		return props;
 	}
 
 	@Override

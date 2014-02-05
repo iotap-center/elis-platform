@@ -38,4 +38,10 @@ public class AnotherMockUserIdentifier implements UserIdentifier {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void populate(Properties props) {
+		// TODO Auto-generated method stub
+		
+	}
 }

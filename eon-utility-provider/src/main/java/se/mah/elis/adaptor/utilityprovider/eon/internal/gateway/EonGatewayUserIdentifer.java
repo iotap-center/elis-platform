@@ -46,14 +46,17 @@ public class EonGatewayUserIdentifer implements GatewayUserIdentifier {
 
 	@Override
 	public Properties getProperties() {
-		return getPropertiesTemplate();
+		Properties props = new Properties();
+		props.put("username", this.username);
+		props.put("password", this.password);
+		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("username", this.username);
-		props.put("password", this.password);
+		props.put("username", "256");
+		props.put("password", "256");
 		return props;
 	}
 

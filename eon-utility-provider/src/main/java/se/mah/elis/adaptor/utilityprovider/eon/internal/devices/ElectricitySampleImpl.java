@@ -16,6 +16,7 @@ public class ElectricitySampleImpl implements ElectricitySample {
 	 */
 	private static final long serialVersionUID = 1127379585566280397L;
 	private double currentKwh;
+	private UUID uuid;
 	
 	public ElectricitySampleImpl(double sample){
 		currentKwh = sample;
@@ -132,43 +133,43 @@ public class ElectricitySampleImpl implements ElectricitySample {
 
 	@Override
 	public UUID getUUID() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.uuid;
 	}
 
 	@Override
 	public void setUUID(UUID uuid) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = uuid;
 	}
 
 	@Override
 	public void setUniqueUserId(int userId) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public int getUniqueUserId() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		Properties props = new Properties();
+		props.put("uuid", this.uuid);
+		props.put("currentKwh", this.currentKwh);
+		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", "256");
+		props.put("currentKwh", new Double(0.0));
+		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = UUID.fromString((String) props.get("uuid"));
+		this.currentKwh = (Double) props.get("currentKwh");
 	}
 }

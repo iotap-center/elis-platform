@@ -137,14 +137,17 @@ public class EonThermometer extends EonDevice implements Thermometer {
 
 	@Override
 	public Properties getProperties() {
-		return getPropertiesTemplate();
+		Properties props = new Properties();
+		props.put("uuid", this.uuid.toString());
+		props.put("name", this.deviceName);
+		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("uuid", this.uuid.toString());
-		props.put("name", this.deviceName);
+		props.put("uuid", "256");
+		props.put("name", "256");
 		return props;
 	}
 

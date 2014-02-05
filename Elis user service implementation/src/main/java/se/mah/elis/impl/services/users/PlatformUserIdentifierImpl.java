@@ -7,7 +7,6 @@ import java.util.Properties;
 
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.PlatformUserIdentifier;
-import se.mah.elis.services.users.PlatformUser;
 
 /**
  * Implements the UserIdentifier interface.
@@ -138,5 +137,10 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	public void identifies(Class clazz) {
 		// Don't do anything at all. This is not applicable for the
 		// PlatformUserIdentifier.
+	}
+
+	@Override
+	public void populate(Properties props) {
+		// TODO: fill this
 	}
 }

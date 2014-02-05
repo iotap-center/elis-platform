@@ -279,24 +279,33 @@ public class EonGateway implements Gateway {
 
 	@Override
 	public Properties getProperties() {
-		return getPropertiesTemplate();
+		Properties props = new Properties();
+		
+		props.put("uuid", this.uuid);
+		props.put("gatewayId", this.gatewayId);
+		props.put("gatewayName", this.name);
+		props.put("uniqueUserId", this.uniqueUserId);
+		
+		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("uuid", this.uuid);
-		props.put("gatewayId", this.gatewayId);
-		props.put("gatewayName", this.name);
-		props.put("uniqueUserId", this.uniqueUserId);
+
+		props.put("uuid", "256");
+		props.put("gatewayName", "256");
+		props.put("gatewayId", new Integer(0));
+		props.put("uniqueUserId", new Integer(0));
+		
 		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
 		setUUID(UUID.fromString((String) props.get("uuid")));
-		setUniqueUserId((int) props.get("uniqueUserId"));
-		gatewayId = (int) props.get("gatewayId");
+		setUniqueUserId((Integer) props.get("uniqueUserId"));
+		gatewayId = (Integer) props.get("gatewayId");
 		name = (String) props.get("gatewayName");
 	}
 }
