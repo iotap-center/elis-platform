@@ -19,10 +19,22 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
 
 public class MockResultSet implements ResultSet {
+	
+	private MockResultSetMetaData metaData;
+	private ArrayList<Object> data;
+	
+	public MockResultSet() {
+		metaData = new MockResultSetMetaData();
+	}
+	
+	public MockResultSet(MockResultSetMetaData meta) {
+		metaData = meta;
+	}
 
 	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
@@ -268,8 +280,7 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public ResultSetMetaData getMetaData() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return metaData;
 	}
 
 	@Override
