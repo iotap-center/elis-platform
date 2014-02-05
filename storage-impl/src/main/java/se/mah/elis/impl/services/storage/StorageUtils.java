@@ -178,7 +178,7 @@ public class StorageUtils {
 	 * @return A string as described above.
 	 * @since 2.0
 	 */
-	public String pairUp(Properties properties) {
+	public static String pairUp(Properties properties) {
 		StringBuffer pairs = new StringBuffer();
 		
 		for (Entry e : properties.entrySet()) {
@@ -198,7 +198,7 @@ public class StorageUtils {
 	 * @return A byte array.
 	 * @since 2.0
 	 */
-	public byte[] uuidToBytes(UUID uuid) {
+	public static byte[] uuidToBytes(UUID uuid) {
 		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
 		
 		bb.putLong(uuid.getMostSignificantBits());
