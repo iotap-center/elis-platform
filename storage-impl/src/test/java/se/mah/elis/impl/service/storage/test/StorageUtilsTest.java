@@ -77,7 +77,7 @@ public class StorageUtilsTest {
 		
 		utils.createTableIfNotExisting(tableName, props);
 		
-		assertNull(objectStore.get(0));
+		assertEquals(0, objectStore.size());
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class StorageUtilsTest {
 		
 		utils.createTableIfNotExisting(tableName, props);
 		
-		assertNull(objectStore.get(0));
+		assertEquals(0, objectStore.size());
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class StorageUtilsTest {
 		
 		utils.createTableIfNotExisting(tableName, props);
 		
-		assertNull(objectStore.get(0));
+		assertEquals(0, objectStore.size());
 	}
 
 	@Test
@@ -128,7 +128,7 @@ public class StorageUtilsTest {
 		
 		utils.createTableIfNotExisting(tableName, props);
 		
-		assertNull(objectStore.get(0));
+		assertEquals(0, objectStore.size());
 	}
 
 	@Test
@@ -141,7 +141,7 @@ public class StorageUtilsTest {
 		
 		utils.createTableIfNotExisting(tableName, props);
 		
-		assertNull(objectStore.get(0));
+		assertEquals(0, objectStore.size());
 	}
 
 	@Test
@@ -234,10 +234,10 @@ public class StorageUtilsTest {
 	public void testGenerateQMarksNone() {
 		Properties props = new OrderedProperties();
 		String expected, actual;
-		
+
 		expected = "";
 		actual = StorageUtils.generateKeyList(props);
-		
+
 		assertEquals(expected, actual);
 	}
 
@@ -365,7 +365,7 @@ public class StorageUtilsTest {
 
 			utils.addParameter(stmt, "horses", -1);
 			fail("This shouldn't happen");
-		} catch (SQLException e) {
+		} catch (SQLException |IndexOutOfBoundsException e) {
 			// This should happen
 		}
 	}
@@ -386,7 +386,7 @@ public class StorageUtilsTest {
 			// This should NEVER happen with a mock object.
 		}
 		
-		assertEquals("Null: null", (String) objectStore.get(0));
+		assertEquals("Null: 0", (String) objectStore.get(0));
 	}
 
 	@Test
@@ -478,8 +478,7 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-
-			utils.addParameter(stmt, 4.2, 0);
+			utils.addParameter(stmt, (float) 4.2, 0);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
@@ -504,7 +503,7 @@ public class StorageUtilsTest {
 			// This should NEVER happen with a mock object.
 		}
 		
-		assertEquals("Double: 42", (String) objectStore.get(0));
+		assertEquals("Double: 4.2", (String) objectStore.get(0));
 	}
 
 	@Test
@@ -533,6 +532,7 @@ public class StorageUtilsTest {
 		StorageUtils utils = new StorageUtils(connection);
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		DateTime dt = DateTime.now();
+		java.sql.Timestamp ts = new java.sql.Timestamp(dt.getMillis());
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
 		
@@ -545,7 +545,7 @@ public class StorageUtilsTest {
 			// This should NEVER happen with a mock object.
 		}
 		
-		assertEquals("Timestamp: " + dt.getMillis(), (String) objectStore.get(0));
+		assertEquals("Timestamp: " + ts, (String) objectStore.get(0));
 	}
 
 	@Test
@@ -582,7 +582,7 @@ public class StorageUtilsTest {
 		props.put("col 3", false);
 		props.put("col 4", 1.3);
 		
-		expected = "`col_1` = ?, `col_2` = ?', `col_3` = ?, `col_4` = ?";
+		expected = "`col_1` = ?, `col_2` = ?, `col_3` = ?, `col_4` = ?";
 		actual = StorageUtils.pairUp(props);
 		
 		assertEquals(expected, actual);
