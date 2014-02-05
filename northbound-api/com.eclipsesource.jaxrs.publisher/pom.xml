@@ -3,7 +3,7 @@
   <groupId>com.eclipsesource.jaxrs.publisher</groupId>
   <artifactId>osgi-connector</artifactId>
   <packaging>bundle</packaging>
-  <name>Adaptation of OSGi JAX-RS Connector</name>
+  <name>The Elis OSGI HTTP Connector Service Bundle</name>
   
   <build>
     <plugins>

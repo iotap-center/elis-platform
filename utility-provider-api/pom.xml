@@ -38,7 +38,7 @@
       </plugin>    <!-- (2) END -->
     </plugins>
   </build>
-  <name>Elis Utility Provider API bundle</name>
+  <name>The Elis Utility Provider API bundle</name>
   <parent>
   	<groupId>se.mah.elis</groupId>
   	<artifactId>super-pom</artifactId>

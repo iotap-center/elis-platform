@@ -3,7 +3,7 @@
   <artifactId>eon-utility-provider</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
-  <name>Eon Utility Provider</name>
+  <name>The Elis E.On Utility Provider Adaptor Bundle</name>
   
   <dependencies>
     <dependency>
