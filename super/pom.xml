@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>se.mah.elis</groupId>
 	<artifactId>super-pom</artifactId>
-	<version>0.0.1</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<name>The Elis Platform</name>
 	
@@ -158,7 +158,7 @@
 		<module>../Elis exceptions</module>
 		<module>../Data definitions</module>
 		<module>../user service api</module>
-		<module>../storage api</module>
+		
 		<!-- <module>../building api</module> -->
 		<!-- <module>../structure api</module> -->
 		
@@ -167,13 +167,20 @@
 		
 		<!-- Reference implementation modules -->
 		<module>../Elis user service implementation</module>
-		<module>../storage-impl</module>
-		<module>../Elis user web service</module>
+		
+		
 		
 		<!-- Misc modules -->
 		<!-- <module>../elis-branding</module> -->
         <!-- <module>../qs-driver</module> -->
         <!-- <module>../ninjablock</module> -->
-		
+
+        <module>
+        	../northbound-api/com.eclipsesource.jaxrs.publisher
+        </module>
+        <module>../building api</module>
+        <module>../structure api</module>
+        <module>../eon-utility-provider</module>
+        <module>../utility-provider-api</module>
 	</modules>
 </project>

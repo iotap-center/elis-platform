@@ -14,11 +14,6 @@
   
   <dependencies>
   	<dependency>
-  		<groupId>com.eclipsesource.jaxrs.publisher</groupId>
-  		<artifactId>osgi-connector</artifactId>
-  		<version>0.0.1</version>
-  	</dependency>
-  	<dependency>
   		<groupId>com.google.code.gson</groupId>
   		<artifactId>gson</artifactId>
   		<version>2.2.4</version>
@@ -56,6 +51,12 @@
   		<groupId>se.mah.elis.impl.services.users</groupId>
   		<artifactId>user-service-impl</artifactId>
   		<version>1.1.0</version>
+  		<type>bundle</type>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.eclipsesource.jaxrs.publisher</groupId>
+  		<artifactId>osgi-connector</artifactId>
+  		<version>1.0.0</version>
   		<type>bundle</type>
   	</dependency>
   </dependencies>
