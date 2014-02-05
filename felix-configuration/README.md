@@ -18,9 +18,36 @@ Elis depends on a number of third-party bundles. These are available as jars in 
 
 From the command-line, assuming you are in `$FELIX_HOME` run `java -jar bin/felix.jar`. Make sure there are no errors when starting the platform the first time. 
 
-## Installing Elis bundles
+## Using logging on the Elis platform
 
-_TODO_
+Add `logback-classic` (`ch.qos.logback`) as a dependency in the bundle POM. 
+
+Import `org.slf4j.Logger` and `org.slf4j.LoggerFactory` and then instantiate it as the example below illustrates. 
+
+```java
+package se.mah.elis.adaptor.utilityprovider.eon;
+
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Activator implements BundleActivator {
+
+  private static final Logger logger = LoggerFactory.getLogger("eon-adaptor"); 
+  
+  public Activator() {
+  }
+  
+  public void start(BundleContext context) throws Exception {
+    logger.info("The E.On bundle just started");
+  }
+
+  public void stop(BundleContext context) throws Exception {
+    logger.info("The E.On bundle just stopped");
+  }
+}
+```
 
 ## Configuration
 
