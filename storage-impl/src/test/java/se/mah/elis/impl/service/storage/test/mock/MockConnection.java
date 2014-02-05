@@ -159,7 +159,7 @@ public class MockConnection implements Connection {
 	@Override
 	public Statement createStatement(int resultSetType, int resultSetConcurrency)
 			throws SQLException {
-		return new MockStatement();
+		return new MockStatement(new ArrayList<>());
 	}
 
 	@Override

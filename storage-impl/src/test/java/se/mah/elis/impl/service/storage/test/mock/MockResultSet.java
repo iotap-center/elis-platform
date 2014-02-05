@@ -32,8 +32,9 @@ public class MockResultSet implements ResultSet {
 		metaData = new MockResultSetMetaData();
 	}
 	
-	public MockResultSet(MockResultSetMetaData meta) {
+	public MockResultSet(MockResultSetMetaData meta, ArrayList data) {
 		metaData = meta;
+		this.data = data;
 	}
 
 	@Override
