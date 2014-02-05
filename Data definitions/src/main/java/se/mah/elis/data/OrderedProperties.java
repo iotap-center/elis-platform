@@ -1,9 +1,14 @@
 package se.mah.elis.data;
 
+import java.util.AbstractSet;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * <p>OrderedProperties is an extension of Properties, where the entries are
@@ -103,5 +108,56 @@ public class OrderedProperties extends Properties {
 	public synchronized void clear() {
 		keys.clear();
 		super.clear();
+	}
+	
+	/**
+	 * Overrides {@link java.util.Hashtable#entrySet() entrySet()}.
+	 * 
+	 * @return Returns an ordered set of this object's entries.
+	 * @since 1.1
+	 */
+	@Override
+	public Set<Map.Entry<Object, Object>> entrySet() {
+		 Set<Map.Entry<Object, Object>> entrySet =
+				 Collections.synchronizedSet(new LinkedHashSet());
+		 Object value;
+		 
+		  for (Object key: keys) {
+			  value = this.get(key);
+			  entrySet.add(new EntryImpl<Object, Object>(key, value));
+		  }
+		 
+		 return entrySet;
+	}
+	
+	private class EntryImpl<K, V> implements Map.Entry<K, V> {
+		
+		private K key;
+		private V value;
+
+		public EntryImpl(K key, V value) {
+			this.key = key;
+			this.value = value;
+		}
+		
+		@Override
+		public K getKey() {
+			return key;
+		}
+
+		@Override
+		public V getValue() {
+			return value;
+		}
+
+		@Override
+		public V setValue(V value) {
+			V old = this.value;
+			this.value = value;
+			
+			return old;
+		}
+
+		
 	}
 }
