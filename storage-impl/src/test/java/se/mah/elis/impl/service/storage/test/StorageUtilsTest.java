@@ -3,7 +3,10 @@ package se.mah.elis.impl.service.storage.test;
 import static org.junit.Assert.*;
 
 import java.nio.ByteBuffer;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLData;
 import java.sql.SQLException;
 import java.sql.SQLInput;
@@ -24,8 +27,12 @@ import se.mah.elis.impl.service.storage.test.mock.MockConnection;
 import se.mah.elis.impl.service.storage.test.mock.MockResultSet;
 import se.mah.elis.impl.service.storage.test.mock.MockResultSetMetaData;
 import se.mah.elis.impl.services.storage.StorageUtils;
+import se.mah.elis.services.storage.exceptions.StorageException;
 
 public class StorageUtilsTest {
+	
+	private Connection connection = null;
+	private static int INITIAL_ROW_COUNT = 6;
 
 	@Before
 	public void setUp() throws Exception {
@@ -33,6 +40,48 @@ public class StorageUtilsTest {
 
 	@After
 	public void tearDown() throws Exception {
+		if (connection != null && !connection.isClosed()) {
+			connection.close();
+			connection = null;
+		}
+	}
+	
+	private void setUpDatabase() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			connection =  DriverManager
+			          .getConnection("jdbc:mysql://localhost/elis_test?"
+			                  + "user=elis_test&password=elis_test");
+			Statement statement = connection.createStatement();
+			statement.execute("TRUNCATE TABLE elis_test;");
+			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e60', 'table1')");
+			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e42', 'table2')");
+			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e13', 'table3')");
+			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e11', 'table1')");
+			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e17', 'table1')");
+			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e05', 'table2')");
+			statement.close();
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private int countBindingsInDB() {
+		Statement statement;
+		int bindings = -1;
+		
+		try {
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT count(*) FROM elis_test");
+			bindings = rs.getInt(0);
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return bindings;
 	}
 
 	@Test
@@ -212,7 +261,7 @@ public class StorageUtilsTest {
 		props.put("col 4", 1.3);
 		
 		expected = "?, ?, ?, ?";
-		actual = StorageUtils.generateKeyList(props);
+		actual = StorageUtils.generateQMarks(props);
 		
 		assertEquals(expected, actual);
 	}
@@ -225,7 +274,7 @@ public class StorageUtilsTest {
 		props.put("col 1", 42);
 		
 		expected = "?";
-		actual = StorageUtils.generateKeyList(props);
+		actual = StorageUtils.generateQMarks(props);
 		
 		assertEquals(expected, actual);
 	}
@@ -236,7 +285,7 @@ public class StorageUtilsTest {
 		String expected, actual;
 
 		expected = "";
-		actual = StorageUtils.generateKeyList(props);
+		actual = StorageUtils.generateQMarks(props);
 
 		assertEquals(expected, actual);
 	}
@@ -438,7 +487,6 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-
 			utils.addParameter(stmt, 42, 0);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
@@ -457,7 +505,6 @@ public class StorageUtilsTest {
 		
 		try {
 			stmt = connection.prepareStatement(query);
-
 
 			utils.addParameter(stmt, (long) 42, 0);
 		} catch (SQLException e) {
@@ -497,7 +544,6 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-
 			utils.addParameter(stmt, (double) 4.2, 0);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
@@ -516,7 +562,6 @@ public class StorageUtilsTest {
 		
 		try {
 			stmt = connection.prepareStatement(query);
-
 
 			utils.addParameter(stmt, "horses", 0);
 		} catch (SQLException e) {
@@ -539,7 +584,6 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-
 			utils.addParameter(stmt, dt, 0);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
@@ -555,22 +599,35 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		StringBuffer expected = new StringBuffer();
+		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+		byte[] bytes = null;
+
+		bb.putLong(uuid.getMostSignificantBits());
+		bb.putLong(uuid.getLeastSignificantBits());
+		bytes = bb.array();
+		
+		for (int i = 0; i < bytes.length; i++) {
+			expected.append(bytes[i]);
+		}
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, 42, 0);
+			utils.addParameter(stmt, uuid, 0);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
-		assertEquals("Bytes[]: HOWTODOTHIS?", (String) objectStore.get(0));
+		assertEquals("Byte[]: " + expected.toString(), (String) objectStore.get(0));
 	}
 
-	@Test
-	public void testAddParameterObject() {
-		fail("Not yet implemented");
-	}
+//	@Test
+//	public void testAddParameterObject() {
+//		// TODO We need to discuss this behaviour
+//		fail("Not yet implemented");
+//	}
 
 	@Test
 	public void testPairUp() {
@@ -606,7 +663,7 @@ public class StorageUtilsTest {
 		
 		props.put("col 1", 42);
 		
-		expected = "`col_1` = 42";
+		expected = "`col_1` = ?";
 		actual = StorageUtils.pairUp(props);
 		
 		assertEquals(expected, actual);
@@ -615,13 +672,17 @@ public class StorageUtilsTest {
 	@Test
 	public void testUuidToBytes() {
 		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
-		ByteBuffer expected = ByteBuffer.wrap(new byte[16]);
+		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
 		byte[] actual = StorageUtils.uuidToBytes(uuid);
+		byte[] expected = null;
 		
-		expected.putLong(uuid.getMostSignificantBits());
-		expected.putLong(uuid.getLeastSignificantBits());
+		bb.putLong(uuid.getMostSignificantBits());
+		bb.putLong(uuid.getLeastSignificantBits());
+		expected = bb.array();
 		
-		assertEquals(expected.array(), actual);
+		for (int i = 0; i < 16; i++) {
+			assertEquals(expected[i], actual[i]);
+		}
 	}
 
 	@Test
@@ -639,13 +700,19 @@ public class StorageUtilsTest {
 		
 		data.add("Batman");
 		data.add(42);
-		data.add(1.2);
+		data.add((float) 1.2);
 		
 		expected.put("Col1", "Batman");
 		
 		actual = utils.resultSetRowToProperties(rs);
 		
-		assertEquals(expected, actual);
+		assertEquals(3, actual.size());
+		assertTrue(actual.containsKey("Col1"));
+		assertEquals("Batman", actual.get("Col1"));
+		assertTrue(actual.containsKey("Col2"));
+		assertEquals(42, actual.get("Col2"));
+		assertTrue(actual.containsKey("Col3"));
+		assertEquals((float) 1.2, actual.get("Col3"));
 	}
 
 	@Test
@@ -668,7 +735,7 @@ public class StorageUtilsTest {
 		ArrayList<Object> data = new ArrayList<>();
 		MockResultSet rs = new MockResultSet(meta, data);
 		StorageUtils utils = new StorageUtils(new MockConnection());
-		Properties actual;
+		Properties actual = null;
 
 		meta.add("Col1", java.lang.Integer.class.getName());
 		meta.add("Col2", java.lang.Integer.class.getName());
@@ -676,9 +743,13 @@ public class StorageUtilsTest {
 		
 		data.add("Batman");
 		data.add(42);
-		data.add(1.2);
+		data.add((float) 1.2);
 		
-		actual = utils.resultSetRowToProperties(rs);
+		try {
+			actual = utils.resultSetRowToProperties(rs);
+			fail("this shouldn't happen");
+		} catch (ClassCastException e) {
+		}
 		
 		assertNull(actual);
 	}
@@ -698,11 +769,11 @@ public class StorageUtilsTest {
 		
 		data.add("Batman");
 		data.add(42);
-		data.add(1.2);
+		data.add((float) 1.3);
 		
 		expected.put("Col1", "Batman");
 		expected.put("Col2", 42);
-		expected.put("Col3", 1.3);
+		expected.put("Col3", (float) 1.3);
 		
 		actual = utils.resultSetRowToProperties(rs);
 		
@@ -749,7 +820,7 @@ public class StorageUtilsTest {
 		ArrayList<Object> data = new ArrayList<>();
 		MockResultSet rs = new MockResultSet(meta, data);
 		StorageUtils utils = new StorageUtils(new MockConnection());
-		Properties actual;
+		Properties actual = null;
 
 		meta.add("Col1", java.lang.String.class.getName());
 		meta.add("Col2", java.lang.String.class.getName());
@@ -757,56 +828,135 @@ public class StorageUtilsTest {
 		
 		data.add("Batman");
 		data.add(42);
-		data.add(1.2);
+		data.add((float) 1.2);
 		
-		actual = utils.resultSetRowToProperties(rs);
+		try {
+			actual = utils.resultSetRowToProperties(rs);
+			fail("this shouldn't happen");
+		} catch (ClassCastException e) {
+		}
+		
+		assertNull(actual);
+	}
+	
+	// The tests below need a database to work against. For this, we use a
+	// MySQL database, called elis_test, username and password are both
+	// elis_test.
+	
+	@Test
+	public void testLookupUUIDTable() {
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42");
+		String expected = "table2";
+		String actual = utils.lookupUUIDTable(uuid);
+		
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testLookupUUIDTableNonExistentUUID() {
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		String actual = utils.lookupUUIDTable(uuid);
 		
 		assertNull(actual);
 	}
 
 	@Test
-	public void testLookupUUIDTable() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testLookupUUIDTableNonExistentUUID() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testLookupUUIDTableMalformedUUID() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void testLookupUUIDTableNoUUID() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		String actual = utils.lookupUUIDTable(null);
+		
+		assertNull(actual);
 	}
 
 	@Test
 	public void testPairUUIDWithTable() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testPairUUIDWithTableBadTableName() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e42");
+		String expected = "table2";
+		String actual = utils.lookupUUIDTable(uuid);
+		
+		assertNull(actual);
+		
+		try {
+			utils.pairUUIDWithTable(uuid, expected);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		actual = utils.lookupUUIDTable(uuid);
+		
+		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void testPairUUIDWithTableNoTableName() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testPairUUIDWithTableBadUUID() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e42");
+		String table = "";
+		String actual = utils.lookupUUIDTable(uuid);
+		
+		assertNull(actual);
+		
+		try {
+			utils.pairUUIDWithTable(uuid, table);
+			fail("This shouldn't happen");
+		} catch (StorageException e) {
+		}
+		actual = utils.lookupUUIDTable(uuid);
+		
+		assertNull(actual);
 	}
 
 	@Test
 	public void testPairUUIDWithTableNoUUID() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e42");
+		String expected = "table2";
+		String actual = utils.lookupUUIDTable(uuid);
+		
+		assertNull(actual);
+		
+		try {
+			utils.pairUUIDWithTable(null, expected);
+			fail("This shouldn't happen");
+		} catch (StorageException e) {
+		}
+		actual = utils.lookupUUIDTable(uuid);
+		
+		assertNull(actual);
 	}
 
+	@Test
+	public void testPairUUIDWithTableDuplicateUUID() {
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42");
+		String expected = "table2";
+		String actual = utils.lookupUUIDTable(uuid);
+		
+		assertNull(actual);
+		
+		try {
+			utils.pairUUIDWithTable(null, expected);
+			fail("This shouldn't happen");
+		} catch (StorageException e) {
+		}
+		actual = utils.lookupUUIDTable(uuid);
+		
+		assertNull(actual);
+	}
 }

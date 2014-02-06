@@ -30,6 +30,7 @@ public class MockResultSet implements ResultSet {
 	
 	public MockResultSet() {
 		metaData = new MockResultSetMetaData();
+		data = new ArrayList<Object>();
 	}
 	
 	public MockResultSet(MockResultSetMetaData meta, ArrayList data) {
@@ -286,8 +287,7 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public Object getObject(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return data.get(columnIndex);
 	}
 
 	@Override

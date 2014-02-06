@@ -374,8 +374,13 @@ public class MockPreparedStatement implements PreparedStatement {
 
 	@Override
 	public void setBytes(int parameterIndex, byte[] x) throws SQLException {
-		objectStore.add(parameterIndex, "Byte[]: " + x);
-
+		StringBuffer plain = new StringBuffer();
+		
+		for (int i = 0; i < x.length; i++) {
+			plain.append(x[i]);
+		}
+		
+		objectStore.add(parameterIndex, "Byte[]: " + plain.toString());
 	}
 
 	@Override
