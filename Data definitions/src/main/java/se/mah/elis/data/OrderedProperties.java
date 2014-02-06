@@ -157,7 +157,5 @@ public class OrderedProperties extends Properties {
 			
 			return old;
 		}
-
-		
 	}
 }
