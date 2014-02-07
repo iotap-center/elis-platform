@@ -53,13 +53,19 @@ public class StorageUtilsTest {
 			          .getConnection("jdbc:mysql://localhost/elis_test?"
 			                  + "user=elis_test&password=elis_test");
 			Statement statement = connection.createStatement();
-			statement.execute("TRUNCATE TABLE elis_test;");
-			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e60', 'table1')");
-			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e42', 'table2')");
-			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e13', 'table3')");
-			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e11', 'table1')");
-			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e17', 'table1')");
-			statement.execute("INSERT INTO elis_test VALUES ('c3677d61-2378-4183-b478-ec915fd32e05', 'table2')");
+			statement.execute("TRUNCATE TABLE object_lookup_table;");
+			// c3677d61-2378-4183-b478-ec915fd32e60
+			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e60'), 'table1')");
+			// c3677d61-2378-4183-b478-ec915fd32e42
+			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e42'), 'table2')");
+			// c3677d61-2378-4183-b478-ec915fd32e13
+			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e13'), 'table3')");
+			// c3677d61-2378-4183-b478-ec915fd32e11
+			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e11'), 'table1')");
+			// c3677d61-2378-4183-b478-ec915fd32e17
+			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e17'), 'table1')");
+			// c3677d61-2378-4183-b478-ec915fd32e05
+			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e05'), 'table2')");
 			statement.close();
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
@@ -73,8 +79,9 @@ public class StorageUtilsTest {
 		
 		try {
 			statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT count(*) FROM elis_test");
-			bindings = rs.getInt(0);
+			ResultSet rs = statement.executeQuery("SELECT count(*) FROM object_lookup_table");
+			rs.next();
+			bindings = rs.getInt(1);
 			statement.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -867,16 +874,6 @@ public class StorageUtilsTest {
 	}
 
 	@Test
-	public void testLookupUUIDTableNoUUID() {
-		setUpDatabase();
-		
-		StorageUtils utils = new StorageUtils(connection);
-		String actual = utils.lookupUUIDTable(null);
-		
-		assertNull(actual);
-	}
-
-	@Test
 	public void testPairUUIDWithTable() {
 		setUpDatabase();
 		
@@ -948,7 +945,7 @@ public class StorageUtilsTest {
 		String expected = "table2";
 		String actual = utils.lookupUUIDTable(uuid);
 		
-		assertNull(actual);
+		assertEquals(expected, actual);
 		
 		try {
 			utils.pairUUIDWithTable(null, expected);
@@ -957,7 +954,7 @@ public class StorageUtilsTest {
 		}
 		actual = utils.lookupUUIDTable(uuid);
 		
-		assertNull(actual);
+		assertEquals(INITIAL_ROW_COUNT, countBindingsInDB());
 	}
 
 	@Test
