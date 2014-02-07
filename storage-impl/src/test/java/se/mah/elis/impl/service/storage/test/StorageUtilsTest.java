@@ -993,23 +993,4 @@ public class StorageUtilsTest {
 		assertNull(actual);
 		assertEquals(INITIAL_ROW_COUNT, countBindingsInDB());
 	}
-
-	@Test
-	public void testFreeUUIDNoUUID() {
-		setUpDatabase();
-		
-		StorageUtils utils = new StorageUtils(connection);
-		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42");
-		String expected = "table2";
-		String actual = utils.lookupUUIDTable(uuid);
-		
-		assertEquals(expected, actual);
-		assertEquals(INITIAL_ROW_COUNT, countBindingsInDB());
-		
-		utils.freeUUID(null);
-		actual = utils.lookupUUIDTable(uuid);
-		
-		assertEquals(expected, actual);
-		assertEquals(INITIAL_ROW_COUNT, countBindingsInDB());
-	}
 }

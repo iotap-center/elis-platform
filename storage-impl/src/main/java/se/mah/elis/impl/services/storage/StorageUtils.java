@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 
+import se.mah.elis.impl.services.storage.exceptions.YouAreBreakingTheInternetException;
 import se.mah.elis.impl.services.storage.exceptions.YouAreDoingItWrongException;
 import se.mah.elis.services.storage.exceptions.StorageException;
 
@@ -288,22 +289,22 @@ public class StorageUtils {
 		Properties props = null;
 		String tableName = null;
 		
-		String query = "SELECT table_name FROM object_lookup_table " +
-				"WHERE id = '" + uuidToBytes(uuid) + "';";
+		String query = "SELECT stored_in FROM object_lookup_table " +
+				"WHERE id = UNHEX('" + stripDashesFromUUID(uuid) + "');";
 		try {
-			
 			// Let's take command of the commit ship ourselves.
 			// Forward, mateys!
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
 			java.sql.ResultSet rs = stmt.executeQuery(query);
-			props = resultSetRowToProperties(rs);
+			if (rs.next()) {
+				tableName = rs.getString(1);
+			}
 			rs.close();
 			stmt.close();
-			
-			tableName = (String) props.get("table_name");
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
+			e.printStackTrace();
 		}
 		
 		return tableName;
@@ -323,7 +324,11 @@ public class StorageUtils {
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
 		
-		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
+		String query = "INSERT INTO object_lookup_table VALUES(UNHEX(?), ?);";
+		
+		if (uuid == null || table == null || table.length() == 0) {
+			throw new StorageException();
+		}
 		
 		try {
 			// Let's take command of the commit ship ourselves.
@@ -332,14 +337,14 @@ public class StorageUtils {
 			PreparedStatement stmt = connection.prepareStatement(query);
 			
 			// Populate the query
-			stmt.setString(1, uuidToBytes(uuid).toString());
+			stmt.setString(1, stripDashesFromUUID(uuid));
 			stmt.setString(2, table);
 			
 			// Run the statement and end the transaction
 			stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
-			// Skip this like we just don't care
+			throw new StorageException("Couldn't write to database.");
 		}
 	}
 	
@@ -351,7 +356,17 @@ public class StorageUtils {
 	 * @since 1.0
 	 */
 	public void freeUUID(UUID uuid) {
+		String query = "DELETE FROM object_lookup_table WHERE id = UNHEX('" +
+				stripDashesFromUUID(uuid) + "');";
 		
+		try {
+			Statement stmt = connection.createStatement();
+			stmt.executeUpdate(query);
+			stmt.close();
+		} catch (SQLException e) {
+			// Skip this like we just don't care.
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -395,5 +410,9 @@ public class StorageUtils {
 		// TODO We should _really_ handle UUIDs as well. However, this seems to
 		// require some exploratory development and will be postponed for the
 		// time being.
+	}
+	
+	private String stripDashesFromUUID(UUID uuid) {
+		return uuid.toString().replace("-", "");
 	}
 }
