@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 
+import se.mah.elis.impl.services.storage.exceptions.YouAreDoingItWrongException;
 import se.mah.elis.services.storage.exceptions.StorageException;
 
 /**
@@ -69,17 +71,20 @@ public class StorageUtils {
 	 */
 	public static String generateKeyList(Properties p) {
 		Iterator<Entry<Object, Object>> entries = p.entrySet().iterator();
-		Entry<Object, Object> entry = entries.next();
+		Entry<Object, Object> entry = null;
 		StringBuffer keys = new StringBuffer();
 		
-		while (entry != null) {
+		while (entries.hasNext()) {
+			entry = entries.next();
+			if (!(entry.getKey() instanceof String)) {
+				throw new IllegalArgumentException();
+			}
+			
 			if (keys.length() > 0) {
 				keys.append(", ");
 			}
 			
-			keys.append("`" + entry.getKey() + "`");
-			
-			entry = entries.next();
+			keys.append("`" + mysqlifyName((String) entry.getKey()) + "`");
 		}
 		
 		return keys.toString();
@@ -94,15 +99,15 @@ public class StorageUtils {
 	 */
 	public static String generateQMarks(Properties p) {
 		Iterator<Entry<Object, Object>> entries = p.entrySet().iterator();
-		Entry<Object, Object> entry = entries.next();
+		Entry<Object, Object> entry = null;
 		StringBuffer keys = new StringBuffer();
 		
-		while (entry != null) {
+		while (entries.hasNext()) {
+			entry = entries.next();
 			if (keys.length() > 0) {
 				keys.append(", ");
 			}
 			keys.append("?");
-			entry = entries.next();
 		}
 		
 		return keys.toString();
@@ -129,7 +134,7 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public static String demysqlifyName(String name) {
-		return name.replace('-', '.');
+		return name.replace('-', '.').replace("_", " ");
 	}
 
 	/**
@@ -159,10 +164,10 @@ public class StorageUtils {
 			stmt.setBytes(index, uuidToBytes((UUID) value));
 		} else if (value instanceof String) {
 			stmt.setString(index, (String) value);
+		} else if (value instanceof Byte) {
+			stmt.setByte(index, (Byte) value);
 		} else if (value instanceof DateTime) {
-			// TODO Is this the right way to do it?
-			java.sql.Date date = new java.sql.Date(((DateTime) value).getMillis());
-			stmt.setDate(index, date);
+			stmt.setTimestamp(index, new Timestamp(((DateTime) value).getMillis()));
 		} else {
 			// TODO: Implement this, mofo!
 			Blob blob = connection.createBlob();
@@ -185,7 +190,7 @@ public class StorageUtils {
 			if (pairs.length() > 0) {
 				pairs.append(", ");
 			}
-			pairs.append("`" + e.getKey() + "` = ?");
+			pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = ?");
 		}
 		
 		return pairs.toString();
@@ -224,7 +229,7 @@ public class StorageUtils {
 			meta = rs.getMetaData();
 			colCount = meta.getColumnCount();
 			
-			for (int i = 1; i <= colCount; i++) {
+			for (int i = 0; i < colCount; i++) {
 				addValueToProps(props, meta.getColumnClassName(i),
 						meta.getColumnName(i), rs.getObject(i));
 			}
@@ -309,9 +314,11 @@ public class StorageUtils {
 	 * 
 	 * @param uuid The UUID.
 	 * @param table The table name.
+	 * @throws StorageException if the information couldn't be stored, e.g. if
+	 * 		the UUID already exists in the table.
 	 * @since 2.0
 	 */
-	public void pairUUIDWithTable(UUID uuid, String table) {
+	public void pairUUIDWithTable(UUID uuid, String table) throws StorageException {
 		// TODO: It might be possible to create a version of this method that
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
@@ -334,6 +341,17 @@ public class StorageUtils {
 		} catch (SQLException e) {
 			// Skip this like we just don't care
 		}
+	}
+	
+	/**
+	 * Decouples a UUID from a table, i.e. frees it for use in another table.
+	 * 
+	 * @param uuid The UUID.
+	 * @param table The table name.
+	 * @since 1.0
+	 */
+	public void freeUUID(UUID uuid) {
+		
 	}
 	
 	/**

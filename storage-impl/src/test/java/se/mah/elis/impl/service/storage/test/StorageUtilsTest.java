@@ -959,4 +959,60 @@ public class StorageUtilsTest {
 		
 		assertNull(actual);
 	}
+
+	@Test
+	public void testFreeUUID() {
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42");
+		String expected = "table2";
+		String actual = utils.lookupUUIDTable(uuid);
+		
+		assertEquals(expected, actual);
+		assertEquals(INITIAL_ROW_COUNT, countBindingsInDB());
+		
+		utils.freeUUID(uuid);
+		actual = utils.lookupUUIDTable(uuid);
+		
+		assertNull(actual);
+		assertEquals(INITIAL_ROW_COUNT - 1, countBindingsInDB());
+	}
+
+	@Test
+	public void testFreeUUIDNoSuchUUID() {
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e42");
+		String actual = utils.lookupUUIDTable(uuid);
+		
+		assertNull(actual);
+		assertEquals(INITIAL_ROW_COUNT, countBindingsInDB());
+		
+		utils.freeUUID(uuid);
+		actual = utils.lookupUUIDTable(uuid);
+		
+		assertNull(actual);
+		assertEquals(INITIAL_ROW_COUNT, countBindingsInDB());
+	}
+
+	@Test
+	public void testFreeUUIDNoUUID() {
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42");
+		String expected = "table2";
+		String actual = utils.lookupUUIDTable(uuid);
+		
+		assertEquals(expected, actual);
+		assertEquals(INITIAL_ROW_COUNT, countBindingsInDB());
+		
+		utils.freeUUID(null);
+		actual = utils.lookupUUIDTable(uuid);
+		
+		assertEquals(expected, actual);
+		assertEquals(INITIAL_ROW_COUNT, countBindingsInDB());
+	}
 }
