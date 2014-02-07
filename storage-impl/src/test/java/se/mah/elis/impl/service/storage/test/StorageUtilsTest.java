@@ -993,4 +993,13 @@ public class StorageUtilsTest {
 		assertNull(actual);
 		assertEquals(INITIAL_ROW_COUNT, countBindingsInDB());
 	}
+	
+	@Test
+	public void testStripDashesFromUUID() {
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e42");
+		String expected = "deadbeef23784183b478ec915fd32e42";
+		String actual = StorageUtils.stripDashesFromUUID(uuid);
+		
+		assertEquals(expected, actual);
+	}
 }

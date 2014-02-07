@@ -370,6 +370,17 @@ public class StorageUtils {
 	}
 	
 	/**
+	 * Removes dashes from a UUID string for inclusion in MySQL queries.
+	 * 
+	 * @param uuid The UUID to prepare for MySQL usage.
+	 * @return A MySQL-friendly representation of the UUID.
+	 * @since 2.0
+	 */
+	public static String stripDashesFromUUID(UUID uuid) {
+		return uuid.toString().replace("-", "");
+	}
+	
+	/**
 	 * Adds a value to a Properties object, as something else than a simple
 	 * Object, i.e. as an int, a String, or what not.
 	 * 
@@ -410,9 +421,5 @@ public class StorageUtils {
 		// TODO We should _really_ handle UUIDs as well. However, this seems to
 		// require some exploratory development and will be postponed for the
 		// time being.
-	}
-	
-	private String stripDashesFromUUID(UUID uuid) {
-		return uuid.toString().replace("-", "");
 	}
 }
