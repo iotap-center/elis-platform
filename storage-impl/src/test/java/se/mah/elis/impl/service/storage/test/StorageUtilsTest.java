@@ -7,12 +7,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLData;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLInput;
-import java.sql.SQLXML;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.UUID;
@@ -698,28 +695,34 @@ public class StorageUtilsTest {
 		ArrayList<Object> data = new ArrayList<>();
 		MockResultSet rs = new MockResultSet(meta, data);
 		StorageUtils utils = new StorageUtils(new MockConnection());
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e42");
+		
 		Properties expected = new Properties();
 		Properties actual;
 
 		meta.add("Col1", java.lang.String.class.getName());
 		meta.add("Col2", java.lang.Integer.class.getName());
 		meta.add("Col3", java.lang.Float.class.getName());
+		meta.add("Col4", byte[].class.getName());
 		
 		data.add("Batman");
 		data.add(42);
 		data.add((float) 1.2);
+		data.add(StorageUtils.uuidToBytes(uuid));
 		
 		expected.put("Col1", "Batman");
 		
 		actual = utils.resultSetRowToProperties(rs);
 		
-		assertEquals(3, actual.size());
+		assertEquals(4, actual.size());
 		assertTrue(actual.containsKey("Col1"));
 		assertEquals("Batman", actual.get("Col1"));
 		assertTrue(actual.containsKey("Col2"));
 		assertEquals(42, actual.get("Col2"));
 		assertTrue(actual.containsKey("Col3"));
 		assertEquals((float) 1.2, actual.get("Col3"));
+		assertTrue(actual.containsKey("Col4"));
+		assertEquals(uuid, actual.get("Col4"));
 	}
 
 	@Test
