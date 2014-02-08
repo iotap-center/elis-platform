@@ -65,20 +65,36 @@ public class StorageImpl implements Storage {
 	private static String DELETE_QUERY = "This storage engine requires a DeleteQuery.";
 
 	/**
-	 * Creates an instance of this class.
+	 * Creates an instance of this class. It sets up a connection to a
+	 * pre-defined database.
 	 * 
 	 * @since 1.0
 	 */
 	public StorageImpl() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			// TODO: Replace with non-static stuff later on
+			// TODO Replace with non-static stuff later on
 			connection = DriverManager
-					.getConnection("jdbc:mysql://localhost/feedback?"
+					.getConnection("jdbc:mysql://localhost/elis?"
 						+	"user=elis&password=notallthatsecret");
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		// TODO Replace the MySQL query translator with more generic stuff.
+		translator = new MySQLQueryTranslator();
+		utils = new StorageUtils(connection);
+	}
+	
+	/**
+	 * Creates an instance of this class with an already created database
+	 * connection. This is mainly meant to be used for testing purposes.
+	 * 
+	 * @param connection A JDBC connection.
+	 * @since 2.0
+	 */
+	public StorageImpl(Connection connection) {
+		this.connection = connection;
+		// TODO Replace the MySQL query translator with more generic stuff.
 		translator = new MySQLQueryTranslator();
 		utils = new StorageUtils(connection);
 	}

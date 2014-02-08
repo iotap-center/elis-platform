@@ -19,9 +19,9 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 
-import se.mah.elis.impl.services.storage.exceptions.YouAreBreakingTheInternetException;
-import se.mah.elis.impl.services.storage.exceptions.YouAreDoingItWrongException;
 import se.mah.elis.services.storage.exceptions.StorageException;
+
+import org.apache.commons.codec.binary.Hex;
 
 /**
  * This class contains a bunch of helper methods to be used by StorageImpl.
@@ -379,6 +379,24 @@ public class StorageUtils {
 	public static String stripDashesFromUUID(UUID uuid) {
 		return uuid.toString().replace("-", "");
 	}
+
+	/**
+	 * Converts bytes to a UUID object.
+	 * 
+	 * @param bytes The bytes to be converted to a UUID.
+	 * @return A UUID object.
+	 * @since 2.0
+	 */
+	public static UUID bytesToUUID(byte[] bytes) {
+		StringBuilder build = new StringBuilder(Hex.encodeHexString(bytes));
+
+		build.insert(20, '-');
+		build.insert(16, '-');
+		build.insert(12, '-');
+		build.insert(8, '-');
+		
+		return UUID.fromString(build.toString());
+	}
 	
 	/**
 	 * Adds a value to a Properties object, as something else than a simple
@@ -414,12 +432,12 @@ public class StorageUtils {
 			props.put(colName, new DateTime((Date) value));
 		} else if (clazz.equals("java.lang.Boolean")) {
 			props.put(colName, (Boolean) value);
+		} else if (clazz.equals(byte[].class.getName()) &&
+				((byte[]) value).length == 16) {
+			byte[] bytes = (byte[]) value;
+			props.put(colName, bytesToUUID((byte[]) value));
 		} else {
 			props.put(colName, value);
 		}
-		
-		// TODO We should _really_ handle UUIDs as well. However, this seems to
-		// require some exploratory development and will be postponed for the
-		// time being.
 	}
 }
