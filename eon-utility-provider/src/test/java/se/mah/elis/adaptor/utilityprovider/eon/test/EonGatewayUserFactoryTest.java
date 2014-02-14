@@ -15,9 +15,9 @@ import org.junit.Test;
 
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGatewayUser;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGatewayUserFactory;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGatewayUserIdentifer;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.user.EonGatewayUser;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.user.EonGatewayUserFactory;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.user.EonGatewayUserIdentifer;
 
 public class EonGatewayUserFactoryTest {
 

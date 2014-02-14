@@ -1,32 +1,26 @@
 package se.mah.elis.adaptor.utilityprovider.eon;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.mah.elis.adaptor.device.api.providers.GatewayUserProvider;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGatewayUserFactory;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.user.EonUserProvider;
+import se.mah.elis.services.users.factory.UserFactory;
 
-public class EonAdaptor implements BundleActivator {
+@Component(name = "Eon Adapter")
+@Service(value = EonAdaptor.class)
+public class EonAdaptor {
 
-	private static final Logger logger = LoggerFactory.getLogger(EonAdaptor.class); 
-	private GatewayUserProvider userFactory;
-	ServiceRegistration sr;
+	private static final Logger logger = LoggerFactory.getLogger(EonAdaptor.class);
+	
+	@Reference
+	private UserFactory userFactoryService;
 	
 	public EonAdaptor() {
-		userFactory = new EonGatewayUserFactory();
-	}
-	
-	public void start(BundleContext context) throws Exception {
-		logger.info("The E.On bundle just started");
-		
-		sr = (ServiceRegistration) context.registerService(
-				GatewayUserProvider.class.getName(), userFactory, null);
+		userFactoryService.registerProvider(new EonUserProvider());
+		logger.info("E.On adapter initiated");
 	}
 
-	public void stop(BundleContext context) throws Exception {
-		logger.info("The E.On bundle just stopped");
-	}
 }

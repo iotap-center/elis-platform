@@ -1,4 +1,4 @@
-package se.mah.elis.adaptor.utilityprovider.eon.internal.gateway;
+package se.mah.elis.adaptor.utilityprovider.eon.internal.user;
 
 import javax.naming.AuthenticationException;
 import javax.ws.rs.client.ResponseProcessingException;
@@ -7,6 +7,7 @@ import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.device.api.providers.GatewayUserProvider;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 
 /**
  * E.On user factory

@@ -1,4 +1,4 @@
-package se.mah.elis.adaptor.utilityprovider.eon.internal.gateway;
+package se.mah.elis.adaptor.utilityprovider.eon.internal.user;
 
 import java.util.Properties;
 import java.util.UUID;

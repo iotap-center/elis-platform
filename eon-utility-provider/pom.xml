@@ -73,6 +73,11 @@
     	<artifactId>logback-classic</artifactId>
     	<version>1.0.13</version>
     </dependency>
+    <dependency>
+    	<groupId>org.apache.felix</groupId>
+    	<artifactId>org.apache.felix.scr.annotations</artifactId>
+    	<version>1.9.6</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -83,12 +88,25 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
+          	<Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
             <Export-Package>${project.groupId}</Export-Package>
             <Private-Package>${project.groupId}.internal.*</Private-Package>
-            <Bundle-Activator>${project.groupId}.Activator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-scr-plugin</artifactId>
+        <version>1.14.0</version>
+        <executions>
+          <execution>
+            <id>generate-scr-scrdescriptor</id>
+            <goals>
+              <goal>scr</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <groupId>se.mah.elis.adaptor.utilityprovider.eon</groupId>

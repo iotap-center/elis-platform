@@ -19,6 +19,8 @@ import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDevice;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.user.EonGatewayUser;
+import se.mah.elis.adaptor.utilityprovider.eon.internal.user.EonGatewayUserFactory;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.exceptions.StaticEntityException;
 
