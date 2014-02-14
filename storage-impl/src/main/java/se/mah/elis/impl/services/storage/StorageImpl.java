@@ -1198,7 +1198,7 @@ public class StorageImpl implements Storage {
 	 * @since 2.0
 	 */
 	@Override
-	public void readUser(AbstractUser user) throws StorageException {
+	public AbstractUser readUser(AbstractUser user) throws StorageException {
 		readUser(user, false);
 	}
 
@@ -1212,7 +1212,7 @@ public class StorageImpl implements Storage {
 	 * @throws StorageException Thrown when the user couldn't be read.
 	 * @since 2.0
 	 */
-	private void readUser(AbstractUser user, boolean finalRun)
+	private AbstractUser readUser(AbstractUser user, boolean finalRun)
 			throws StorageException {
 		if (user != null) {
 			// Generate the table name
