@@ -43,14 +43,21 @@ public class MockPlatformUser implements PlatformUser {
 
 	@Override
 	public void setIdentifier(UserIdentifier id) {
-		// TODO Auto-generated method stub
-
+		this.id = (PlatformUserIdentifier) id;
 	}
 
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		Properties props = new OrderedProperties();
+		
+		if (id != null) {
+			props.putAll(id.getProperties());
+		}
+		props.put("first_name", firstName);
+		props.put("last_name", lastName);
+		props.put("email", email);
+		
+		return props;
 	}
 
 	@Override

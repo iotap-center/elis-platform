@@ -12,6 +12,11 @@ public class EmptyMockUserIdentifier implements UserIdentifier {
 	public EmptyMockUserIdentifier() {
 		clazz = se.mah.elis.services.users.User.class;
 	}
+
+	
+	public EmptyMockUserIdentifier(Class clazz) {
+		this.clazz = clazz;
+	}
 	
 	@Override
 	public Properties getProperties() {

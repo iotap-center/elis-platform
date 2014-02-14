@@ -16,6 +16,7 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 
 import se.mah.elis.data.ElisDataObject;
+import se.mah.elis.impl.services.storage.exceptions.YouAreDoingItWrongException;
 import se.mah.elis.impl.services.storage.query.DeleteQuery;
 import se.mah.elis.impl.services.storage.query.MySQLQueryTranslator;
 import se.mah.elis.impl.services.storage.result.ResultSetImpl;
@@ -59,6 +60,7 @@ public class StorageImpl implements Storage {
 	
 	// Some error messages
 	private static String OBJECT_NOT_FOUND = "Couldn't find object in data store";
+	private static String OBJECT_NOT_VALID = "Couldn't save this object";
 	private static String INSTANCE_OBJECT_ERROR = "Couldn't instantiate object";
 	private static String INSTANCE_USER_ERROR = "Couldn't instantiate user";
 	private static String STORAGE_ERROR = "Couldn't access storage";
@@ -98,6 +100,16 @@ public class StorageImpl implements Storage {
 		translator = new MySQLQueryTranslator();
 		utils = new StorageUtils(connection);
 	}
+	
+	/**
+	 * Sets the user factory.
+	 * 
+	 * @param factory The user factory.
+	 * @since 2.0
+	 */
+	public void setFactory(UserFactory factory) {
+		this.factory = factory;
+	}
 
 	/**
 	 * Implementation of
@@ -131,24 +143,32 @@ public class StorageImpl implements Storage {
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
 		
-		// Yes, checking data and id for nullness twice is strictly speaking
-		// unnecessary, but makes the code somewhat easier to read.
-		
-		if (data != null && data.getUUID() == null) {
+		if (data != null && !StorageUtils.isEmpty(data.getProperties())) {
 			// Basically, this is a new object. Let's insert it.
+			Properties props = null;
+			UUID uuid = null;
 			
 			// Generate the table name
 			String tableName = data.getClass().getCanonicalName();
 			
-			// Generate the UUID
-			UUID uuid = UUID.randomUUID();
-			data.setUUID(uuid);
+			if (data.getUUID() == null) {
+				// Generate the UUID
+				uuid = UUID.randomUUID();
+				data.setUUID(uuid);
+			} else {
+				uuid = data.getUUID();
+			}
+			
+			props = data.getProperties();
+			
+			if (StorageUtils.isEmpty(props)) {
+				throw new StorageException();
+			}
 			
 			// Create a query to be run as a prepared statement and do some
 			// magic MySQL stuff to it.
 			String query = "INSERT INTO `" + utils.mysqlifyName(tableName) +
 					"` VALUES (" + utils.generateQMarks(data.getProperties()) + ");";
-			Properties props = data.getProperties();
 			
 			// This will be used by the parameter loop below
 			int i = 1;
@@ -183,9 +203,8 @@ public class StorageImpl implements Storage {
 					throw new StorageException(STORAGE_ERROR);
 				}
 			}
-		} else if (data != null && data.getUUID() != null) {
-			// This object should already exist. Let's try to update it.
-			update(data);
+		} else {
+			throw new StorageException();
 		}
 	}
 
@@ -258,7 +277,8 @@ public class StorageImpl implements Storage {
 		
 		String query = null;
 		String tableName = null;
-		Properties props = user.getProperties();
+		Properties props = null;
+		PreparedStatement stmt = null;
 		
 		if (user != null) {
 			// Platform users are handled differently from any other user type.
@@ -266,128 +286,124 @@ public class StorageImpl implements Storage {
 				PlatformUser pu = (PlatformUser) user;
 				PlatformUserIdentifier pid =
 						(PlatformUserIdentifier) pu.getIdentifier();
+				props = user.getProperties();
 				
-				if (pid.getId() > 0) {
-					// This is indeed a new object. Insert it.
+				// First of all, let's make a sanity check of the user.
+				if (pu.getFirstName() == null || pu.getFirstName().length() < 1 ||
+					pu.getLastName() == null || pu.getLastName().length() < 1 ||
+					pu.getEmail() == null || pu.getEmail().length() < 1 ||
+					pid == null || pid.isEmpty()) {
+					throw new StorageException(OBJECT_NOT_VALID);
+				}
+				
+				// This is indeed a new object. Insert it.
+				
+				// Generate the table name and bestow MySQL magic onto it
+				tableName = "se-mah-elis-services-users-PlatformUser";
+				
+				/*
+				 * PlatformUser objects are stored as
+				 * |int id|String username|String password|String first_name|
+				 * 		String last_name|String e-mail|
+				 */
+				query = "INSERT INTO `" + tableName + "` VALUES "
+					+	"(?, ?, PASSWORD(?), ?, ?, ?)";
+				
+				try {
+					// Let's take command of the commit ship ourselves.
+					// Forward, mateys!
+					connection.setAutoCommit(false);
+					stmt = connection.prepareStatement(query);
 					
-					// Generate the table name and bestow MySQL magic onto it
-					tableName = utils.mysqlifyName("se.mah.elis.services.users.PlatformUser");
-					
-					/*
-					 * PlatformUser objects are stored as
-					 * |int id|String username|String password|String first_name|
-					 * 		String last_name|String e-mail|
-					 */
-					query = "INSERT INTO `" + tableName + "` VALUES "
-						+	"(?, ?, PASSWORD(?), ?, ?, ?)";
-					
-					try {
-						// Let's take command of the commit ship ourselves.
-						// Forward, mateys!
-						connection.setAutoCommit(false);
-						PreparedStatement stmt =
-								connection.prepareStatement(query);
-						
-						// Has this user been stored before?
-						if (pid.getId() > 0) {
-							stmt.setInt(1, pid.getId());
-						} else {
-							stmt.setNull(1, Types.NULL);
-						}
-						stmt.setString(2, pid.getUsername());
-						stmt.setString(3, pid.getPassword());
-						stmt.setString(4, pu.getFirstName());
-						stmt.setString(5, pu.getLastName());
-						stmt.setString(6, pu.getEmail());
-						stmt.executeUpdate();
-					} catch (SQLException e) {
-						// Try to create a non-existing table, but only once.
-						if (e.getErrorCode() == 1146 && !finalRun) {
-							// Flatten the user properties
-							Properties template = new Properties();
-							template.putAll(user.getIdentifier()
-									.getPropertiesTemplate());
-							template.putAll(user.getPropertiesTemplate());
-							template.remove("identifier");
-							utils.createTableIfNotExisting(tableName,
-									user.getPropertiesTemplate());
-							insert(user, true);
-						} else {
-							// Well, that didn't work too well. Give up
-							// and die.
-							throw new StorageException(STORAGE_ERROR);
-						}
+					// Has this user been stored before?
+					if (pid.getId() > 0) {
+						stmt.setInt(1, pid.getId());
+					} else {
+						stmt.setNull(1, Types.NULL);
 					}
-				} else {
-					// This object should already exist. Let's just update it.
-					update(user);
+					stmt.setString(2, pid.getUsername());
+					stmt.setString(3, pid.getPassword());
+					stmt.setString(4, pu.getFirstName());
+					stmt.setString(5, pu.getLastName());
+					stmt.setString(6, pu.getEmail());
+					stmt.executeUpdate();
+					stmt.close();
+				} catch (SQLException e) {
+					// This shouldn't happen. The table should be in place
+					throw new StorageException(STORAGE_ERROR);
 				}
 			} else {
 				// Just a generic User object.
 				
+				// Let's sanity check it first
+				if (user.getIdentifier() == null ||
+						StorageUtils.isEmpty(user.getIdentifier()
+								.getProperties())) {
+					throw new StorageException();
+				}
+				
+				// This might be a new user. Insert it.
+				UUID uuid = null;
+				
 				if (((User) user).getUserId() == null) {
-					// This is indeed a new user. Insert it.
-					
 					// Generate the UUID
-					UUID uuid = UUID.randomUUID();
+					uuid = UUID.randomUUID();
 					((User) user).setUserId(uuid);
-					
-					// This will be used by the parameter loop below
-					int i = 1;
-					
-					// Flatten the properties
-					Properties merged = new Properties();
-					merged.putAll(user.getIdentifier().getProperties());
-					merged.putAll(user.getProperties());
-					merged.remove("identifier");
-					
-					// Generate the table name
-					tableName = user.getClass().getCanonicalName();
-					
-					// Create a query to be run as a prepared statement and do
-					// some magic MySQL stuff to it.
-					query = "INSERT INTO " + utils.mysqlifyName(tableName) + 
-							" VALUES (" + utils.generateQMarks(merged) + ");";
-	
-					try {
-						// Let's take command of the commit ship ourselves.
-						// Forward, mateys!
-						connection.setAutoCommit(false);
-						PreparedStatement stmt =
-								connection.prepareStatement(query);
-					
-						// Add the parameters to the query. We don't know what
-						// we'll run into. Better let someone else, i.e.
-						// addParameter() take care of that for us.
-						for (Entry<Object, Object> prop : merged.entrySet()) {
-							utils.addParameter(stmt, prop.getValue(), i++);
-						}
-						
-						// Run the statement and end the transaction
-						stmt.executeUpdate();
-						stmt.close();
-						
-						utils.pairUUIDWithTable(uuid, tableName);
-					} catch (SQLException e) {
-						// Try to create a non-existing table, but only once.
-						if (e.getErrorCode() == 1146 && !finalRun) {
-							Properties template = new Properties();
-							template.putAll(user.getIdentifier()
-									.getPropertiesTemplate());
-							template.putAll(user.getPropertiesTemplate());
-							template.remove("identifier");
-							utils.createTableIfNotExisting(tableName,
-									user.getPropertiesTemplate());
-							insert(user, true);
-						} else {
-							// Well, that didn't work too well. Give up
-							// and die.
-							throw new StorageException(STORAGE_ERROR);
-						}
-					}
 				} else {
-					// This might be an existing object. Just update it.
-					update(user);
+					uuid = ((User) user).getUserId();
+				}
+				
+				props = user.getProperties();
+				
+				// This will be used by the parameter loop below
+				int i = 1;
+				
+				// Get the user properties
+				Properties userProps = user.getProperties();
+				
+				// Generate the table name
+				tableName = user.getClass().getCanonicalName();
+				
+				// Create a query to be run as a prepared statement and do
+				// some magic MySQL stuff to it.
+				query = "INSERT INTO `" + StorageUtils.mysqlifyName(tableName) + 
+						"` VALUES (" + StorageUtils.generateQMarks(userProps) + ");";
+
+				try {
+					// Let's take command of the commit ship ourselves.
+					// Forward, mateys!
+					connection.setAutoCommit(false);
+					stmt = connection.prepareStatement(query);
+				
+					// Add the parameters to the query. We don't know what
+					// we'll run into. Better let someone else, i.e.
+					// addParameter() take care of that for us.
+					for (Entry<Object, Object> prop : userProps.entrySet()) {
+						utils.addParameter(stmt, prop.getValue(), i++);
+					}
+					System.out.println(stmt);
+					
+					// Run the statement and end the transaction
+					stmt.executeUpdate();
+					
+					utils.pairUUIDWithTable(uuid, tableName);
+				} catch (SQLException e) {
+					// Try to create a non-existing table, but only once.
+					if (e.getErrorCode() == 1146 && !finalRun) {
+						utils.createTableIfNotExisting(tableName,
+								user.getPropertiesTemplate());
+						insert(user, true);
+					} else {
+						// Well, that didn't work too well. Give up
+						// and die.
+						throw new StorageException(STORAGE_ERROR);
+					}
+				} finally {
+					try {
+						stmt.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -460,16 +476,19 @@ public class StorageImpl implements Storage {
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
 		
-		if (data != null) {
+		boolean updated = false;
+		
+		if (data != null && data.getUUID() != null) {
 			// Generate the table name
 			String tableName = data.getClass().getCanonicalName();
 			
 			// Create a query to be run as a prepared statement and do some
 			// magic MySQL stuff to it.
 			Properties props = data.getProperties();
-			String query = "UPDATE `" + utils.mysqlifyName(tableName) +
-					"` SET " + utils.pairUp(data.getProperties()) +
-					" WHERE id = " + props.getProperty("id").toString() + ";";
+			String query = "UPDATE `" + StorageUtils.mysqlifyName(tableName) +
+					"` SET " + StorageUtils.pairUp(data.getProperties()) +
+					" WHERE uuid = x'" + 
+					StorageUtils.stripDashesFromUUID(data.getUUID()) + "';";
 			
 			// This will be used by the parameter loop below
 			int i = 1;
@@ -488,13 +507,13 @@ public class StorageImpl implements Storage {
 				}
 				
 				// Run the statement and end the transaction
-				stmt.executeUpdate();
+				updated = stmt.executeUpdate() > 0;
 				stmt.close();
 			} catch (SQLException e) {
 				// Try to create a non-existing table, but only once.
 				if (e.getErrorCode() == 1146 && !finalRun) {
 					utils.createTableIfNotExisting(
-							utils.mysqlifyName(tableName),
+							StorageUtils.mysqlifyName(tableName),
 							data.getPropertiesTemplate());
 					update(data, true);
 				} else {
@@ -502,6 +521,12 @@ public class StorageImpl implements Storage {
 					throw new StorageException(STORAGE_ERROR);
 				}
 			}
+			
+			if (!updated) {
+				throw new StorageException(OBJECT_NOT_FOUND);
+			}
+		} else {
+			throw new StorageException(OBJECT_NOT_FOUND);
 		}
 	}
 
@@ -575,7 +600,7 @@ public class StorageImpl implements Storage {
 		String tableName = null;
 		Properties props = user.getProperties();
 		
-		if (user != null) {
+		if (user != null && !StorageUtils.isEmpty(props)) {
 			// Platform users are handled differently from any other user type.
 			if (user instanceof PlatformUser) {
 				PlatformUser pu = (PlatformUser) user;
@@ -767,9 +792,10 @@ public class StorageImpl implements Storage {
 			
 			// Create a query to be run as a prepared statement and do some
 			// magic MySQL stuff to it.
-			Properties props = data.getProperties();
-			String query = "DELETE FROM `" + utils.mysqlifyName(tableName) +
-					" WHERE id = " + props.getProperty("id").toString() + ";";
+			UUID uuid = (UUID) data.getProperties().get("uuid");
+			String query = "DELETE FROM `" + StorageUtils.mysqlifyName(tableName) +
+					"` WHERE uuid = x'" +
+					StorageUtils.stripDashesFromUUID(uuid) + "';";
 			
 			try {
 				// Let's take command of the commit ship ourselves.
@@ -778,7 +804,9 @@ public class StorageImpl implements Storage {
 				PreparedStatement stmt = connection.prepareStatement(query);
 				
 				// Run the statement and end the transaction
-				stmt.executeUpdate();
+				if (stmt.executeUpdate() > 0) {
+					utils.freeUUID(uuid);
+				}
 				stmt.close();
 			} catch (SQLException e) {
 				throw new StorageException(STORAGE_ERROR);
@@ -853,23 +881,33 @@ public class StorageImpl implements Storage {
 		//		 minimizing execution time and DB load.
 		
 		if (user != null) {
-			// Generate the table name
-			String tableName = user.getClass().getCanonicalName();
+			String query = null;
+			UUID uuid = null;
+			String tableName = null;
 			
-			// Create a query to be run as a prepared statement and do some
-			// magic MySQL stuff to it.
-			Properties props = user.getProperties();
-			String query = "DELETE FROM `" + utils.mysqlifyName(tableName) +
-					" WHERE id = " + props.getProperty("id").toString() + ";";
+			if (user instanceof PlatformUser) {
+				// Create a query to be run and do some MySQL stuff to it.
+				tableName = "se-mah-elis-services-users-PlatformUser";
+				PlatformUserIdentifier pid =
+						(PlatformUserIdentifier) ((PlatformUser) user).getIdentifier();
+				query = "DELETE FROM `" + tableName + "` WHERE id = " +
+						pid.getId()  + ";";
+			} else {
+				// Generate the table name
+				tableName = user.getClass().getCanonicalName();
+				// Create a query to be run and do some MySQL stuff to it.
+				uuid = (UUID) user.getProperties().get("uuid");
+				query = "DELETE FROM `" + StorageUtils.mysqlifyName(tableName) +
+						"` WHERE uuid = x'" +
+						StorageUtils.stripDashesFromUUID(uuid) + "';";
+			}
 			
 			try {
-				// Let's take command of the commit ship ourselves.
-				// Forward, mateys!
-				connection.setAutoCommit(false);
-				PreparedStatement stmt = connection.prepareStatement(query);
-				
 				// Run the statement and end the transaction
-				stmt.executeUpdate();
+				PreparedStatement stmt = connection.prepareStatement(query);
+				if (stmt.executeUpdate() > 0 && user instanceof User) {
+					utils.freeUUID(uuid);
+				}
 				stmt.close();
 			} catch (SQLException e) {
 				throw new StorageException(STORAGE_ERROR);
@@ -1010,11 +1048,9 @@ public class StorageImpl implements Storage {
 				edo = (ElisDataObject) Class.forName(className).newInstance();
 				
 				query = "SELECT * FROM `" + tableName +
-						"` WHERE id = '" + utils.uuidToBytes(id) + "';";
+						"` WHERE uuid = x'" +
+						StorageUtils.stripDashesFromUUID(id) + "';";
 				
-				// Let's take command of the commit ship ourselves.
-				// Forward, mateys!
-				connection.setAutoCommit(false);
 				Statement stmt = connection.createStatement();
 				java.sql.ResultSet rs = stmt.executeQuery(query);
 				props = utils.resultSetRowToProperties(rs);
@@ -1069,8 +1105,8 @@ public class StorageImpl implements Storage {
 			String query = null;
 			Properties props = null;
 			
-			query = "SELECT table_name FROM `" + tableName + "` WHERE id = '" +
-					utils.uuidToBytes(id) + "';";
+			query = "SELECT * FROM `" + tableName + "` WHERE uuid = x'" +
+					StorageUtils.stripDashesFromUUID(id) + "';";
 			
 			try {
 				// Let's take command of the commit ship ourselves.
@@ -1087,6 +1123,9 @@ public class StorageImpl implements Storage {
 			} catch (SQLException e) {
 				throw new StorageException(OBJECT_NOT_FOUND);
 			} catch (UserInitalizationException e) {
+				throw new StorageException(INSTANCE_USER_ERROR);
+			} catch (NullPointerException e) {
+				// This is not a User object.
 				throw new StorageException(INSTANCE_USER_ERROR);
 			}
 		}
@@ -1199,7 +1238,7 @@ public class StorageImpl implements Storage {
 	 */
 	@Override
 	public AbstractUser readUser(AbstractUser user) throws StorageException {
-		readUser(user, false);
+		return readUser(user, false);
 	}
 
 	/**
@@ -1257,6 +1296,8 @@ public class StorageImpl implements Storage {
 				}
 			}
 		}
+		
+		return null;
 	}
 
 	/**

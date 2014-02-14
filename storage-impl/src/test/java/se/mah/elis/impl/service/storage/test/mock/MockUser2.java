@@ -17,7 +17,7 @@ public class MockUser2 implements User {
 	
 	public MockUser2() {
 		uid = new MockUserIdentifier();
-		uuid = UUID.fromString("0000deadbeef33334444555566667777");
+		uuid = UUID.fromString("0000dead-beef-3333-4444-555566667777");
 		stuff = "";
 		
 		uid.identifies(this.getClass());
@@ -25,7 +25,7 @@ public class MockUser2 implements User {
 	
 	public MockUser2(String stuff) {
 		uid = new MockUserIdentifier();
-		uuid = UUID.fromString("0000deadbeef33334444555566667777");
+		uuid = UUID.fromString("0000dead-beef-3333-4444-555566667777");
 		this.stuff = stuff;
 		
 		uid.identifies(this.getClass());
@@ -59,6 +59,10 @@ public class MockUser2 implements User {
 	public String getStuff() {
 		return stuff;
 	}
+	
+	public void setStuff(String stuff) {
+		this.stuff = stuff;
+	}
 
 	@Override
 	public int getIdNumber() {
@@ -72,11 +76,17 @@ public class MockUser2 implements User {
 
 	@Override
 	public Properties getProperties() {
-		Properties props = new Properties();
+		Properties props = new OrderedProperties();
 		
-		props.put("identifier", new MockUserIdentifier());
+		if (uuid != null) {
+			props.put("uuid", uuid);
+		}
+		props.put("service_name", "MockUser1");
+		props.putAll((new MockUserIdentifier()).getProperties());
 		props.put("id", id);
-		props.put("stuff", stuff);
+		if (stuff != null) {
+			props.put("stuff", stuff);
+		}
 		
 		return props;
 	}
@@ -85,7 +95,9 @@ public class MockUser2 implements User {
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
 		
-		props.put("identifier", new MockUserIdentifier());
+		props.put("uuid", uuid);
+		props.put("service_name", "9");
+		props.putAll((new MockUserIdentifier()).getPropertiesTemplate());
 		props.put("id", 1);
 		props.put("stuff", "32");
 		
@@ -102,19 +114,22 @@ public class MockUser2 implements User {
 
 	@Override
 	public String getServiceName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "MockUser2";
 	}
 
 	@Override
 	public UUID getUserId() {
-		// TODO Auto-generated method stub
-		return null;
+		return uuid;
 	}
 
 	@Override
 	public void setUserId(UUID id) {
-		// TODO Auto-generated method stub
-		
+		uuid = id;
+	}
+	
+	@Override
+	public String toString() {
+		return "MockUser1, uid: " + uid + ", UUID: " + uuid.toString() +
+				", stuff: " + stuff;
 	}
 }

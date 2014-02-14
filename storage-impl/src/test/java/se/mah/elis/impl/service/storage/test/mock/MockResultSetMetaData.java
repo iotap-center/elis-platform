@@ -2,6 +2,7 @@ package se.mah.elis.impl.service.storage.test.mock;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -9,11 +10,13 @@ import org.apache.commons.lang3.tuple.Pair;
 public class MockResultSetMetaData implements ResultSetMetaData {
 
 	private ArrayList<String> colNames;
+	private ArrayList<Integer> colTypes;
 	private ArrayList<String> colClasses;
 	
 	public MockResultSetMetaData() {
 		colNames = new ArrayList<String>();
 		colClasses = new ArrayList<String>();
+		colTypes = new ArrayList<Integer>();
 	}
 	
 	public MockResultSetMetaData(ArrayList<String> colNames, ArrayList<String> colClasses) {
@@ -21,8 +24,9 @@ public class MockResultSetMetaData implements ResultSetMetaData {
 		this.colClasses = colClasses;
 	}
 	
-	public void add(String name, String clazz) {
+	public void add(String name, int type, String clazz) {
 		colNames.add(name);
+		colTypes.add(type);
 		colClasses.add(clazz);
 	}
 	
@@ -93,7 +97,7 @@ public class MockResultSetMetaData implements ResultSetMetaData {
 
 	@Override
 	public String getColumnName(int column) throws SQLException {
-		return colNames.get(column);
+		return colNames.get(column - 1);
 	}
 
 	@Override
@@ -128,8 +132,7 @@ public class MockResultSetMetaData implements ResultSetMetaData {
 
 	@Override
 	public int getColumnType(int column) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return colTypes.get(column - 1);
 	}
 
 	@Override
@@ -158,7 +161,7 @@ public class MockResultSetMetaData implements ResultSetMetaData {
 
 	@Override
 	public String getColumnClassName(int column) throws SQLException {
-		return colClasses.get(column);
+		return colClasses.get(column - 1);
 	}
 
 }

@@ -54,6 +54,13 @@
   		<artifactId>org.apache.commons.codec</artifactId>
   		<version>1.8</version>
   	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.impl.services.users</groupId>
+  		<artifactId>user-service-impl</artifactId>
+  		<version>1.1.0</version>
+  		<type>bundle</type>
+  		<scope>test</scope>
+  	</dependency>
   </dependencies>
   
   <build>

@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.UUID;
@@ -700,10 +701,10 @@ public class StorageUtilsTest {
 		Properties expected = new Properties();
 		Properties actual;
 
-		meta.add("Col1", java.lang.String.class.getName());
-		meta.add("Col2", java.lang.Integer.class.getName());
-		meta.add("Col3", java.lang.Float.class.getName());
-		meta.add("Col4", byte[].class.getName());
+		meta.add("Col1", Types.VARCHAR, java.lang.String.class.getName());
+		meta.add("Col2", Types.INTEGER, java.lang.Integer.class.getName());
+		meta.add("Col3", Types.FLOAT, java.lang.Float.class.getName());
+		meta.add("Col4", Types.VARBINARY, byte[].class.getName());
 		
 		data.add("Batman");
 		data.add(42);
@@ -747,9 +748,9 @@ public class StorageUtilsTest {
 		StorageUtils utils = new StorageUtils(new MockConnection());
 		Properties actual = null;
 
-		meta.add("Col1", java.lang.Integer.class.getName());
-		meta.add("Col2", java.lang.Integer.class.getName());
-		meta.add("Col3", java.lang.Float.class.getName());
+		meta.add("Col1", Types.INTEGER, java.lang.Integer.class.getName());
+		meta.add("Col2", Types.INTEGER, java.lang.Integer.class.getName());
+		meta.add("Col3", Types.FLOAT, java.lang.Float.class.getName());
 		
 		data.add("Batman");
 		data.add(42);
@@ -773,9 +774,9 @@ public class StorageUtilsTest {
 		Properties expected = new Properties();
 		Properties actual;
 
-		meta.add("Col1", java.lang.String.class.getName());
-		meta.add("Col2", java.lang.Integer.class.getName());
-		meta.add("Col3", java.lang.Float.class.getName());
+		meta.add("Col1", Types.VARCHAR, java.lang.String.class.getName());
+		meta.add("Col2", Types.INTEGER, java.lang.Integer.class.getName());
+		meta.add("Col3", Types.FLOAT, java.lang.Float.class.getName());
 		
 		data.add("Batman");
 		data.add(42);
@@ -799,7 +800,7 @@ public class StorageUtilsTest {
 		Properties expected = new Properties();
 		Properties actual;
 
-		meta.add("Col1", java.lang.String.class.getName());
+		meta.add("Col1", Types.VARCHAR, java.lang.String.class.getName());
 		
 		data.add("Batman");
 		
@@ -832,9 +833,9 @@ public class StorageUtilsTest {
 		StorageUtils utils = new StorageUtils(new MockConnection());
 		Properties actual = null;
 
-		meta.add("Col1", java.lang.String.class.getName());
-		meta.add("Col2", java.lang.String.class.getName());
-		meta.add("Col3", java.lang.Float.class.getName());
+		meta.add("Col1", Types.VARCHAR, java.lang.String.class.getName());
+		meta.add("Col2", Types.VARCHAR, java.lang.String.class.getName());
+		meta.add("Col3", Types.FLOAT, java.lang.Float.class.getName());
 		
 		data.add("Batman");
 		data.add(42);

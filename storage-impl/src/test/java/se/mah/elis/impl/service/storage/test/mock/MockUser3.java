@@ -8,37 +8,33 @@ import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
-public class MockUser1 implements User {
+public class MockUser3 implements User {
 
 	private UserIdentifier uid;
 	private UUID uuid;
 	private String stuff;
-	private int whatever;
 	private int id;
 	
-	public MockUser1() {
+	public MockUser3() {
 		uid = new MockUserIdentifier();
-		uuid = UUID.fromString("00001111-2222-dead-beef-555566667777");
+		uuid = UUID.fromString("0000dead-beef-3333-4444-555566667777");
 		stuff = "";
-		whatever = 0;
 		
 		uid.identifies(this.getClass());
 	}
 	
-	public MockUser1(String stuff, int whatever) {
-		this.uid = new MockUserIdentifier();
-		this.uuid = UUID.fromString("00001111-2222-dead-beef-555566667777");
+	public MockUser3(String stuff) {
+		uid = new MockUserIdentifier();
+		uuid = UUID.fromString("0000dead-beef-3333-4444-555566660000");
 		this.stuff = stuff;
-		this.whatever = whatever;
 		
 		uid.identifies(this.getClass());
 	}
 	
-	public MockUser1(UUID uuid, String stuff, int whatever) {
-		this.uid = new MockUserIdentifier();
-		this.uuid = uuid;
+	public MockUser3(UUID uuid, String stuff) {
+		uid = new MockUserIdentifier();
+		uuid = uuid;
 		this.stuff = stuff;
-		this.whatever = whatever;
 		
 		uid.identifies(this.getClass());
 	}
@@ -50,7 +46,8 @@ public class MockUser1 implements User {
 
 	@Override
 	public void setIdentifier(UserIdentifier id) {
-		uid = id;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -63,16 +60,8 @@ public class MockUser1 implements User {
 		return stuff;
 	}
 	
-	public int getWhatever() {
-		return whatever;
-	}
-	
 	public void setStuff(String stuff) {
 		this.stuff = stuff;
-	}
-	
-	public void setWhatever(int whatever) {
-		this.whatever = whatever;
 	}
 
 	@Override
@@ -87,20 +76,17 @@ public class MockUser1 implements User {
 
 	@Override
 	public Properties getProperties() {
-		OrderedProperties props = new OrderedProperties();
+		Properties props = new OrderedProperties();
 		
 		if (uuid != null) {
 			props.put("uuid", uuid);
 		}
 		props.put("service_name", "MockUser1");
-		if (uid != null) {
-			props.putAll(uid.getProperties());
-		}
+		props.putAll((new MockUserIdentifier()).getProperties());
 		props.put("id", id);
 		if (stuff != null) {
 			props.put("stuff", stuff);
 		}
-		props.put("whatever", whatever);
 		
 		return props;
 	}
@@ -108,13 +94,12 @@ public class MockUser1 implements User {
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-
+		
 		props.put("uuid", uuid);
 		props.put("service_name", "9");
 		props.putAll((new MockUserIdentifier()).getPropertiesTemplate());
 		props.put("id", 1);
 		props.put("stuff", "32");
-		props.put("whatever", 1);
 		
 		return props;
 	}
@@ -124,13 +109,12 @@ public class MockUser1 implements User {
 		uid = new MockUserIdentifier();
 		uuid = (UUID) props.get("uuid");
 		stuff = (String) props.get("stuff");
-		whatever = (int) props.get("whatever");
 		id = (int) props.get("id");
 	}
 
 	@Override
 	public String getServiceName() {
-		return "MockUser1";
+		return "";
 	}
 
 	@Override
@@ -140,12 +124,12 @@ public class MockUser1 implements User {
 
 	@Override
 	public void setUserId(UUID id) {
-		this.uuid = id;
+		uuid = id;
 	}
 	
 	@Override
 	public String toString() {
 		return "MockUser1, uid: " + uid + ", UUID: " + uuid.toString() +
-				", stuff: " + stuff + ", whatever: " + whatever;
+				", stuff: " + stuff;
 	}
 }

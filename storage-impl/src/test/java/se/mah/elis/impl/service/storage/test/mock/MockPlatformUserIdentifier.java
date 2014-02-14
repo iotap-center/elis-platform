@@ -36,7 +36,7 @@ public class MockPlatformUserIdentifier implements PlatformUserIdentifier {
 
 	@Override
 	public Properties getProperties() {
-		Properties p = new Properties();
+		Properties p = new OrderedProperties();
 		
 		p.put("id", id);
 		p.put("username", username);
@@ -88,8 +88,7 @@ public class MockPlatformUserIdentifier implements PlatformUserIdentifier {
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return !(username.length() > 0 && password.length() > 0);
 	}
 
 }

@@ -63,9 +63,11 @@ public class MockDataObject2 implements ElisDataObject {
 
 	@Override
 	public Properties getProperties() {
-		Properties props = new Properties();
+		Properties props = new OrderedProperties();
 		
-		props.put("uuid", uuid);
+		if (uuid != null) {
+			props.put("uuid", uuid);
+		}
 		props.put("userid", userid);
 		props.put("baz", baz);
 		

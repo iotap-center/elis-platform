@@ -19,7 +19,9 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 
+import se.mah.elis.data.Identifier;
 import se.mah.elis.services.storage.exceptions.StorageException;
+import se.mah.elis.services.users.UserIdentifier;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -58,6 +60,7 @@ public class StorageUtils {
 		try {
 			Statement stmt = connection.createStatement();
 			stmt.execute(TableBuilder.buildModel(tableName, p));
+			stmt.close();
 		} catch (SQLException | StorageException e) {
 			// Skip this like we just don't care.
 		}
@@ -224,15 +227,49 @@ public class StorageUtils {
 	public Properties resultSetRowToProperties(ResultSet rs) {
 		ResultSetMetaData meta = null;
 		Properties props = new Properties();
-		int colCount = 0;
+		Object payload = null;
 		
 		try {
 			meta = rs.getMetaData();
-			colCount = meta.getColumnCount();
+			rs.next();
 			
-			for (int i = 0; i < colCount; i++) {
-				addValueToProps(props, meta.getColumnClassName(i),
-						meta.getColumnName(i), rs.getObject(i));
+			for (int i = 1; i <= meta.getColumnCount(); i++) {
+				payload = null;
+				switch (meta.getColumnType(i)) {
+					case Types.VARBINARY:
+						byte[] bytes = rs.getBytes(i);
+						if (bytes.length == 16) {
+							payload = bytesToUUID(bytes);
+						} else {
+							payload = bytes;
+						}
+						break;
+					case Types.NULL:
+						// Don't add this to the properties, it'll not end well
+						break;
+					case Types.TINYINT:
+						payload = rs.getBoolean(i);
+					case Types.INTEGER:
+						payload = rs.getInt(i);
+						break;
+					case Types.FLOAT:
+						payload = rs.getFloat(i);
+						break;
+					case Types.DOUBLE:
+						payload = rs.getDouble(i);
+						break;
+					case Types.CHAR:
+					case Types.VARCHAR:
+						payload = rs.getString(i);
+						break;
+					case Types.TIMESTAMP:
+						payload = new DateTime(rs.getTimestamp(i).getTime());
+						break;
+				}
+				if (payload != null) {
+					addValueToProps(props, payload.getClass().getName(),
+							meta.getColumnName(i), payload);
+				}
 			}
 		} catch (SQLException e) {
 			// Well, this didn't fare very well. Let's just return a null reference.
@@ -396,6 +433,43 @@ public class StorageUtils {
 		build.insert(8, '-');
 		
 		return UUID.fromString(build.toString());
+	}
+	
+	/**
+	 * Checks whether a set of properties are empty or not. A set of properties
+	 * are considered empty if all of them are deemed empty. A property is
+	 * considered empty if:<br>
+	 * <ul>
+	 *   <li>A String is empty</li>
+	 *   <li>A Number is 0</li>
+	 * </ul>
+	 * Note that property sets can't hold null values.
+	 * 
+	 * @param props The properties to check.
+	 * @return True if the property set is empty, otherwise false.
+	 * @since 2.0
+	 */
+	public static boolean isEmpty(Properties props) {
+		Iterator<Entry<Object, Object>> entries = props.entrySet().iterator();
+		Object value = null;
+		boolean isEmpty = true;
+		
+		while (entries.hasNext() && isEmpty) {
+			value = entries.next().getValue();
+			if (value instanceof String) {
+				isEmpty = (((String) value).length() < 1); 
+			} else if (value instanceof Number) {
+				isEmpty = (((Number) value).equals(0));
+			} else if (value instanceof Identifier) {
+				isEmpty = isEmpty(((Identifier) value).getProperties());
+			} else if (value instanceof UUID) {
+				// Do nothing
+			} else {
+				isEmpty = false;
+			}
+		}
+		
+		return isEmpty;
 	}
 	
 	/**

@@ -70,14 +70,12 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public String getString(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return (String) data.get(columnIndex - 1);
 	}
 
 	@Override
 	public boolean getBoolean(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		return (Boolean) data.get(columnIndex - 1);
 	}
 
 	@Override
@@ -94,26 +92,22 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public int getInt(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return (Integer) data.get(columnIndex - 1);
 	}
 
 	@Override
 	public long getLong(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return (Long) data.get(columnIndex - 1);
 	}
 
 	@Override
 	public float getFloat(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return (Float) data.get(columnIndex - 1);
 	}
 
 	@Override
 	public double getDouble(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return (Double) data.get(columnIndex - 1);
 	}
 
 	@Override
@@ -125,8 +119,7 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public byte[] getBytes(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return (byte[]) data.get(columnIndex - 1);
 	}
 
 	@Override
@@ -143,8 +136,7 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public Timestamp getTimestamp(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return (Timestamp) data.get(columnIndex - 1);
 	}
 
 	@Override
@@ -287,7 +279,7 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public Object getObject(int columnIndex) throws SQLException {
-		return data.get(columnIndex);
+		return data.get(columnIndex - 1);
 	}
 
 	@Override
