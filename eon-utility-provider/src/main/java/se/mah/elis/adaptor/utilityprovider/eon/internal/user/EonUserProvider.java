@@ -23,11 +23,11 @@ public class EonUserProvider implements UserProvider {
 		
 		System.out.println("Building an eon user: " + email + " - " + password);
 		
-		GatewayUserProvider eonProvider = new EonGatewayUserFactory();
+		GatewayUserProvider eonUserFactory = new EonGatewayUserFactory();
 		GatewayUser user = null;
 		
 		try {
-			user = eonProvider.getUser(email, password);
+			user = eonUserFactory.getUser(email, password);
 		} catch (AuthenticationException ae) {
 //			log.warn("E.On provider try to login for user: " + email);
 			throw new UserInitalizationException("eon", "Could not log in user");

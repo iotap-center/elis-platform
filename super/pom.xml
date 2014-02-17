@@ -184,5 +184,7 @@
         <module>../utility-provider-api</module>
         
         <module>../rest-demo</module>
+        
+        <module>../elis-demo-users</module>
 	</modules>
 </project>
