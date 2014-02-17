@@ -18,18 +18,22 @@ public class EonUserProvider implements UserProvider {
 	
 	@Override
 	public User build(Properties properties) throws UserInitalizationException {
-		String email = properties.getProperty("email");
+		String email = (String) properties.getProperty("email");
+		String password = (String) properties.getProperty("password");
+		
+		System.out.println("Building an eon user: " + email + " - " + password);
+		
 		GatewayUserProvider eonProvider = new EonGatewayUserFactory();
 		GatewayUser user = null;
 		
 		try {
-			user = eonProvider.getUser(email, properties.getProperty("password"));
+			user = eonProvider.getUser(email, password);
 		} catch (AuthenticationException ae) {
 //			log.warn("E.On provider try to login for user: " + email);
 			throw new UserInitalizationException("eon", "Could not log in user");
 		} catch (MethodNotSupportedException mnse) {
 //			log.error("User login failed. " + mnse.getMessage());
-			throw new UserInitalizationException();
+			throw new UserInitalizationException("eon", "Method not supported");
 		}
 		
 		return user;

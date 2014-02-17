@@ -26,8 +26,6 @@ public class UserFactoryImpl implements UserFactory {
 
 	@Override
 	public void registerProvider(UserProvider provider) {
-		System.out.println("Registering provider: " + provider.getRecipe().getServiceName());
-		
 		Map<String, UserProvider> map =
 				providers.get(provider.getRecipe().getUserType());
 		

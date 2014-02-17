@@ -21,15 +21,20 @@ import org.junit.Test;
 
 import se.mah.elis.adaptor.device.api.data.GatewayAddress;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
 
 public class EonGatewayTest {
 
-	private static final String TEST_GATEWAY_ID = "1234";
+	private static final String PASSWORD = "medeamah2012";
+	private static final String USERNAME = "marcus.ljungblad@mah.se";
 	private static final String TEST_GATEWAY_NAME = "testGateway";
 	private static final String TEST_TOKEN = "sometoken";
-	private static final String TEST_GATEWAY_ADDRESS = "someaddress";
+	private static final String TEST_GATEWAY_ADDRESS = "134";
+	private static final String TEST_HOST = "http://ewpapi2.dev.appex.no";
+	private static final String TEST_BASEPATH = "/v0_2/api/";
+	private static final int TEST_PORT = 80;
 	private EonHttpBridge bridge;
 	private EonGateway gateway;
 
@@ -62,7 +67,7 @@ public class EonGatewayTest {
 	private Map<String, Object> fakeGatewayData() {
 		Map<String, Object> fakeGatewayData = new HashMap<String, Object>();
 		fakeGatewayData.put("Name", TEST_GATEWAY_NAME);
-		fakeGatewayData.put("EwpPanelId", TEST_GATEWAY_ID);
+		fakeGatewayData.put("EwpPanelId", TEST_GATEWAY_ADDRESS);
 		return fakeGatewayData;
 	}
 	
@@ -71,11 +76,46 @@ public class EonGatewayTest {
 		try {
 			gateway.connect();
 			assertEquals(TEST_GATEWAY_NAME, gateway.getName());
-			assertEquals(Integer.parseInt(TEST_GATEWAY_ID), gateway.getId());
-			assertTrue(gateway.size() > 0);
+			assertEquals(TEST_GATEWAY_ADDRESS, gateway.getAddress().toString());
 			assertTrue(gateway.hasConnected());
 		} catch (Exception e) {
 			fail();
+		}
+	}
+	
+	@Test 
+	public void testEnsureGatewayHasDevices() {
+		try {
+			gateway.connect();
+			assertTrue(gateway.size() > 0);
+		} catch (GatewayCommunicationException e) {
+			fail("Could not connect");
+		}
+	}
+	
+	@Test
+	public void testConnectWithRealUser() {
+		try {
+			EonHttpBridge bridge = new EonHttpBridge(TEST_HOST, TEST_PORT, TEST_BASEPATH);
+			String token = bridge.authenticate(USERNAME, PASSWORD);
+			EonGateway gw = new EonGateway();
+			gw.setHttpBridge(bridge);
+			gw.setAuthenticationToken(token);
+			gw.connect();
+		} catch (Exception e) {
+			fail("Could not connect to gateway with real user");
+		}
+	}
+	
+	@Test 
+	public void testValidToken() {
+		EonHttpBridge bridge = new EonHttpBridge(TEST_HOST, TEST_PORT, TEST_BASEPATH);
+		try {
+			String token = bridge.authenticate(USERNAME, PASSWORD);
+			// example: 635282347637201905,marcus.ljungblad@mah.se,medeamah2012
+			assertTrue(token.endsWith(",marcus.ljungblad@mah.se,medeamah2012"));
+		} catch (AuthenticationException | ResponseProcessingException e) {
+			fail("exception thrown");
 		}
 	}
 

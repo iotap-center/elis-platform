@@ -33,6 +33,11 @@ public class EonGatewayUserIdentifer implements GatewayUserIdentifier {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	@Override
+	public String toString() {
+		return "(EonUser) " + username;
+	}
 
 	@Override
 	public Class identifies() {

@@ -196,27 +196,51 @@ public class EonGateway implements Gateway {
 	@Override
 	public void connect() throws GatewayCommunicationException {
 		try {
+			System.out.println("adding gw data");
 			addGatewayData();
+			System.out.println("getting all devices connected to gw");
 			getAllDevices();
+			System.out.println("marking gw as connected");
 			markAsConnected();
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new GatewayCommunicationException();
 		}
 	}
 
-	private void addGatewayData() throws ResponseProcessingException,
-			ParseException, StaticEntityException {
-		Map<String, Object> data = httpBridge
-				.getGateway(getAuthenticationToken());
-		setName((String) data.get("Name"));
-		setId(Integer.parseInt((String) data.get("EwpPanelId")));
+	// TODO clean up this mess
+	private void addGatewayData() {
+		Map<String, Object> data = null;
+		
+		try {
+			data = httpBridge.getGateway(getAuthenticationToken());
+		} catch (ResponseProcessingException e1) {
+			e1.printStackTrace();
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		
+		
+		try {
+			setName((String) data.get("Name"));
+		} catch (StaticEntityException e) {
+			e.printStackTrace();
+		}
+		
+		setAddress(new EonGatewayAddress(data.get("EwpPanelId").toString()));
 	}
 
-	private void getAllDevices() throws ResponseProcessingException,
-			ParseException {
+	private void getAllDevices() {
 		
-		List<Device> devices = httpBridge.getDevices(
-				getAuthenticationToken(), getAddress().toString());
+		List<Device> devices = null;
+		try {
+			devices = httpBridge.getDevices(
+					getAuthenticationToken(), getAddress().toString());
+		} catch (ResponseProcessingException e1) {
+			e1.printStackTrace();
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
 		
 		for (Device device : devices) {
 			try {
