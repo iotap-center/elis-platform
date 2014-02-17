@@ -182,5 +182,7 @@
         <module>../structure api</module>
         <module>../eon-utility-provider</module>
         <module>../utility-provider-api</module>
+        
+        <module>../rest-demo</module>
 	</modules>
 </project>
