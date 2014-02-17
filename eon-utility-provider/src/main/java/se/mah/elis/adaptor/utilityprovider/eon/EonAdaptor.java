@@ -3,24 +3,33 @@ package se.mah.elis.adaptor.utilityprovider.eon;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import se.mah.elis.adaptor.utilityprovider.eon.internal.user.EonUserProvider;
 import se.mah.elis.services.users.factory.UserFactory;
+import se.mah.elis.services.users.factory.UserProvider;
 
-@Component(name = "Eon Adapter")
+@Component(name = "Eon Adaptor", immediate = true)
 @Service(value = EonAdaptor.class)
 public class EonAdaptor {
 
-	private static final Logger logger = LoggerFactory.getLogger(EonAdaptor.class);
-	
 	@Reference
 	private UserFactory userFactoryService;
+	private UserProvider eonProvider;
 	
 	public EonAdaptor() {
-		userFactoryService.registerProvider(new EonUserProvider());
-		logger.info("E.On adapter initiated");
+		System.out.println("E.On adaptor created");
+		eonProvider = new EonUserProvider();
 	}
-
+	
+	protected void bindUserFactoryService(UserFactory uf) {
+		System.out.println("E.On adaptor bind UserFactory");
+		this.userFactoryService = uf;
+		userFactoryService.registerProvider(eonProvider);
+	}
+	
+	protected void unbindUserFactoryService(UserFactory uf) {
+		System.out.println("E.On adaptor unbind UserFactory");
+		userFactoryService.unregisterProvider(eonProvider);
+		this.userFactoryService = null;
+	}
 }

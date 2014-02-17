@@ -15,7 +15,7 @@ import se.mah.elis.services.users.factory.UserProvider;
 import se.mah.elis.services.users.factory.UserRecipe;
 
 @Component(name = "Elis User factory")
-@Service(value = UserFactory.class)
+@Service
 public class UserFactoryImpl implements UserFactory {
 
 	private Map<String, Map<String, UserProvider>> providers;
@@ -26,6 +26,8 @@ public class UserFactoryImpl implements UserFactory {
 
 	@Override
 	public void registerProvider(UserProvider provider) {
+		System.out.println("Registering provider: " + provider.getRecipe().getServiceName());
+		
 		Map<String, UserProvider> map =
 				providers.get(provider.getRecipe().getUserType());
 		
