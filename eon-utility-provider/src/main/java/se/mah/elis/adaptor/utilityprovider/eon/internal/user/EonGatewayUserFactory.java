@@ -59,8 +59,6 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 					"Could not authenticate against E.On for " + username);
 		}
 		
-		System.out.println("E.On auth token: " + token);
-		
 		gateway.setAuthenticationToken(token);
 		gateway.setHttpBridge(httpBridge);
 		

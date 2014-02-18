@@ -196,11 +196,8 @@ public class EonGateway implements Gateway {
 	@Override
 	public void connect() throws GatewayCommunicationException {
 		try {
-			System.out.println("adding gw data");
 			addGatewayData();
-			System.out.println("getting all devices connected to gw");
 			getAllDevices();
-			System.out.println("marking gw as connected");
 			markAsConnected();
 		} catch (Exception e) {
 			e.printStackTrace();
