@@ -28,7 +28,6 @@ public class RestDemoService {
 	
 	protected void bindUserService(UserService us) {
 		this.userService = us;
-		
 	}
 	
 	@GET
