@@ -34,7 +34,7 @@ public class UserLoaderService {
 		demoUsers = new ArrayList<String>();
 		
 		// read from file?
-		demoUsers.add("marcus;elis;Marcus;Ljungblad;marcus@ljungblad.nu;EonUser;eon;marcus.ljungblad@mah.se;medeamah2012");
+		demoUsers.add("marcus;elis;Marcus;Ljungblad;marcus@ljungblad.nu;EonUser;eon;marcus.ljungblad@mah.se;medeamah2012;MkbWaterUser;mkb-water;63408101");
 	}
 	
 	protected void bindUserService(UserService us) {
@@ -65,10 +65,26 @@ public class UserLoaderService {
 		String[] user = parseUser(userinfo);
 		PlatformUser pu = createPlatformUser(user[0], user[1], user[2], user[3], user[4]);
 		User gwuser = createEonUser(user[5], user[6], user[7], user[8]);
+		User mkbuser = createMkbUser(user[9], user[10], user[11]);
 		registerGwUserToPlatformUser(gwuser, pu);
+		registerGwUserToPlatformUser(mkbuser, pu);
 		System.out.println("Added: " + userinfo);
 	}
 	
+	private User createMkbUser(String userType, String serviceName, String meterId) {
+		Properties props = new Properties();
+		props.put("id", meterId);
+		User mkbUser = null;
+		
+		try {
+			mkbUser = userFactory.build(userType, serviceName, props);
+		} catch (UserInitalizationException uie) {
+			uie.printStackTrace();
+		}
+		
+		return mkbUser;
+	}
+
 	private void registerGwUserToPlatformUser(User user, PlatformUser pu) {
 		try {
 			userService.registerUserToPlatformUser(user, pu);
