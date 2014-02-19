@@ -2,12 +2,12 @@ package se.mah.elis.adaptor.water.mkb.data;
 
 import org.joda.time.DateTime;
 
-public class WaterSample implements Comparable<WaterSample> {
+public class WaterDataPoint implements Comparable<WaterDataPoint> {
 	
 	private DateTime registeredDateTime;
 	private float measuredValue;
 
-	public WaterSample(DateTime time, float value) {
+	public WaterDataPoint(DateTime time, float value) {
 		registeredDateTime = time;
 		measuredValue = value;
 	}
@@ -21,7 +21,7 @@ public class WaterSample implements Comparable<WaterSample> {
 	}
 
 	@Override
-	public int compareTo(WaterSample o) {
+	public int compareTo(WaterDataPoint o) {
 		return registeredDateTime.compareTo(o.registeredDateTime);
 	}
 	

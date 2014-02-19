@@ -8,23 +8,23 @@ import org.joda.time.DateTime;
 
 public class WaterData {
 	
-	private Map<String, List<WaterSample>> userDataMap;
+	private Map<String, List<WaterDataPoint>> userDataMap;
 	
 	public WaterData() {
 		userDataMap = new HashMap<>();
 	}
 	
-	public void setWaterData(Map<String, List<WaterSample>> map) {
+	public void setWaterData(Map<String, List<WaterDataPoint>> map) {
 		userDataMap = map;
 	}
 	
-	public List<WaterSample> getRange(String meterId, DateTime start, DateTime end) {
+	public List<WaterDataPoint> getRange(String meterId, DateTime start, DateTime end) {
 		if (userDataMap.containsKey(meterId))
 			return getRangeInSamples(meterId, userDataMap.get(meterId), start, end);
 		return null;
 	}
 	
-	private List<WaterSample> getRangeInSamples(String meterId, List<WaterSample> list, 
+	private List<WaterDataPoint> getRangeInSamples(String meterId, List<WaterDataPoint> list, 
 			DateTime start, DateTime end) {
 		int listsize = list.size();
 		int startIndex = 0;
@@ -40,7 +40,7 @@ public class WaterData {
 		
 	}
 
-	private int findStopIndex(List<WaterSample> list, DateTime end, int listsize,
+	private int findStopIndex(List<WaterDataPoint> list, DateTime end, int listsize,
 			int startIndex) {
 		int stopIndex = 0;
 		
@@ -54,7 +54,7 @@ public class WaterData {
 		return stopIndex;
 	}
 
-	private int findStartIndex(String meterId, List<WaterSample> list,
+	private int findStartIndex(String meterId, List<WaterDataPoint> list,
 			DateTime start, int listsize) {
 		int startIndex = 0;
 		
@@ -72,11 +72,11 @@ public class WaterData {
 		return startIndex;
 	}
 
-	public List<WaterSample> getRange(String meterId, DateTime fromDate) {
+	public List<WaterDataPoint> getRange(String meterId, DateTime fromDate) {
 		return getRange(meterId, fromDate, getLastDate(meterId));
 	}
 	
-	public List<WaterSample> getAllValues(String meterId) {
+	public List<WaterDataPoint> getAllValues(String meterId) {
 		if (userDataMap.containsKey(meterId))
 			return userDataMap.get(meterId);
 		return null;
@@ -92,9 +92,9 @@ public class WaterData {
 		return getLatestSample(meterId).getSampleDateTime();
 	}
 	
-	public WaterSample getLatestSample(String meterId) {
+	public WaterDataPoint getLatestSample(String meterId) {
 		if (userDataMap.containsKey(meterId)) {
-			List<WaterSample> samples = userDataMap.get(meterId);
+			List<WaterDataPoint> samples = userDataMap.get(meterId);
 			return samples.get(samples.size() - 1);
 		}	
 		return null;

@@ -1,19 +1,24 @@
 package se.mah.elis.adaptor.water.mkb;
 
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.felix.scr.annotations.Reference;
+import org.joda.time.DateTime;
 
 import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
-import se.mah.elis.adaptor.device.api.entities.devices.WaterMeter;
+import se.mah.elis.adaptor.device.api.entities.devices.WaterMeterSampler;
+import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
+import se.mah.elis.adaptor.water.mkb.data.WaterDataPoint;
 import se.mah.elis.adaptor.water.mkb.data.WaterDataService;
 import se.mah.elis.data.OrderedProperties;
+import se.mah.elis.data.WaterSample;
 import se.mah.elis.exceptions.StaticEntityException;
 
-public class MkbWaterMeter implements WaterMeter {
+public class MkbWaterMeter implements WaterMeterSampler {
 
 	private static final long serialVersionUID = 1483471192257524353L;
 	private DeviceIdentifier deviceId;
@@ -22,17 +27,17 @@ public class MkbWaterMeter implements WaterMeter {
 	private Gateway gateway;
 	private UUID uuid;
 	private boolean isOnline;
-	
+
 	@Reference
 	private WaterDataService waterDataSource;
-	
+
 	protected void bindWaterDataSource(WaterDataService source) {
 		if (source.getInstance() != null) {
 			waterDataSource = source;
 			isOnline = true;
 		}
 	}
-	
+
 	protected void unbindWaterDataSource(WaterDataService source) {
 		isOnline = false;
 		waterDataSource = null;
@@ -134,10 +139,32 @@ public class MkbWaterMeter implements WaterMeter {
 	}
 
 	@Override
-	public float getWaterConsumption() {
+	public WaterSample getSample() throws SensorFailedException {
 		if (isOnline)
-			waterDataSource.getInstance().getLatestSample(getName());
-		return 0;
+			return getLatestSample();
+		return null;
+	}
+
+	private WaterSample getLatestSample() {
+		WaterDataPoint latestPoint = waterDataSource.getInstance()
+				.getLatestSample(getName());
+		WaterSample sample = new MkbWaterSample(latestPoint);
+		return sample;
+	}
+
+	@Override
+	public WaterSample getSample(DateTime from, DateTime to)
+			throws SensorFailedException {
+		if (isOnline)
+			return getRangeSample(from, to);
+		return null;
+	}
+
+	private WaterSample getRangeSample(DateTime from, DateTime to) {
+		List<WaterDataPoint> points = waterDataSource.getInstance().getRange(
+				getName(), from, to);
+		WaterSample sample = new MkbWaterSample(points);
+		return sample;
 	}
 
 }

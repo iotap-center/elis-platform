@@ -1,5 +1,8 @@
 package se.mah.elis.adaptor.water.mkb.data;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,11 +11,8 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class WaterDataTest {
 
@@ -27,24 +27,24 @@ public class WaterDataTest {
 
 	@Before
 	public void setup() {
-		Map<String, List<WaterSample>> fakeData = createFakeData(); 
+		Map<String, List<WaterDataPoint>> fakeData = createFakeData(); 
 		waterData = new WaterData();
 		waterData.setWaterData(fakeData);
 	}
 
-	private Map<String, List<WaterSample>> createFakeData() {
-		Map<String, List<WaterSample>> samples = new HashMap<>();
+	private Map<String, List<WaterDataPoint>> createFakeData() {
+		Map<String, List<WaterDataPoint>> samples = new HashMap<>();
 		String[] testLines = WaterDataLoaderTest.testData().split("\n");
 		for (String line : testLines) {
 			String[] parts = line.split(";");
 			DateTime registered = fmt.parseDateTime(parts[0]);
 			String meterId = parts[1];
 			float value = Float.parseFloat(parts[3].replace(',', '.'));
-			WaterSample sample = new WaterSample(registered, value);
+			WaterDataPoint sample = new WaterDataPoint(registered, value);
 			if (samples.containsKey(meterId))
 				samples.get(meterId).add(sample);
 			else {
-				samples.put(meterId, new ArrayList<WaterSample>());
+				samples.put(meterId, new ArrayList<WaterDataPoint>());
 				samples.get(meterId).add(sample);
 			}
 		}
@@ -59,14 +59,14 @@ public class WaterDataTest {
 	public void testGetFullRange() {
 		DateTime start = fmt.parseDateTime("2014-02-18 00:00:00");
 		DateTime end = fmt.parseDateTime("2014-02-18 07:00:00");
-		List<WaterSample> samples = waterData.getRange(METERID, start, end);
+		List<WaterDataPoint> samples = waterData.getRange(METERID, start, end);
 		assertEquals(8, samples.size());
 	}
 	
 	@Test
 	public void testGetBeforeExisting() {
 		DateTime start = fmt.parseDateTime("2012-01-01 00:00:00");
-		List<WaterSample> samples = waterData.getRange(METERID, start);
+		List<WaterDataPoint> samples = waterData.getRange(METERID, start);
 		assertEquals(8, samples.size());
 	}
 	
@@ -74,13 +74,13 @@ public class WaterDataTest {
 	public void testGetRangeFrom() {
 		DateTime start = fmt.parseDateTime("2014-02-18 01:00:00");
 		DateTime end = fmt.parseDateTime("2014-02-18 03:00:00");
-		List<WaterSample> samples = waterData.getRange(METERID, start, end);
+		List<WaterDataPoint> samples = waterData.getRange(METERID, start, end);
 		assertEquals(3, samples.size());
 	}
 	
 	@Test
 	public void testGetAll() {
-		List<WaterSample> samples = waterData.getAllValues(METERID);
+		List<WaterDataPoint> samples = waterData.getAllValues(METERID);
 		assertEquals(8, samples.size());
 	}
 	
@@ -99,7 +99,7 @@ public class WaterDataTest {
 	@Test 
 	public void testGetLatestSample() {
 		DateTime end = fmt.parseDateTime("2014-02-18 07:00:00");
-		WaterSample sample = new WaterSample(end, 18.519f);
+		WaterDataPoint sample = new WaterDataPoint(end, 18.519f);
 		assertTrue(sample.getValue() == waterData.getLatestSample(METERID).getValue());
 	}
 }

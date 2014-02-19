@@ -20,13 +20,13 @@ public class WaterDataLoader {
 
 	public static WaterData loadFromFile(String path) throws FileNotFoundException { 
 		WaterData data = new WaterData();
-		Map<String, List<WaterSample>> samples = getSamplesFromFile(path);
+		Map<String, List<WaterDataPoint>> samples = getSamplesFromFile(path);
 		data.setWaterData(samples);
 		return data;
 	}
 
-	private static Map<String, List<WaterSample>> getSamplesFromFile(String path) throws FileNotFoundException {
-		Map<String, List<WaterSample>> samples = new HashMap<>();
+	private static Map<String, List<WaterDataPoint>> getSamplesFromFile(String path) throws FileNotFoundException {
+		Map<String, List<WaterDataPoint>> samples = new HashMap<>();
 		BufferedReader bufferedReader = null;
 		
 		try {
@@ -53,23 +53,23 @@ public class WaterDataLoader {
 		return data;
 	}
 
-	private static Map<String, List<WaterSample>> createFromCode() {
+	private static Map<String, List<WaterDataPoint>> createFromCode() {
 		String[] testLines = testData().split("\n");
-		Map<String, List<WaterSample>> samples = parseLines(testLines);
+		Map<String, List<WaterDataPoint>> samples = parseLines(testLines);
 		return samples;
 	}
 
-	private static Map<String, List<WaterSample>> parseLines(String[] testLines) {
-		Map<String, List<WaterSample>> samples = new HashMap<>();
+	private static Map<String, List<WaterDataPoint>> parseLines(String[] testLines) {
+		Map<String, List<WaterDataPoint>> samples = new HashMap<>();
 		for (String line : testLines) {
 			parseLine(samples, line);
 		}
 		return samples;
 	}
 
-	private static void parseLine(Map<String, List<WaterSample>> samples,
+	private static void parseLine(Map<String, List<WaterDataPoint>> samples,
 			String line) {
-		WaterSample sample = null;
+		WaterDataPoint sample = null;
 		
 		try {
 			
@@ -77,12 +77,12 @@ public class WaterDataLoader {
 			DateTime registered = fmt.parseDateTime(parts[0]);
 			String meterId = parts[1];
 			float value = Float.parseFloat(parts[3].replace(',', '.'));
-			sample = new WaterSample(registered, value);
+			sample = new WaterDataPoint(registered, value);
 		
 			if (samples.containsKey(meterId))
 				samples.get(meterId).add(sample);
 			else {
-				samples.put(meterId, new ArrayList<WaterSample>());
+				samples.put(meterId, new ArrayList<WaterDataPoint>());
 				samples.get(meterId).add(sample);
 			}
 			
