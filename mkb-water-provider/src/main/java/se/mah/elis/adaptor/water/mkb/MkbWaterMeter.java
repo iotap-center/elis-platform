@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.joda.time.DateTime;
 
@@ -18,6 +19,7 @@ import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.data.WaterSample;
 import se.mah.elis.exceptions.StaticEntityException;
 
+@Component
 public class MkbWaterMeter implements WaterMeterSampler {
 
 	private static final long serialVersionUID = 1483471192257524353L;
@@ -32,9 +34,11 @@ public class MkbWaterMeter implements WaterMeterSampler {
 	private WaterDataService waterDataSource;
 
 	protected void bindWaterDataSource(WaterDataService source) {
+		System.out.println("binding WaterDataService to MKB WaterMeter");
 		if (source.getInstance() != null) {
 			waterDataSource = source;
 			isOnline = true;
+			System.out.println("bound WaterDataService to MKB WaterMeter");
 		}
 	}
 
@@ -140,9 +144,9 @@ public class MkbWaterMeter implements WaterMeterSampler {
 
 	@Override
 	public WaterSample getSample() throws SensorFailedException {
-		if (isOnline)
-			return getLatestSample();
-		return null;
+		if (!isOnline)
+			throw new SensorFailedException();
+		return getLatestSample();
 	}
 
 	private WaterSample getLatestSample() {
