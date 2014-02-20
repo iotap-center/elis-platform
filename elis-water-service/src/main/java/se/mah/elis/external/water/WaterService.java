@@ -5,16 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
@@ -30,28 +34,29 @@ import se.mah.elis.services.users.UserService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-@Path("/water/{puid}")
+@Path("/water")
 @Produces("application/json")
 @Component(name = "ElisWaterService", immediate = true)
 @Service(value = WaterService.class)
 public class WaterService {
 
 	private static final String QUERY_PERIOD_NOW = "now";
+	private static final String QUERY_PERIOD_DAILY = "daily";
 
 	private Gson gson;
-	
+
 	@Reference
 	private UserService userService;
-	
+
 	public WaterService() {
 		gson = new GsonBuilder().setPrettyPrinting().create();
 	}
-	
+
 	@GET
-	@Path("/now")
+	@Path("/{puid}/now")
 	public Response getCurrentWaterConsumption(@PathParam("puid") String puid) {
 		ResponseBuilder response = null;
-		
+
 		if (userService != null) {
 			PlatformUser pu = userService.getPlatformUser(puid);
 			if (pu != null) {
@@ -62,21 +67,95 @@ public class WaterService {
 		} else {
 			response = Response.serverError();
 		}
-		
+
 		return response.build();
 	}
 
-	private ResponseBuilder buildCurrentWaterConsumptionResponseFrom(PlatformUser pu) {
+	private ResponseBuilder buildCurrentWaterConsumptionResponseFrom(
+			PlatformUser pu) {
 		ResponseBuilder response;
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
-		Map<String, WaterSample> samples = getCurrentSamplesForMeters(waterMeters);
-		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_NOW);
+		Map<String, List<WaterSample>> samples = getCurrentSamplesForMeters(waterMeters);
+		WaterBean waterConsumptionBean = buildWaterBean(samples,
+				QUERY_PERIOD_NOW);
 		String json = gson.toJson(waterConsumptionBean);
-		System.out.println(json);
 		response = Response.ok(json);
 		return response;
 	}
-	
+
+	@GET
+	@Path("/{puid}/daily")
+	public Response getDailyWaterConsumption(@PathParam("puid") String puid,
+			@QueryParam("from") String from,
+			@DefaultValue("") @QueryParam("to") String to) {
+		System.out.println("Got query for: " + puid + " from " + from + " to " + to);
+		ResponseBuilder response = null;
+
+		if (userService != null) {
+			PlatformUser pu = userService.getPlatformUser(puid);
+			if (pu != null)
+				response = buildDailyWaterConsumptionResponseFrom(pu, from, to);
+			else {
+				System.out.println("Trouble finding the user");
+				response = Response.status(Response.Status.NOT_FOUND);
+			}
+		} else
+			response = Response.serverError();
+
+		return response.build();
+	}
+
+	private ResponseBuilder buildDailyWaterConsumptionResponseFrom(
+			PlatformUser pu, String from, String to) {
+		ResponseBuilder response;
+		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
+		Map<String, List<WaterSample>> samples = getDailySamplesForMeters(
+				waterMeters, from, to);
+		WaterBean waterConsumptionBean = buildWaterBean(samples,
+				QUERY_PERIOD_DAILY);
+		response = Response.ok(gson.toJson(waterConsumptionBean));
+		return response;
+	}
+
+	private Map<String, List<WaterSample>> getDailySamplesForMeters(
+			List<WaterMeterSampler> waterMeters, String from, String to) {
+		Map<String, List<WaterSample>> samples = new HashMap<String, List<WaterSample>>();
+
+		DateTime fromDt = new Instant(Long.parseLong(from)).toDateTime();
+		DateTime toDt;
+
+		if (!to.isEmpty())
+			toDt = new Instant(Long.parseLong(to)).toDateTime();
+		else 
+			toDt = DateTime.now();
+		
+		if (toDt.isAfter(DateTime.now()))
+			toDt = DateTime.now();	
+		
+		System.out.println("from> " + fromDt.toString() + " to> " + toDt.toString());
+
+		while (!fromDt.isAfter(toDt)) {
+			for (WaterMeterSampler sampler : waterMeters) {
+				tryAddRange(samples, sampler, fromDt, fromDt.plusDays(1));
+			}
+			fromDt = fromDt.plusDays(1);
+		}
+
+		return samples;
+	}
+
+	private void tryAddRange(Map<String, List<WaterSample>> samples,
+			WaterMeterSampler sampler, DateTime fromDt, DateTime fromDtPlusRange) {
+		try {
+			WaterSample sample = sampler.getSample(fromDt, fromDtPlusRange);
+			if (!samples.containsKey(sampler.getName()))
+				samples.put(sampler.getName(), new ArrayList<WaterSample>());
+			samples.get(sampler.getName()).add(sample);
+		} catch (SensorFailedException e) {
+			// ignore sample
+		}
+	}
+
 	private List<WaterMeterSampler> waterMetersForUser(PlatformUser pu) {
 		List<WaterMeterSampler> meters = new ArrayList<>();
 		User[] users = userService.getUsers(pu);
@@ -84,7 +163,6 @@ public class WaterService {
 			if (user instanceof GatewayUser) {
 				for (Device device : ((GatewayUser) user).getGateway()) {
 					if (device instanceof WaterMeterSampler) {
-						System.out.println("adding meter: " + device.getName());
 						meters.add((WaterMeterSampler) device);
 					}
 				}
@@ -93,32 +171,36 @@ public class WaterService {
 		return meters;
 	}
 
-	private Map<String, WaterSample> getCurrentSamplesForMeters(List<WaterMeterSampler> waterMeters) {
-		Map<String, WaterSample> samples = new HashMap<>();
+	private Map<String, List<WaterSample>> getCurrentSamplesForMeters(
+			List<WaterMeterSampler> waterMeters) {
+		Map<String, List<WaterSample>> samples = new HashMap<>();
 		for (WaterMeterSampler sampler : waterMeters) {
 			tryAdd(samples, sampler);
 		}
 		return samples;
 	}
-	
-	private void tryAdd(Map<String, WaterSample> samples, WaterMeterSampler sampler) {
+
+	private void tryAdd(Map<String, List<WaterSample>> samples,
+			WaterMeterSampler sampler) {
 		try {
 			WaterSample sample = sampler.getSample();
-			System.out.println("added sample: " + sample.getSampleTimestamp().toString());
-			samples.put(sampler.getName(), sample);
+			if (!samples.containsKey(sampler.getName()))
+				samples.put(sampler.getName(), new ArrayList<WaterSample>());
+			samples.get(sampler.getName()).add(sample);
 		} catch (SensorFailedException sfe) {
 			// ignore this sample
 		}
 	}
 
-	private WaterBean buildWaterBean(Map<String, WaterSample> samples, String queryPeriod) {
+	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
+			String queryPeriod) {
 		return WaterBeanFactory.create(samples, queryPeriod);
 	}
-	
+
 	protected void bindUserService(UserService us) {
 		this.userService = us;
 	}
-	
+
 	protected void unbindUserService(UserService us) {
 		this.userService = null;
 	}

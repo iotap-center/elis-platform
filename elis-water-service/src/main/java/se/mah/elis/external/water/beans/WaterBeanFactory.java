@@ -10,12 +10,10 @@ import se.mah.elis.data.WaterSample;
 
 public class WaterBeanFactory {
 
-	public static WaterBean create(Map<String, WaterSample> samples, String queryPeriod) {
+	public static WaterBean create(Map<String, List<WaterSample>> samples, String queryPeriod) {
 		WaterBean bean = new WaterBean();
 		
-		System.out.println("creating bean");
-		
-		// only one meter id
+		// only one meter id - will cause bug for one user
 		for (String meter : samples.keySet()) {
 			bean.meterId = meter;
 			bean.data = createDataListFromSamples(samples.get(meter));
@@ -23,18 +21,18 @@ public class WaterBeanFactory {
 		
 		bean.period = queryPeriod;
 		
-		System.out.println("bean created");
-		
 		return bean;
 	}
 
 	private static List<WaterDataPointBean> createDataListFromSamples(
-			WaterSample waterSamples) {
+			List<WaterSample> waterSamples) {
 		List<WaterDataPointBean> points = new ArrayList<>();
-		WaterDataPointBean point = new WaterDataPointBean();
-		point.timestamp = unixtime(waterSamples.getSampleTimestamp());
-		point.volume = waterSamples.getVolume();
-		points.add(point);
+		for (WaterSample sample : waterSamples) {
+			WaterDataPointBean point = new WaterDataPointBean();
+			point.timestamp = unixtime(sample.getSampleTimestamp());
+			point.volume = sample.getVolume();
+			points.add(point);			
+		}
 		return points;
 	}
 

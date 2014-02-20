@@ -27,18 +27,17 @@ public class MkbWaterSample implements WaterSample {
 	}
 
 	public MkbWaterSample(List<WaterDataPoint> points) {
-		float totalVolume = 0;
-		
-		for (WaterDataPoint point : points) {
-			totalVolume += point.getValue();
-		}
-		
 		WaterDataPoint firstPoint = points.get(0);
 		WaterDataPoint lastPoint = points.get(points.size() - 1);
 		
 		this.sampleLength = calculateLength(firstPoint, lastPoint);
-		this.volume = totalVolume;
+		this.volume = calculateTotalVolume(firstPoint, lastPoint);
 		this.sampleTimestamp = lastPoint.getSampleDateTime();
+	}
+
+	private float calculateTotalVolume(WaterDataPoint firstPoint,
+			WaterDataPoint lastPoint) {
+		return lastPoint.getValue() - firstPoint.getValue();
 	}
 
 	private int calculateLength(WaterDataPoint firstPoint,
