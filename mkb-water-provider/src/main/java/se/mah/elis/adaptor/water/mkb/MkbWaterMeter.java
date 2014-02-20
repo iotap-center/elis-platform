@@ -4,9 +4,15 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.ReferenceCardinality;
+import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.joda.time.DateTime;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.component.ComponentContext;
 
 import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
@@ -30,21 +36,20 @@ public class MkbWaterMeter implements WaterMeterSampler {
 	private UUID uuid;
 	private boolean isOnline;
 
-	@Reference
+	@Reference(policy = ReferencePolicy.DYNAMIC, 
+			cardinality = ReferenceCardinality.OPTIONAL_UNARY)
 	private WaterDataService waterDataSource;
+	private static ComponentContext ctx;
 
-	protected void bindWaterDataSource(WaterDataService source) {
-		System.out.println("binding WaterDataService to MKB WaterMeter");
-		if (source.getInstance() != null) {
-			waterDataSource = source;
-			isOnline = true;
-			System.out.println("bound WaterDataService to MKB WaterMeter");
-		}
-	}
+	public MkbWaterMeter() { } 
+	
+	protected void bindWaterDataSource(ServiceReference source) { }
 
-	protected void unbindWaterDataSource(WaterDataService source) {
-		isOnline = false;
-		waterDataSource = null;
+	protected void unbindWaterDataSource(WaterDataService source) {	}
+	
+	@Activate
+	public void activate(ComponentContext context) {
+		ctx = context;
 	}
 
 	@Override
@@ -144,6 +149,7 @@ public class MkbWaterMeter implements WaterMeterSampler {
 
 	@Override
 	public WaterSample getSample() throws SensorFailedException {
+		setWaterSource();
 		if (!isOnline)
 			throw new SensorFailedException();
 		return getLatestSample();
@@ -159,9 +165,21 @@ public class MkbWaterMeter implements WaterMeterSampler {
 	@Override
 	public WaterSample getSample(DateTime from, DateTime to)
 			throws SensorFailedException {
-		if (isOnline)
-			return getRangeSample(from, to);
-		return null;
+		setWaterSource();
+		if (!isOnline)
+			throw new SensorFailedException();
+		return getRangeSample(from, to);
+	}
+
+	private void setWaterSource() {
+		if (waterDataSource == null) {
+			BundleContext bundleContext = ctx.getBundleContext();
+			ServiceReference ref = bundleContext.getServiceReference(WaterDataService.class.getName());
+			if (ref != null) {
+				waterDataSource = (WaterDataService) bundleContext.getService(ref);
+				isOnline = true;
+			}
+		}
 	}
 
 	private WaterSample getRangeSample(DateTime from, DateTime to) {
