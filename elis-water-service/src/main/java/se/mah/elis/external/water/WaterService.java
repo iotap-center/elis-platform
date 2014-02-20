@@ -1,5 +1,7 @@
 package se.mah.elis.external.water;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +44,8 @@ public class WaterService {
 
 	private static final String QUERY_PERIOD_NOW = "now";
 	private static final String QUERY_PERIOD_DAILY = "daily";
+	private static final String QUERY_PERIOD_WEEKLY = "weekly";
+	private static final String QUERY_PERIOD_MONTHLY = "monthly";
 
 	private Gson gson;
 
@@ -76,8 +80,7 @@ public class WaterService {
 		ResponseBuilder response;
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getCurrentSamplesForMeters(waterMeters);
-		WaterBean waterConsumptionBean = buildWaterBean(samples,
-				QUERY_PERIOD_NOW);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_NOW);
 		String json = gson.toJson(waterConsumptionBean);
 		response = Response.ok(json);
 		return response;
@@ -85,23 +88,21 @@ public class WaterService {
 
 	@GET
 	@Path("/{puid}/daily")
-	public Response getDailyWaterConsumption(@PathParam("puid") String puid,
+	public Response getDailyWaterConsumption(
+			@PathParam("puid") String puid,
 			@QueryParam("from") String from,
 			@DefaultValue("") @QueryParam("to") String to) {
-		System.out.println("Got query for: " + puid + " from " + from + " to " + to);
 		ResponseBuilder response = null;
 
 		if (userService != null) {
 			PlatformUser pu = userService.getPlatformUser(puid);
 			if (pu != null)
 				response = buildDailyWaterConsumptionResponseFrom(pu, from, to);
-			else {
-				System.out.println("Trouble finding the user");
+			else
 				response = Response.status(Response.Status.NOT_FOUND);
-			}
 		} else
 			response = Response.serverError();
-
+		
 		return response.build();
 	}
 
@@ -111,34 +112,118 @@ public class WaterService {
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getDailySamplesForMeters(
 				waterMeters, from, to);
-		WaterBean waterConsumptionBean = buildWaterBean(samples,
-				QUERY_PERIOD_DAILY);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_DAILY);
 		response = Response.ok(gson.toJson(waterConsumptionBean));
 		return response;
 	}
-
+	
 	private Map<String, List<WaterSample>> getDailySamplesForMeters(
 			List<WaterMeterSampler> waterMeters, String from, String to) {
 		Map<String, List<WaterSample>> samples = new HashMap<String, List<WaterSample>>();
 
-		DateTime fromDt = new Instant(Long.parseLong(from)).toDateTime();
-		DateTime toDt;
-
-		if (!to.isEmpty())
-			toDt = new Instant(Long.parseLong(to)).toDateTime();
-		else 
-			toDt = DateTime.now();
+		DateTime fromDt = parseFromDate(from);
+		DateTime toDt = parseToDate(to);
 		
-		if (toDt.isAfter(DateTime.now()))
-			toDt = DateTime.now();	
-		
-		System.out.println("from> " + fromDt.toString() + " to> " + toDt.toString());
-
 		while (!fromDt.isAfter(toDt)) {
 			for (WaterMeterSampler sampler : waterMeters) {
 				tryAddRange(samples, sampler, fromDt, fromDt.plusDays(1));
 			}
 			fromDt = fromDt.plusDays(1);
+		}
+
+		return samples;
+	}
+	
+	@GET
+	@Path("/{puid}/weekly")
+	public Response getWeeklyWaterConsumption(
+			@PathParam("puid") String puid,
+			@QueryParam("from") String from,
+			@DefaultValue("") @QueryParam("to") String to) {
+		ResponseBuilder response = null;
+
+		if (userService != null) {
+			PlatformUser pu = userService.getPlatformUser(puid);
+			if (pu != null)
+				response = buildWeeklyWaterConsumptionResponseFrom(pu, from, to);
+			else
+				response = Response.status(Response.Status.NOT_FOUND);
+		} else
+			response = Response.serverError();
+		
+		return response.build();
+	}
+
+	private ResponseBuilder buildWeeklyWaterConsumptionResponseFrom(
+			PlatformUser pu, String from, String to) {
+		ResponseBuilder response;
+		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
+		Map<String, List<WaterSample>> samples = getWeeklySamplesForMeters(
+				waterMeters, from, to);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_WEEKLY);
+		response = Response.ok(gson.toJson(waterConsumptionBean));
+		return response;
+	}
+	
+	private Map<String, List<WaterSample>> getWeeklySamplesForMeters(
+			List<WaterMeterSampler> waterMeters, String from, String to) {
+		Map<String, List<WaterSample>> samples = new HashMap<String, List<WaterSample>>();
+
+		DateTime fromDt = parseFromDate(from);
+		DateTime toDt = parseToDate(to);
+		
+		while (!fromDt.isAfter(toDt)) {
+			for (WaterMeterSampler sampler : waterMeters) {
+				tryAddRange(samples, sampler, fromDt, fromDt.plusDays(7));
+			}
+			fromDt = fromDt.plusDays(7);
+		}
+
+		return samples;
+	}
+
+	@GET
+	@Path("/{puid}/monthly")
+	public Response getMonthlyWaterConsumption(
+			@PathParam("puid") String puid,
+			@QueryParam("from") String from,
+			@DefaultValue("") @QueryParam("to") String to) {
+		ResponseBuilder response = null;
+
+		if (userService != null) {
+			PlatformUser pu = userService.getPlatformUser(puid);
+			if (pu != null)
+				response = buildMonthlyWaterConsumptionResponseFrom(pu, from, to);
+			else
+				response = Response.status(Response.Status.NOT_FOUND);
+		} else
+			response = Response.serverError();
+
+		return response.build();
+	}
+
+	private ResponseBuilder buildMonthlyWaterConsumptionResponseFrom(
+			PlatformUser pu, String from, String to) {
+		ResponseBuilder response;
+		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
+		Map<String, List<WaterSample>> samples = getMonthlySamplesForMeters(
+				waterMeters, from, to);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_MONTHLY);
+		response = Response.ok(gson.toJson(waterConsumptionBean));
+		return response;
+	}
+
+	private Map<String, List<WaterSample>> getMonthlySamplesForMeters(
+			List<WaterMeterSampler> waterMeters, String from, String to) {
+		Map<String, List<WaterSample>> samples = new HashMap<String, List<WaterSample>>();
+		DateTime fromDt = parseFromDate(from);
+		DateTime toDt = parseToDate(to);
+		
+		while (!fromDt.isAfter(toDt)) {
+			for (WaterMeterSampler sampler : waterMeters) {
+				tryAddRange(samples, sampler, fromDt, fromDt.plusMonths(1));
+			}
+			fromDt = fromDt.plusMonths(1);
 		}
 
 		return samples;
@@ -190,6 +275,22 @@ public class WaterService {
 		} catch (SensorFailedException sfe) {
 			// ignore this sample
 		}
+	}
+	
+	private DateTime parseFromDate(String from) {
+		return new Instant(Long.parseLong(from)).toDateTime();
+	}
+
+	private DateTime parseToDate(String to) {
+		DateTime toDt;
+		if (!to.isEmpty())
+			toDt = new Instant(Long.parseLong(to)).toDateTime();
+		else 
+			toDt = DateTime.now();
+		
+		if (toDt.isAfter(DateTime.now()))
+			toDt = DateTime.now();	
+		return toDt;
 	}
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
