@@ -1,4 +1,7 @@
 #!/bin/bash
+
+mkdir -p /tmp/mkb-water-data
+
 HOST="ftp.elvaco.se"
 USER="eonimd"
 PASS="Metering2013%"
