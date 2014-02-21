@@ -23,7 +23,7 @@ public interface ElisDataObject extends Serializable {
 	 * @return The data object's identifier.
 	 * @since 1.1
 	 */
-	UUID getUUID();
+	UUID getDataId();
 	
 	/**
 	 * Sets the data object's identifier. The identifier is globally unique,
@@ -32,7 +32,7 @@ public interface ElisDataObject extends Serializable {
 	 * @param uuid The object's identifier.
 	 * @since 1.1
 	 */
-	void setUUID(UUID uuid);
+	void setDataId(UUID uuid);
 	
 	/**
 	 * Sets the owner of this data object.
@@ -40,7 +40,7 @@ public interface ElisDataObject extends Serializable {
 	 * @param userId 
 	 * @since 2.0
 	 */
-	void setUniqueUserId(UUID userId);
+	void setOwnerId(UUID userId);
 	
 	/**
 	 * Returns the associated unique user id. This id number is associated with
@@ -50,7 +50,7 @@ public interface ElisDataObject extends Serializable {
 	 * @return the unique user id.
 	 * @since 2.0
 	 */
-	UUID getUniqueUserId();
+	UUID getOwnerId();
 
 	/**
 	 * <p>Get a Properties-based representation of the object. This method is
