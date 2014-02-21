@@ -42,10 +42,10 @@ public interface AbstractUser {
 	 * invariable, as the underlying storage engine might be too inflexible to
 	 * store different kinds of values for each field.</p>
 	 * 
-	 * @return A Properties object with all of the object's properties.
+	 * @return An OrderedProperties object with all of the object's properties.
 	 * @since 1.1
 	 */
-	Properties getProperties();
+	OrderedProperties getProperties();
 
 	/**
 	 * <p>Get a description of the AbstractUser object, the identifier included

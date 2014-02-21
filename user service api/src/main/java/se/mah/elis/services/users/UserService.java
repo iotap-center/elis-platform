@@ -1,5 +1,7 @@
 package se.mah.elis.services.users;
 
+import java.util.UUID;
+
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
 import se.mah.elis.services.users.exceptions.UserExistsException;
 
@@ -26,11 +28,11 @@ public interface UserService {
 	 * id number.
 	 * 
 	 * @param pu The platform user.
-	 * @param uid The user object's id number.
+	 * @param uuid The user object's id number.
 	 * @return A User object. If no user is found, null is returned.
-	 * @since 1.0
+	 * @since 2.0
 	 */
-	User getUser(PlatformUser pu, int uid);
+	User getUser(PlatformUser pu, UUID uuid);
 	
 	/**
 	 * Fetches all platform users.
