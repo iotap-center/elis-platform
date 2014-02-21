@@ -78,7 +78,7 @@ public class WaterDataTest {
 		DateTime start = fmt.parseDateTime("2014-02-18 01:00:00");
 		DateTime end = fmt.parseDateTime("2014-02-18 03:00:00");
 		List<WaterDataPoint> samples = waterData.getRange(METERID, start, end);
-		assertEquals(3, samples.size());
+		assertEquals(2, samples.size());
 	}
 	
 	@Test 
