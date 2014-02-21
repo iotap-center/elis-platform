@@ -15,7 +15,7 @@ public class MockUserIdentifier implements UserIdentifier {
 	public MockUserIdentifier() {
 		clazz = se.mah.elis.services.users.User.class;
 		
-		idNumber = 42;
+		idNumber = 1;
 		username = "Batman";
 		password = "Robin";
 	}

@@ -1086,7 +1086,7 @@ public class MySQLQueryTranslatorTest {
 	public void testUser() {
 		QueryTranslator translator = new MySQLQueryTranslator();
 		UserIdentifier uid = new MockUserIdentifier();
-		String expected = "(`id_number` = 42 AND `username` = 'Batman' " +
+		String expected = "(`id_number` = 1 AND `username` = 'Batman' " +
 						  "AND `password` = 'Robin')";
 		String actual = "";
 		
@@ -1197,7 +1197,7 @@ public class MySQLQueryTranslatorTest {
 		UserIdentifier uid = new MockUserIdentifier();
 		String expected = "SELECT * FROM `java-lang-String` WHERE " +
 						  "(`foo` = 'bar' OR `a` <> 1) AND " +
-						  "((`id_number` = 42 AND `username` = 'Batman' AND " +
+						  "((`id_number` = 1 AND `username` = 'Batman' AND " +
 						  "`password` = 'Robin') OR " +
 						  "(`b` > 0 OR `foo` = 'bar')) LIMIT 0, 10 DESC;";
 		String actual = "";
@@ -1264,7 +1264,7 @@ public class MySQLQueryTranslatorTest {
 		UserPredicate up = new UserPredicate(uid);
 		String actual = null;
 		String expected = "DELETE FROM `java-lang-String` WHERE " +
-						  "(`id_number` = 42 AND `username` = 'Batman' " +
+						  "(`id_number` = 1 AND `username` = 'Batman' " +
 						  "AND `password` = 'Robin');";
 		
 		

@@ -92,11 +92,11 @@ public class MockUser1 implements User {
 		if (uuid != null) {
 			props.put("uuid", uuid);
 		}
-		props.put("service_name", "MockUser1");
+		props.put("service_name", "test");
 		if (uid != null) {
 			props.putAll(uid.getProperties());
 		}
-		props.put("id", id);
+		props.put("userid", id);
 		if (stuff != null) {
 			props.put("stuff", stuff);
 		}
@@ -112,7 +112,7 @@ public class MockUser1 implements User {
 		props.put("uuid", uuid);
 		props.put("service_name", "9");
 		props.putAll((new MockUserIdentifier()).getPropertiesTemplate());
-		props.put("id", 1);
+		props.put("userid", 1);
 		props.put("stuff", "32");
 		props.put("whatever", 1);
 		
@@ -121,16 +121,18 @@ public class MockUser1 implements User {
 
 	@Override
 	public void populate(Properties props) {
-		uid = new MockUserIdentifier();
+		uid = new MockUserIdentifier((Integer) props.get("id_number"),
+									 (String) props.getProperty("username"),
+									 (String) props.getProperty("password"));
 		uuid = (UUID) props.get("uuid");
 		stuff = (String) props.get("stuff");
 		whatever = (int) props.get("whatever");
-		id = (int) props.get("id");
+		id = (int) props.get("userid");
 	}
 
 	@Override
 	public String getServiceName() {
-		return "MockUser1";
+		return "test";
 	}
 
 	@Override
