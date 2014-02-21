@@ -169,8 +169,8 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	}
 
 	@Override
-	public Properties getProperties() {
-		Properties p = new Properties();
+	public OrderedProperties getProperties() {
+		OrderedProperties p = new OrderedProperties();
 		
 		p.put("identifier", id);
 		p.put("first_name", firstName);
@@ -195,37 +195,58 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	public void populate(Properties props) throws IllegalArgumentException {
 		// Check the properties. Are they OK?
 		if (!props.containsKey("first_name") ||
-				props.get("first_name").getClass() != java.lang.String.class ||
+				!(props.get("first_name") instanceof String) ||
+				((String) props.get("first_name")).length() < 1 ||
 				!props.containsKey("last_name") ||
-				props.get("last_name").getClass() != java.lang.String.class ||
+				!(props.get("last_name") instanceof String) ||
+				((String) props.get("last_name")).length() < 1 ||
 				!props.containsKey("email") ||
-				props.get("email").getClass() != java.lang.String.class) {
+				!(props.get("email") instanceof String) ||
+				!validateAddress((String) props.get("email"))) {
 			// Apparently not. Let's bail out.
 			throw new IllegalArgumentException();
 		}
 		// The identifier part can be of two kinds: either a full Identifier
 		// object or a flattened version.
 		if (!((props.containsKey("identifier") &&
-				props.get("identifier").getClass() ==
-					PlatformUserIdentifierImpl.class) ||
-				(props.containsKey("id")) &&
-				props.get("id").getClass() == java.lang.Integer.class &&
-				props.containsKey("username") &&
-				props.get("username").getClass() == java.lang.String.class &&
-				props.containsKey("password") &&
-				props.get("password").getClass() == java.lang.String.class)) {
+			   props.get("identifier") instanceof PlatformUserIdentifierImpl) ||
+			(((props.containsKey("id")) &&
+			   props.get("id") instanceof Integer) ||
+			   !props.containsKey("id")) &&
+			   props.containsKey("username") &&
+			   props.get("username") instanceof String)) {
 			// Apparently not. Let's bail out.
 			throw new IllegalArgumentException();
 		}
+//		// The password part is tricky. We'll deal with that separately for
+//		// the sake of readability.
+//		if ((props.containsKey("password") &&
+//				!(props.get("password") instanceof String &&
+//				((String) props.get("password")).length() > 0))) {
+//			// If there is a password, and it isn't valid, then let's bail out.
+//			throw new IllegalArgumentException();
+//		}
+			
 		
 		// OK, all properties are fine. Let's start with taking care of the
 		// identifier and add that to the object.
 		if (props.containsKey("identifier")) {
 			id = (UserIdentifier) props.get("identifier");
 		} else {
-			int idNumber = (int) props.get("id");
+			int idNumber = 0;
 			String username = (String) props.get("username");
-			String password = (String) props.get("password");
+			String password = null;
+			
+			if (props.containsKey("id")) {
+				idNumber = (int) props.get("id");
+				if (idNumber < 0)
+					idNumber = 0;
+			}
+			
+			if (props.containsKey("password")) {
+				password = (String) props.get("password");
+			}
+			
 			id = new PlatformUserIdentifierImpl(idNumber, username, password);
 		}
 		

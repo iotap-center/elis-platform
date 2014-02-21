@@ -35,17 +35,7 @@ public class AnotherMockUser implements User {
 	}
 
 	@Override
-	public int getIdNumber() {
-		return id;
-	}
-
-	@Override
-	public void setIdNumber(int id) {
-		this.id = id;
-	}
-
-	@Override
-	public Properties getProperties() {
+	public OrderedProperties getProperties() {
 		// TODO Auto-generated method stub
 		return null;
 	}

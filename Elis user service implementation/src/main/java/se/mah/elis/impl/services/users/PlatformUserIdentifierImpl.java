@@ -41,10 +41,10 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	}
 	
 	public void setId(int id) throws IllegalArgumentException {
-		if (id > 0) {
+		if (id >= 0) {
 			this.id = id;
 		} else {
-			throw new IllegalArgumentException("Id can't be zero");
+			throw new IllegalArgumentException("Id can't be negative");
 		}
 	}
 	
@@ -77,14 +77,14 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	public void setPassword(String password) {
 		if (password != null) {
 			password = password.trim();
+			
+			if (!password.isEmpty()) {
+				this.password = password;
+			} else {
+				throw new IllegalArgumentException("Password can't be empty");
+			}
 		} else {
-			throw new IllegalArgumentException("Password can't be empty");
-		}
-		
-		if (!password.isEmpty()) {
-			this.password = password;
-		} else {
-			throw new IllegalArgumentException("Password can't be empty");
+			this.password = null;
 		}
 	}
 	
@@ -108,8 +108,8 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	}
 
 	@Override
-	public Properties getProperties() {
-		Properties p = new Properties();
+	public OrderedProperties getProperties() {
+		OrderedProperties p = new OrderedProperties();
 		
 		p.put("id", id);
 		p.put("username", username);

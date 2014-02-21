@@ -12,7 +12,7 @@ public class MockUser implements User {
 
 	private String stuff;
 	private int whatever;
-	private int id;
+	private UUID uuid;
 	
 	public MockUser() {
 		stuff = "";
@@ -51,17 +51,7 @@ public class MockUser implements User {
 	}
 
 	@Override
-	public int getIdNumber() {
-		return id;
-	}
-
-	@Override
-	public void setIdNumber(int id) {
-		this.id = id;
-	}
-
-	@Override
-	public Properties getProperties() {
+	public OrderedProperties getProperties() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -86,13 +76,11 @@ public class MockUser implements User {
 
 	@Override
 	public UUID getUserId() {
-		// TODO Auto-generated method stub
-		return null;
+		return uuid;
 	}
 
 	@Override
 	public void setUserId(UUID id) {
-		// TODO Auto-generated method stub
-		
+		uuid = id;
 	}
 }

@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
@@ -34,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
 	// TODO This is a placeholer. It has to be replaced with a persistent storage at a later stage.
 	private Map<PlatformUser, ArrayList<User>> map;
-	private int platformUserCounter, userCounter;
+	private int platformUserCounter;
 	
 	/**
 	 * 
@@ -43,7 +44,6 @@ public class UserServiceImpl implements UserService {
 		// TODO This isn't kosher
 		map = new TreeMap<PlatformUser, ArrayList<User>>();
 		platformUserCounter = 0;
-		userCounter = 0;
 	}
 
 	/* (non-Javadoc)
@@ -72,13 +72,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User getUser(PlatformUser pu, int uid) {
+	public User getUser(PlatformUser pu, UUID uuid) {
 		User user = null;
 		ArrayList<User> users = map.get(pu);
 		
 		if (users != null) {
 			for (User u : users) {
-				if (u.getIdNumber() == uid) {
+				if (u.getUserId() == uuid) {
 					user = u;
 				}
 			}
@@ -116,8 +116,8 @@ public class UserServiceImpl implements UserService {
 		
 		ArrayList<User> list = null;
 		
-		if (u.getIdNumber() < 1) {
-			u.setIdNumber(++userCounter);
+		if (u.getUserId() == null) {
+			u.setUserId(UUID.randomUUID());
 		}
 		
 		if (!map.containsKey(pu)) {
