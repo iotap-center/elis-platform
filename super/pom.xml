@@ -186,5 +186,8 @@
         <module>../rest-demo</module>
         
         <module>../elis-demo-users</module>
+        <module>../elis-device-service</module>
+        <module>../elis-water-service</module>
+        <module>../mkb-water-provider</module>
 	</modules>
 </project>
