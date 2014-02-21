@@ -16,7 +16,7 @@ public class SimpleSampleMock implements Sample {
 		// TODO Auto-generated constructor stub
 	}
 
-	public int getSampleLength() {
+	public long getSampleLength() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -32,12 +32,6 @@ public class SimpleSampleMock implements Sample {
 	}
 
 	@Override
-	public long getDataId() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public UUID getUUID() {
 		// TODO Auto-generated method stub
 		return null;
@@ -50,15 +44,15 @@ public class SimpleSampleMock implements Sample {
 	}
 
 	@Override
-	public void setUniqueUserId(int userId) {
+	public void setUniqueUserId(UUID userId) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public int getUniqueUserId() {
+	public UUID getUniqueUserId() {
 		// TODO Auto-generated method stub
-		return 0;
+		return UUID.randomUUID();
 	}
 
 	@Override

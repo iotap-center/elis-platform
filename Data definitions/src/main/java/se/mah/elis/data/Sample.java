@@ -19,7 +19,7 @@ public interface Sample extends ElisDataObject {
 	 * @return The sample length in milliseconds.
 	 * @since 1.0
 	 */
-	int getSampleLength();
+	long getSampleLength();
 
 	/**
 	 * Gets the moment in time when this sample was taken. The timestamp is

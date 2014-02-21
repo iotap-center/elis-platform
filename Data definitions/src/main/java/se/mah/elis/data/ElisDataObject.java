@@ -17,20 +17,6 @@ import java.util.UUID;
 public interface ElisDataObject extends Serializable {
 	
 	/**
-	 * <p>Returns the data object's identifier. The identifier is set on a
-	 * collection basis; that is, the identifier isn't truly unique on its own,
-	 * but constitutes a unique identifier in combination with the associated
-	 * collection's name.</p>
-	 * 
-	 * <p>This method was replaced by the getUUID() method in version 1.1.</p>
-	 * 
-	 * @return The identifier number.
-	 * @deprecated As of version 1.1, replaced by {@link #getUUID()}.
-	 * @since 1.0
-	 */
-	long getDataId();
-	
-	/**
 	 * Returns the data object's identifier. The identifier is globally unique,
 	 * making the data object traceable.
 	 * 
@@ -52,9 +38,9 @@ public interface ElisDataObject extends Serializable {
 	 * Sets the owner of this data object.
 	 * 
 	 * @param userId 
-	 * @since 1.0
+	 * @since 2.0
 	 */
-	void setUniqueUserId(int userId);
+	void setUniqueUserId(UUID userId);
 	
 	/**
 	 * Returns the associated unique user id. This id number is associated with
@@ -62,9 +48,9 @@ public interface ElisDataObject extends Serializable {
 	 * associated with the system that provided it.
 	 * 
 	 * @return the unique user id.
-	 * @since 1.0
+	 * @since 2.0
 	 */
-	int getUniqueUserId();
+	UUID getUniqueUserId();
 
 	/**
 	 * <p>Get a Properties-based representation of the object. This method is

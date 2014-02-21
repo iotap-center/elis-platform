@@ -23,7 +23,7 @@ public class ElectricitySampleMock implements ElectricitySample {
 		testValue = 1;
 	}
 
-	public int getSampleLength() {
+	public long getSampleLength() {
 		return 100;
 	}
 
@@ -109,12 +109,6 @@ public class ElectricitySampleMock implements ElectricitySample {
 	}
 
 	@Override
-	public long getDataId() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public UUID getUUID() {
 		// TODO Auto-generated method stub
 		return null;
@@ -127,15 +121,15 @@ public class ElectricitySampleMock implements ElectricitySample {
 	}
 
 	@Override
-	public void setUniqueUserId(int userId) {
+	public void setUniqueUserId(UUID userId) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public int getUniqueUserId() {
+	public UUID getUniqueUserId() {
 		// TODO Auto-generated method stub
-		return 0;
+		return UUID.randomUUID();
 	}
 
 	@Override
