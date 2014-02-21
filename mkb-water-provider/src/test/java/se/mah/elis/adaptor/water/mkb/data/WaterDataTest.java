@@ -14,6 +14,9 @@ import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.mah.elis.adaptor.water.mkb.data.WaterData;
+import se.mah.elis.adaptor.water.mkb.data.WaterDataPoint;
+
 public class WaterDataTest {
 
 	
@@ -34,7 +37,7 @@ public class WaterDataTest {
 
 	private Map<String, List<WaterDataPoint>> createFakeData() {
 		Map<String, List<WaterDataPoint>> samples = new HashMap<>();
-		String[] testLines = WaterDataLoaderTest.testData().split("\n");
+		String[] testLines = WaterDataLoader.testData().split("\n");
 		for (String line : testLines) {
 			String[] parts = line.split(";");
 			DateTime registered = fmt.parseDateTime(parts[0]);
@@ -78,10 +81,42 @@ public class WaterDataTest {
 		assertEquals(3, samples.size());
 	}
 	
+	@Test 
+	public void testGetRangeOneHour() {
+		DateTime start = fmt.parseDateTime("2014-02-18 00:00:00");
+		DateTime end = fmt.parseDateTime("2014-02-18 01:00:00");
+		List<WaterDataPoint> samples = waterData.getRange(METERID, start, end);
+		assertEquals(1, samples.size());
+	}
+	
+	@Test 
+	public void testGetRangeTwoHours() {
+		DateTime start = fmt.parseDateTime("2014-02-18 00:00:00");
+		DateTime end = fmt.parseDateTime("2014-02-18 02:00:00");
+		List<WaterDataPoint> samples = waterData.getRange(METERID, start, end);
+		assertEquals(2, samples.size());
+	}
+	
+	@Test 
+	public void testGetRangeZeroHours() {
+		DateTime start = fmt.parseDateTime("2014-02-18 00:00:00");
+		DateTime end = fmt.parseDateTime("2014-02-18 00:00:00");
+		List<WaterDataPoint> samples = waterData.getRange(METERID, start, end);
+		assertEquals(0, samples.size());
+	}
+	
 	@Test
 	public void testGetAll() {
 		List<WaterDataPoint> samples = waterData.getAllValues(METERID);
 		assertEquals(8, samples.size());
+	}
+	
+	@Test 
+	public void testGetRangeInMiddle() {
+		DateTime start = fmt.parseDateTime("2014-02-23 00:00:00");
+		DateTime end = fmt.parseDateTime("2014-02-24 00:00:00");
+		List<WaterDataPoint> samples = waterData.getRange("63408103", start, end);
+		assertEquals(1, samples.size());
 	}
 	
 	@Test
@@ -102,4 +137,5 @@ public class WaterDataTest {
 		WaterDataPoint sample = new WaterDataPoint(end, 18.519f);
 		assertTrue(sample.getValue() == waterData.getLatestSample(METERID).getValue());
 	}
+
 }

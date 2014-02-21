@@ -6,7 +6,6 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
-import org.joda.time.Period;
 
 import se.mah.elis.adaptor.water.mkb.data.WaterDataPoint;
 import se.mah.elis.data.OrderedProperties;
@@ -22,7 +21,7 @@ public class MkbWaterSample implements WaterSample {
 
 	public MkbWaterSample(WaterDataPoint point) {
 		this.volume = point.getValue();
-		this.sampleTimestamp = point.getSampleDateTime();
+		this.sampleTimestamp = point.getRecordedDateTime();
 		this.sampleLength = 0;
 	}
 
@@ -30,9 +29,9 @@ public class MkbWaterSample implements WaterSample {
 		WaterDataPoint firstPoint = points.get(0);
 		WaterDataPoint lastPoint = points.get(points.size() - 1);
 		
-		this.sampleLength = calculateLength(firstPoint, lastPoint);
+		this.sampleLength = (int) calculateLength(firstPoint, lastPoint);
 		this.volume = calculateTotalVolume(firstPoint, lastPoint);
-		this.sampleTimestamp = lastPoint.getSampleDateTime();
+		this.sampleTimestamp = lastPoint.getRecordedDateTime();
 	}
 
 	private float calculateTotalVolume(WaterDataPoint firstPoint,
@@ -40,11 +39,11 @@ public class MkbWaterSample implements WaterSample {
 		return lastPoint.getValue() - firstPoint.getValue();
 	}
 
-	private int calculateLength(WaterDataPoint firstPoint,
+	private long calculateLength(WaterDataPoint firstPoint,
 			WaterDataPoint lastPoint) {
-		Period period = new Period(firstPoint.getSampleDateTime(), 
-				lastPoint.getSampleDateTime());
-		return period.getMillis();
+		long end = lastPoint.getRecordedDateTime().toInstant().getMillis();
+		long start = firstPoint.getRecordedDateTime().toInstant().getMillis();
+		return end - start;
 	}
 
 	@Override

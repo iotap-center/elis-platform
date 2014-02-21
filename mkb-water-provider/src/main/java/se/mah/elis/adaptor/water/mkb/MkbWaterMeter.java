@@ -43,6 +43,11 @@ public class MkbWaterMeter implements WaterMeterSampler {
 
 	public MkbWaterMeter() { } 
 	
+	protected MkbWaterMeter(WaterDataService wds) {
+		waterDataSource = wds;
+		isOnline = true;
+	}
+	
 	protected void bindWaterDataSource(ServiceReference source) { }
 
 	protected void unbindWaterDataSource(WaterDataService source) {	}

@@ -14,16 +14,17 @@ public class WaterDataService {
 	public WaterDataService() {
 		init();
 	}
+	
+	public WaterDataService(WaterData data) {
+		waterData = data;
+	}
 
 	private void init() {
-		System.out.println("Loading MKB water data");
 		try {
 			waterData = WaterDataLoader.loadFromFile("/tmp/mkb-water-data/all.txt");
-			System.out.println("Loaded MKB water data");
 		} catch (FileNotFoundException e) {		
 			e.printStackTrace();
 		}
-		//waterData = WaterDataLoader.loadFromCode();
 	}
 	
 	public WaterData getInstance() {

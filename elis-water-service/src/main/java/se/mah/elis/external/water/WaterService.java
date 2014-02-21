@@ -129,6 +129,9 @@ public class WaterService {
 				tryAddRange(samples, sampler, fromDt, fromDt.plusDays(1));
 			}
 			fromDt = fromDt.plusDays(1);
+			
+			if (fromDt.equals(toDt))
+				break;
 		}
 
 		return samples;
@@ -177,6 +180,9 @@ public class WaterService {
 				tryAddRange(samples, sampler, fromDt, fromDt.plusDays(7));
 			}
 			fromDt = fromDt.plusDays(7);
+			
+			if (fromDt.equals(toDt))
+				break;
 		}
 
 		return samples;
@@ -224,6 +230,9 @@ public class WaterService {
 				tryAddRange(samples, sampler, fromDt, fromDt.plusMonths(1));
 			}
 			fromDt = fromDt.plusMonths(1);
+			
+			if (fromDt.equals(toDt))
+				break;
 		}
 
 		return samples;

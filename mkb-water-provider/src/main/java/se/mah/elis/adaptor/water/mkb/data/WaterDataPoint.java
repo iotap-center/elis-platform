@@ -4,16 +4,16 @@ import org.joda.time.DateTime;
 
 public class WaterDataPoint implements Comparable<WaterDataPoint> {
 	
-	private DateTime registeredDateTime;
+	private DateTime recordedDateTime;
 	private float measuredValue;
 
 	public WaterDataPoint(DateTime time, float value) {
-		registeredDateTime = time;
+		recordedDateTime = time;
 		measuredValue = value;
 	}
 	
-	public DateTime getSampleDateTime() {
-		return registeredDateTime;
+	public DateTime getRecordedDateTime() {
+		return recordedDateTime;
 	}
 	
 	public float getValue() {
@@ -22,7 +22,7 @@ public class WaterDataPoint implements Comparable<WaterDataPoint> {
 
 	@Override
 	public int compareTo(WaterDataPoint o) {
-		return registeredDateTime.compareTo(o.registeredDateTime);
+		return recordedDateTime.compareTo(o.recordedDateTime);
 	}
 	
 }

@@ -44,13 +44,12 @@ public class WaterData {
 			int startIndex) {
 		int stopIndex = 0;
 		
-		for (int i = startIndex; i < listsize; i++) {
-			DateTime sample = list.get(i).getSampleDateTime();
-			if (sample.isBefore(end))
+		for (int i = startIndex + 1; i < listsize; i++) {
+			DateTime sample = list.get(i).getRecordedDateTime();
+			if (sample.isBefore(end) || sample.equals(end))
 				stopIndex = i;
 		}
 		
-		stopIndex += 1; // make inclusive
 		return stopIndex;
 	}
 
@@ -58,17 +57,19 @@ public class WaterData {
 			DateTime start, int listsize) {
 		int startIndex = 0;
 		
-		if (getEarliestDate(meterId).isBefore(start))
+		if (start.isBefore(getEarliestDate(meterId))) {
 			startIndex = 0;
-		else {
+		} else {
 			for (int i = 0; i < listsize; i++) {
-				DateTime sample = list.get(i).getSampleDateTime();
-				if (sample.isBefore(start))
+				DateTime sample = list.get(i).getRecordedDateTime();
+				if (sample.isBefore(start) || sample.equals(start))
 					startIndex = i;
-				else
+				else {
 					break; // don't bother going through the rest
+				}
 			}
 		}
+
 		return startIndex;
 	}
 
@@ -84,12 +85,12 @@ public class WaterData {
 	
 	public DateTime getEarliestDate(String meterId) {
 		if (userDataMap.containsKey(meterId))
-			return userDataMap.get(meterId).get(0).getSampleDateTime();
+			return userDataMap.get(meterId).get(0).getRecordedDateTime();
 		return null;
 	}
 	
 	public DateTime getLastDate(String meterId) {
-		return getLatestSample(meterId).getSampleDateTime();
+		return getLatestSample(meterId).getRecordedDateTime();
 	}
 	
 	public WaterDataPoint getLatestSample(String meterId) {
