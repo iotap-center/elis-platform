@@ -19,7 +19,7 @@ public class MockPlatformUser implements PlatformUser {
 	}
 
 	@Override
-	public Properties getProperties() {
+	public OrderedProperties getProperties() {
 		// TODO Auto-generated method stub
 		return null;
 	}
