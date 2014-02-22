@@ -3062,223 +3062,223 @@ public class StorageImplTest {
 		}
 	}
 
-	@Test
-	public void testSelectOneHit() {
-		buildAndPopulateMDO1Table();
+//	@Test
+//	public void testSelectOneHit() {
+//		buildAndPopulateMDO1Table();
+//
+//		UserFactory factory = new UserFactoryImpl();
+//		Storage storage = new StorageImpl(connection, factory);
+//		se.mah.elis.services.storage.result.ResultSet rs = null;
+//		MockDataObject1 mdo = null;
+//		Query query = new Query();
+//		
+//		query.setDataType(MockDataObject1.class)
+//			.setPredicate((new SimplePredicate(CriterionType.EQ))
+//					.setField("bar")
+//					.setCriterion("Jezibaba"));
+//		
+//		try {
+//			rs = storage.select(query);
+//		} catch (StorageException e) {
+//			e.printStackTrace();
+//			fail("This shouldn't happen");
+//		}
+//		
+//		assertNotNull(rs);
+//		assertEquals(1, rs.size());
+//		assertEquals(MockDataObject1.class, rs.getObjectType());
+//		
+//		mdo = (MockDataObject1) rs.first();
+//		
+//		assertEquals(UUID.fromString("00001111-2222-3333-4444-555566667779"), mdo.getDataId());
+//		assertEquals("Jezibaba", mdo.getBar());
+//		assertEquals(17, mdo.getFoo());
+//		assertEquals(1, mdo.getOwnerId());
+//	}
+//
+//	@Test
+//	public void testSelectOneHitAbstractUser() {
+//		buildAndPopulateMU1Table();
+//
+//		UserFactory factory = new UserFactoryImpl();
+//		Storage storage = new StorageImpl(connection, factory);
+//		se.mah.elis.services.storage.result.ResultSet rs = null;
+//		MockUser1 mu = null;
+//		Query query = new Query();
+//		
+//		factory.registerProvider(new MockUser1Provider());
+//		
+//		query.setDataType(MockUser1.class)
+//			.setPredicate((new SimplePredicate(CriterionType.EQ))
+//					.setField("stuff")
+//					.setCriterion("Vinea"));
+//		
+//		try {
+//			rs = storage.select(query);
+//		} catch (StorageException e) {
+//			e.printStackTrace();
+//			fail("This shouldn't happen");
+//		}
+//		
+//		assertNotNull(rs);
+//		assertEquals(1, rs.size());
+//		assertEquals(MockUser1.class, rs.getObjectType());
+//		
+//		mu = (MockUser1) rs.first();
+//		
+//		assertEquals(UUID.fromString("00001111-2222-dead-beef-555566667772"), mu.getUserId());
+//		assertEquals("Vinea", mu.getStuff());
+//		assertEquals(22, mu.getWhatever());
+//	}
+//
+//	@Test
+//	public void testSelectSeveralHits() {
+//		buildAndPopulateMDO1Table();
+//
+//		UserFactory factory = new UserFactoryImpl();
+//		Storage storage = new StorageImpl(connection, factory);
+//		se.mah.elis.services.storage.result.ResultSet rs = null;
+//		MockDataObject1 mdo = null;
+//		Query query = new Query();
+//		
+//		query.setDataType(MockDataObject1.class)
+//			.setPredicate((new ChainingPredicate(ChainingType.OR))
+//				.setLeft((new SimplePredicate(CriterionType.EQ))
+//					.setField("bar")
+//					.setCriterion("Jezibaba"))
+//				.setRight((new SimplePredicate(CriterionType.EQ))
+//					.setField("foo")
+//					.setCriterion(42)));
+//		
+//		try {
+//			rs = storage.select(query);
+//		} catch (StorageException e) {
+//			e.printStackTrace();
+//			fail("This shouldn't happen");
+//		}
+//		
+//		assertNotNull(rs);
+//		assertEquals(2, rs.size());
+//		assertEquals(MockDataObject1.class, rs.getObjectType());
+//		
+//		mdo = (MockDataObject1) rs.first();
+//		
+//		assertEquals(UUID.fromString("00001111-2222-3333-4444-555566667779"), mdo.getDataId());
+//		assertEquals("Jezibaba", mdo.getBar());
+//		assertEquals(17, mdo.getFoo());
+//		assertEquals(1, mdo.getOwnerId());
+//		
+//		mdo = (MockDataObject1) rs.next();
+//		
+//		assertEquals(UUID.fromString("00001111-2222-3333-4444-555566667777"), mdo.getDataId());
+//		assertEquals("Baba Roga", mdo.getBar());
+//		assertEquals(17, mdo.getFoo());
+//		assertEquals(1, mdo.getOwnerId());
+//	}
 
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		se.mah.elis.services.storage.result.ResultSet rs = null;
-		MockDataObject1 mdo = null;
-		Query query = new Query();
-		
-		query.setDataType(MockDataObject1.class)
-			.setPredicate((new SimplePredicate(CriterionType.EQ))
-					.setField("bar")
-					.setCriterion("Jezibaba"));
-		
-		try {
-			rs = storage.select(query);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertNotNull(rs);
-		assertEquals(1, rs.size());
-		assertEquals(MockDataObject1.class, rs.getObjectType());
-		
-		mdo = (MockDataObject1) rs.first();
-		
-		assertEquals(UUID.fromString("00001111-2222-3333-4444-555566667779"), mdo.getDataId());
-		assertEquals("Jezibaba", mdo.getBar());
-		assertEquals(17, mdo.getFoo());
-		assertEquals(1, mdo.getOwnerId());
-	}
-
-	@Test
-	public void testSelectOneHitAbstractUser() {
-		buildAndPopulateMU1Table();
-
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		se.mah.elis.services.storage.result.ResultSet rs = null;
-		MockUser1 mu = null;
-		Query query = new Query();
-		
-		factory.registerProvider(new MockUser1Provider());
-		
-		query.setDataType(MockUser1.class)
-			.setPredicate((new SimplePredicate(CriterionType.EQ))
-					.setField("stuff")
-					.setCriterion("Vinea"));
-		
-		try {
-			rs = storage.select(query);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertNotNull(rs);
-		assertEquals(1, rs.size());
-		assertEquals(MockUser1.class, rs.getObjectType());
-		
-		mu = (MockUser1) rs.first();
-		
-		assertEquals(UUID.fromString("00001111-2222-dead-beef-555566667772"), mu.getUserId());
-		assertEquals("Vinea", mu.getStuff());
-		assertEquals(22, mu.getWhatever());
-	}
-
-	@Test
-	public void testSelectSeveralHits() {
-		buildAndPopulateMDO1Table();
-
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		se.mah.elis.services.storage.result.ResultSet rs = null;
-		MockDataObject1 mdo = null;
-		Query query = new Query();
-		
-		query.setDataType(MockDataObject1.class)
-			.setPredicate((new ChainingPredicate(ChainingType.OR))
-				.setLeft((new SimplePredicate(CriterionType.EQ))
-					.setField("bar")
-					.setCriterion("Jezibaba"))
-				.setRight((new SimplePredicate(CriterionType.EQ))
-					.setField("foo")
-					.setCriterion(42)));
-		
-		try {
-			rs = storage.select(query);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertNotNull(rs);
-		assertEquals(2, rs.size());
-		assertEquals(MockDataObject1.class, rs.getObjectType());
-		
-		mdo = (MockDataObject1) rs.first();
-		
-		assertEquals(UUID.fromString("00001111-2222-3333-4444-555566667779"), mdo.getDataId());
-		assertEquals("Jezibaba", mdo.getBar());
-		assertEquals(17, mdo.getFoo());
-		assertEquals(1, mdo.getOwnerId());
-		
-		mdo = (MockDataObject1) rs.next();
-		
-		assertEquals(UUID.fromString("00001111-2222-3333-4444-555566667777"), mdo.getDataId());
-		assertEquals("Baba Roga", mdo.getBar());
-		assertEquals(17, mdo.getFoo());
-		assertEquals(1, mdo.getOwnerId());
-	}
-
-	@Test
-	public void testSelectNoHits() {
-		buildAndPopulateMDO1Table();
-
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		se.mah.elis.services.storage.result.ResultSet rs = null;
-		Query query = new Query();
-		
-		query.setDataType(MockDataObject1.class)
-			.setPredicate((new SimplePredicate(CriterionType.EQ))
-					.setField("bar")
-					.setCriterion("Bohovia sú mrtve"));
-		
-		try {
-			rs = storage.select(query);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertNotNull(rs);
-		assertEquals(0, rs.size());
-		assertEquals(MockDataObject1.class, rs.getObjectType());
-	}
-
-	@Test
-	public void testDeleteQuery() {
-		buildAndPopulateMDO1Table();
-
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		se.mah.elis.services.storage.result.ResultSet rs = null;
-		Query query = new Query();
-		
-		query.setDataType(MockDataObject1.class)
-			.setPredicate((new SimplePredicate(CriterionType.EQ))
-					.setField("bar")
-					.setCriterion("Jezibaba"));
-		
-		try {
-			storage.delete(query);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertEquals(EDO1_COUNT - 1, countBindingsInDB(new MockDataObject1()));
-		assertEquals(EDO1_COUNT - 1, countBindingsInDB());
-	}
-
-	@Test
-	public void testDeleteQueryNoMatch() {
-		buildAndPopulateMDO1Table();
-
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		se.mah.elis.services.storage.result.ResultSet rs = null;
-		Query query = new Query();
-		
-		query.setDataType(MockDataObject1.class)
-			.setPredicate((new SimplePredicate(CriterionType.EQ))
-					.setField("bar")
-					.setCriterion("Bohovie sú mrtve"));
-		
-		try {
-			storage.delete(query);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertEquals(EDO1_COUNT - 1, countBindingsInDB(new MockDataObject1()));
-		assertEquals(EDO1_COUNT - 1, countBindingsInDB());
-	}
-
-	@Test
-	public void testDeleteQuerySeveralMatches() {
-		buildAndPopulateMDO1Table();
-
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		se.mah.elis.services.storage.result.ResultSet rs = null;
-		Query query = new Query();
-		
-		query.setDataType(MockDataObject1.class)
-		.setPredicate((new ChainingPredicate(ChainingType.OR))
-			.setLeft((new SimplePredicate(CriterionType.EQ))
-				.setField("bar")
-				.setCriterion("Jezibaba"))
-			.setRight((new SimplePredicate(CriterionType.EQ))
-				.setField("foo")
-				.setCriterion(42)));
-		
-		try {
-			storage.delete(query);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertEquals(EDO1_COUNT - 2, countBindingsInDB(new MockDataObject1()));
-		assertEquals(EDO1_COUNT - 2, countBindingsInDB());
-	}
+//	@Test
+//	public void testSelectNoHits() {
+//		buildAndPopulateMDO1Table();
+//
+//		UserFactory factory = new UserFactoryImpl();
+//		Storage storage = new StorageImpl(connection, factory);
+//		se.mah.elis.services.storage.result.ResultSet rs = null;
+//		Query query = new Query();
+//		
+//		query.setDataType(MockDataObject1.class)
+//			.setPredicate((new SimplePredicate(CriterionType.EQ))
+//					.setField("bar")
+//					.setCriterion("Bohovia sú mrtve"));
+//		
+//		try {
+//			rs = storage.select(query);
+//		} catch (StorageException e) {
+//			e.printStackTrace();
+//			fail("This shouldn't happen");
+//		}
+//		
+//		assertNotNull(rs);
+//		assertEquals(0, rs.size());
+//		assertEquals(MockDataObject1.class, rs.getObjectType());
+//	}
+//
+//	@Test
+//	public void testDeleteQuery() {
+//		buildAndPopulateMDO1Table();
+//
+//		UserFactory factory = new UserFactoryImpl();
+//		Storage storage = new StorageImpl(connection, factory);
+//		se.mah.elis.services.storage.result.ResultSet rs = null;
+//		Query query = new Query();
+//		
+//		query.setDataType(MockDataObject1.class)
+//			.setPredicate((new SimplePredicate(CriterionType.EQ))
+//					.setField("bar")
+//					.setCriterion("Jezibaba"));
+//		
+//		try {
+//			storage.delete(query);
+//		} catch (StorageException e) {
+//			e.printStackTrace();
+//			fail("This shouldn't happen");
+//		}
+//		
+//		assertEquals(EDO1_COUNT - 1, countBindingsInDB(new MockDataObject1()));
+//		assertEquals(EDO1_COUNT - 1, countBindingsInDB());
+//	}
+//
+//	@Test
+//	public void testDeleteQueryNoMatch() {
+//		buildAndPopulateMDO1Table();
+//
+//		UserFactory factory = new UserFactoryImpl();
+//		Storage storage = new StorageImpl(connection, factory);
+//		se.mah.elis.services.storage.result.ResultSet rs = null;
+//		Query query = new Query();
+//		
+//		query.setDataType(MockDataObject1.class)
+//			.setPredicate((new SimplePredicate(CriterionType.EQ))
+//					.setField("bar")
+//					.setCriterion("Bohovie sú mrtve"));
+//		
+//		try {
+//			storage.delete(query);
+//		} catch (StorageException e) {
+//			e.printStackTrace();
+//			fail("This shouldn't happen");
+//		}
+//		
+//		assertEquals(EDO1_COUNT - 1, countBindingsInDB(new MockDataObject1()));
+//		assertEquals(EDO1_COUNT - 1, countBindingsInDB());
+//	}
+//
+//	@Test
+//	public void testDeleteQuerySeveralMatches() {
+//		buildAndPopulateMDO1Table();
+//
+//		UserFactory factory = new UserFactoryImpl();
+//		Storage storage = new StorageImpl(connection, factory);
+//		se.mah.elis.services.storage.result.ResultSet rs = null;
+//		Query query = new Query();
+//		
+//		query.setDataType(MockDataObject1.class)
+//		.setPredicate((new ChainingPredicate(ChainingType.OR))
+//			.setLeft((new SimplePredicate(CriterionType.EQ))
+//				.setField("bar")
+//				.setCriterion("Jezibaba"))
+//			.setRight((new SimplePredicate(CriterionType.EQ))
+//				.setField("foo")
+//				.setCriterion(42)));
+//		
+//		try {
+//			storage.delete(query);
+//		} catch (StorageException e) {
+//			e.printStackTrace();
+//			fail("This shouldn't happen");
+//		}
+//		
+//		assertEquals(EDO1_COUNT - 2, countBindingsInDB(new MockDataObject1()));
+//		assertEquals(EDO1_COUNT - 2, countBindingsInDB());
+//	}
 
 }
