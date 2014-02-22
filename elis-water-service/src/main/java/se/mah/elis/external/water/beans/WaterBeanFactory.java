@@ -30,6 +30,7 @@ public class WaterBeanFactory {
 		for (WaterSample sample : waterSamples) {
 			WaterDataPointBean point = new WaterDataPointBean();
 			point.timestamp = unixtime(sample.getSampleTimestamp());
+			point.humanReadableTimestamp = sample.getSampleTimestamp().toString();
 			point.volume = sample.getVolume();
 			points.add(point);			
 		}

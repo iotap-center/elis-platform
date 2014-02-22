@@ -10,5 +10,8 @@ public class WaterDataPointBean {
 	public String timestamp;
 	
 	@XmlElement
+	public String humanReadableTimestamp;
+	
+	@XmlElement
 	public float volume;
 }
