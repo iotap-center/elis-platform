@@ -2,6 +2,8 @@ package se.mah.elis.impl.service.storage.test.mock;
 
 import java.util.Properties;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.PlatformUserIdentifier;
@@ -13,6 +15,7 @@ public class MockPlatformUser implements PlatformUser {
 	private String firstName;
 	private String lastName;
 	private String email;
+	private DateTime created = DateTime.now();
 
 	/**
 	 * Create a brand new, empty platform user.
@@ -56,6 +59,7 @@ public class MockPlatformUser implements PlatformUser {
 		props.put("first_name", firstName);
 		props.put("last_name", lastName);
 		props.put("email", email);
+		props.put("created", created);
 		
 		return props;
 	}
@@ -104,6 +108,15 @@ public class MockPlatformUser implements PlatformUser {
 	@Override
 	public String getEmail() {
 		return email;
+	}
+	
+	public void setCreated(DateTime dt) {
+		created = dt;
+	}
+
+	@Override
+	public DateTime created() {
+		return created;
 	}
 
 }

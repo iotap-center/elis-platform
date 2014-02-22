@@ -3,6 +3,8 @@ package se.mah.elis.services.users.impl.test.mock;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
@@ -82,5 +84,11 @@ public class MockUser implements User {
 	@Override
 	public void setUserId(UUID id) {
 		uuid = id;
+	}
+
+	@Override
+	public DateTime created() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

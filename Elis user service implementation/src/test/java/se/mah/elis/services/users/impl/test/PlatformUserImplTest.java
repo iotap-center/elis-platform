@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Properties;
 
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -276,6 +277,15 @@ public class PlatformUserImplTest {
 	}
 	
 	@Test
+	public void testCreated() {
+		PlatformUserImpl pu = new PlatformUserImpl();
+		DateTime now = DateTime.now();
+		
+		assertNotNull(pu.created());
+		assertFalse(now.isBefore(pu.created().getMillis()));
+	}
+	
+	@Test
 	public void testGetPropertiesTemplate() {
 		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl(puid);
@@ -288,6 +298,10 @@ public class PlatformUserImplTest {
 		expected.put("first_name", "32");
 		expected.put("last_name", "32");
 		expected.put("email", "256");
+		
+		assertNotNull(pu.created());
+		assertFalse(DateTime.now().isBefore(((DateTime) actual.get("created")).getMillis()));
+		actual.remove("created");
 		
 		assertEquals(expected, actual);
 	}
@@ -310,6 +324,10 @@ public class PlatformUserImplTest {
 		
 		actual = pu.getProperties();
 		
+		assertNotNull(pu.created());
+		assertFalse(DateTime.now().isBefore(((DateTime) actual.get("created")).getMillis()));
+		actual.remove("created");
+		
 		assertEquals(expected, actual);
 	}
 	
@@ -331,6 +349,10 @@ public class PlatformUserImplTest {
 		
 		actual = pu.getProperties();
 		
+		assertNotNull(pu.created());
+		assertFalse(DateTime.now().isBefore((DateTime) actual.get("created")));
+		actual.remove("created");
+		
 		assertEquals(expected, actual);
 	}
 	
@@ -351,6 +373,10 @@ public class PlatformUserImplTest {
 		
 		actual = pu.getProperties();
 		
+		assertNotNull(pu.created());
+		assertFalse(DateTime.now().isBefore((DateTime) actual.get("created")));
+		actual.remove("created");
+		
 		assertEquals(expected, actual);
 	}
 	
@@ -368,8 +394,12 @@ public class PlatformUserImplTest {
 
 		pu.setFirstName("Bruce");
 		pu.setEmail("batman@gotham.gov");
-		
 		actual = pu.getProperties();
+		
+		assertNotNull(pu.created());
+		assertFalse(DateTime.now().isBefore((DateTime) actual.get("created")));
+		
+		actual.remove("created");
 		
 		assertEquals(expected, actual);
 	}
@@ -391,6 +421,10 @@ public class PlatformUserImplTest {
 		
 		actual = pu.getProperties();
 		
+		assertNotNull(pu.created());
+		assertFalse(DateTime.now().isBefore((DateTime) actual.get("created")));
+		actual.remove("created");
+		
 		assertEquals(expected, actual);
 	}
 	
@@ -401,11 +435,13 @@ public class PlatformUserImplTest {
 		Properties props = new Properties();
 		Properties expected = new Properties();
 		Properties actual = null;
+		DateTime now = DateTime.now();
 		
 		props.put("identifier", puid);
 		props.put("first_name", "Bruce");
 		props.put("last_name", "Wayne");
 		props.put("email", "batman@gotham.gov");
+		props.put("created", now);
 		
 		pu.populate(props);
 		
@@ -413,6 +449,7 @@ public class PlatformUserImplTest {
 		expected.put("first_name", "Bruce");
 		expected.put("last_name", "Wayne");
 		expected.put("email", "batman@gotham.gov");
+		expected.put("created", now);
 		
 		actual = pu.getProperties();
 		
@@ -426,8 +463,38 @@ public class PlatformUserImplTest {
 		Properties props = new Properties();
 		Properties expected = new Properties();
 		Properties actual = null;
+		DateTime now = DateTime.now();
 
 		props.put("id", 1);
+		props.put("username", "batman");
+		props.put("password", "superman");
+		props.put("first_name", "Bruce");
+		props.put("last_name", "Wayne");
+		props.put("email", "batman@gotham.gov");
+		props.put("created", now);
+		
+		pu.populate(props);
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "Bruce");
+		expected.put("last_name", "Wayne");
+		expected.put("email", "batman@gotham.gov");
+		expected.put("created", now);
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testPopulateNoId() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl();
+		Properties props = new Properties();
+		Properties expected = new Properties();
+		Properties actual = null;
+		DateTime now = DateTime.now();
+
 		props.put("username", "batman");
 		props.put("password", "superman");
 		props.put("first_name", "Bruce");
@@ -443,6 +510,42 @@ public class PlatformUserImplTest {
 		
 		actual = pu.getProperties();
 		
+		assertNotNull(pu.created());
+		assertFalse(DateTime.now().isBefore(((DateTime) actual.get("created")).getMillis()));
+		actual.remove("created");
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testPopulateIdIsZero() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl();
+		Properties props = new Properties();
+		Properties expected = new Properties();
+		Properties actual = null;
+		DateTime now = DateTime.now();
+
+		props.put("id", 0);
+		props.put("username", "batman");
+		props.put("password", "superman");
+		props.put("first_name", "Bruce");
+		props.put("last_name", "Wayne");
+		props.put("email", "batman@gotham.gov");
+		
+		pu.populate(props);
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "Bruce");
+		expected.put("last_name", "Wayne");
+		expected.put("email", "batman@gotham.gov");
+		
+		actual = pu.getProperties();
+		
+		assertNotNull(pu.created());
+		assertFalse(DateTime.now().isBefore(((DateTime) actual.get("created")).getMillis()));
+		actual.remove("created");
+		
 		assertEquals(expected, actual);
 	}
 	
@@ -450,10 +553,12 @@ public class PlatformUserImplTest {
 	public void testPopulateMissingIdentifier() {
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
+		DateTime now = DateTime.now();
 
 		props.put("first_name", "Bruce");
 		props.put("last_name", "Wayne");
 		props.put("email", "batman@gotham.gov");
+		props.put("created", now);
 		
 		try {
 			pu.populate(props);
@@ -468,10 +573,12 @@ public class PlatformUserImplTest {
 		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
+		DateTime now = DateTime.now();
 
 		props.put("identifier", puid);
 		props.put("last_name", "Wayne");
 		props.put("email", "batman@gotham.gov");
+		props.put("created", now);
 		
 		try {
 			pu.populate(props);
@@ -486,10 +593,12 @@ public class PlatformUserImplTest {
 		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
+		DateTime now = DateTime.now();
 
 		props.put("identifier", puid);
 		props.put("first_name", "Bruce");
 		props.put("email", "batman@gotham.gov");
+		props.put("created", now);
 		
 		try {
 			pu.populate(props);
@@ -504,10 +613,32 @@ public class PlatformUserImplTest {
 		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
+		DateTime now = DateTime.now();
 
 		props.put("identifier", puid);
 		props.put("first_name", "Bruce");
 		props.put("last_name", "Wayne");
+		props.put("created", now);
+		
+		try {
+			pu.populate(props);
+			fail("Shouldn't get this far.");
+		} catch (IllegalArgumentException e) {
+			// This should happen.
+		}
+	}
+	
+	@Test
+	public void testPopulateMissingCreated() {
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserImpl pu = new PlatformUserImpl();
+		Properties props = new Properties();
+		DateTime now = DateTime.now();
+
+		props.put("identifier", puid);
+		props.put("first_name", "Bruce");
+		props.put("last_name", "Wayne");
+		props.put("email", "batman@gotham.gov");
 		
 		try {
 			pu.populate(props);
@@ -524,12 +655,14 @@ public class PlatformUserImplTest {
 		Properties props = new Properties();
 		Properties expected = new Properties();
 		Properties actual = null;
+		DateTime now = DateTime.now();
 		
 		props.put("identifier", puid);
 		props.put("first_name", "Bruce");
 		props.put("last_name", "Wayne");
 		props.put("email", "batman@gotham.gov");
 		props.put("horses", "Sleipnir, Shadowfax, Brunte");
+		props.put("created", now);
 		
 		pu.populate(props);
 		
@@ -539,6 +672,10 @@ public class PlatformUserImplTest {
 		expected.put("email", "batman@gotham.gov");
 		
 		actual = pu.getProperties();
+		
+		assertNotNull(pu.created());
+		assertFalse(DateTime.now().isBefore(((DateTime) actual.get("created")).getMillis()));
+		actual.remove("created");
 		
 		assertEquals(expected, actual);
 	}

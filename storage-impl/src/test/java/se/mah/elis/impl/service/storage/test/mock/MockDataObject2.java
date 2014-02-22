@@ -3,6 +3,8 @@ package se.mah.elis.impl.service.storage.test.mock;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.data.OrderedProperties;
 
@@ -11,6 +13,7 @@ public class MockDataObject2 implements ElisDataObject {
 	private UUID id;
 	private UUID ownerid;
 	private float baz;
+	private DateTime created = DateTime.now();
 	
 	public MockDataObject2() {
 		id = null;
@@ -67,6 +70,7 @@ public class MockDataObject2 implements ElisDataObject {
 			props.put("ownerid", ownerid);
 		}
 		props.put("baz", baz);
+		props.put("created", created);
 		
 		return props;
 	}
@@ -78,6 +82,7 @@ public class MockDataObject2 implements ElisDataObject {
 		props.put("dataid", UUID.randomUUID());
 		props.put("ownerid", UUID.randomUUID());
 		props.put("baz", 0.0);
+		props.put("created", created);
 		
 		return props;
 	}
@@ -87,6 +92,7 @@ public class MockDataObject2 implements ElisDataObject {
 		id = (UUID) props.get("dataid");
 		ownerid = (UUID) props.get("ownerid");
 		baz = (float) props.get("baz");
+		created = (DateTime) props.get("created");
 	}
 
 	public void setBaz(float baz) {
@@ -95,5 +101,14 @@ public class MockDataObject2 implements ElisDataObject {
 	
 	public float getBaz() {
 		return baz;
+	}
+	
+	public void setCreated(DateTime dt) {
+		created = dt;
+	}
+
+	@Override
+	public DateTime created() {
+		return created;
 	}
 }

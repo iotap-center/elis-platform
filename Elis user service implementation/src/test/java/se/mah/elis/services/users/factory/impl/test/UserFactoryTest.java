@@ -1,6 +1,7 @@
 package se.mah.elis.services.users.factory.impl.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
@@ -8,6 +9,7 @@ import static org.junit.Assert.fail;
 
 import java.util.Properties;
 
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -152,6 +154,7 @@ public class UserFactoryTest {
 		Properties props = new Properties();
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
+		DateTime now = DateTime.now();
 		
 		props.put("id", 42);
 		props.put("username", "arthur");
@@ -159,6 +162,7 @@ public class UserFactoryTest {
 		props.put("first_name", "Arthur");
 		props.put("last_name", "Dent");
 		props.put("email", "arthur@heartofgold.net");
+		props.put("created", now);
 		
 		try {
 			pu = uf.build(props);
@@ -174,6 +178,7 @@ public class UserFactoryTest {
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("arthur@heartofgold.net", pu.getEmail());
+		assertEquals(now, pu.created());
 	}
 	
 	@Test
@@ -203,6 +208,7 @@ public class UserFactoryTest {
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("arthur@heartofgold.net", pu.getEmail());
+		assertFalse(DateTime.now().isBefore(pu.created()));
 	}
 	
 	@Test
@@ -231,6 +237,7 @@ public class UserFactoryTest {
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("arthur@heartofgold.net", pu.getEmail());
+		assertFalse(DateTime.now().isBefore(pu.created()));
 	}
 	
 	@Test
@@ -277,12 +284,14 @@ public class UserFactoryTest {
 		Properties props = new Properties();
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
+		DateTime now = DateTime.now();
 		
 		props.put("id", 42);
 		props.put("username", "arthur");
 		props.put("first_name", "Arthur");
 		props.put("last_name", "Dent");
 		props.put("email", "arthur@heartofgold.net");
+		props.put("created", now);
 		
 		try {
 			pu = uf.build(props);
@@ -298,6 +307,7 @@ public class UserFactoryTest {
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("arthur@heartofgold.net", pu.getEmail());
+		assertEquals(now, pu.created());
 	}
 	
 	@Test

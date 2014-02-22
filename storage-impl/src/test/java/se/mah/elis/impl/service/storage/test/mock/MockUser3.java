@@ -3,6 +3,8 @@ package se.mah.elis.impl.service.storage.test.mock;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
@@ -13,6 +15,7 @@ public class MockUser3 implements User {
 	private UserIdentifier uid;
 	private UUID uuid;
 	private String stuff;
+	private DateTime created = DateTime.now();
 	
 	public MockUser3() {
 		uid = new MockUserIdentifier();
@@ -75,6 +78,7 @@ public class MockUser3 implements User {
 		if (stuff != null) {
 			props.put("stuff", stuff);
 		}
+		props.put("created", created);
 		
 		return props;
 	}
@@ -87,6 +91,7 @@ public class MockUser3 implements User {
 		props.put("service_name", "9");
 		props.putAll((new MockUserIdentifier()).getPropertiesTemplate());
 		props.put("stuff", "32");
+		props.put("created", created);
 		
 		return props;
 	}
@@ -96,6 +101,7 @@ public class MockUser3 implements User {
 		uid = new MockUserIdentifier();
 		uuid = (UUID) props.get("uuid");
 		stuff = (String) props.get("stuff");
+		created = (DateTime) props.get("created");
 	}
 
 	@Override
@@ -117,5 +123,14 @@ public class MockUser3 implements User {
 	public String toString() {
 		return "MockUser1, uid: " + uid + ", UUID: " + uuid.toString() +
 				", stuff: " + stuff;
+	}
+	
+	public void setCreated(DateTime dt) {
+		created = dt;
+	}
+
+	@Override
+	public DateTime created() {
+		return created;
 	}
 }

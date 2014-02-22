@@ -3,6 +3,8 @@ package se.mah.elis.impl.service.storage.test.mock;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.data.OrderedProperties;
 
@@ -12,6 +14,7 @@ public class MockDataObject1 implements ElisDataObject {
 	private UUID ownerid;
 	private int foo;
 	private String bar;
+	private DateTime created = DateTime.now();
 	
 	public MockDataObject1() {
 		id = null;
@@ -75,6 +78,7 @@ public class MockDataObject1 implements ElisDataObject {
 		if (bar != null) {
 			props.put("bar", bar);
 		}
+		props.put("created", created);
 		
 		return props;
 	}
@@ -87,6 +91,7 @@ public class MockDataObject1 implements ElisDataObject {
 		props.put("ownerid", UUID.randomUUID());
 		props.put("foo", 0);
 		props.put("bar", "16");
+		props.put("created", created);
 		
 		return props;
 	}
@@ -97,6 +102,7 @@ public class MockDataObject1 implements ElisDataObject {
 		ownerid = (UUID) props.get("ownerid");
 		foo = (int) props.get("foo");
 		bar = (String) props.get("bar");
+		created = (DateTime) props.get("created");
 	}
 	
 	public void setFoo(int foo) {
@@ -113,6 +119,15 @@ public class MockDataObject1 implements ElisDataObject {
 	
 	public String getBar() {
 		return bar;
+	}
+	
+	public void setCreated(DateTime dt) {
+		created = dt;
+	}
+
+	@Override
+	public DateTime created() {
+		return created;
 	}
 
 }

@@ -5,6 +5,8 @@ package se.mah.elis.services.users;
 
 import java.util.Properties;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.data.OrderedProperties;
 
 /**
@@ -90,4 +92,12 @@ public interface AbstractUser {
 	 * @since 1.1
 	 */
 	String getServiceName();
+	
+	/**
+	 * Returns the date when the user was first created.
+	 * 
+	 * @return The time that the user was first created.
+	 * @since 20.
+	 */
+	DateTime created();
 }

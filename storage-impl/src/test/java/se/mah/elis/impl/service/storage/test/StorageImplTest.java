@@ -99,19 +99,20 @@ public class StorageImplTest {
 						"`dataid` BINARY(16) PRIMARY KEY, " +
 						"`ownerid` BINARY(16), " +
 						"`foo` INTEGER, " +
-						"`bar` VARCHAR( 16 ))");
+						"`bar` VARCHAR( 16 ), " +
+						"`created` TIMESTAMP);");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId1 +"'), UNHEX('" + ownerId1 + "'), 42, 'Baba Roga')");
+					"VALUES (UNHEX('" + dataId1 +"'), UNHEX('" + ownerId1 + "'), 42, 'Baba Roga', '2000-01-01 00:00:00')");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId2 +"'), UNHEX('" + ownerId1 + "'), 13, 'Baba Jaga')");
+					"VALUES (UNHEX('" + dataId2 +"'), UNHEX('" + ownerId1 + "'), 13, 'Baba Jaga', '2000-01-01 00:00:01')");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId3 +"'), UNHEX('" + ownerId1 + "'), 17, 'Jezibaba')");
+					"VALUES (UNHEX('" + dataId3 +"'), UNHEX('" + ownerId1 + "'), 17, 'Jezibaba', '2000-01-01 00:00:02')");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId4 +"'), UNHEX('" + ownerId2 + "'), 17, 'Domovoj')");
+					"VALUES (UNHEX('" + dataId4 +"'), UNHEX('" + ownerId2 + "'), 17, 'Domovoj', '2000-01-01 00:00:03')");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId5 +"'), UNHEX('" + ownerId2 + "'), 5, 'Domovik')");
+					"VALUES (UNHEX('" + dataId5 +"'), UNHEX('" + ownerId2 + "'), 5, 'Domovik', '2000-01-01 00:00:04')");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId6 +"'), UNHEX('" + ownerId3 + "'), 5, 'Perun')");
+					"VALUES (UNHEX('" + dataId6 +"'), UNHEX('" + ownerId3 + "'), 5, 'Perun', '2000-01-01 00:00:05')");
 			
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + dataId1 +"'), " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject1')");
@@ -143,13 +144,14 @@ public class StorageImplTest {
 			stmt.execute("CREATE TABLE `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` (" +
 						"`dataid` BINARY(16) PRIMARY KEY, " +
 						"`ownerid` BINARY(16), " +
-						"`baz` FLOAT)");
+						"`baz` FLOAT, " +
+						"`created` TIMESTAMP)");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` " +
-					"VALUES (UNHEX('" + dataId1 +"'), UNHEX('" + ownerId1 + "'), 1.1);");
+					"VALUES (UNHEX('" + dataId1 +"'), UNHEX('" + ownerId1 + "'), 1.1, '2000-01-01 00:00:00');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` " +
-					"VALUES (UNHEX('" + dataId2 +"'), UNHEX('" + ownerId1 + "'), 0.5);");
+					"VALUES (UNHEX('" + dataId2 +"'), UNHEX('" + ownerId1 + "'), 0.5, '2000-01-01 00:00:01');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` " +
-					"VALUES (UNHEX('" + dataId3 +"'), UNHEX('" + ownerId2 + "'), 7.1);");
+					"VALUES (UNHEX('" + dataId3 +"'), UNHEX('" + ownerId2 + "'), 7.1, '2000-01-01 00:00:02');");
 
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + dataId1 +"'), " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject2')");
@@ -176,13 +178,14 @@ public class StorageImplTest {
 						"`username` VARCHAR(32), " +
 						"`password` VARCHAR(32), " +
 						"`stuff` VARCHAR(32), " +
-						"`whatever` INTEGER)");
+						"`whatever` INTEGER, " +
+						"`created` TIMESTAMP)");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser1` " +
-					"VALUES (UNHEX('" + uuid1 +"'), 'test', 1, 'Batman', 'Robin', 'Rajec', 21);");
+					"VALUES (UNHEX('" + uuid1 +"'), 'test', 1, 'Batman', 'Robin', 'Rajec', 21, '2000-01-01 00:00:00');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser1` " +
-					"VALUES (UNHEX('" + uuid2 +"'), 'test', 1, 'Superman', 'Lois Lane', 'Vinea', 22);");
+					"VALUES (UNHEX('" + uuid2 +"'), 'test', 1, 'Superman', 'Lois Lane', 'Vinea', 22, '2000-01-01 00:00:01');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser1` " +
-					"VALUES (UNHEX('" + uuid3 +"'), 'test', 1, 'Spongebob Squarepants', 'Patrick Seastar', 'Kofola', 23);");
+					"VALUES (UNHEX('" + uuid3 +"'), 'test', 1, 'Spongebob Squarepants', 'Patrick Seastar', 'Kofola', 23, '2000-01-01 00:00:02');");
 
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + uuid1 +"'), " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockUser1')");
@@ -208,13 +211,14 @@ public class StorageImplTest {
 						"`id_number` INTEGER, " +
 						"`username` VARCHAR(32), " +
 						"`password` VARCHAR(32), " +
-						"`stuff` VARCHAR(32))");
+						"`stuff` VARCHAR(32), " +
+						"`created` TIMESTAMP)");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser2` " +
-					"VALUES (UNHEX('" + uuid1 +"'), 'test', 1, 'Batman', 'Robin', 'Kvass');");
+					"VALUES (UNHEX('" + uuid1 +"'), 'test', 1, 'Batman', 'Robin', 'Kvass', '2000-01-01 00:00:00');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser2` " +
-					"VALUES (UNHEX('" + uuid2 +"'), 'test', 1, 'Superman', 'Lois Lane', 'Kompot');");
+					"VALUES (UNHEX('" + uuid2 +"'), 'test', 1, 'Superman', 'Lois Lane', 'Kompot', '2000-01-01 00:00:01');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser2` " +
-					"VALUES (UNHEX('" + uuid3 +"'), 'test', 1, 'Spongebob Squarepants', 'Patrick Seastar', 'Slivovice');");
+					"VALUES (UNHEX('" + uuid3 +"'), 'test', 1, 'Spongebob Squarepants', 'Patrick Seastar', 'Slivovice', '2000-01-01 00:00:02');");
 
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + uuid1 +"'), " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockUser2')");
@@ -232,11 +236,11 @@ public class StorageImplTest {
 		try {
 			Statement stmt = connection.createStatement();
 			stmt.execute("INSERT INTO `se-mah-elis-services-users-PlatformUser` " +
-					"VALUES (1, 'Batman', PASSWORD('Robin'), 'Bruce', 'Wayne', 'bruce@waynecorp.com');");
+					"VALUES (1, 'Batman', PASSWORD('Robin'), 'Bruce', 'Wayne', 'bruce@waynecorp.com', '2000-01-01 00:00:00');");
 			stmt.execute("INSERT INTO `se-mah-elis-services-users-PlatformUser` " +
-					"VALUES (2, 'Superman', PASSWORD('Lois Lane'), 'Clark', 'Kent', 'clark.kent@dailyplanet.com');");
+					"VALUES (2, 'Superman', PASSWORD('Lois Lane'), 'Clark', 'Kent', 'clark.kent@dailyplanet.com', '2000-01-01 00:00:01');");
 			stmt.execute("INSERT INTO `se-mah-elis-services-users-PlatformUser` " +
-					"VALUES (3, 'Spongebob Squarepants', PASSWORD('Patrick Seastar'), 'Spongebob', 'Squarepants', 'spongebob@krustykrab.com');");
+					"VALUES (3, 'Spongebob Squarepants', PASSWORD('Patrick Seastar'), 'Spongebob', 'Squarepants', 'spongebob@krustykrab.com', '2000-01-01 00:00:02');");
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
