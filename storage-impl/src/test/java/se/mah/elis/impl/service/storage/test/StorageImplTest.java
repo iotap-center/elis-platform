@@ -1475,7 +1475,7 @@ public class StorageImplTest {
 		runQuery("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser1` " +
 				"VALUES (UNHEX('" + StorageUtils.stripDashesFromUUID(uuid) +
 				"'), 'test', 1, 'Batman', 'Robin', " +
-				"'Water', 1);");
+				"'Water', 1, '2014-02-22 16:18:00');");
 		runQuery("INSERT INTO `object_lookup_table` VALUES (UNHEX('" +
 				StorageUtils.stripDashesFromUUID(uuid) +
 				"'), 'se-mah-elis-impl-service-storage-test-mock-MockUser1');");

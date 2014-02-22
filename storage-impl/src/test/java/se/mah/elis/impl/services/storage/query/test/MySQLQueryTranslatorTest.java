@@ -33,7 +33,7 @@ public class MySQLQueryTranslatorTest {
 	@Test
 	public void testCompileEmptyQuery() {
 		QueryTranslator translator = new MySQLQueryTranslator();
-		String expected = "SELECT * FROM  ASC;";
+		String expected = "SELECT * FROM  ORDER BY `created` ASC;";
 		String actual = "";
 		
 		try {
@@ -49,7 +49,7 @@ public class MySQLQueryTranslatorTest {
 	public void testWhat() {
 		QueryTranslator translator = new MySQLQueryTranslator();
 		Class what = java.lang.Byte.class;
-		String expected = "SELECT * FROM `java-lang-Byte` ASC;";
+		String expected = "SELECT * FROM `java-lang-Byte` ORDER BY `created` ASC;";
 		String actual = "";
 		
 		assertEquals(translator, translator.what(what));
@@ -66,7 +66,7 @@ public class MySQLQueryTranslatorTest {
 	public void testWhere() {
 		QueryTranslator translator = new MySQLQueryTranslator();
 		SimplePredicate where = new SimplePredicate(CriterionType.EQ);
-		String expected = "SELECT * FROM  WHERE `foo` = 'bar' ASC;";
+		String expected = "SELECT * FROM  WHERE `foo` = 'bar' ORDER BY `created` ASC;";
 		String actual = "";
 		
 		try {
@@ -84,7 +84,7 @@ public class MySQLQueryTranslatorTest {
 	@Test
 	public void testLimit() {
 		QueryTranslator translator = new MySQLQueryTranslator();
-		String expected = "SELECT * FROM  LIMIT 1, 10 ASC;";
+		String expected = "SELECT * FROM  LIMIT 1, 10 ORDER BY `created` ASC;";
 		String actual = "";
 		
 		assertEquals(translator, translator.limit(1, 10));
@@ -100,7 +100,7 @@ public class MySQLQueryTranslatorTest {
 	@Test
 	public void testLimitNegativeStartValue() {
 		QueryTranslator translator = new MySQLQueryTranslator();
-		String expected = "SELECT * FROM  ASC;";
+		String expected = "SELECT * FROM  ORDER BY `created` ASC;";
 		String actual = "";
 		
 		assertEquals(translator, translator.limit(-1, 10));
@@ -116,7 +116,7 @@ public class MySQLQueryTranslatorTest {
 	@Test
 	public void testLimitNegativeLimit() {
 		QueryTranslator translator = new MySQLQueryTranslator();
-		String expected = "SELECT * FROM  ASC;";
+		String expected = "SELECT * FROM  ORDER BY `created` ASC;";
 		String actual = "";
 		
 		assertEquals(translator, translator.limit(1, -10));
@@ -132,7 +132,7 @@ public class MySQLQueryTranslatorTest {
 	@Test
 	public void testOrder() {
 		QueryTranslator translator = new MySQLQueryTranslator();
-		String expected = "SELECT * FROM  DESC;";
+		String expected = "SELECT * FROM  ORDER BY `created` DESC;";
 		String actual = "";
 		
 		assertEquals(translator, translator.order(false));
@@ -1111,7 +1111,7 @@ public class MySQLQueryTranslatorTest {
 		SimplePredicate gt = new SimplePredicate(CriterionType.GT);
 		String expected = "SELECT * FROM `java-lang-String` WHERE " +
 						  "(`foo` = 'bar' OR `a` <> 1) AND " +
-						  "(`b` > 0 OR `foo` = 'bar') ASC;";
+						  "(`b` > 0 OR `foo` = 'bar') ORDER BY `created` ASC;";
 		String actual = "";
 		
 		try {
@@ -1150,7 +1150,7 @@ public class MySQLQueryTranslatorTest {
 		SimplePredicate gt = new SimplePredicate(CriterionType.GT);
 		String expected = "SELECT * FROM `java-lang-String` WHERE " +
 						  "(`foo` = 'bar' OR `a` <> 1) AND " +
-						  "(`b` > 0 OR `foo` = 'bar') LIMIT 0, 10 DESC;";
+						  "(`b` > 0 OR `foo` = 'bar') LIMIT 0, 10 ORDER BY `created` DESC;";
 		String actual = "";
 		
 		try {
@@ -1199,7 +1199,7 @@ public class MySQLQueryTranslatorTest {
 						  "(`foo` = 'bar' OR `a` <> 1) AND " +
 						  "((`id_number` = 1 AND `username` = 'Batman' AND " +
 						  "`password` = 'Robin') OR " +
-						  "(`b` > 0 OR `foo` = 'bar')) LIMIT 0, 10 DESC;";
+						  "(`b` > 0 OR `foo` = 'bar')) LIMIT 0, 10 ORDER BY `created` DESC;";
 		String actual = "";
 		
 		try {
