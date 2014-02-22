@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 /**
  * <p>ElisDataObject is a baseline interface for every saveable data object. By
  * implementing it, the Elis platform is able to store and retrieve the object
@@ -97,4 +99,12 @@ public interface ElisDataObject extends Serializable {
 	 * @since 1.1
 	 */
 	void populate(Properties props);
+	
+	/**
+	 * Returns the date when the data object was first created.
+	 * 
+	 * @return The time that the data object was first created.
+	 * @since 20.
+	 */
+	DateTime created();
 }

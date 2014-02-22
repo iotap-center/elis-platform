@@ -32,25 +32,25 @@ public class SimpleSampleMock implements Sample {
 	}
 
 	@Override
-	public UUID getUUID() {
+	public UUID getDataId() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setUUID(UUID uuid) {
+	public void setDataId(UUID uuid) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void setUniqueUserId(UUID userId) {
+	public void setOwnerId(UUID userId) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public UUID getUniqueUserId() {
+	public UUID getOwnerId() {
 		// TODO Auto-generated method stub
 		return UUID.randomUUID();
 	}
@@ -71,6 +71,12 @@ public class SimpleSampleMock implements Sample {
 	public void populate(Properties props) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public DateTime created() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
