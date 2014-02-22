@@ -1,6 +1,6 @@
 package se.mah.elis.adaptor.utilityprovider.api;
 
-import se.mah.elis.adaptor.building.api.entities.devices.DeviceSet;
+import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 
 /**
  * This is a temporary interface for describing a utility provider such as E.On. 
