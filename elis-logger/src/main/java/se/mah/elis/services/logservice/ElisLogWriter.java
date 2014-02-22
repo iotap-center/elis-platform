@@ -3,7 +3,7 @@ package se.mah.elis.services.logservice;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 
-public class ElisLogListener implements LogListener {
+public class ElisLogWriter implements LogListener {
 
 	public void logged(LogEntry entry) {
 		String logMessage = String.format("[%s][%d][%d] %s", 

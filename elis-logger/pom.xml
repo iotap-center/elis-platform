@@ -15,6 +15,11 @@
   		<artifactId>org.osgi.compendium</artifactId>
   		<version>4.3.1</version>
   	</dependency>
+  	<dependency>
+  		<groupId>org.apache.felix</groupId>
+  		<artifactId>org.apache.felix.scr.annotations</artifactId>
+  		<version>1.9.6</version>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>
@@ -26,18 +31,31 @@
         <configuration>
           <instructions>
             <Export-Package>${project.groupId}.*</Export-Package>
-             <Bundle-Activator>${project.groupId}.Activator</Bundle-Activator> 
+            <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy> 
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-scr-plugin</artifactId>
+        <version>1.14.0</version>
+        <executions>
+          <execution>
+            <id>generate-scr-scrdescriptor</id>
+            <goals>
+              <goal>scr</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
-  <name>LogTester Bundle</name>
-  <artifactId>LogTester</artifactId>
+  <name>The Elis Log Service Bundle</name>
   <parent>
   	<groupId>se.mah.elis</groupId>
   	<artifactId>super-pom</artifactId>
   	<version>0.0.1</version>
   	<relativePath>../super</relativePath>
   </parent>
+  <artifactId>elis-logservice</artifactId>
 </project>

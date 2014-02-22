@@ -12,7 +12,7 @@ public class ElisHttpContext implements HttpContext {
 
 	public boolean handleSecurity(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
-		System.out.println(">>> handling security in Elis specific HttpContext");
+//		System.out.println(">>> handling security in Elis specific HttpContext");
 		return true;
 	}
 

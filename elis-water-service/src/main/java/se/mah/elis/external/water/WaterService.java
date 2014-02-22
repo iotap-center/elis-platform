@@ -21,6 +21,7 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
@@ -51,6 +52,9 @@ public class WaterService {
 
 	@Reference
 	private UserService userService;
+	
+	@Reference
+	private LogService log;
 
 	public WaterService() {
 		gson = new GsonBuilder().setPrettyPrinting().create();
@@ -60,6 +64,8 @@ public class WaterService {
 	@Path("/{puid}/now")
 	public Response getCurrentWaterConsumption(@PathParam("puid") String puid) {
 		ResponseBuilder response = null;
+		
+		logRequest("now", puid);
 
 		if (userService != null) {
 			PlatformUser pu = userService.getPlatformUser(puid);
@@ -145,6 +151,8 @@ public class WaterService {
 			@DefaultValue("") @QueryParam("to") String to) {
 		ResponseBuilder response = null;
 
+		logRequest("weekly", puid, from, to);
+		
 		if (userService != null) {
 			PlatformUser pu = userService.getPlatformUser(puid);
 			if (pu != null)
@@ -196,14 +204,20 @@ public class WaterService {
 			@DefaultValue("") @QueryParam("to") String to) {
 		ResponseBuilder response = null;
 
+		logRequest("monthly", puid, from, to);
+		
 		if (userService != null) {
 			PlatformUser pu = userService.getPlatformUser(puid);
 			if (pu != null)
 				response = buildMonthlyWaterConsumptionResponseFrom(pu, from, to);
-			else
+			else {
+				logWarning("No such user: " + puid);
 				response = Response.status(Response.Status.NOT_FOUND);
-		} else
+			}
+		} else {
+			logError("No user service found");
 			response = Response.serverError();
+		}
 
 		return response.build();
 	}
@@ -306,6 +320,27 @@ public class WaterService {
 			String queryPeriod) {
 		return WaterBeanFactory.create(samples, queryPeriod);
 	}
+	
+	private void logRequest(String endpoint, String puid, String from, String to) {
+		logRequest("Request: /water/" + puid + "/" + endpoint
+				+ "?from=" + from + "&to=" + to);
+	}
+	
+	private void logRequest(String endpoint, String puid) {
+		logRequest("Request: /water/" + puid + "/" + endpoint);
+	}
+	
+	private void logRequest(String msg) {
+		log.log(LogService.LOG_INFO, msg);
+	}
+	
+	private void logWarning(String msg) {
+		log.log(LogService.LOG_WARNING, msg);
+	}
+	
+	private void logError(String msg) {
+		log.log(LogService.LOG_ERROR, msg);
+	}
 
 	protected void bindUserService(UserService us) {
 		this.userService = us;
@@ -313,5 +348,13 @@ public class WaterService {
 
 	protected void unbindUserService(UserService us) {
 		this.userService = null;
+	}
+	
+	protected void bindLog(LogService log) {
+		this.log = log;
+	}
+	
+	protected void unbindLog(LogService log) {
+		this.log = null;
 	}
 }
