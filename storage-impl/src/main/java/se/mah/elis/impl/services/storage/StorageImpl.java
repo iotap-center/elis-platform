@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -61,6 +62,8 @@ public class StorageImpl implements Storage {
 	// Some error messages
 	private static String OBJECT_NOT_FOUND = "Couldn't find object in data store";
 	private static String OBJECT_NOT_VALID = "Couldn't save this object";
+	private static String USER_NOT_FOUND = "Couldn't find user in data store";
+	private static String USER_NOT_VALID = "Couldn't save this user";
 	private static String INSTANCE_OBJECT_ERROR = "Couldn't instantiate object";
 	private static String INSTANCE_USER_ERROR = "Couldn't instantiate user";
 	private static String STORAGE_ERROR = "Couldn't access storage";
@@ -102,13 +105,18 @@ public class StorageImpl implements Storage {
 	}
 	
 	/**
-	 * Sets the user factory.
+	 * Creates an instance of this class with an already created database
+	 * connection. This is mainly meant to be used for testing purposes.
 	 * 
-	 * @param factory The user factory.
+	 * @param connection A JDBC connection.
 	 * @since 2.0
 	 */
-	public void setFactory(UserFactory factory) {
+	public StorageImpl(Connection connection, UserFactory factory) {
+		this.connection = connection;
 		this.factory = factory;
+		// TODO Replace the MySQL query translator with more generic stuff.
+		translator = new MySQLQueryTranslator();
+		utils = new StorageUtils(connection);
 	}
 
 	/**
@@ -151,12 +159,12 @@ public class StorageImpl implements Storage {
 			// Generate the table name
 			String tableName = data.getClass().getCanonicalName();
 			
-			if (data.getUUID() == null) {
-				// Generate the UUID
+			if (data.getDataId() == null) {
+				// Generate the data id
 				uuid = UUID.randomUUID();
-				data.setUUID(uuid);
+				data.setDataId(uuid);
 			} else {
-				uuid = data.getUUID();
+				uuid = data.getDataId();
 			}
 			
 			props = data.getProperties();
@@ -281,6 +289,11 @@ public class StorageImpl implements Storage {
 		PreparedStatement stmt = null;
 		
 		if (user != null) {
+			if (user.getServiceName() == null ||
+					user.getServiceName().isEmpty()) {
+				throw new StorageException(USER_NOT_VALID);
+			}
+			
 			// Platform users are handled differently from any other user type.
 			if (user instanceof PlatformUser) {
 				PlatformUser pu = (PlatformUser) user;
@@ -289,9 +302,9 @@ public class StorageImpl implements Storage {
 				props = user.getProperties();
 				
 				// First of all, let's make a sanity check of the user.
-				if (pu.getFirstName() == null || pu.getFirstName().length() < 1 ||
-					pu.getLastName() == null || pu.getLastName().length() < 1 ||
-					pu.getEmail() == null || pu.getEmail().length() < 1 ||
+				if (pu.getFirstName() == null || pu.getFirstName().isEmpty() ||
+					pu.getLastName() == null || pu.getLastName().isEmpty() ||
+					pu.getEmail() == null || pu.getEmail().isEmpty() ||
 					pid == null || pid.isEmpty()) {
 					throw new StorageException(OBJECT_NOT_VALID);
 				}
@@ -307,7 +320,7 @@ public class StorageImpl implements Storage {
 				 * 		String last_name|String e-mail|
 				 */
 				query = "INSERT INTO `" + tableName + "` VALUES "
-					+	"(?, ?, PASSWORD(?), ?, ?, ?)";
+					+	"(?, ?, PASSWORD(?), ?, ?, ?, ?)";
 				
 				try {
 					// Let's take command of the commit ship ourselves.
@@ -326,6 +339,7 @@ public class StorageImpl implements Storage {
 					stmt.setString(4, pu.getFirstName());
 					stmt.setString(5, pu.getLastName());
 					stmt.setString(6, pu.getEmail());
+					stmt.setTimestamp(7, new Timestamp(pu.created().getMillis()));
 					stmt.executeUpdate();
 					stmt.close();
 				} catch (SQLException e) {
@@ -381,7 +395,6 @@ public class StorageImpl implements Storage {
 					for (Entry<Object, Object> prop : userProps.entrySet()) {
 						utils.addParameter(stmt, prop.getValue(), i++);
 					}
-					System.out.println(stmt);
 					
 					// Run the statement and end the transaction
 					stmt.executeUpdate();
@@ -478,7 +491,11 @@ public class StorageImpl implements Storage {
 		
 		boolean updated = false;
 		
-		if (data != null && data.getUUID() != null) {
+		if (data != null) {
+			if (data.getDataId() == null) {
+				throw new StorageException(OBJECT_NOT_FOUND);
+			}
+			
 			// Generate the table name
 			String tableName = data.getClass().getCanonicalName();
 			
@@ -487,8 +504,8 @@ public class StorageImpl implements Storage {
 			Properties props = data.getProperties();
 			String query = "UPDATE `" + StorageUtils.mysqlifyName(tableName) +
 					"` SET " + StorageUtils.pairUp(data.getProperties()) +
-					" WHERE uuid = x'" + 
-					StorageUtils.stripDashesFromUUID(data.getUUID()) + "';";
+					" WHERE dataid = x'" + 
+					StorageUtils.stripDashesFromUUID(data.getDataId()) + "';";
 			
 			// This will be used by the parameter loop below
 			int i = 1;
@@ -525,8 +542,6 @@ public class StorageImpl implements Storage {
 			if (!updated) {
 				throw new StorageException(OBJECT_NOT_FOUND);
 			}
-		} else {
-			throw new StorageException(OBJECT_NOT_FOUND);
 		}
 	}
 
@@ -601,11 +616,26 @@ public class StorageImpl implements Storage {
 		Properties props = user.getProperties();
 		
 		if (user != null && !StorageUtils.isEmpty(props)) {
+			if (user.getIdentifier() == null ||
+				StorageUtils.isEmpty(user.getIdentifier().getProperties())) {
+				throw new StorageException(USER_NOT_FOUND);
+			}
+			
 			// Platform users are handled differently from any other user type.
 			if (user instanceof PlatformUser) {
 				PlatformUser pu = (PlatformUser) user;
 				PlatformUserIdentifier pid =
 						(PlatformUserIdentifier) pu.getIdentifier();
+				
+				// When it comes to PlatformUser, none of the fields, save for
+				// the password field, are allowed to be null or empty.
+				if (pid.getId() < 1 ||
+					pid.getUsername() == null || pid.getUsername().isEmpty() ||
+					pu.getFirstName() == null || pu.getFirstName().isEmpty() ||
+					pu.getLastName() == null || pu.getLastName().isEmpty() ||
+					pu.getEmail() == null || pu.getEmail().isEmpty()) {
+					throw new StorageException(USER_NOT_VALID);
+				}
 				
 				// Generate the table name and bestow MySQL magic onto it
 				tableName = utils.mysqlifyName("se.mah.elis.services.users.PlatformUser");
@@ -615,20 +645,19 @@ public class StorageImpl implements Storage {
 				 * |int id|String username|String password|String first_name|
 				 * 		String last_name|String e-mail|
 				 */
-				if (pid.getPassword().length() > 0) {
+				if (pid.getPassword().isEmpty()) {
+					query = "UPDATE `" + tableName + "` SET " +
+							"username = ?, " +
+							"first_name = ?, last_name = ?, `email` = ? " + 
+							"WHERE id = " + pid.getId() + ";";
+				} else {
 					// Only update the password if it is being changed
 					query = "UPDATE `" + tableName + "` SET " +
-							"id = ?,  username = ?, " +
-							"`password` = PASSWORD(?), first_name = ?, " +
-							"last_name = ?, `e-mail` = ? WHERE id = " +
+							"username = ?, first_name = ?, " +
+							"last_name = ?, `email` = ?, " +
+							"`password` = PASSWORD(?) WHERE id = " +
 							pid.getId() + ";";
-				} else {
-					query = "UPDATE `" + tableName + "` SET " +
-							"id = ?,  username = ?, " +
-							"first_name = ?, last_name = ?, `e-mail` = ? " + 
-							"WHERE id = " + pid.getId() + ";";
 				}
-				
 				
 				try {
 					// Let's take command of the commit ship ourselves.
@@ -636,15 +665,14 @@ public class StorageImpl implements Storage {
 					connection.setAutoCommit(false);
 					PreparedStatement stmt = connection.prepareStatement(query);
 					
-					stmt.setInt(1, pid.getId());
-					stmt.setString(2, pid.getUsername());
+					stmt.setString(1, pid.getUsername());
+					stmt.setString(2, pu.getFirstName());
+					stmt.setString(3, pu.getLastName());
+					stmt.setString(4, pu.getEmail());
 					if (pid.getPassword().length() > 0) {
 						// Only update the password if it is being changed
-						stmt.setString(3, pid.getPassword());
+						stmt.setString(5, pid.getPassword());
 					}
-					stmt.setString(4, pu.getFirstName());
-					stmt.setString(5, pu.getLastName());
-					stmt.setString(6, pu.getEmail());
 					stmt.executeUpdate();
 				} catch (SQLException e) {
 					// Try to create a non-existing table, but only once.
@@ -664,6 +692,10 @@ public class StorageImpl implements Storage {
 				}	
 			} else {
 				// Just a generic AbstractUser object.
+				// First, let's see if we will be able to find it
+				if (((User) user).getUserId() == null) {
+					throw new StorageException(USER_NOT_FOUND);
+				}
 				
 				// This will be used by the parameter loop below
 				int i = 1;
@@ -671,17 +703,12 @@ public class StorageImpl implements Storage {
 				// Generate the table name
 				tableName = user.getClass().getCanonicalName();
 				
-				// Flatten the properties
-				Properties merged = new Properties();
-				merged.putAll(user.getIdentifier().getProperties());
-				merged.putAll(user.getProperties());
-				merged.remove("identifier");
-				
 				// Create a query to be run as a prepared statement and do
 				// some magic MySQL stuff to it.
 				query = "UPDATE `" + utils.mysqlifyName(tableName) +
 						"` SET " + utils.pairUp(user.getProperties()) +
-						" WHERE id = " + props.getProperty("id").toString() + ";";
+						" WHERE uuid = x'" +
+						StorageUtils.stripDashesFromUUID(((User) user).getUserId()) + "';";
 
 				try {
 					// Let's take command of the commit ship ourselves.
@@ -692,7 +719,7 @@ public class StorageImpl implements Storage {
 					// Add the parameters to the query. We don't know what
 					// we'll run into. Better let someone else, i.e.
 					// addParameter() take care of that for us.
-					for (Entry<Object, Object> prop : merged.entrySet()) {
+					for (Entry<Object, Object> prop : user.getProperties().entrySet()) {
 						utils.addParameter(stmt, prop.getValue(), i++);
 					}
 					
@@ -750,7 +777,8 @@ public class StorageImpl implements Storage {
 		if (users != null && users.length > 0) {
 			// Just delegate this to the insert(AbstractUser, false) method.
 			for (AbstractUser user : users) {
-				update(user, false);
+				if (user != null)
+					update(user, false);
 			}
 		}
 	}
@@ -792,9 +820,9 @@ public class StorageImpl implements Storage {
 			
 			// Create a query to be run as a prepared statement and do some
 			// magic MySQL stuff to it.
-			UUID uuid = (UUID) data.getProperties().get("uuid");
+			UUID uuid = (UUID) data.getProperties().get("dataid");
 			String query = "DELETE FROM `" + StorageUtils.mysqlifyName(tableName) +
-					"` WHERE uuid = x'" +
+					"` WHERE dataid = x'" +
 					StorageUtils.stripDashesFromUUID(uuid) + "';";
 			
 			try {
@@ -979,12 +1007,13 @@ public class StorageImpl implements Storage {
 	private void delete(Query query, boolean finalRun) throws StorageException {
 		if (query != null) {
 			try {
-				DeleteQuery dq = (DeleteQuery) query;
+				DeleteQuery dq = new DeleteQuery(query);
 				
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
 				connection.setAutoCommit(false);
 				Statement stmt = connection.createStatement();
+				System.out.println(dq.compile());
 				stmt.execute(dq.compile());
 				stmt.close();
 			} catch (SQLException e) {
@@ -993,20 +1022,6 @@ public class StorageImpl implements Storage {
 				throw new StorageException(DELETE_QUERY);
 			}
 		}
-	}
-
-	/**
-	 * Mock implementation of
-	 * {@link se.mah.elis.services.storage.Storage#readData(long) readData(long)}.
-	 * 
-	 * @param query The query to be run.
-	 * @throws StorageException Thrown when query couldn't be run.
-	 * @deprecated As of version 1.1, replaced by {@link #readData(UUID)}.
-	 * @since 1.0
-	 */
-	@Override
-	public ElisDataObject readData(long id) throws StorageException {
-		throw new StorageException(OBJECT_NOT_FOUND);
 	}
 
 	/**
@@ -1048,7 +1063,7 @@ public class StorageImpl implements Storage {
 				edo = (ElisDataObject) Class.forName(className).newInstance();
 				
 				query = "SELECT * FROM `" + tableName +
-						"` WHERE uuid = x'" +
+						"` WHERE dataid = x'" +
 						StorageUtils.stripDashesFromUUID(id) + "';";
 				
 				Statement stmt = connection.createStatement();
@@ -1118,10 +1133,10 @@ public class StorageImpl implements Storage {
 				rs.close();
 				stmt.close();
 				
-				user = factory.build(className,
-						(String) props.get("serviceName"), props);
+				user = factory.build(className.substring(className.lastIndexOf('.')+1),
+						(String) props.get("service_name"), props);
 			} catch (SQLException e) {
-				throw new StorageException(OBJECT_NOT_FOUND);
+				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
 				throw new StorageException(INSTANCE_USER_ERROR);
 			} catch (NullPointerException e) {
@@ -1162,7 +1177,7 @@ public class StorageImpl implements Storage {
 			throws StorageException {
 		AbstractUser user = null;
 		Class clazz = id.identifies();
-		String className = clazz.toString();
+		String className = clazz.getName();
 		String tableName = utils.mysqlifyName(className);
 		String query = null;
 
@@ -1186,22 +1201,22 @@ public class StorageImpl implements Storage {
 				stmt.close();
 				
 				// Create a PlatformUser object
-				user = factory.build(userType, serviceName, props);
+				user = factory.build(props);
 			} catch (SQLException e) {
-				throw new StorageException(OBJECT_NOT_FOUND);
+				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
 				throw new StorageException(INSTANCE_USER_ERROR);
 			}
 		} else {
 			// This is a generic user.
-			String userType = "se.mah.elis.services.users.PlatformUser";
-			String serviceName = userType;
+			String userType = id.identifies().getSimpleName();
 			Properties props = null;
 			
 			// We'll run this as a prepared statement, since we don't know what
 			// we'll run into.
 			query = "SELECT * FROM `" + tableName + "` WHERE " +
-					utils.pairUp(id.getProperties()) + ";";
+					utils.pairUpForSelect(id.getProperties()) +
+					" ORDER BY uuid ASC;";
 			
 			try {
 				PreparedStatement stmt = connection.prepareStatement(query);
@@ -1214,12 +1229,12 @@ public class StorageImpl implements Storage {
 				java.sql.ResultSet rs = stmt.executeQuery();
 				
 				props = utils.resultSetRowToProperties(rs);
-				user = factory.build(className,
-						(String) props.get("serviceName"), props);
 				rs.close();
 				stmt.close();
-			} catch (SQLException e) {
-				throw new StorageException(OBJECT_NOT_FOUND);
+				user = factory.build(userType,
+						(String) props.get("service_name"), props);
+			} catch (SQLException | NullPointerException e) {
+				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
 				throw new StorageException(INSTANCE_USER_ERROR);
 			}
@@ -1257,19 +1272,21 @@ public class StorageImpl implements Storage {
 			// Generate the table name
 			String tableName = user.getClass().getCanonicalName();
 			
+			String query = null;
 			String id = null;
 			
 			if (user instanceof User) {
-				id = utils.uuidToBytes(((User) user).getUserId()).toString();
+				id = StorageUtils.stripDashesFromUUID(((User) user).getUserId());
+				query = "SELECT * FROM `" + utils.mysqlifyName(tableName) +
+						"` WHERE uuid = x'" + id + "';";
 			} else {
 				id = "" + ((PlatformUserIdentifier) ((PlatformUser) user)
 						.getIdentifier()).getId();
+				query = "SELECT * FROM `" + utils.mysqlifyName(tableName) +
+						"` WHERE id = " + id + ";";
 			}
-			
-			String query = "SELECT * FROM `" + utils.mysqlifyName(tableName) +
-					"` WHERE id = " + id;
 
-			// * Build query from identifier
+			// Build query from identifier
 			try {
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
@@ -1279,25 +1296,13 @@ public class StorageImpl implements Storage {
 						utils.resultSetRowToProperties(stmt.executeQuery(query));
 				user.populate(props);
 				stmt.close();
-			} catch (SQLException e) {
-				// Try to create a non-existing table, but only once.
-				if (e.getErrorCode() == 1146 && !finalRun) {
-					// Flatten the user properties
-					Properties template = new Properties();
-					template.putAll(user.getIdentifier()
-							.getPropertiesTemplate());
-					template.putAll(user.getPropertiesTemplate());
-					utils.createTableIfNotExisting(tableName,
-							user.getPropertiesTemplate());
-					insert(user, true);
-				} else {
-					// That didn't go too well. Just give up and die, already.
-					throw new StorageException(STORAGE_ERROR);
-				}
+			} catch (SQLException | NullPointerException e) {
+				// No user type
+				throw new StorageException(STORAGE_ERROR);
 			}
 		}
 		
-		return null;
+		return user;
 	}
 
 	/**
@@ -1332,6 +1337,8 @@ public class StorageImpl implements Storage {
 		Class clazz = query.getDataType();
 		
 		if (query != null) {
+			query.setTranslator(new MySQLQueryTranslator());
+			
 			try {
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!

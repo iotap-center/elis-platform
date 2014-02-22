@@ -180,19 +180,43 @@ public class StorageUtils {
 
 	/**
 	 * Generates a list of properties in the form of
-	 * <i>`key1` = ?, `key2` = ?</i> to be included in e.g. an update
-	 * query.
+	 * <i>`key1` = ?, `key2` = ?</i> to be included in e.g. an update query.
 	 * 
 	 * @param properties The properties to list.
 	 * @return A string as described above.
 	 * @since 2.0
 	 */
 	public static String pairUp(Properties properties) {
+		return pairUp(properties, ", ");
+	}
+
+	/**
+	 *  Generates a list of properties in the form of
+	 * <i>`key1` = ? AND `key2` = ?</i> to be included in e.g. a select query.
+	 * 
+	 * @param properties The properties to list.
+	 * @return A string as described above.
+	 * @since 2.0
+	 */
+	public static String pairUpForSelect(Properties properties) {
+		return pairUp(properties, " AND ");
+	}
+	
+	/**
+	 *  Generates a list of properties in the form of
+	 * <i>`key1` = ?<connector>`key2` = ?</i> to be included in a select query.
+	 * 
+	 * @param properties The properties to list.
+	 * @param connector The string to connect the pairs.
+	 * @return A string as described above.
+	 * @since 2.0
+	 */
+	private static String pairUp(Properties properties, String connector) {
 		StringBuffer pairs = new StringBuffer();
 		
 		for (Entry e : properties.entrySet()) {
 			if (pairs.length() > 0) {
-				pairs.append(", ");
+				pairs.append(connector);
 			}
 			pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = ?");
 		}
@@ -237,6 +261,7 @@ public class StorageUtils {
 				payload = null;
 				switch (meta.getColumnType(i)) {
 					case Types.VARBINARY:
+					case Types.BINARY:
 						byte[] bytes = rs.getBytes(i);
 						if (bytes.length == 16) {
 							payload = bytesToUUID(bytes);
@@ -253,6 +278,7 @@ public class StorageUtils {
 						payload = rs.getInt(i);
 						break;
 					case Types.FLOAT:
+					case Types.REAL:
 						payload = rs.getFloat(i);
 						break;
 					case Types.DOUBLE:
@@ -323,7 +349,6 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public String lookupUUIDTable(UUID uuid) {
-		Properties props = null;
 		String tableName = null;
 		
 		String query = "SELECT stored_in FROM object_lookup_table " +
@@ -451,17 +476,25 @@ public class StorageUtils {
 	 */
 	public static boolean isEmpty(Properties props) {
 		Iterator<Entry<Object, Object>> entries = props.entrySet().iterator();
+		Entry<Object, Object> entry = null;
 		Object value = null;
 		boolean isEmpty = true;
 		
 		while (entries.hasNext() && isEmpty) {
-			value = entries.next().getValue();
+			entry = entries.next();
+			value = entry.getValue();
 			if (value instanceof String) {
-				isEmpty = (((String) value).length() < 1); 
+				if (!entry.getKey().equals("service_name")) {
+					isEmpty = (((String) value).length() < 1);
+				}
 			} else if (value instanceof Number) {
 				isEmpty = (((Number) value).equals(0));
 			} else if (value instanceof Identifier) {
 				isEmpty = isEmpty(((Identifier) value).getProperties());
+			} else if (value instanceof DateTime) {
+				if (!entry.getKey().equals("created")) {
+					isEmpty = ((DateTime) value).isEqual(0);
+				}
 			} else if (value instanceof UUID) {
 				// Do nothing
 			} else {
