@@ -19,8 +19,8 @@ public class EmptyMockUserIdentifier implements UserIdentifier {
 	}
 	
 	@Override
-	public Properties getProperties() {
-		Properties props = new Properties();
+	public OrderedProperties getProperties() {
+		OrderedProperties props = new OrderedProperties();
 
 		props.put("id_number", 0);
 		props.put("username", "");

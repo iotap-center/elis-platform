@@ -8,67 +8,64 @@ import se.mah.elis.data.OrderedProperties;
 
 public class MockDataObject2 implements ElisDataObject {
 
-	private UUID uuid;
-	private int userid;
+	private UUID id;
+	private UUID ownerid;
 	private float baz;
 	
 	public MockDataObject2() {
-		uuid = null;
-		userid = 0;
+		id = null;
+		ownerid = null;
 		baz = 0;
 	}
 	
-	public MockDataObject2(UUID uuid, int userid, float baz) {
-		this.uuid = uuid;
-		this.userid = userid;
+	public MockDataObject2(UUID id, UUID ownerid, float baz) {
+		this.id = id;
+		this.ownerid = ownerid;
 		this.baz = baz;
 	}
 	
-	public MockDataObject2(int userid, float baz) {
-		this.uuid = null;
-		this.userid = userid;
+	public MockDataObject2(UUID ownerid, float baz) {
+		this.id = null;
+		this.ownerid = ownerid;
 		this.baz = baz;
 	}
 	
 	public MockDataObject2(float baz) {
-		this.uuid = null;
-		this.userid = 0;
+		this.id = null;
+		this.ownerid = null;
 		this.baz = baz;
 	}
-	
+
 	@Override
-	public long getDataId() {
-		return 0;
+	public UUID getDataId() {
+		return id;
 	}
 
 	@Override
-	public UUID getUUID() {
-		return uuid;
+	public void setDataId(UUID uuid) {
+		this.id = uuid;
 	}
 
 	@Override
-	public void setUUID(UUID uuid) {
-		this.uuid = uuid;
+	public void setOwnerId(UUID userId) {
+		this.ownerid = userId;
 	}
 
 	@Override
-	public void setUniqueUserId(int userId) {
-		this.userid = userId;
-	}
-
-	@Override
-	public int getUniqueUserId() {
-		return userid;
+	public UUID getOwnerId() {
+		return ownerid;
 	}
 
 	@Override
 	public Properties getProperties() {
 		Properties props = new OrderedProperties();
 		
-		if (uuid != null) {
-			props.put("uuid", uuid);
+		if (id != null) {
+			props.put("dataid", id);
 		}
-		props.put("userid", userid);
+		if (ownerid != null) {
+			props.put("ownerid", ownerid);
+		}
 		props.put("baz", baz);
 		
 		return props;
@@ -78,8 +75,8 @@ public class MockDataObject2 implements ElisDataObject {
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
 
-		props.put("uuid", UUID.randomUUID());
-		props.put("userid", 0);
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
 		props.put("baz", 0.0);
 		
 		return props;
@@ -87,8 +84,8 @@ public class MockDataObject2 implements ElisDataObject {
 
 	@Override
 	public void populate(Properties props) {
-		uuid = (UUID) props.get("uuid");
-		userid = (int) props.get("userid");
+		id = (UUID) props.get("dataid");
+		ownerid = (UUID) props.get("ownerid");
 		baz = (float) props.get("baz");
 	}
 

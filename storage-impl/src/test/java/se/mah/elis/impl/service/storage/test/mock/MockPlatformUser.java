@@ -47,8 +47,8 @@ public class MockPlatformUser implements PlatformUser {
 	}
 
 	@Override
-	public Properties getProperties() {
-		Properties props = new OrderedProperties();
+	public OrderedProperties getProperties() {
+		OrderedProperties props = new OrderedProperties();
 		
 		if (id != null) {
 			props.putAll(id.getProperties());

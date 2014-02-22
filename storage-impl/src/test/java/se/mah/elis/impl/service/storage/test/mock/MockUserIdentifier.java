@@ -29,8 +29,8 @@ public class MockUserIdentifier implements UserIdentifier {
 	}
 	
 	@Override
-	public Properties getProperties() {
-		Properties props = new OrderedProperties();
+	public OrderedProperties getProperties() {
+		OrderedProperties props = new OrderedProperties();
 
 		props.put("id_number", idNumber);
 		props.put("username", username);

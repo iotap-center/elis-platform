@@ -35,12 +35,16 @@ public class MockPlatformUserIdentifier implements PlatformUserIdentifier {
 	}
 
 	@Override
-	public Properties getProperties() {
-		Properties p = new OrderedProperties();
+	public OrderedProperties getProperties() {
+		OrderedProperties p = new OrderedProperties();
 		
 		p.put("id", id);
-		p.put("username", username);
-		p.put("password", password);
+		if (username != null) {
+			p.put("username", username);
+		}
+		if (password != null) {
+			p.put("password", password);
+		}
 		
 		return p;
 	}

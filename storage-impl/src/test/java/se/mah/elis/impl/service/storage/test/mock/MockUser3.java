@@ -13,7 +13,6 @@ public class MockUser3 implements User {
 	private UserIdentifier uid;
 	private UUID uuid;
 	private String stuff;
-	private int id;
 	
 	public MockUser3() {
 		uid = new MockUserIdentifier();
@@ -33,7 +32,7 @@ public class MockUser3 implements User {
 	
 	public MockUser3(UUID uuid, String stuff) {
 		uid = new MockUserIdentifier();
-		uuid = uuid;
+		this.uuid = uuid;
 		this.stuff = stuff;
 		
 		uid.identifies(this.getClass());
@@ -65,25 +64,14 @@ public class MockUser3 implements User {
 	}
 
 	@Override
-	public int getIdNumber() {
-		return id;
-	}
-
-	@Override
-	public void setIdNumber(int id) {
-		this.id = id;
-	}
-
-	@Override
-	public Properties getProperties() {
-		Properties props = new OrderedProperties();
+	public OrderedProperties getProperties() {
+		OrderedProperties props = new OrderedProperties();
 		
 		if (uuid != null) {
 			props.put("uuid", uuid);
 		}
 		props.put("service_name", "MockUser1");
 		props.putAll((new MockUserIdentifier()).getProperties());
-		props.put("id", id);
 		if (stuff != null) {
 			props.put("stuff", stuff);
 		}
@@ -98,7 +86,6 @@ public class MockUser3 implements User {
 		props.put("uuid", uuid);
 		props.put("service_name", "9");
 		props.putAll((new MockUserIdentifier()).getPropertiesTemplate());
-		props.put("id", 1);
 		props.put("stuff", "32");
 		
 		return props;
@@ -109,7 +96,6 @@ public class MockUser3 implements User {
 		uid = new MockUserIdentifier();
 		uuid = (UUID) props.get("uuid");
 		stuff = (String) props.get("stuff");
-		id = (int) props.get("id");
 	}
 
 	@Override
