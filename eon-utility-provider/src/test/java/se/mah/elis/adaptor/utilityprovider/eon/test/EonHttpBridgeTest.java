@@ -127,6 +127,7 @@ public class EonHttpBridgeTest {
 //			fail("Failed to toggle device");
 //		}
 //	}
+
 	
 	/**
 	 * Default action status on non-existing action is ACTION_QUEUED although 

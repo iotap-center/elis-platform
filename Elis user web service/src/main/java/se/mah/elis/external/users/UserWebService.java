@@ -5,6 +5,7 @@ package se.mah.elis.external.users;
 
 import java.lang.reflect.Field;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -44,7 +45,7 @@ import se.mah.elis.services.users.factory.UserFactory;
 import se.mah.elis.services.users.factory.UserRecipe;
 
 /**
- * @author "Johan Holmberg, Malmö University"
+ * @author "Johan Holmberg, Malm�� University"
  * @since 1.0
  */
 @Path("/user")
@@ -392,7 +393,7 @@ public class UserWebService {
 		PlatformUserBean bean = new PlatformUserBean();
 		EnvelopeBean envelope = new EnvelopeBean();
 		UserContainerBean container = new UserContainerBean();
-		User u = null;
+		User user = null;
 		
 		// First of all, count on things being bad.
 		response = buildBadRequestResponse(response);
@@ -417,9 +418,9 @@ public class UserWebService {
 					throw new NoSuchUserException();
 				}
 				
-				u = userFactory.build(recipe.getUserType(),
+				user = userFactory.build(recipe.getUserType(),
 						recipe.getServiceName(), properties);
-				userService.registerUserToPlatformUser(u, pu);
+				userService.registerUserToPlatformUser(user, pu);
 
 				bean.userId = Integer.toString(((PlatformUserIdentifier) pu
 						.getIdentifier()).getId());
@@ -429,7 +430,7 @@ public class UserWebService {
 				bean.lastName = pu.getLastName();
 				bean.email = pu.getEmail();
 				bean.gatewayUser = input;
-				input.id = Integer.toString(u.getIdNumber());
+				input.id = user.getUserId().toString();
 				
 				container.user = bean;
 				envelope.response = container;
@@ -463,7 +464,7 @@ public class UserWebService {
 		User u = null;
 		
 		if (pu != null) {
-			u = userService.getUser(pu, Integer.parseInt(userId));
+			u = userService.getUser(pu, UUID.fromString(userId));
 		}
 		
 		if (u != null) {

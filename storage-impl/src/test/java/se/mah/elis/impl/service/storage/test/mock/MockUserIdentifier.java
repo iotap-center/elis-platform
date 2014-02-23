@@ -60,4 +60,10 @@ public class MockUserIdentifier implements UserIdentifier {
 		this.clazz = clazz;
 	}
 
+	@Override
+	public void populate(Properties props) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

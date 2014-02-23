@@ -19,7 +19,7 @@ import se.mah.elis.services.users.UserIdentifier;
  * @since 1.0
  */
 public class PlatformUserImpl
-implements PlatformUser, Comparable<PlatformUserImpl> {
+		implements PlatformUser, Comparable<PlatformUserImpl> {
 
 	public static final Pattern VALID_EMAIL = 
 			Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",

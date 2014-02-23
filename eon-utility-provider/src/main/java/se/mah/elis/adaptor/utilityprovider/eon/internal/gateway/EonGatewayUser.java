@@ -15,7 +15,7 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 /**
  * Representation of a gateway user for E.On 
  * @author Marcus Ljungblad
- * @version 1.0.0
+ * @version 1.1.0
  * @since 1.0
  */
 public class EonGatewayUser implements GatewayUser {

@@ -1,20 +1,19 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
-import org.json.simple.parser.ParseException;
-
-import se.mah.elis.adaptor.utilityprovider.eon.internal.EonParser;
 import se.mah.elis.data.ElectricitySample;
 import se.mah.elis.data.OrderedProperties;
 
-public class ElectricitySampleImpl implements ElectricitySample{
+public class ElectricitySampleImpl implements ElectricitySample {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 9035743168231203310L;
 	private UUID dataid;
 	private UUID ownerid;
 	private double currentKwh = 0;

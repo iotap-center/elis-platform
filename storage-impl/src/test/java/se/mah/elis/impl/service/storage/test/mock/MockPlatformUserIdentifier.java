@@ -95,4 +95,10 @@ public class MockPlatformUserIdentifier implements PlatformUserIdentifier {
 		return !(username.length() > 0 && password.length() > 0);
 	}
 
+	@Override
+	public void populate(Properties props) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

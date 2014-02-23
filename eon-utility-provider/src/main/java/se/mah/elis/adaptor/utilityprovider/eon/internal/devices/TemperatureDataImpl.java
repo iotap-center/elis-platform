@@ -10,6 +10,7 @@ import se.mah.elis.data.TemperatureData;
 
 public class TemperatureDataImpl implements TemperatureData {
 
+	private static final long serialVersionUID = 512051193886837620L;
 	private float celsius = 0;
 	private UUID dataid;
 	private UUID ownerid;

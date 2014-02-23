@@ -48,4 +48,10 @@ public class MockUserIdentifier implements UserIdentifier {
 		
 		return output;
 	}
+
+	@Override
+	public void populate(Properties props) {
+		// TODO Auto-generated method stub
+		
+	}
 }

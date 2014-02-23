@@ -69,8 +69,7 @@ public class AnotherMockUser implements User {
 
 	@Override
 	public void setUserId(UUID id) {
-		// TODO Auto-generated method stub
-		
+		this.uuid = id;
 	}
 
 	@Override

@@ -493,7 +493,7 @@ public class UserServiceImplTest {
 		try {
 			PlatformUser pu1 = us.createPlatformUser("batman", "superman");
 			PlatformUser pu2 = us.createPlatformUser("bilbo", "baggins");
-			PlatformUser pu3 = us.createPlatformUser("orvar", "säfström");
+			PlatformUser pu3 = us.createPlatformUser("orvar", "s��fstr��m");
 		} catch (UserExistsException e) {}
 		PlatformUser[] pus = us.getPlatformUsers();
 		assertNotNull(pus);
