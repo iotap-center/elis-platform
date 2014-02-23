@@ -102,29 +102,29 @@ public class StorageImplTest {
 						"`bar` VARCHAR( 16 ), " +
 						"`created` TIMESTAMP);");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId1 +"'), UNHEX('" + ownerId1 + "'), 42, 'Baba Roga', '2000-01-01 00:00:00')");
+					"VALUES (x'" + dataId1 +"', x'" + ownerId1 + "', 42, 'Baba Roga', '2000-01-01 00:00:00')");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId2 +"'), UNHEX('" + ownerId1 + "'), 13, 'Baba Jaga', '2000-01-01 00:00:01')");
+					"VALUES (x'" + dataId2 +"', x'" + ownerId1 + "', 13, 'Baba Jaga', '2000-01-01 00:00:01')");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId3 +"'), UNHEX('" + ownerId1 + "'), 17, 'Jezibaba', '2000-01-01 00:00:02')");
+					"VALUES (x'" + dataId3 +"', x'" + ownerId1 + "', 17, 'Jezibaba', '2000-01-01 00:00:02')");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId4 +"'), UNHEX('" + ownerId2 + "'), 17, 'Domovoj', '2000-01-01 00:00:03')");
+					"VALUES (x'" + dataId4 +"', x'" + ownerId2 + "', 17, 'Domovoj', '2000-01-01 00:00:03')");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId5 +"'), UNHEX('" + ownerId2 + "'), 5, 'Domovik', '2000-01-01 00:00:04')");
+					"VALUES (x'" + dataId5 +"', x'" + ownerId2 + "', 5, 'Domovik', '2000-01-01 00:00:04')");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` " +
-					"VALUES (UNHEX('" + dataId6 +"'), UNHEX('" + ownerId3 + "'), 5, 'Perun', '2000-01-01 00:00:05')");
+					"VALUES (x'" + dataId6 +"', x'" + ownerId3 + "', 5, 'Perun', '2000-01-01 00:00:05')");
 			
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + dataId1 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId1 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject1')");
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + dataId2 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId2 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject1')");
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + dataId3 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId3 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject1')");
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + dataId4 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId4 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject1')");
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + dataId5 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId5 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject1')");
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + dataId6 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId6 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject1')");
 			stmt.close();
 		} catch (SQLException e) {
@@ -147,17 +147,17 @@ public class StorageImplTest {
 						"`baz` FLOAT, " +
 						"`created` TIMESTAMP)");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` " +
-					"VALUES (UNHEX('" + dataId1 +"'), UNHEX('" + ownerId1 + "'), 1.1, '2000-01-01 00:00:00');");
+					"VALUES (x'" + dataId1 +"', x'" + ownerId1 + "', 1.1, '2000-01-01 00:00:00');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` " +
-					"VALUES (UNHEX('" + dataId2 +"'), UNHEX('" + ownerId1 + "'), 0.5, '2000-01-01 00:00:01');");
+					"VALUES (x'" + dataId2 +"', x'" + ownerId1 + "', 0.5, '2000-01-01 00:00:01');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` " +
-					"VALUES (UNHEX('" + dataId3 +"'), UNHEX('" + ownerId2 + "'), 7.1, '2000-01-01 00:00:02');");
+					"VALUES (x'" + dataId3 +"', x'" + ownerId2 + "', 7.1, '2000-01-01 00:00:02');");
 
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + dataId1 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId1 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject2')");
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + dataId2 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId2 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject2')");
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + dataId3 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId3 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject2')");
 			stmt.close();
 		} catch (SQLException e) {
@@ -172,7 +172,7 @@ public class StorageImplTest {
 		try {
 			Statement stmt = connection.createStatement();
 			stmt.execute("CREATE TABLE `se-mah-elis-impl-service-storage-test-mock-MockUser1` (" +
-						"`uuid` VARBINARY(16) PRIMARY KEY, " +
+						"`uuid` BINARY(16) PRIMARY KEY, " +
 						"`service_name` VARCHAR(9), " +
 						"`id_number` INTEGER, " +
 						"`username` VARCHAR(32), " +
@@ -181,17 +181,17 @@ public class StorageImplTest {
 						"`whatever` INTEGER, " +
 						"`created` TIMESTAMP)");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser1` " +
-					"VALUES (UNHEX('" + uuid1 +"'), 'test', 1, 'Batman', 'Robin', 'Rajec', 21, '2000-01-01 00:00:00');");
+					"VALUES (x'" + uuid1 +"', 'test', 1, 'Batman', 'Robin', 'Rajec', 21, '2000-01-01 00:00:00');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser1` " +
-					"VALUES (UNHEX('" + uuid2 +"'), 'test', 1, 'Superman', 'Lois Lane', 'Vinea', 22, '2000-01-01 00:00:01');");
+					"VALUES (x'" + uuid2 +"', 'test', 1, 'Superman', 'Lois Lane', 'Vinea', 22, '2000-01-01 00:00:01');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser1` " +
-					"VALUES (UNHEX('" + uuid3 +"'), 'test', 1, 'Spongebob Squarepants', 'Patrick Seastar', 'Kofola', 23, '2000-01-01 00:00:02');");
+					"VALUES (x'" + uuid3 +"', 'test', 1, 'Spongebob Squarepants', 'Patrick Seastar', 'Kofola', 23, '2000-01-01 00:00:02');");
 
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + uuid1 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid1 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockUser1')");
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + uuid2 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid2 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockUser1')");
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + uuid3 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid3 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockUser1')");
 			stmt.close();
 		} catch (SQLException e) {
@@ -206,7 +206,7 @@ public class StorageImplTest {
 		try {
 			Statement stmt = connection.createStatement();
 			stmt.execute("CREATE TABLE `se-mah-elis-impl-service-storage-test-mock-MockUser2` (" +
-						"`uuid` VARBINARY(16) PRIMARY KEY, " +
+						"`uuid` BINARY(16) PRIMARY KEY, " +
 						"`service_name` VARCHAR(9), " +
 						"`id_number` INTEGER, " +
 						"`username` VARCHAR(32), " +
@@ -214,17 +214,17 @@ public class StorageImplTest {
 						"`stuff` VARCHAR(32), " +
 						"`created` TIMESTAMP)");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser2` " +
-					"VALUES (UNHEX('" + uuid1 +"'), 'test', 1, 'Batman', 'Robin', 'Kvass', '2000-01-01 00:00:00');");
+					"VALUES (x'" + uuid1 +"', 'test', 1, 'Batman', 'Robin', 'Kvass', '2000-01-01 00:00:00');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser2` " +
-					"VALUES (UNHEX('" + uuid2 +"'), 'test', 1, 'Superman', 'Lois Lane', 'Kompot', '2000-01-01 00:00:01');");
+					"VALUES (x'" + uuid2 +"', 'test', 1, 'Superman', 'Lois Lane', 'Kompot', '2000-01-01 00:00:01');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser2` " +
-					"VALUES (UNHEX('" + uuid3 +"'), 'test', 1, 'Spongebob Squarepants', 'Patrick Seastar', 'Slivovice', '2000-01-01 00:00:02');");
+					"VALUES (x'" + uuid3 +"', 'test', 1, 'Spongebob Squarepants', 'Patrick Seastar', 'Slivovice', '2000-01-01 00:00:02');");
 
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + uuid1 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid1 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockUser2')");
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + uuid2 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid2 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockUser2')");
-			stmt.execute("INSERT INTO `object_lookup_table` VALUES (UNHEX('" + uuid3 +"'), " +
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid3 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockUser2')");
 			stmt.close();
 		} catch (SQLException e) {
@@ -245,6 +245,60 @@ public class StorageImplTest {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void makeMDO1MDO2() {
+		runQuery("RENAME TABLE `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` TO `se-mah-elis-impl-service-storage-test-mock-MockDataObject2`;");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` SET `dataid` = x'10001111222233334444555566667777' where `dataid` = x'00001111222233334444555566667777';");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` SET `dataid` = x'10001111222233334444555566667778' where `dataid` = x'00001111222233334444555566667778';");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` SET `dataid` = x'10001111222233334444555566667779' where `dataid` = x'00001111222233334444555566667779';");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` SET `dataid` = x'1000111122223333444455556666777A' where `dataid` = x'0000111122223333444455556666777A';");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` SET `dataid` = x'1000111122223333444455556666777B' where `dataid` = x'0000111122223333444455556666777B';");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` SET `dataid` = x'1000111122223333444455556666777C' where `dataid` = x'0000111122223333444455556666777C';");
+		runQuery("UPDATE `object_lookup_table` SET `stored_in` = 'se-mah-elis-impl-service-storage-test-mock-MockDataObject2';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'10001111222233334444555566667777' where `id` = x'00001111222233334444555566667777';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'10001111222233334444555566667778' where `id` = x'00001111222233334444555566667778';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'10001111222233334444555566667779' where `id` = x'00001111222233334444555566667779';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'1000111122223333444455556666777A' where `id` = x'0000111122223333444455556666777A';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'1000111122223333444455556666777B' where `id` = x'0000111122223333444455556666777B';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'1000111122223333444455556666777C' where `id` = x'0000111122223333444455556666777C';");
+		buildAndPopulateMDO1Table();
+	}
+
+	private void makeMDO2MDO1() {
+		runQuery("RENAME TABLE `se-mah-elis-impl-service-storage-test-mock-MockDataObject2` TO `se-mah-elis-impl-service-storage-test-mock-MockDataObject1`;");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` SET `dataid` = x'10001111222233334444555566667771' where `dataid` = x'00001111222233334444555566667771';");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` SET `dataid` = x'10001111222233334444555566667772' where `dataid` = x'00001111222233334444555566667772';");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` SET `dataid` = x'10001111222233334444555566667773' where `dataid` = x'00001111222233334444555566667773';");
+		runQuery("UPDATE `object_lookup_table` SET `stored_in` = 'se-mah-elis-impl-service-storage-test-mock-MockDataObject1';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'10001111222233334444555566667771' where `id` = x'00001111222233334444555566667771';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'10001111222233334444555566667772' where `id` = x'00001111222233334444555566667772';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'10001111222233334444555566667773' where `id` = x'00001111222233334444555566667773';");
+		buildAndPopulateMDO2Table();
+	}
+
+	private void makeMU1MU2() {
+		runQuery("RENAME TABLE `se-mah-elis-impl-service-storage-test-mock-MockUser1` TO `se-mah-elis-impl-service-storage-test-mock-MockUser2`;");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockUser2` SET `uuid` = x'100011112222deadbeef555566667771' where `uuid` = x'000011112222deadbeef555566667771';");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockUser2` SET `uuid` = x'100011112222deadbeef555566667772' where `uuid` = x'000011112222deadbeef555566667772';");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockUser2` SET `uuid` = x'100011112222deadbeef555566667773' where `uuid` = x'000011112222deadbeef555566667773';");
+		runQuery("UPDATE `object_lookup_table` SET `stored_in` = 'se-mah-elis-impl-service-storage-test-mock-MockUser2';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'100011112222deadbeef555566667771' where `id` = x'000011112222deadbeef555566667771';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'100011112222deadbeef555566667772' where `id` = x'000011112222deadbeef555566667772';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'100011112222deadbeef555566667773' where `id` = x'000011112222deadbeef555566667773';");
+		buildAndPopulateMU1Table();
+	}
+
+	private void makeMU2MU1() {
+		runQuery("RENAME TABLE `se-mah-elis-impl-service-storage-test-mock-MockUser2` TO `se-mah-elis-impl-service-storage-test-mock-MockUser1`;");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockUser1` SET `uuid` = x'1000deadbeef33334444555566667771' where `uuid` = x'0000deadbeef33334444555566667771';");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockUser1` SET `uuid` = x'1000deadbeef33334444555566667772' where `uuid` = x'0000deadbeef33334444555566667772';");
+		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockUser1` SET `uuid` = x'1000deadbeef33334444555566667773' where `uuid` = x'0000deadbeef33334444555566667773';");
+		runQuery("UPDATE `object_lookup_table` SET `stored_in` = 'se-mah-elis-impl-service-storage-test-mock-MockUser1';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'1000deadbeef33334444555566667771' where `id` = x'0000deadbeef33334444555566667771';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'1000deadbeef33334444555566667772' where `id` = x'0000deadbeef33334444555566667772';");
+		runQuery("UPDATE `object_lookup_table` SET `id` = x'1000deadbeef33334444555566667773' where `id` = x'0000deadbeef33334444555566667773';");
+		buildAndPopulateMU2Table();
 	}
 	
 	private void tearDownTables() {
@@ -662,8 +716,7 @@ public class StorageImplTest {
 	@Test
 	public void testInsertElisDataObjectArrayLastObjectDoesntMatchTable() {
 		buildAndPopulateMDO1Table();
-		runQuery("RENAME TABLE `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` TO `se-mah-elis-impl-service-storage-test-mock-MockDataObject2`;");
-		buildAndPopulateMDO1Table();
+		makeMDO1MDO2();
 		
 		Storage storage = new StorageImpl(connection);
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-5555deadbeef");
@@ -702,8 +755,7 @@ public class StorageImplTest {
 	@Test
 	public void testInsertElisDataObjectArrayRandomObjectDoesntMatchTable() {
 		buildAndPopulateMDO1Table();
-		runQuery("RENAME TABLE `se-mah-elis-impl-service-storage-test-mock-MockDataObject1` TO `se-mah-elis-impl-service-storage-test-mock-MockDataObject2`;");
-		buildAndPopulateMDO1Table();
+		makeMDO1MDO2();
 		
 		Storage storage = new StorageImpl(connection);
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-5555deadbeef");
@@ -1151,15 +1203,7 @@ public class StorageImplTest {
 	@Test
 	public void testInsertAbstractUserArrayOneUserDoesntMatchTable() {
 		buildAndPopulateMU2Table();
-		runQuery("RENAME TABLE `se-mah-elis-impl-service-storage-test-mock-MockUser2` TO `se-mah-elis-impl-service-storage-test-mock-MockUser1`;");
-		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockUser1` SET `uuid` = UNHEX('1000deadbeef33334444555566667771') where `uuid` = x'0000deadbeef33334444555566667771';");
-		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockUser1` SET `uuid` = UNHEX('1000deadbeef33334444555566667772') where `uuid` = x'0000deadbeef33334444555566667772';");
-		runQuery("UPDATE `se-mah-elis-impl-service-storage-test-mock-MockUser1` SET `uuid` = UNHEX('1000deadbeef33334444555566667773') where `uuid` = x'0000deadbeef33334444555566667773';");
-		runQuery("UPDATE `object_lookup_table` SET `stored_in` = 'se-mah-elis-impl-service-storage-test-mock-MockUser1';");
-		runQuery("UPDATE `object_lookup_table` SET `id` = x'1000deadbeef33334444555566667771' where `id` = x'0000deadbeef33334444555566667771';");
-		runQuery("UPDATE `object_lookup_table` SET `id` = x'1000deadbeef33334444555566667772' where `id` = x'0000deadbeef33334444555566667772';");
-		runQuery("UPDATE `object_lookup_table` SET `id` = x'1000deadbeef33334444555566667773' where `id` = x'0000deadbeef33334444555566667773';");
-		buildAndPopulateMU2Table();
+		makeMU2MU1();
 		
 		Storage storage = new StorageImpl(connection);
 		User[] users = new User[3];
@@ -2178,7 +2222,6 @@ public class StorageImplTest {
 			storage.update(mdo);
 			fail("This shouldn't happen");
 		} catch (StorageException e) {
-			e.printStackTrace();
 		}
 		
 		try {
@@ -2334,7 +2377,6 @@ public class StorageImplTest {
 			storage.update(edos);
 			fail("This shouldn't happen");
 		} catch (StorageException e) {
-			e.printStackTrace();
 		}
 		
 		mdo1 = null;
