@@ -3,9 +3,10 @@ package se.mah.elis.adaptor.utilityprovider.eon.internal.gateway;
 import javax.naming.AuthenticationException;
 import javax.ws.rs.client.ResponseProcessingException;
 
-import se.mah.elis.adaptor.building.api.entities.GatewayUser;
-import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
-import se.mah.elis.adaptor.building.api.providers.GatewayUserProvider;
+import se.mah.elis.adaptor.device.api.entities.GatewayUser;
+import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
+import se.mah.elis.adaptor.device.api.providers.GatewayUserProvider;
+import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 
 /**
@@ -41,7 +42,7 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 			AuthenticationException {
 		EonGatewayUser user = createGatewayUser(username, password);
 		EonGateway gateway = createGateway(username, password, bridge);
-		user.setGateway(gateway);
+		user.setGateway((Gateway) gateway);
 		return user;
 	}
 

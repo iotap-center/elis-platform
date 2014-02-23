@@ -110,25 +110,25 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public synchronized void registerUserToPlatformUser(User u, PlatformUser pu)
+	public synchronized void registerUserToPlatformUser(User user, PlatformUser platformUser)
 			throws NoSuchUserException {
 		// TODO This isn't kosher
 		
 		ArrayList<User> list = null;
 		
-		if (u.getUserId() == null) {
-			u.setUserId(UUID.randomUUID());
+		if (user.getUserId() == null) {
+			user.setUserId(UUID.randomUUID());
 		}
 		
-		if (!map.containsKey(pu)) {
+		if (!map.containsKey(platformUser)) {
 			list = new ArrayList<User>();
-			((PlatformUserIdentifierImpl) pu.getIdentifier()).setId(++platformUserCounter);
-			map.put(pu, list);
+			((PlatformUserIdentifierImpl) platformUser.getIdentifier()).setId(++platformUserCounter);
+			map.put(platformUser, list);
 		} else {
-			list = (ArrayList<User>) map.get(pu);
+			list = (ArrayList<User>) map.get(platformUser);
 		}
 		
-		list.add(u);
+		list.add(user);
 	}
 
 	@Override

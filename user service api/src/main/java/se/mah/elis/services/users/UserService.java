@@ -9,7 +9,8 @@ import se.mah.elis.services.users.exceptions.UserExistsException;
  * The UserBroker interface describes a user service.
  * 
  * @author "Johan Holmberg, Malm\u00f6 University"
- * @since 1.0
+ * @author "Marcus Ljungblad, Malmo University"
+ * @since 2.0
  */
 public interface UserService {
 	

@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import se.mah.elis.adaptor.building.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionObject;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionStatus;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
@@ -101,31 +101,32 @@ public class EonHttpBridgeTest {
 		assertEquals(TEST_DEVICEID, status.get("DeviceId"));
 	}
 	
-	@Test
-	public void testTurnOn() throws AuthenticationException {
-		String token = bridge.authenticate(TEST_USER, TEST_PASS);
-		try {
-			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5";
-			EonActionObject reply = bridge.turnOn(token, TEST_GATEWAY, tulpanLampa);
-			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to toggle device");
-		}
-	}
-	
-	@Test
-	public void testTurnOff() throws AuthenticationException {
-		String token = bridge.authenticate(TEST_USER, TEST_PASS);
-		try {
-			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5"; 
-			EonActionObject reply = bridge.turnOff(token, TEST_GATEWAY, tulpanLampa);
-			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to toggle device");
-		}
-	}
+//	@Test
+//	public void testTurnOn() throws AuthenticationException {
+//		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+//		System.out.println(token);
+//		try {
+//			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5";
+//			EonActionObject reply = bridge.turnOn(token, TEST_GATEWAY, tulpanLampa);
+//			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			fail("Failed to toggle device");
+//		}
+//	}
+//	
+//	@Test
+//	public void testTurnOff() throws AuthenticationException {
+//		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+//		try {
+//			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5"; 
+//			EonActionObject reply = bridge.turnOff(token, TEST_GATEWAY, tulpanLampa);
+//			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			fail("Failed to toggle device");
+//		}
+//	}
 	
 	/**
 	 * Default action status on non-existing action is ACTION_QUEUED although 

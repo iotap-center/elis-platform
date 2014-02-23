@@ -18,24 +18,6 @@
     	<type>bundle</type>
     </dependency>
     <dependency>
-    	<groupId>se.mah.elis.adaptor.utilityprovider.api</groupId>
-    	<artifactId>temp-utilityprovider-api</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-    	<type>bundle</type>
-    </dependency>
-    <dependency>
-    	<groupId>se.mah.elis.auxiliaries</groupId>
-    	<artifactId>auxiliaries</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-    	<type>bundle</type>
-    </dependency>
-    <dependency>
-    	<groupId>se.mah.elis.adaptor.building.api</groupId>
-    	<artifactId>building-api</artifactId>
-    	<version>0.0.2</version>
-    	<type>bundle</type>
-    </dependency>
-    <dependency>
     	<groupId>org.mockito</groupId>
     	<artifactId>mockito-all</artifactId>
     	<version>1.9.5</version>
@@ -55,6 +37,41 @@
     	<groupId>org.glassfish.jersey.connectors</groupId>
     	<artifactId>jersey-apache-connector</artifactId>
     	<version>2.0</version>
+    </dependency>
+    <dependency>
+    	<groupId>se.mah.elis.exceptions</groupId>
+    	<artifactId>elis-exceptions</artifactId>
+    	<version>1.0.0</version>
+    	<type>bundle</type>
+    </dependency>
+    <dependency>
+    	<groupId>se.mah.elis.data</groupId>
+    	<artifactId>elis-data-definitions</artifactId>
+    	<version>2.0.0-SNAPSHOT</version>
+    	<type>bundle</type>
+    </dependency>
+    <dependency>
+    	<groupId>se.mah.elis.adaptor.device.api</groupId>
+    	<artifactId>device-api</artifactId>
+    	<version>1.0.0-SNAPSHOT</version>
+    	<type>bundle</type>
+    </dependency>
+    <dependency>
+    	<groupId>se.mah.elis.services.users</groupId>
+    	<artifactId>user-service</artifactId>
+    	<version>2.0.0-SNAPSHOT</version>
+    	<type>bundle</type>
+    </dependency>
+    <dependency>
+    	<groupId>joda-time</groupId>
+    	<artifactId>joda-time</artifactId>
+    	<version>2.3</version>
+    </dependency>
+    <dependency>
+    	<groupId>se.mah.elis.adaptor.utilityprovider.api</groupId>
+    	<artifactId>temp-utilityprovider-api</artifactId>
+    	<version>0.0.2-SNAPSHOT</version>
+    	<type>bundle</type>
     </dependency>
   </dependencies>
   <build>

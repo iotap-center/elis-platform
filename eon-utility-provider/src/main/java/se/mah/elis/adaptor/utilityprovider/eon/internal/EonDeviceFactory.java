@@ -2,15 +2,16 @@ package se.mah.elis.adaptor.utilityprovider.eon.internal;
 
 import org.json.simple.JSONObject;
 
-import se.mah.elis.adaptor.building.api.entities.devices.Device;
-import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDevice;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDeviceIdentifier;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerMeter;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonThermometer;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonThermostat;
+import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * Factory to create java representations of E.On devices from JSON responses
@@ -94,7 +95,7 @@ public class EonDeviceFactory {
 			Device device, JSONObject any)
 			throws StaticEntityException {
 		String deviceId = (String) any.get("Id");
-		device.setId(new EonDeviceIdentifier(deviceId));
+		device.setId((DeviceIdentifier) new EonDeviceIdentifier(deviceId));
 		device.setName((String) any.get("Name")); 
 		device.setDescription((String) any.get("Description"));
 		

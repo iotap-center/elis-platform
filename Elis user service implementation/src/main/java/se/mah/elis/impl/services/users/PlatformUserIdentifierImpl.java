@@ -139,4 +139,10 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 		// Don't do anything at all. This is not applicable for the
 		// PlatformUserIdentifier.
 	}
+
+	@Override
+	public void populate(Properties props) {
+		// TODO Auto-generated method stub
+		
+	}
 }

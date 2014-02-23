@@ -1,8 +1,14 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.gateway;
 
-import se.mah.elis.adaptor.building.api.entities.GatewayUser;
-import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
-import se.mah.elis.adaptor.building.api.exceptions.GatewayCommunicationException;
+import java.util.Properties;
+import java.util.UUID;
+
+import org.joda.time.DateTime;
+
+import se.mah.elis.adaptor.device.api.entities.GatewayUser;
+import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
+import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
@@ -16,7 +22,8 @@ public class EonGatewayUser implements GatewayUser {
 
 	private Gateway gateway;
 	private EonGatewayUserIdentifer gatewayUserIdentifier;
-	private int id;
+	private UUID id;
+	private DateTime created = DateTime.now();
 
 	/**
 	 * Will try to initialise the gateway if that has not been done before. 
@@ -42,6 +49,7 @@ public class EonGatewayUser implements GatewayUser {
 	@Override
 	public void setIdentifier(UserIdentifier userIdentifier) {
 		gatewayUserIdentifier = (EonGatewayUserIdentifer) userIdentifier;
+		gatewayUserIdentifier.identifies(this.getClass());
 	}
 
 	@Override
@@ -55,13 +63,47 @@ public class EonGatewayUser implements GatewayUser {
 	}
 
 	@Override
-	public int getIdNumber() {
+	public UUID getUserId() {
 		return id;
 	}
 
 	@Override
-	public void setIdNumber(int id) {
+	public void setUserId(UUID id) {
 		this.id = id;
+	}
+
+	@Override
+	public OrderedProperties getProperties() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("userid", id);
+		props.putAll(gatewayUserIdentifier.getProperties());
+		props.put("gateway", gateway.getId());
+		props.put("created", created);
+		
+		return props;
+	}
+
+	@Override
+	public OrderedProperties getPropertiesTemplate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getServiceName() {
+		return "eon";
+	}
+
+	@Override
+	public void populate(Properties arg0) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public DateTime created() {
+		return created;
 	}
 
 }

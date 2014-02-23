@@ -39,7 +39,7 @@ public interface ElisDataObject extends Serializable {
 	/**
 	 * Sets the owner of this data object.
 	 * 
-	 * @param userId 
+	 * @param userId
 	 * @since 2.0
 	 */
 	void setOwnerId(UUID userId);

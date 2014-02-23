@@ -1,24 +1,22 @@
 package se.mah.elis.adaptor.utilityprovider.eon.devices.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyInt;
-import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
-import se.mah.elis.adaptor.building.api.data.GatewayAddress;
-import se.mah.elis.adaptor.building.api.exceptions.ActuatorFailedException;
-import se.mah.elis.adaptor.building.api.exceptions.SensorFailedException;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
+import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
+import se.mah.elis.adaptor.device.api.data.GatewayAddress;
+import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonThermometer;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.TemperatureDataImpl;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;
-import se.mah.elis.auxiliaries.data.TemperatureData;
+import se.mah.elis.data.TemperatureData;
+import se.mah.elis.exceptions.StaticEntityException;
 
 public class EonThermometerTest {
 	

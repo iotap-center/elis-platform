@@ -17,8 +17,8 @@ import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.mah.elis.adaptor.building.api.data.GatewayAddress;
-import se.mah.elis.adaptor.building.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.data.GatewayAddress;
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.gateway.EonGateway;

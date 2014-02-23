@@ -12,6 +12,7 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 public class MockUser implements User {
 
+	public static final UUID MOCK_UUID = UUID.fromString("067e6162-3b6f-4ae2-a171-2470b63dff00");
 	private String stuff;
 	private int whatever;
 	private UUID uuid;
@@ -19,11 +20,13 @@ public class MockUser implements User {
 	public MockUser() {
 		stuff = "";
 		whatever = 0;
+		uuid = MockUser.MOCK_UUID;
 	}
 	
 	public MockUser(String stuff, int whatever) {
 		this.stuff = stuff;
 		this.whatever = whatever;
+		uuid = MockUser.MOCK_UUID;
 	}
 
 	@Override
@@ -83,7 +86,7 @@ public class MockUser implements User {
 
 	@Override
 	public void setUserId(UUID id) {
-		uuid = id;
+		this.uuid = id;
 	}
 
 	@Override

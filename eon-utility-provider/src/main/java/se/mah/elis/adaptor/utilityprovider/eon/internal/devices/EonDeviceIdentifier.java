@@ -1,6 +1,9 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 
-import se.mah.elis.adaptor.building.api.data.DeviceIdentifier;
+import java.util.Properties;
+
+import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
+import se.mah.elis.data.OrderedProperties;
 
 public class EonDeviceIdentifier implements DeviceIdentifier {
 	private String id; 
@@ -23,5 +26,28 @@ public class EonDeviceIdentifier implements DeviceIdentifier {
 		if (o instanceof EonDeviceIdentifier)
 			return this.getId().equals( ((EonDeviceIdentifier)o).getId() );
 		return false;
+	}
+
+	@Override
+	public OrderedProperties getProperties() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("id", id);
+		
+		return props;
+	}
+
+	@Override
+	public OrderedProperties getPropertiesTemplate() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("id", "32");
+		
+		return props;
+	}
+
+	@Override
+	public void populate(Properties props) {
+		id = (String) props.getProperty("id");
 	}
 }

@@ -36,6 +36,12 @@
   		<version>2.0.0-SNAPSHOT</version>
   		<type>bundle</type>
   	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.exceptions</groupId>
+  		<artifactId>elis-exceptions</artifactId>
+  		<version>1.0.0</version>
+  		<type>bundle</type>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>

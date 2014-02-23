@@ -5,22 +5,23 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 import javax.ws.rs.client.ResponseProcessingException;
 
+import org.joda.time.DateTime;
 import org.json.simple.parser.ParseException;
 
-import se.mah.elis.adaptor.building.api.data.GatewayAddress;
-import se.mah.elis.adaptor.building.api.entities.GatewayUser;
-import se.mah.elis.adaptor.building.api.entities.devices.Device;
-import se.mah.elis.adaptor.building.api.entities.devices.Gateway;
-import se.mah.elis.adaptor.building.api.exceptions.GatewayCommunicationException;
-import se.mah.elis.adaptor.building.api.exceptions.StaticEntityException;
-import se.mah.elis.adaptor.building.api.exceptions.MethodNotSupportedException;
+import se.mah.elis.adaptor.device.api.data.GatewayAddress;
+import se.mah.elis.adaptor.device.api.entities.GatewayUser;
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
+import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDevice;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDeviceIdentifier;
-import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMeter;
+import se.mah.elis.data.OrderedProperties;
+import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * Implementation of an E.On panel (in Elis terms: gateway)
@@ -39,6 +40,7 @@ import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonPowerSwitchMe
  */
 public class EonGateway implements Gateway {
 
+	private static final long serialVersionUID = 4987546440772318353L;
 	private String authenticationToken;
 	private EonHttpBridge httpBridge;
 	private List<Device> devices;
@@ -47,6 +49,9 @@ public class EonGateway implements Gateway {
 	private GatewayUser gatewayUser;
 	private boolean gatewayHasConnected;
 	private int gatewayId;
+	private UUID dataid;
+	private UUID uniqueUserId;
+	private DateTime created = DateTime.now();
 
 	public EonGateway() {
 		this.devices = new ArrayList<Device>();
@@ -248,4 +253,59 @@ public class EonGateway implements Gateway {
 		return false;
 	}
 
+	@Override
+	public UUID getDataId() {
+		return this.dataid;
+	}
+
+	@Override
+	public void setOwnerId(UUID userId) {
+		this.uniqueUserId = userId;
+	}
+
+	@Override
+	public UUID getOwnerId() {
+		return this.uniqueUserId;
+	}
+
+	@Override
+	public Properties getProperties() {
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", this.dataid);
+		props.put("gatewayId", this.gatewayId);
+		props.put("gatewayName", this.name);
+		props.put("uniqueUserId", this.uniqueUserId);
+		props.put("created", created);
+		return props;
+	}
+
+	@Override
+	public OrderedProperties getPropertiesTemplate() {
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", this.dataid);
+		props.put("gatewayId", this.gatewayId);
+		props.put("gatewayName", "64");
+		props.put("uniqueUserId", this.uniqueUserId);
+		props.put("created", created);
+		return props;
+	}
+
+	@Override
+	public void populate(Properties props) {
+		setDataId(UUID.fromString((String) props.get("uuid")));
+		setOwnerId((UUID) props.get("uniqueUserId"));
+		gatewayId = (int) props.get("gatewayId");
+		name = (String) props.get("gatewayName");
+		created = (DateTime) props.get("created");
+	}
+
+	@Override
+	public void setDataId(UUID uuid) {
+		this.dataid = uuid;
+	}
+
+	@Override
+	public DateTime created() {
+		return created;
+	}
 }

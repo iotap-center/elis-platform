@@ -146,21 +146,22 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testRegisterUserToPlatformUser() {
-		UserService us = new UserServiceImpl();
-		PlatformUser pu = new PlatformUserImpl();
-		User mu = new MockUser();
+		UserService userService = new UserServiceImpl();
+		PlatformUser platformUser = new PlatformUserImpl();
+		User mockUser = new MockUser();
 		
 		try {
-			us.registerUserToPlatformUser(mu, pu);
+			userService.registerUserToPlatformUser(mockUser, platformUser);
 		} catch (NoSuchUserException e) {
 			fail("Register no workie");
 		}
 		
-		User[] users = us.getUsers(pu);
+		User[] users = userService.getUsers(platformUser);
 		
 		assertNotNull(users);
 		assertEquals(1, users.length);
 		assertEquals("I'm a MockUserIndentifier", users[0].getIdentifier().toString());
+		assertEquals(MockUser.MOCK_UUID, users[0].getUserId());
 	}
 
 	@Test
@@ -205,6 +206,7 @@ public class UserServiceImplTest {
 		assertNotNull(users);
 		assertEquals(1, users.length);
 		assertEquals("I'm an AnotherMockUserIndentifier", users[0].getIdentifier().toString());
+		assertEquals(UUID.fromString(AnotherMockUser.MOCK_UUID), users[0].getUserId());
 	}
 
 	@Test
