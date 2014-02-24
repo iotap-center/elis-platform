@@ -1,6 +1,7 @@
 package se.mah.elis.services.users.factory.impl.test.mock;
 
 import java.util.Properties;
+import java.util.UUID;
 
 import se.mah.elis.services.users.factory.UserRecipe;
 
@@ -23,7 +24,7 @@ public class MockUserRecipe implements UserRecipe {
 	public Properties getProperties() {
 		Properties p = new Properties();
 
-		p.put("id", "string");
+		p.put("id", UUID.randomUUID());
 		p.put("serviceUserName", "string");
 		p.put("servicePassword", "string");
 		

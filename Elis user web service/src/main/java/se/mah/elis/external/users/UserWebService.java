@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.felix.service.command.Descriptor;
 
@@ -227,6 +226,7 @@ public class UserWebService {
 							properties = populateRecipe(input.gatewayUser, recipe);
 							u = userFactory.build(recipe.getUserType(),
 									recipe.getServiceName(), properties);
+							System.out.println(properties);
 						} catch (UserInitalizationException e) {
 							return buildBadRequestResponse(response);
 						} catch (Exception e) {
@@ -238,7 +238,7 @@ public class UserWebService {
 					}
 					
 					userService.registerUserToPlatformUser(u, pu);
-					input.gatewayUser.id = Integer.toString(u.getIdNumber());
+					input.gatewayUser.id = u.getUserId().toString();
 				}
 				
 				input.password = null;
@@ -518,10 +518,12 @@ public class UserWebService {
 			if (payload != null) {
 				properties.setProperty(key, payload);
 			}
+			if (properties.containsKey("id") &&
+					properties.get("id") instanceof String) {
+				properties.put("id", UUID.fromString((String) properties.get("id")));
+			}
 		}
-		if (properties.getProperty("id") == "string") {
-			properties.setProperty("id", "null");
-		}
+		
 		return properties;
 	}
 	
