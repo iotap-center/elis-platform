@@ -159,8 +159,8 @@
 		<module>../Data definitions</module>
 		<module>../user service api</module>
 		<module>../storage api</module>
-		<!-- <module>../building api</module> -->
-		<!-- <module>../structure api</module> -->
+		<module>../building api</module>
+		<module>../structure api</module>
 		
 		<!-- External API modules -->
 		<!-- <module>../northbound-api/com.eclipsesource.jaxrs.publisher</module> -->
@@ -171,6 +171,7 @@
 		<module>../Elis user web service</module>
 		
 		<!-- Misc modules -->
+		<module>../eon-utility-provider</module>
 		<!-- <module>../elis-branding</module> -->
         <!-- <module>../qs-driver</module> -->
         <!-- <module>../ninjablock</module> -->
