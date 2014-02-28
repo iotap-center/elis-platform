@@ -143,10 +143,32 @@ public class UserServiceImplTest {
 		
 		return bindings;
 	}
+	
+	private void runQuery(String query) {
+		Statement statement;
+		
+		try {
+			statement = connection.createStatement();
+			statement.execute(query);
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private boolean findInArray(PlatformUser needle, PlatformUser[] haystack) {
+		for (int i = 0; i < haystack.length; i++) {
+			if (needle.toString().equals(haystack[i].toString())) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
 	@Test
 	public void testGetUsers() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		
 		User[] users = us.getUsers(pu);
@@ -157,7 +179,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetUser() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
@@ -178,7 +200,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetUserMultipleUserTypes() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
@@ -200,7 +222,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetUserMultipeUsersOfSameType() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
@@ -222,7 +244,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetUserNoSuchUser() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
@@ -281,7 +303,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testRegisterUserToPlatformUserMultiple() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		User mu = new MockUser();
 		User amu = new AnotherMockUser();
@@ -303,7 +325,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testUnregisterUserFromPlatformUser() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		User mu = new MockUser();
 		User amu = new AnotherMockUser();
@@ -321,12 +343,12 @@ public class UserServiceImplTest {
 		assertNotNull(users);
 		assertEquals(1, users.length);
 		assertEquals("I'm an AnotherMockUserIndentifier", users[0].getIdentifier().toString());
-		assertEquals(UUID.fromString(AnotherMockUser.MOCK_UUID), users[0].getUserId());
+		assertEquals(AnotherMockUser.MOCK_UUID, users[0].getUserId());
 	}
 
 	@Test
 	public void testUnregisterAllUsersFromPlatformUser() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		User mu = new MockUser();
 		User amu = new AnotherMockUser();
@@ -348,15 +370,16 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUser() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		PlatformUser actual = null;
+		
 		try {
-			pu = us.createPlatformUser("batman", "superman");
+			pu = us.createPlatformUser("Fred", "Barney");
 		} catch (UserExistsException e) {}
 
-		assertEquals("PlatformUser batman (1)", pu.toString());
-		assertEquals(1, us.getNbrOfPlatformUsers());
+		assertEquals("PlatformUser Fred (1)", pu.toString());
+		assertEquals(PU_COUNT + 1, countPlatformUsers());
 		
 		actual = us.getPlatformUser(pu.getIdentifier());
 		
@@ -365,16 +388,17 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUserMultipleUsers() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		PlatformUser actual = null;
+		
 		try {
-			pu1 = us.createPlatformUser("batman", "superman");
-			pu2 = us.createPlatformUser("fred", "barney");
+			pu1 = us.createPlatformUser("Fred", "Barney");
+			pu2 = us.createPlatformUser("Modesty", "Blaise");
 		} catch (UserExistsException e) {}
 
-		assertEquals(2, us.getNbrOfPlatformUsers());
+		assertEquals(PU_COUNT + 2, countPlatformUsers());
 		
 		actual = us.getPlatformUser(pu2.getIdentifier());
 		
@@ -383,115 +407,99 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUserWithString() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		PlatformUser actual = null;
+		
 		try {
-			pu1 = us.createPlatformUser("batman", "superman");
-			pu2 = us.createPlatformUser("fred", "barney");
+			pu1 = us.createPlatformUser("Fred", "Barney");
+			pu2 = us.createPlatformUser("Modesty", "Blaise");
 		} catch (UserExistsException e) {}
 
-		assertEquals(2, us.getNbrOfPlatformUsers());
+		assertEquals(PU_COUNT + 2, countPlatformUsers());
 		
-		actual = us.getPlatformUser("2");
+		actual = us.getPlatformUser("5");
 		
 		assertEquals(actual, pu2);
 	}
 
 	@Test
 	public void testGetPlatformUserNotFound() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		PlatformUser actual = null;
+		
 		try {
-			pu1 = us.createPlatformUser("batman", "superman");
-			pu2 = us.createPlatformUser("fred", "barney");
+			pu1 = us.createPlatformUser("Fred", "Barney");
+			pu2 = us.createPlatformUser("Modesty", "Blaise");
 		} catch (UserExistsException e) {}
 
-		assertEquals(2, us.getNbrOfPlatformUsers());
+		assertEquals(PU_COUNT + 2, countPlatformUsers());
 		
-		actual = us.getPlatformUser(new PlatformUserIdentifierImpl(3, "arthur", "douglas"));
+		actual = us.getPlatformUser(new PlatformUserIdentifierImpl(3, "Arthur", "Douglas"));
 		
 		assertNull(actual);
-	}
-	
-	@Test
-	public void testGetNbrOfPlatformUsers() {
-		UserServiceImpl us = new UserServiceImpl();
-		PlatformUser pu = new PlatformUserImpl();
-		User mu = new MockUser();
-
-		try {
-			us.registerUserToPlatformUser(mu, pu);
-		} catch (NoSuchUserException e) {
-			fail("Register no workie");
-		}
-		
-		assertEquals(1, us.getNbrOfPlatformUsers());
-	}
-	
-	@Test
-	public void testGetNbrOfPlatformUsersNoUsers() {
-		UserServiceImpl us = new UserServiceImpl();
-		
-		assertEquals(0, us.getNbrOfPlatformUsers());
 	}
 
 	@Test
 	public void testCreatePlatformUser() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		try {
-			pu = us.createPlatformUser("batman", "superman");
+			pu = us.createPlatformUser("Fred", "Barney");
 		} catch (UserExistsException e) {}
 
-		assertEquals("PlatformUser batman (1)", pu.toString());
-		assertEquals(1, us.getNbrOfPlatformUsers());
+		assertEquals("PlatformUser Fred (1)", pu.toString());
+		assertEquals(PU_COUNT + 1, countPlatformUsers());
 	}
 
 	@Test
 	public void testCreatePlatformUserBadData() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		try {
-			pu = us.createPlatformUser("", "superman");
+			pu = us.createPlatformUser("", "Barney");
 			fail("IllegalArgumentException should've been raised");
 		} catch (UserExistsException e) {
 			fail("IllegalArgumentException should've been raised");
 		} catch (IllegalArgumentException e) {}
+		
+		assertEquals(PU_COUNT, countPlatformUsers());
 	}
 
 	@Test
 	public void testCreatePlatformUserExistingUser() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu1;
 		try {
-			pu1 = us.createPlatformUser("batman", "superman");
+			pu1 = us.createPlatformUser("Fred", "Barney");
 		} catch (UserExistsException e) {
 			fail("Adding a platform user should work");
 		}
 		
 		try {
-			PlatformUser pu2 = us.createPlatformUser("batman", "robin");
+			PlatformUser pu2 = us.createPlatformUser("Fred", "robin");
 			fail("Readding an existing user shouldn't work.");
 		} catch (UserExistsException e) {}
+		
+		assertEquals(PU_COUNT, countPlatformUsers());
 	}
 
 	@Test
 	public void testCreatePlatformUserTwoUsers() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		try {
-			pu1 = us.createPlatformUser("batman", "superman");
-			pu2 = us.createPlatformUser("bilbo", "baggins");
+			pu1 = us.createPlatformUser("Fred", "Barney");
+			pu2 = us.createPlatformUser("Bilbo", "Baggins");
 		} catch (UserExistsException e) {}
 
-		assertEquals("PlatformUser batman (1)", pu1.toString());
-		assertEquals("PlatformUser bilbo (2)", pu2.toString());
-		assertEquals(2, us.getNbrOfPlatformUsers());
+		assertEquals("PlatformUser Fred (1)", pu1.toString());
+		assertEquals("PlatformUser Bilbo (2)", pu2.toString());
+		assertEquals(PU_COUNT + 2, countPlatformUsers());
 	}
 
 	@Test
@@ -499,7 +507,7 @@ public class UserServiceImplTest {
 		UserService us = new UserServiceImpl();
 		PlatformUser pu = new PlatformUserImpl();
 		try {
-			pu = us.createPlatformUser("batman", "superman");
+			pu = us.createPlatformUser("Fred", "Barney");
 		} catch (UserExistsException e1) {}
 		User mu = new MockUser();
 		
@@ -518,7 +526,7 @@ public class UserServiceImplTest {
 		
 		assertNotNull(pus);
 		assertEquals(1, pus.length);
-		assertEquals("1: batman, superman", pus[0].getIdentifier().toString());
+		assertEquals("1: Fred, Barney", pus[0].getIdentifier().toString());
 	}
 
 	@Test
@@ -604,20 +612,27 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetPlatformUsers() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
+		PlatformUser pu1 = null, pu2 = null, pu3 = null;
+		
 		try {
-			PlatformUser pu1 = us.createPlatformUser("batman", "superman");
-			PlatformUser pu2 = us.createPlatformUser("bilbo", "baggins");
-			PlatformUser pu3 = us.createPlatformUser("orvar", "s��fstr��m");
+			pu1 = us.createPlatformUser("Fred", "Barney");
+			pu2 = us.createPlatformUser("Bilbo", "Baggins");
+			pu3 = us.createPlatformUser("Orvar", "Säfström");
 		} catch (UserExistsException e) {}
 		PlatformUser[] pus = us.getPlatformUsers();
 		assertNotNull(pus);
-		assertEquals(3, pus.length);
+		assertEquals(PU_COUNT + 3, pus.length);
+		assertTrue(findInArray(pu1, pus));
+		assertTrue(findInArray(pu2, pus));
+		assertTrue(findInArray(pu3, pus));
 	}
 	
 	@Test
 	public void testGetPlatformUsersNoUsers() {
-		UserServiceImpl us = new UserServiceImpl();
+		runQuery("TRUNCATE TABLE `se-mah-elis-services-users-PlatformUser`;");
+		
+		UserServiceImpl us = new UserServiceImpl(storage);
 
 		PlatformUser[] pus = us.getPlatformUsers();
 		assertNotNull(pus);
@@ -626,9 +641,12 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetPlatformUsersOneUser() {
-		UserServiceImpl us = new UserServiceImpl();
+		runQuery("TRUNCATE TABLE `se-mah-elis-services-users-PlatformUser`;");
+		
+		UserServiceImpl us = new UserServiceImpl(storage);
+		
 		try {
-			PlatformUser pu1 = us.createPlatformUser("batman", "superman");
+			us.createPlatformUser("Fred", "Barney");
 		} catch (UserExistsException e) {}
 
 		PlatformUser[] pus = us.getPlatformUsers();
@@ -638,38 +656,45 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testUpdatePlatformUser() {
-		UserServiceImpl us = new UserServiceImpl();
-		PlatformUser pu = new PlatformUserImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
+		PlatformUser pu = null;
+		
 		try {
-			pu = us.createPlatformUser("batman", "superman");
+			pu = us.createPlatformUser("Fred", "Barney");
 		} catch (UserExistsException e1) {}
 		
-		assertEquals("PlatformUser batman (1)", pu.toString());
-		assertEquals(1, us.getNbrOfPlatformUsers());
+		assertEquals("PlatformUser Fred (1)", pu.toString());
+		assertEquals(1, countPlatformUsers());
 
-		pu.setFirstName("Bruce");
-		pu.setLastName("Wayne");
+		pu.setFirstName("Fred");
+		pu.setLastName("Flintstone");
 		
 		try {
 			us.updatePlatformUser(pu);
+			pu = null;
+			pu = us.getPlatformUser(new PlatformUserIdentifierImpl("Fred", "Barney"));
 		} catch (NoSuchUserException e) {
 			fail("Bad stuff going on");
 		}
+		
+		assertEquals("Fred", pu.getFirstName());
+		assertEquals("Flintstone", pu.getLastName());
 	}
 	
 	@Test
 	public void testUpdatePlatformUserNonExistingUser() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
+		
 		try {
-			pu1 = us.createPlatformUser("batman", "superman");
+			pu1 = us.createPlatformUser("Fred", "Barney");
 			pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "a"));
 		} catch (UserExistsException e1) {}
 		
 		
-		assertEquals("PlatformUser batman (1)", pu1.toString());
-		assertEquals(1, us.getNbrOfPlatformUsers());
+		assertEquals("PlatformUser Fred (1)", pu1.toString());
+		assertEquals(1, countPlatformUsers());
 
 		pu2.setFirstName("Bruce");
 		pu2.setLastName("Wayne");
@@ -682,12 +707,12 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testDeletePlatformUser() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		try {
-			pu1 = us.createPlatformUser("batman", "superman");
-			pu2 = us.createPlatformUser("bilbo", "baggins");
+			pu1 = us.createPlatformUser("Fred", "Barney");
+			pu2 = us.createPlatformUser("Bilbo", "Baggins");
 		} catch (UserExistsException e) {}
 
 		try {
@@ -699,17 +724,18 @@ public class UserServiceImplTest {
 		PlatformUser pu3 = us.getPlatformUser(pu1.getIdentifier());
 		
 		assertNull(pu3);
-		assertEquals(1, us.getNbrOfPlatformUsers());
+		assertEquals(PU_COUNT + 1, countPlatformUsers());
 	}
 	
 	@Test
 	public void testDeletePlatformUserNoSuchUser() {
-		UserServiceImpl us = new UserServiceImpl();
+		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
+		
 		try {
-			pu1 = us.createPlatformUser("batman", "superman");
-			pu2 = us.createPlatformUser("bilbo", "baggins");
+			pu1 = us.createPlatformUser("Fred", "Barney");
+			pu2 = us.createPlatformUser("Bilbo", "Baggins");
 		} catch (UserExistsException e) {}
 
 		try {
@@ -721,16 +747,6 @@ public class UserServiceImplTest {
 		PlatformUser pu3 = us.getPlatformUser(pu1.getIdentifier());
 		
 		assertNotNull(pu3);
-		assertEquals(2, us.getNbrOfPlatformUsers());
-	}
-	
-	private boolean findInArray(PlatformUser needle, PlatformUser[] haystack) {
-		for (int i = 0; i < haystack.length; i++) {
-			if (needle.toString().equals(haystack[i].toString())) {
-				return true;
-			}
-		}
-		
-		return false;
+		assertEquals(PU_COUNT + 2, countPlatformUsers());
 	}
 }

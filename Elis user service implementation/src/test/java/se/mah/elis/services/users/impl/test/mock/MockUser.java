@@ -23,7 +23,7 @@ public class MockUser implements User {
 	
 	public MockUser() {
 		uid = new MockUserIdentifier();
-		uuid = UUID.fromString("00001111-2222-dead-beef-555566667777");
+		uuid = MOCK_UUID;
 		stuff = "";
 		whatever = 0;
 		
@@ -32,7 +32,7 @@ public class MockUser implements User {
 	
 	public MockUser(String stuff, int whatever) {
 		this.uid = new MockUserIdentifier();
-		this.uuid = UUID.fromString("00001111-2222-dead-beef-555566667777");
+		this.uuid = MOCK_UUID;
 		this.stuff = stuff;
 		this.whatever = whatever;
 		

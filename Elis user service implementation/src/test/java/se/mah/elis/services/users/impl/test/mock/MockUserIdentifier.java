@@ -13,7 +13,7 @@ public class MockUserIdentifier implements UserIdentifier {
 	private String password;
 	
 	public MockUserIdentifier() {
-		clazz = se.mah.elis.services.users.User.class;
+		clazz = MockUser.class;
 		
 		idNumber = 1;
 		username = "Batman";
@@ -21,7 +21,7 @@ public class MockUserIdentifier implements UserIdentifier {
 	}
 	
 	public MockUserIdentifier(int idNumber, String username, String password) {
-		clazz = se.mah.elis.services.users.User.class;
+		clazz = MockUser.class;
 		
 		this.idNumber = idNumber;
 		this.username = username;
@@ -62,8 +62,9 @@ public class MockUserIdentifier implements UserIdentifier {
 
 	@Override
 	public void populate(Properties props) {
-		// TODO Auto-generated method stub
-		
+		idNumber = (int) props.get("id_number");
+		username = (String) props.get("username");
+		password = (String) props.get("password");
 	}
 
 	@Override

@@ -12,24 +12,48 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 public class AnotherMockUser implements User {
 	
-	public static final String MOCK_UUID = "54947df8-0e9e-4471-a2f9-9af509fb5889";
-	private int id;
+	public static final UUID MOCK_UUID = UUID.fromString("54947df8-0e9e-4471-a2f9-9af509fb5889");
+	private UserIdentifier uid;
 	private UUID uuid;
-
+	private String stuff;
+	private int whatever;
+	private DateTime created = DateTime.now();
+	
 	public AnotherMockUser() {
-		uuid = UUID.fromString(MOCK_UUID);
+		uid = new MockUserIdentifier();
+		uuid = MOCK_UUID;
+		stuff = "";
+		whatever = 0;
+		
+		uid.identifies(this.getClass());
+	}
+	
+	public AnotherMockUser(String stuff, int whatever) {
+		this.uid = new MockUserIdentifier();
+		this.uuid = MOCK_UUID;
+		this.stuff = stuff;
+		this.whatever = whatever;
+		
+		uid.identifies(this.getClass());
+	}
+	
+	public AnotherMockUser(UUID uuid, String stuff, int whatever) {
+		this.uid = new MockUserIdentifier();
+		this.uuid = uuid;
+		this.stuff = stuff;
+		this.whatever = whatever;
+		
+		uid.identifies(this.getClass());
 	}
 
 	@Override
 	public UserIdentifier getIdentifier() {
-		// TODO Auto-generated method stub
-		return new AnotherMockUserIdentifier();
+		return uid;
 	}
 
 	@Override
 	public void setIdentifier(UserIdentifier id) {
-		// TODO Auto-generated method stub
-
+		uid = id;
 	}
 
 	@Override
@@ -38,28 +62,70 @@ public class AnotherMockUser implements User {
 
 	}
 
+	public String getStuff() {
+		return stuff;
+	}
+	
+	public int getWhatever() {
+		return whatever;
+	}
+	
+	public void setStuff(String stuff) {
+		this.stuff = stuff;
+	}
+	
+	public void setWhatever(int whatever) {
+		this.whatever = whatever;
+	}
+
 	@Override
 	public OrderedProperties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		
+		if (uuid != null) {
+			props.put("uuid", uuid);
+		}
+		props.put("service_name", "test");
+		if (uid != null) {
+			props.putAll(uid.getProperties());
+		}
+		if (stuff != null) {
+			props.put("stuff", stuff);
+		}
+		props.put("whatever", whatever);
+		props.put("created", created);
+		
+		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+
+		props.put("uuid", uuid);
+		props.put("service_name", "9");
+		props.putAll((new MockUserIdentifier()).getPropertiesTemplate());
+		props.put("stuff", "32");
+		props.put("whatever", 1);
+		props.put("created", created);
+		
+		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		// TODO Auto-generated method stub
-		
+		uid = new MockUserIdentifier((Integer) props.get("id_number"),
+									 (String) props.getProperty("username"),
+									 (String) props.getProperty("password"));
+		uuid = (UUID) props.get("uuid");
+		stuff = (String) props.get("stuff");
+		whatever = (int) props.get("whatever");
+		created = (DateTime)props.get("created");
 	}
 
 	@Override
 	public String getServiceName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "test";
 	}
 
 	@Override
@@ -71,11 +137,19 @@ public class AnotherMockUser implements User {
 	public void setUserId(UUID id) {
 		this.uuid = id;
 	}
+	
+	@Override
+	public String toString() {
+		return "MockUser1, uid: " + uid + ", UUID: " + uuid.toString() +
+				", stuff: " + stuff + ", whatever: " + whatever;
+	}
+	
+	public void setCreated(DateTime dt) {
+		created = dt;
+	}
 
 	@Override
 	public DateTime created() {
-		// TODO Auto-generated method stub
-		return null;
+		return created;
 	}
-
 }
