@@ -12,8 +12,10 @@ import java.util.TreeSet;
 import java.util.UUID;
 
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 
+import se.mah.elis.services.storage.Storage;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
@@ -33,6 +35,9 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 @Service
 public class UserServiceImpl implements UserService {
 
+	@Reference
+	private Storage storage;
+	
 	// TODO This is a placeholer. It has to be replaced with a persistent storage at a later stage.
 	private Map<PlatformUser, ArrayList<User>> map;
 	private int platformUserCounter;
@@ -42,6 +47,14 @@ public class UserServiceImpl implements UserService {
 	 */
 	public UserServiceImpl() {
 		// TODO This isn't kosher
+		map = new TreeMap<PlatformUser, ArrayList<User>>();
+		platformUserCounter = 0;
+	}
+	
+	public UserServiceImpl(Storage storage) {
+		this.storage = storage;
+		
+		// TODO This isn't kosher - remove when done
 		map = new TreeMap<PlatformUser, ArrayList<User>>();
 		platformUserCounter = 0;
 	}
