@@ -177,4 +177,13 @@
         <!-- <module>../ninjablock</module> -->
 		
 	</modules>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.27</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
