@@ -2,15 +2,22 @@ package se.mah.elis.services.users.impl.test;
 
 import static org.junit.Assert.*;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.mah.elis.impl.services.storage.StorageImpl;
 import se.mah.elis.impl.services.users.PlatformUserIdentifierImpl;
 import se.mah.elis.impl.services.users.PlatformUserImpl;
 import se.mah.elis.impl.services.users.UserServiceImpl;
+import se.mah.elis.services.storage.Storage;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
@@ -20,13 +27,121 @@ import se.mah.elis.services.users.impl.test.mock.AnotherMockUser;
 import se.mah.elis.services.users.impl.test.mock.MockUser;
 
 public class UserServiceImplTest {
+	
+	private static int PU_COUNT = 3;
+	
+	private Connection connection;
+	private Storage storage;
 
 	@Before
 	public void setUp() throws Exception {
+		setUpDatabase();
+		tearDownTables();
+		populatePUTable();
+		buildAndPopulateMUTable();
+		storage = new StorageImpl(connection);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		try {
+			if (connection != null && !connection.isClosed()) {
+				connection.close();
+				connection = null;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void setUpDatabase() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			connection =  DriverManager
+			          .getConnection("jdbc:mysql://localhost/elis_test?"
+			                  + "user=elis_test&password=elis_test");
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void tearDownTables() {
+		try {
+			Statement stmt = connection.createStatement();
+			stmt.execute("TRUNCATE TABLE object_lookup_table;");
+			stmt.execute("TRUNCATE TABLE `se-mah-elis-services-users-PlatformUser`;");
+			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-services-user-test-mock-MockUser`;");
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void buildAndPopulateMUTable() {
+		String uuid1 = "000011112222deadbeef555566667771";
+		String uuid2 = "000011112222deadbeef555566667772";
+		String uuid3 = "000011112222deadbeef555566667773";
+		try {
+			Statement stmt = connection.createStatement();
+			stmt.execute("CREATE TABLE `se-mah-elis-services-user-test-mock-MockUser` (" +
+						"`uuid` BINARY(16) PRIMARY KEY, " +
+						"`service_name` VARCHAR(9), " +
+						"`id_number` INTEGER, " +
+						"`username` VARCHAR(32), " +
+						"`password` VARCHAR(32), " +
+						"`stuff` VARCHAR(32), " +
+						"`whatever` INTEGER, " +
+						"`created` TIMESTAMP)");
+			stmt.execute("INSERT INTO `se-mah-elis-services-user-test-mock-MockUser` " +
+					"VALUES (x'" + uuid1 +"', 'test', 1, 'Batman', 'Robin', 'Rajec', 21, '2000-01-01 00:00:00');");
+			stmt.execute("INSERT INTO `se-mah-elis-services-user-test-mock-MockUser` " +
+					"VALUES (x'" + uuid2 +"', 'test', 1, 'Superman', 'Lois Lane', 'Vinea', 22, '2000-01-01 00:00:01');");
+			stmt.execute("INSERT INTO `se-mah-elis-services-user-test-mock-MockUser` " +
+					"VALUES (x'" + uuid3 +"', 'test', 1, 'Spongebob Squarepants', 'Patrick Seastar', 'Kofola', 23, '2000-01-01 00:00:02');");
+
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid1 +"', " +
+					"'se-mah-elis-services-user-test-mock-MockUser')");
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid2 +"', " +
+					"'se-mah-elis-services-user-test-mock-MockUser')");
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid3 +"', " +
+					"'se-mah-elis-services-user-test-mock-MockUser')");
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void populatePUTable() {
+		try {
+			Statement stmt = connection.createStatement();
+			stmt.execute("INSERT INTO `se-mah-elis-services-users-PlatformUser` " +
+					"VALUES (1, 'Batman', PASSWORD('Robin'), 'Bruce', 'Wayne', 'bruce@waynecorp.com', '2000-01-01 00:00:00');");
+			stmt.execute("INSERT INTO `se-mah-elis-services-users-PlatformUser` " +
+					"VALUES (2, 'Superman', PASSWORD('Lois Lane'), 'Clark', 'Kent', 'clark.kent@dailyplanet.com', '2000-01-01 00:00:01');");
+			stmt.execute("INSERT INTO `se-mah-elis-services-users-PlatformUser` " +
+					"VALUES (3, 'Spongebob Squarepants', PASSWORD('Patrick Seastar'), 'Spongebob', 'Squarepants', 'spongebob@krustykrab.com', '2000-01-01 00:00:02');");
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private int countPlatformUsers() {
+		Statement statement;
+		int bindings = -1;
+		
+		try {
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT count(*) FROM `se-mah-elis-services-users-PlatformUser`");
+			rs.next();
+			bindings = rs.getInt(1);
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return bindings;
 	}
 
 	@Test
