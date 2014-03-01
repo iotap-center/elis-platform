@@ -262,7 +262,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetUserNoSuchPlatformUser() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl(
 				new PlatformUserIdentifierImpl(1, "a", "b"));
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
@@ -283,7 +283,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testRegisterUserToPlatformUser() {
-		UserService userService = new UserServiceImpl();
+		UserService userService = new UserServiceImpl(storage);
 		PlatformUser platformUser = new PlatformUserImpl();
 		User mockUser = new MockUser();
 		
@@ -504,7 +504,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUsersAssociatedWithUser() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu = new PlatformUserImpl();
 		try {
 			pu = us.createPlatformUser("Fred", "Barney");
@@ -531,7 +531,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserTwoPlatformUsers() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
 		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
 		User mu = new MockUser();
@@ -558,7 +558,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserNonExistingUser() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
 		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
 		User mu1 = new MockUser();
@@ -584,7 +584,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserNToMCase() {
-		UserService us = new UserServiceImpl();
+		UserService us = new UserServiceImpl(storage);
 		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
 		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
 		User mu1 = new MockUser();
