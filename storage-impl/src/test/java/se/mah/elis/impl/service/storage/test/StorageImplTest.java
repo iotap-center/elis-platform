@@ -929,6 +929,28 @@ public class StorageImplTest {
 	}
 
 	@Test
+	public void testInsertAbstractUserPlatformExistingUserName() {
+		populatePUTable();
+		
+		Storage storage = new StorageImpl(connection);
+		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Batman", "kvack");
+		PlatformUser pu = new MockPlatformUser(pid);
+		
+		pu.setFirstName("Kalle");
+		pu.setLastName("Anka");
+		pu.setEmail("kalle.anka@margarinfabriken.nu");
+		
+		try {
+			storage.insert(pu);
+			fail("This shouldn't happen");
+		} catch (StorageException e) {
+		}
+		
+		assertEquals(PU_COUNT, countBindingsInDB(pu));
+		assertEquals(0, countBindingsInDB());
+	}
+
+	@Test
 	public void testInsertAbstractUserPlatformUserHasNoUserName() {
 		populatePUTable();
 		
