@@ -451,7 +451,7 @@ public class UserServiceImplTest {
 			pu = us.createPlatformUser("Fred", "Barney");
 		} catch (UserExistsException e) {}
 
-		assertEquals("PlatformUser Fred (1)", pu.toString());
+		assertEquals("PlatformUser Fred (4)", pu.toString());
 		assertEquals(PU_COUNT + 1, countPlatformUsers());
 	}
 
@@ -480,11 +480,11 @@ public class UserServiceImplTest {
 		}
 		
 		try {
-			PlatformUser pu2 = us.createPlatformUser("Fred", "robin");
+			PlatformUser pu2 = us.createPlatformUser("Fred", "Barney");
 			fail("Readding an existing user shouldn't work.");
 		} catch (UserExistsException e) {}
 		
-		assertEquals(PU_COUNT, countPlatformUsers());
+		assertEquals(PU_COUNT + 1, countPlatformUsers());
 	}
 
 	@Test
@@ -497,8 +497,8 @@ public class UserServiceImplTest {
 			pu2 = us.createPlatformUser("Bilbo", "Baggins");
 		} catch (UserExistsException e) {}
 
-		assertEquals("PlatformUser Fred (1)", pu1.toString());
-		assertEquals("PlatformUser Bilbo (2)", pu2.toString());
+		assertEquals("PlatformUser Fred (4)", pu1.toString());
+		assertEquals("PlatformUser Bilbo (5)", pu2.toString());
 		assertEquals(PU_COUNT + 2, countPlatformUsers());
 	}
 
@@ -663,8 +663,8 @@ public class UserServiceImplTest {
 			pu = us.createPlatformUser("Fred", "Barney");
 		} catch (UserExistsException e1) {}
 		
-		assertEquals("PlatformUser Fred (1)", pu.toString());
-		assertEquals(1, countPlatformUsers());
+		assertEquals("PlatformUser Fred (4)", pu.toString());
+		assertEquals(PU_COUNT + 1, countPlatformUsers());
 
 		pu.setFirstName("Fred");
 		pu.setLastName("Flintstone");
@@ -694,7 +694,7 @@ public class UserServiceImplTest {
 		
 		
 		assertEquals("PlatformUser Fred (1)", pu1.toString());
-		assertEquals(1, countPlatformUsers());
+		assertEquals(PU_COUNT + 1, countPlatformUsers());
 
 		pu2.setFirstName("Bruce");
 		pu2.setLastName("Wayne");
