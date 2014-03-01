@@ -287,6 +287,7 @@ public class StorageImpl implements Storage {
 		String tableName = null;
 		Properties props = null;
 		PreparedStatement stmt = null;
+		java.sql.ResultSet keys = null;
 		
 		if (user != null) {
 			if (user.getServiceName() == null ||
@@ -326,7 +327,7 @@ public class StorageImpl implements Storage {
 					// Let's take command of the commit ship ourselves.
 					// Forward, mateys!
 					connection.setAutoCommit(false);
-					stmt = connection.prepareStatement(query);
+					stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 					
 					// Has this user been stored before?
 					if (pid.getId() > 0) {
@@ -341,6 +342,9 @@ public class StorageImpl implements Storage {
 					stmt.setString(6, pu.getEmail());
 					stmt.setTimestamp(7, new Timestamp(pu.created().getMillis()));
 					stmt.executeUpdate();
+					keys = stmt.getGeneratedKeys();
+					keys.next();
+					pid.setId(keys.getInt(1));
 					stmt.close();
 				} catch (SQLException e) {
 					// This shouldn't happen. The table should be in place

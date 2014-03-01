@@ -811,6 +811,7 @@ public class StorageImplTest {
 		}
 		
 		assertEquals(PU_COUNT + 1, countBindingsInDB(pu));
+		assertEquals(4, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
 		assertEquals(0, countBindingsInDB());
 	}
 
@@ -835,6 +836,7 @@ public class StorageImplTest {
 		}
 		
 		assertEquals(PU_COUNT + 1, countBindingsInDB(pu));
+		assertEquals(42, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
 		assertEquals(0, countBindingsInDB());
 	}
 
@@ -859,6 +861,7 @@ public class StorageImplTest {
 		}
 		
 		assertEquals(PU_COUNT + 1, countBindingsInDB(pu));
+		assertEquals(42, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
 		assertEquals(0, countBindingsInDB());
 	}
 
@@ -899,6 +902,7 @@ public class StorageImplTest {
 		}
 		
 		assertEquals(PU_COUNT + 1, countBindingsInDB(pu));
+		assertEquals(4, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
 		assertEquals(0, countBindingsInDB());
 	}
 
@@ -1023,6 +1027,7 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
+		assertNotNull(mu.getUserId());
 		assertEquals(AU1_COUNT + 1, countBindingsInDB(mu));
 		assertEquals(AU1_COUNT + 1, countBindingsInDB());
 	}
@@ -1038,7 +1043,8 @@ public class StorageImplTest {
 			e.printStackTrace();
 			fail("This shouldn't happen");
 		}
-		
+
+		assertNotNull(mu.getUserId());
 		assertEquals(1, countBindingsInDB(mu));
 		assertEquals(1, countBindingsInDB());
 	}
@@ -1057,7 +1063,8 @@ public class StorageImplTest {
 			e.printStackTrace();
 			fail("This shouldn't happen");
 		}
-		
+
+		assertEquals(UUID.fromString("00001111-2222-3333-4444-deadbeef7777"), mu.getUserId());
 		assertEquals(AU1_COUNT + 1, countBindingsInDB(mu));
 		assertEquals(AU1_COUNT + 1, countBindingsInDB());
 	}
@@ -1076,6 +1083,7 @@ public class StorageImplTest {
 		} catch (StorageException e) {
 		}
 		
+		assertEquals(UUID.fromString("00001111-2222-dead-beef-555566667771"), mu.getUserId());
 		assertEquals(AU1_COUNT, countBindingsInDB(mu));
 		assertEquals(AU1_COUNT, countBindingsInDB());
 	}
@@ -1148,7 +1156,10 @@ public class StorageImplTest {
 			e.printStackTrace();
 			fail("This shouldn't happen");
 		}
-		
+
+		assertNotNull(mu1.getUserId());
+		assertNotNull(mu2.getUserId());
+		assertNotNull(mu3.getUserId());
 		assertEquals(AU1_COUNT + 3, countBindingsInDB(mu1));
 		assertEquals(AU1_COUNT + 3, countBindingsInDB());
 	}
@@ -1171,7 +1182,10 @@ public class StorageImplTest {
 			e.printStackTrace();
 			fail("This shouldn't happen");
 		}
-		
+
+		assertNotNull(mu1.getUserId());
+		assertNotNull(mu2.getUserId());
+		assertNotNull(mu3.getUserId());
 		assertEquals(3, countBindingsInDB(mu1));
 		assertEquals(3, countBindingsInDB());
 	}
@@ -1194,7 +1208,10 @@ public class StorageImplTest {
 			e.printStackTrace();
 			fail("This shouldn't happen");
 		}
-		
+
+		assertNotNull(mu1.getUserId());
+		assertNotNull(mu2.getUserId());
+		assertNotNull(mu3.getUserId());
 		assertEquals(2, countBindingsInDB(mu1));
 		assertEquals(1, countBindingsInDB(mu2));
 		assertEquals(3, countBindingsInDB());
@@ -1254,7 +1271,10 @@ public class StorageImplTest {
 			e.printStackTrace();
 			fail("This shouldn't happen");
 		}
-		
+
+		assertNotNull(mu1.getUserId());
+		assertNotNull(mu2.getUserId());
+		assertNotNull(mu3.getUserId());
 		assertEquals(AU1_COUNT + 3, countBindingsInDB(mu1));
 		assertEquals(AU1_COUNT + 3, countBindingsInDB());
 		assertEquals(PU_COUNT + 1, countBindingsInDB(pu));
@@ -1300,7 +1320,10 @@ public class StorageImplTest {
 			e.printStackTrace();
 			fail("This shouldn't happen");
 		}
-		
+
+		assertNotNull(mu1.getUserId());
+		assertNotNull(mu2.getUserId());
+		assertNotNull(mu3.getUserId());
 		assertEquals(AU1_COUNT + 3, countBindingsInDB(mu1));
 		assertEquals(AU1_COUNT + 3, countBindingsInDB());
 	}
