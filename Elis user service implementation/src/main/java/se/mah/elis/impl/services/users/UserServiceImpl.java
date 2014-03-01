@@ -227,14 +227,4 @@ public class UserServiceImpl implements UserService {
 			throw new NoSuchUserException();
 		}
 	}
-	
-	/**
-	 * This is used mainly for testing.
-	 * 
-	 * @return The number of registered platform users.
-	 */
-	public int getNbrOfPlatformUsers() {
-		return map.size();
-	}
-
 }
