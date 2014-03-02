@@ -1309,6 +1309,18 @@ public class StorageImpl implements Storage {
 		return user;
 	}
 
+	@Override
+	public AbstractUser[] readUsers(Class userType, Properties criteria) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PlatformUser[] readPlatformUsers(Properties criteria) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/**
 	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#select(Query) select(Query)}.

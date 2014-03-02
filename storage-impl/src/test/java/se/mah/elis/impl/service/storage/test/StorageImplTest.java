@@ -1761,6 +1761,81 @@ public class StorageImplTest {
 		} catch (StorageException e) {
 		}
 	}
+	
+	@Test
+	public void testReadUsers() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadUsersNoMatches() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadUsersNoSuchClass() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadUsersNoProperties() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadUsersPasswordShouldBeNeglected() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadUsersMoreThanOneCriterion() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadUsersCriterionIsNotString() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadUsersCriterionIsString() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadPlatformUsers() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadPlatformUsersNoMatches() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadPlatformUsersNoProperties() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadPlatformUsersPasswordShouldBeNeglected() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadPlatformUsersMoreThanOneCriterion() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadPlatformUsersCriterionIsNotString() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testReadPlatformUsersCriterionIsString() {
+		fail("Not yet defined");
+	}
 
 	@Test
 	public void testDeleteElisDataObject() {
