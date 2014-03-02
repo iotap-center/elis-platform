@@ -1,5 +1,6 @@
 package se.mah.elis.services.storage;
 
+import java.util.Properties;
 import java.util.UUID;
 
 import se.mah.elis.data.ElisDataObject;
@@ -7,6 +8,7 @@ import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.Query;
 import se.mah.elis.services.storage.result.ResultSet;
 import se.mah.elis.services.users.AbstractUser;
+import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
 
@@ -173,11 +175,38 @@ public interface Storage {
 	 * Reads out a specific user from the storage.
 	 * 
 	 * @param id An AbstractUser object containing a UserIdentifier.
-	 * @return 
+	 * @return An AbstractUser object.
 	 * @throws StorageException if the user wasn't found.
 	 * @since 2.0
 	 */
 	AbstractUser readUser(AbstractUser user) throws StorageException;
+	
+	/**
+	 * Reads out all users matching a set of criteria. Any string criterion
+	 * will be searched fro in a wild card-pattern, i.e. "man" will match
+	 * "Batman", "mandible" and "man". Non-string criteria will be be used to
+	 * look for exact matches. Any criteria trying to match against fields
+	 * named "password" will be neglected.
+	 * 
+	 * @param userType The type of users to be read.
+	 * @param criteria The criteria to match against.
+	 * @return An array of AbstractUser objects.
+	 * @since 2.0
+	 */
+	AbstractUser[] readUsers(Class userType, Properties criteria);
+	
+	/**
+	 * Reads out all platform users matching a set of criteria. Any string
+	 * will be searched fro in a wild card-pattern, i.e. "man" will match
+	 * "Batman", "mandible" and "man". Non-string criteria will be be used to
+	 * look for exact matches. Any criteria trying to match against fields
+	 * named "password" will be neglected.
+	 * 
+	 * @param criteria The criteria to match against.
+	 * @return An array of PlatformUser objects.
+	 * @since 2.0
+	 */
+	PlatformUser[] readPlatformUsers(Properties criteria);
 	
 	/**
 	 * Runs a select query on the Elis storage.
