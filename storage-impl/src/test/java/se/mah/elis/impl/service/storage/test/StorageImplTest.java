@@ -1973,37 +1973,144 @@ public class StorageImplTest {
 	
 	@Test
 	public void testReadPlatformUsers() {
-		fail("Not yet defined");
+		populatePUTable();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		PlatformUser[] users = null;
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("first_name", "Spongebob");
+		
+		users = storage.readPlatformUsers(props);
+		
+		assertNotNull(users);
+		assertEquals(1, users.length);
+		assertEquals("Spongebob", users[0].getFirstName());
+		assertEquals("Squarepants", users[0].getLastName());
 	}
 	
 	@Test
 	public void testReadPlatformUsersNoMatches() {
-		fail("Not yet defined");
+		populatePUTable();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		PlatformUser[] users = null;
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("first_name", "George");
+		
+		users = storage.readPlatformUsers(props);
+		
+		assertNotNull(users);
+		assertEquals(0, users.length);
 	}
 	
 	@Test
 	public void testReadPlatformUsersNoProperties() {
-		fail("Not yet defined");
+		populatePUTable();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		PlatformUser[] users = null;
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		users = storage.readPlatformUsers(props);
+		
+		assertNotNull(users);
+		assertEquals(3, users.length);
 	}
 	
 	@Test
 	public void testReadPlatformUsersPasswordShouldBeNeglected() {
-		fail("Not yet defined");
+		populatePUTable();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		PlatformUser[] users = null;
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("password", "qwerty");
+		
+		users = storage.readPlatformUsers(props);
+		
+		assertNotNull(users);
+		assertEquals(3, users.length);
 	}
 	
 	@Test
 	public void testReadPlatformUsersMoreThanOneCriterion() {
-		fail("Not yet defined");
+		populatePUTable();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		PlatformUser[] users = null;
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("first_name", "Spongebob");
+		props.put("last_name", "Kent");
+		
+		users = storage.readPlatformUsers(props);
+		
+		assertNotNull(users);
+		assertEquals(0, users.length);
 	}
 	
 	@Test
 	public void testReadPlatformUsersCriterionIsNotString() {
-		fail("Not yet defined");
+		populatePUTable();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		PlatformUser[] users = null;
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("userid", "2");
+		
+		users = storage.readPlatformUsers(props);
+		
+		assertNotNull(users);
+		assertEquals(1, users.length);
+		assertEquals("Clark", users[0].getFirstName());
+		assertEquals("Kent", users[0].getLastName());
 	}
 	
 	@Test
 	public void testReadPlatformUsersCriterionIsString() {
-		fail("Not yet defined");
+		populatePUTable();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		PlatformUser[] users = null;
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("email", "ne");
+		
+		users = storage.readPlatformUsers(props);
+		
+		assertNotNull(users);
+		assertEquals(2, users.length);
+		assertEquals("Bruce", users[0].getFirstName());
+		assertEquals("Wayne", users[0].getLastName());
+		assertEquals("bruce@waynecorp.com", users[0].getEmail());
+		assertEquals("Clark", users[1].getFirstName());
+		assertEquals("Kent", users[1].getLastName());
+		assertEquals("clark.kent@dailyplanet.com", users[1].getEmail());
 	}
 
 	@Test
