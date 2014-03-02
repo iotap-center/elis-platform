@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.junit.After;
@@ -1764,42 +1765,210 @@ public class StorageImplTest {
 	
 	@Test
 	public void testReadUsers() {
-		fail("Not yet defined");
+		buildAndPopulateMU1Table();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		AbstractUser[] users = null;
+		UUID expectedUUID = UUID.fromString("00001111-2222-dead-beef-555566667772");
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("stuff", "Vinea");
+		
+		users = storage.readUsers(MockUser1.class, props);
+		
+		assertNotNull(users);
+		assertEquals(1, users.length);
+		assertTrue(users[0] instanceof MockUser1);
+		assertEquals(expectedUUID, ((MockUser1) users[0]).getUserId());
+		assertEquals(22, ((MockUser1) users[0]).getWhatever());
+		assertEquals("Vinea", ((MockUser1) users[0]).getStuff());
 	}
 	
 	@Test
 	public void testReadUsersNoMatches() {
-		fail("Not yet defined");
+		buildAndPopulateMU1Table();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		AbstractUser[] users = null;
+		UUID expectedUUID = UUID.fromString("00001111-2222-dead-beef-555566667772");
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("stuff", "Julmust");
+		
+		users = storage.readUsers(MockUser1.class, props);
+		
+		assertNotNull(users);
+		assertEquals(0, users.length);
 	}
 	
 	@Test
 	public void testReadUsersNoSuchClass() {
-		fail("Not yet defined");
+		buildAndPopulateMU1Table();
+	
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		AbstractUser[] users = null;
+		UUID expectedUUID = UUID.fromString("00001111-2222-dead-beef-555566667772");
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("stuff", "Vinea");
+		
+		users = storage.readUsers(MockUser2.class, props);
+		
+		assertNotNull(users);
+		assertEquals(0, users.length);
 	}
 	
 	@Test
 	public void testReadUsersNoProperties() {
-		fail("Not yet defined");
+		buildAndPopulateMU1Table();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		AbstractUser[] users = null;
+		UUID expectedUUID = UUID.fromString("00001111-2222-dead-beef-555566667772");
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		users = storage.readUsers(MockUser1.class, new Properties());
+		
+		assertNotNull(users);
+		assertEquals(3, users.length);
+		assertTrue(users[0] instanceof MockUser1);
 	}
 	
 	@Test
 	public void testReadUsersPasswordShouldBeNeglected() {
-		fail("Not yet defined");
+		buildAndPopulateMU1Table();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		AbstractUser[] users = null;
+		UUID expectedUUID = UUID.fromString("00001111-2222-dead-beef-555566667772");
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("password", "Robin");
+		
+		users = storage.readUsers(MockUser1.class, props);
+		
+		assertNotNull(users);
+		assertEquals(3, users.length);
 	}
 	
 	@Test
 	public void testReadUsersMoreThanOneCriterion() {
-		fail("Not yet defined");
+		buildAndPopulateMU1Table();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		AbstractUser[] users = null;
+		UUID expectedUUID = UUID.fromString("00001111-2222-dead-beef-555566667772");
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("stuff", "Vinea");
+		props.put("wahatever", 22);
+		
+		users = storage.readUsers(MockUser1.class, props);
+		
+		assertNotNull(users);
+		assertEquals(1, users.length);
+		assertTrue(users[0] instanceof MockUser1);
+		assertEquals(expectedUUID, ((MockUser1) users[0]).getUserId());
+		assertEquals(22, ((MockUser1) users[0]).getWhatever());
+		assertEquals("Vinea", ((MockUser1) users[0]).getStuff());
 	}
 	
 	@Test
 	public void testReadUsersCriterionIsNotString() {
-		fail("Not yet defined");
+		buildAndPopulateMU1Table();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		AbstractUser[] users = null;
+		UUID expectedUUID = UUID.fromString("00001111-2222-dead-beef-555566667771");
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		props.put("whatever", "21");
+		
+		users = storage.readUsers(MockUser1.class, props);
+		
+		assertNotNull(users);
+		assertEquals(1, users.length);
+		assertTrue(users[0] instanceof MockUser1);
+		assertEquals(expectedUUID, ((MockUser1) users[0]).getUserId());
+		assertEquals(21, ((MockUser1) users[0]).getWhatever());
+		assertEquals("Rajec", ((MockUser1) users[0]).getStuff());
 	}
 	
 	@Test
 	public void testReadUsersCriterionIsString() {
-		fail("Not yet defined");
+		buildAndPopulateMU1Table();
+		
+		UserFactory factory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
+		Properties props = new Properties();
+		AbstractUser[] users = null;
+		MockUser1 mu1 = new MockUser1("Voda", 1);
+		MockUser1 mu2 = new MockUser1("Káva", 2);
+		
+		mu1.setIdentifier(new MockUserIdentifier(13, "man", "Secret"));
+		mu2.setIdentifier(new MockUserIdentifier(17, "mandibles", "Arthropod"));
+		
+		factory.registerProvider(new MockUser1Provider());
+		
+		try {
+			storage.insert(mu1);
+			storage.insert(mu2);
+		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
+		}
+		
+		props.put("username", "man");
+		
+		users = storage.readUsers(MockUser1.class, props);
+		
+		assertNotNull(users);
+		assertEquals(4, users.length);
+		assertTrue(users[0] instanceof MockUser1);
+		
+		// Batman
+		props = users[0].getIdentifier().getProperties();
+		assertEquals("Batman", props.get("username"));
+		assertEquals(21, ((MockUser1) users[0]).getWhatever());
+		assertEquals("Rajec", ((MockUser1) users[0]).getStuff());
+		
+		// Superman
+		props = users[1].getIdentifier().getProperties();
+		assertEquals("Superman", props.get("username"));
+		assertEquals(22, ((MockUser1) users[1]).getWhatever());
+		assertEquals("Vinea", ((MockUser1) users[1]).getStuff());
+		
+		// man
+		props = users[0].getIdentifier().getProperties();
+		assertEquals("man", props.get("username"));
+		assertEquals(13, ((MockUser1) users[2]).getWhatever());
+		assertEquals("Voda", ((MockUser1) users[2]).getStuff());
+		
+		// mandibles
+		props = users[0].getIdentifier().getProperties();
+		assertEquals("mandibles", props.get("username"));
+		assertEquals(17, ((MockUser1) users[3]).getWhatever());
+		assertEquals("Káva", ((MockUser1) users[3]).getStuff());
 	}
 	
 	@Test
