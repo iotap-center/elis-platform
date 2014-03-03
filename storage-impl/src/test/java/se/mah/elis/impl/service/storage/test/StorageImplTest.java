@@ -398,6 +398,25 @@ public class StorageImplTest {
 			e.printStackTrace();
 		}
 	}
+	
+	private void printContents(AbstractUser user) {
+		Statement statement;
+		int bindings = -1;
+		String query = "";
+		String table = user.getIdentifier().identifies().getName().replace('.', '-');
+		
+		query = "SELECT * FROM `" + table + "`";
+		try {
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery(query);
+			while (rs.next()) {
+				System.out.println(rs.getInt(3) + " " + rs.getString(4) + ", " + rs.getString(6) + " " + rs.getInt(7));
+			}
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Test
 	public void testStorageImpl() {
@@ -1922,8 +1941,8 @@ public class StorageImplTest {
 		Storage storage = new StorageImpl(connection, factory);
 		Properties props = new Properties();
 		AbstractUser[] users = null;
-		MockUser1 mu1 = new MockUser1("Voda", 1);
-		MockUser1 mu2 = new MockUser1("Káva", 2);
+		MockUser1 mu1 = new MockUser1(null, "Voda", 1);
+		MockUser1 mu2 = new MockUser1(null, "Káva", 2);
 		
 		mu1.setIdentifier(new MockUserIdentifier(13, "man", "Secret"));
 		mu2.setIdentifier(new MockUserIdentifier(17, "mandibles", "Arthropod"));
