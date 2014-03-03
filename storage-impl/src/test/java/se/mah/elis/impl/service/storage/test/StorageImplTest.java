@@ -311,6 +311,7 @@ public class StorageImplTest {
 			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-impl-service-storage-test-mock-MockDataObject2`;");
 			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-impl-service-storage-test-mock-MockUser1`;");
 			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-impl-service-storage-test-mock-MockUser2`;");
+			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-impl-service-storage-test-mock-MockUser3`;");
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1956,6 +1957,8 @@ public class StorageImplTest {
 			e.printStackTrace();
 			fail("This shouldn't happen");
 		}
+		
+		printContents(mu1);
 		
 		props.put("username", "man");
 		
