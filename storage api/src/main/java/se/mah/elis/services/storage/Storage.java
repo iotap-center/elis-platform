@@ -182,11 +182,13 @@ public interface Storage {
 	AbstractUser readUser(AbstractUser user) throws StorageException;
 	
 	/**
-	 * Reads out all users matching a set of criteria. Any string criterion
-	 * will be searched fro in a wild card-pattern, i.e. "man" will match
-	 * "Batman", "mandible" and "man". Non-string criteria will be be used to
-	 * look for exact matches. Any criteria trying to match against fields
-	 * named "password" will be neglected.
+	 * <p>Reads out all users matching a set of criteria. The criteria will
+	 * work as a filter.<p>
+	 * 
+	 * <p>Any string criterion will be searched fro in a wild card-pattern,
+	 * i.e. "man" will match "Batman", "mandible" and "man". Non-string
+	 * criteria will be used to look for exact matches. Any criteria trying to
+	 * match against fields named "password" will be neglected.</p>
 	 * 
 	 * @param userType The type of users to be read.
 	 * @param criteria The criteria to match against.
@@ -196,11 +198,13 @@ public interface Storage {
 	AbstractUser[] readUsers(Class userType, Properties criteria);
 	
 	/**
-	 * Reads out all platform users matching a set of criteria. Any string
-	 * will be searched fro in a wild card-pattern, i.e. "man" will match
-	 * "Batman", "mandible" and "man". Non-string criteria will be be used to
-	 * look for exact matches. Any criteria trying to match against fields
-	 * named "password" will be neglected.
+	 * <p>Reads out all platform users matching a set of criteria. The criteria
+	 * will work as a filter.<p>
+	 * 
+	 * <p>Any string will be searched fro in a wild card-pattern, i.e. "man"
+	 * will match "Batman", "mandible" and "man". Non-string criteria will be
+	 * used to look for exact matches. Any criteria trying to match against
+	 * fields named "password" will be neglected.</p>
 	 * 
 	 * @param criteria The criteria to match against.
 	 * @return An array of PlatformUser objects.
