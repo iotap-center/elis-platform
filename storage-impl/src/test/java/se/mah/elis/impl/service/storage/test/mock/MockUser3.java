@@ -49,7 +49,8 @@ public class MockUser3 implements User {
 	@Override
 	public void setIdentifier(UserIdentifier id) {
 		uid = id;
-		uid.identifies(this.getClass());
+		if (uid != null)
+			uid.identifies(this.getClass());
 	}
 
 	@Override
