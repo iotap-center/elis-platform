@@ -147,11 +147,12 @@ public class StorageUtils {
 	 * @param stmt The prepared statement to add the parameter to.
 	 * @param value The value to be analyzed and added to the statement.
 	 * @param index The position of the parameter in the statement.
+	 * @param useLike Set to true to search for string likeness.
 	 * @throws SQLException When the parameter couldn't be set.
 	 * @since 2.0
 	 */
-	public void addParameter(PreparedStatement stmt, Object value, int index)
-			throws SQLException {
+	public void addParameter(PreparedStatement stmt, Object value, int index,
+			boolean useLike) throws SQLException {
 		if (value == null) {
 			stmt.setNull(index, Types.NULL);
 		} else if (value instanceof Integer) {
@@ -167,7 +168,11 @@ public class StorageUtils {
 		} else if (value instanceof UUID) {
 			stmt.setBytes(index, uuidToBytes((UUID) value));
 		} else if (value instanceof String) {
-			stmt.setString(index, (String) value);
+			if (useLike) {
+				stmt.setString(index, '%' + (String) value + '%');
+			} else {
+				stmt.setString(index, (String) value);
+			}
 		} else if (value instanceof Byte) {
 			stmt.setByte(index, (Byte) value);
 		} else if (value instanceof DateTime) {
@@ -187,7 +192,7 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public static String pairUp(Properties properties) {
-		return pairUp(properties, ", ");
+		return pairUp(properties, ", ", false);
 	}
 
 	/**
@@ -195,11 +200,12 @@ public class StorageUtils {
 	 * <i>`key1` = ? AND `key2` = ?</i> to be included in e.g. a select query.
 	 * 
 	 * @param properties The properties to list.
+	 * @param useLike Set to true to search for string likeness.
 	 * @return A string as described above.
 	 * @since 2.0
 	 */
-	public static String pairUpForSelect(Properties properties) {
-		return pairUp(properties, " AND ");
+	public static String pairUpForSelect(Properties properties, boolean useLike) {
+		return pairUp(properties, " AND ", useLike);
 	}
 	
 	/**
@@ -208,17 +214,23 @@ public class StorageUtils {
 	 * 
 	 * @param properties The properties to list.
 	 * @param connector The string to connect the pairs.
+	 * @param useLike Set to true to search for string likeness.
 	 * @return A string as described above.
 	 * @since 2.0
 	 */
-	private static String pairUp(Properties properties, String connector) {
+	private static String pairUp(Properties properties, String connector,
+			boolean useLike) {
 		StringBuffer pairs = new StringBuffer();
 		
 		for (Entry e : properties.entrySet()) {
 			if (pairs.length() > 0) {
 				pairs.append(connector);
 			}
-			pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = ?");
+			if (e.getValue() instanceof String && useLike) {
+				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` LIKE ?");
+			} else {
+				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = ?");
+			}
 		}
 		
 		return pairs.toString();

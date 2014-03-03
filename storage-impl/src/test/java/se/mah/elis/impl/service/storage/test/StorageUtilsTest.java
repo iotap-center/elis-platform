@@ -396,8 +396,8 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, 1, 0);
-			utils.addParameter(stmt, "horses", 1);
+			utils.addParameter(stmt, 1, 0, false);
+			utils.addParameter(stmt, "horses", 1, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
@@ -417,7 +417,7 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, "horses", -1);
+			utils.addParameter(stmt, "horses", -1, false);
 			fail("This shouldn't happen");
 		} catch (SQLException |IndexOutOfBoundsException e) {
 			// This should happen
@@ -435,7 +435,7 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, null, 0);
+			utils.addParameter(stmt, null, 0, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
@@ -454,7 +454,7 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, true, 0);
+			utils.addParameter(stmt, true, 0, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
@@ -473,7 +473,7 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (byte) 12, 0);
+			utils.addParameter(stmt, (byte) 12, 0, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
@@ -492,7 +492,7 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, 42, 0);
+			utils.addParameter(stmt, 42, 0, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
@@ -511,7 +511,7 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (long) 42, 0);
+			utils.addParameter(stmt, (long) 42, 0, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
@@ -530,7 +530,7 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (float) 4.2, 0);
+			utils.addParameter(stmt, (float) 4.2, 0, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
@@ -549,7 +549,7 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (double) 4.2, 0);
+			utils.addParameter(stmt, (double) 4.2, 0, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
@@ -568,12 +568,31 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, "horses", 0);
+			utils.addParameter(stmt, "horses", 0, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("String: horses", (String) objectStore.get(0));
+	}
+
+	@Test
+	public void testAddParameterStringWithWildcards() {
+		MockConnection connection = new MockConnection();
+		StorageUtils utils = new StorageUtils(connection);
+		ArrayList<Object> objectStore = connection.getObjectStore();
+		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
+		PreparedStatement stmt = null;
+		
+		try {
+			stmt = connection.prepareStatement(query);
+
+			utils.addParameter(stmt, "horses", 0, true);
+		} catch (SQLException e) {
+			// This should NEVER happen with a mock object.
+		}
+		
+		assertEquals("String: %horses%", (String) objectStore.get(0));
 	}
 
 	@Test
@@ -589,7 +608,7 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, dt, 0);
+			utils.addParameter(stmt, dt, 0, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
@@ -620,7 +639,7 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, uuid, 0);
+			utils.addParameter(stmt, uuid, 0, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
