@@ -48,8 +48,8 @@ public class MockUser2 implements User {
 
 	@Override
 	public void setIdentifier(UserIdentifier id) {
-		// TODO Auto-generated method stub
-
+		uid = id;
+		uid.identifies(this.getClass());
 	}
 
 	@Override

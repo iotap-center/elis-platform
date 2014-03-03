@@ -53,6 +53,7 @@ public class MockUser1 implements User {
 	@Override
 	public void setIdentifier(UserIdentifier id) {
 		uid = id;
+		uid.identifies(this.getClass());
 	}
 
 	@Override
