@@ -10,6 +10,7 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -1898,7 +1899,7 @@ public class StorageImplTest {
 		factory.registerProvider(new MockUser1Provider());
 		
 		props.put("stuff", "Vinea");
-		props.put("wahatever", 22);
+		props.put("whatever", 22);
 		
 		users = storage.readUsers(MockUser1.class, props);
 		
@@ -1935,7 +1936,7 @@ public class StorageImplTest {
 	}
 	
 	@Test
-	public void testReadUsersCriterionIsString() {
+	public void testReadUsersCriterionIsString() throws InterruptedException {
 		buildAndPopulateMU1Table();
 		
 		UserFactory factory = new UserFactoryImpl();
@@ -1947,6 +1948,9 @@ public class StorageImplTest {
 		
 		mu1.setIdentifier(new MockUserIdentifier(13, "man", "Secret"));
 		mu2.setIdentifier(new MockUserIdentifier(17, "mandibles", "Arthropod"));
+		
+		// Set timestamp to a second into the future to preserve order.
+		mu2.setCreated(new DateTime(DateTime.now().getMillis() + 1000));
 		
 		factory.registerProvider(new MockUser1Provider());
 		
@@ -1979,15 +1983,15 @@ public class StorageImplTest {
 		assertEquals("Vinea", ((MockUser1) users[1]).getStuff());
 		
 		// man
-		props = users[0].getIdentifier().getProperties();
+		props = users[2].getIdentifier().getProperties();
 		assertEquals("man", props.get("username"));
-		assertEquals(13, ((MockUser1) users[2]).getWhatever());
+		assertEquals(1, ((MockUser1) users[2]).getWhatever());
 		assertEquals("Voda", ((MockUser1) users[2]).getStuff());
 		
 		// mandibles
-		props = users[0].getIdentifier().getProperties();
+		props = users[3].getIdentifier().getProperties();
 		assertEquals("mandibles", props.get("username"));
-		assertEquals(17, ((MockUser1) users[3]).getWhatever());
+		assertEquals(2, ((MockUser1) users[3]).getWhatever());
 		assertEquals("Káva", ((MockUser1) users[3]).getStuff());
 	}
 	
@@ -2098,7 +2102,7 @@ public class StorageImplTest {
 		
 		factory.registerProvider(new MockUser1Provider());
 		
-		props.put("userid", "2");
+		props.put("id", 2);
 		
 		users = storage.readPlatformUsers(props);
 		
