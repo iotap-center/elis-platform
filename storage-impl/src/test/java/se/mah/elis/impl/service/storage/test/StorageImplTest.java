@@ -1958,8 +1958,6 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		printContents(mu1);
-		
 		props.put("username", "man");
 		
 		users = storage.readUsers(MockUser1.class, props);
