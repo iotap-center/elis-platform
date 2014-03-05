@@ -549,6 +549,8 @@ public class StorageUtils {
 			props.put(colName, new DateTime((Date) value));
 		} else if (clazz.equals("java.sql.Datetime")) {
 			props.put(colName, new DateTime((Date) value));
+		} else if (clazz.equals("java.sql.Timestamp")) {
+			props.put(colName, new DateTime(((Timestamp) value).getTime()));
 		} else if (clazz.equals("java.lang.Boolean")) {
 			props.put(colName, (Boolean) value);
 		} else if (clazz.equals(byte[].class.getName()) &&
