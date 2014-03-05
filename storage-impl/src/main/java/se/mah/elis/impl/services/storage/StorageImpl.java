@@ -3,6 +3,7 @@ package se.mah.elis.impl.services.storage;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -191,7 +192,7 @@ public class StorageImpl implements Storage {
 				// run into. Better let someone else, i.e. addParameter() take
 				// care of that for us.
 				for (Entry<Object, Object> prop : props.entrySet()) {
-					utils.addParameter(stmt, prop.getValue(), i++);
+					utils.addParameter(stmt, prop.getValue(), i++, false);
 				}
 				
 				// Run the statement and end the transaction
@@ -397,7 +398,7 @@ public class StorageImpl implements Storage {
 					// we'll run into. Better let someone else, i.e.
 					// addParameter() take care of that for us.
 					for (Entry<Object, Object> prop : userProps.entrySet()) {
-						utils.addParameter(stmt, prop.getValue(), i++);
+						utils.addParameter(stmt, prop.getValue(), i++, false);
 					}
 					
 					// Run the statement and end the transaction
@@ -524,7 +525,7 @@ public class StorageImpl implements Storage {
 				// run into. Better let someone else, i.e. addParameter() take
 				// care of that for us.
 				for (Entry<Object, Object> prop : props.entrySet()) {
-					utils.addParameter(stmt, prop.getValue(), i++);
+					utils.addParameter(stmt, prop.getValue(), i++, false);
 				}
 				
 				// Run the statement and end the transaction
@@ -724,7 +725,7 @@ public class StorageImpl implements Storage {
 					// we'll run into. Better let someone else, i.e.
 					// addParameter() take care of that for us.
 					for (Entry<Object, Object> prop : user.getProperties().entrySet()) {
-						utils.addParameter(stmt, prop.getValue(), i++);
+						utils.addParameter(stmt, prop.getValue(), i++, false);
 					}
 					
 					// Run the statement and end the transaction
@@ -1017,7 +1018,6 @@ public class StorageImpl implements Storage {
 				// Forward, mateys!
 				connection.setAutoCommit(false);
 				Statement stmt = connection.createStatement();
-				System.out.println(dq.compile());
 				stmt.execute(dq.compile());
 				stmt.close();
 			} catch (SQLException e) {
@@ -1219,7 +1219,7 @@ public class StorageImpl implements Storage {
 			// We'll run this as a prepared statement, since we don't know what
 			// we'll run into.
 			query = "SELECT * FROM `" + tableName + "` WHERE " +
-					utils.pairUpForSelect(id.getProperties()) +
+					utils.pairUpForSelect(id.getProperties(), false) +
 					" ORDER BY uuid ASC;";
 			
 			try {
@@ -1227,7 +1227,7 @@ public class StorageImpl implements Storage {
 				
 				int i = 1;
 				for (Entry<Object, Object> entry : id.getProperties().entrySet()) {
-					utils.addParameter(stmt, entry.getValue(), i++);
+					utils.addParameter(stmt, entry.getValue(), i++, false);
 				}
 				
 				java.sql.ResultSet rs = stmt.executeQuery();
@@ -1311,14 +1311,112 @@ public class StorageImpl implements Storage {
 
 	@Override
 	public AbstractUser[] readUsers(Class userType, Properties criteria) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<AbstractUser> users = new ArrayList<AbstractUser>();
+		String tableName = StorageUtils.mysqlifyName(userType.getName());
+		PreparedStatement stmt = null;
+		String query = null;
+		int i = 1;
+		
+		// First of all, remove any attempts to filter on "password"
+		criteria.remove("password");
+		
+		// Next, let's build the select query
+		query = "SELECT * FROM `" + tableName + "`";
+		if (criteria.size() > 0) {
+			query += " WHERE " + StorageUtils.pairUpForSelect(criteria, true);
+		}
+		query += " ORDER BY `created` ASC;";
+		
+		try {
+			// Let's take command of the commit ship ourselves.
+			// Forward, mateys!
+			connection.setAutoCommit(false);
+			stmt = connection.prepareStatement(query);
+		
+			// Add the parameters to the query. We don't know what
+			// we'll run into. Better let someone else, i.e.
+			// addParameter() take care of that for us.
+			for (Entry<Object, Object> prop : criteria.entrySet()) {
+				utils.addParameter(stmt, prop.getValue(), i++, true);
+			}
+			
+			// Run the statement and create the new users;
+			java.sql.ResultSet rs = stmt.executeQuery();
+			ArrayList<Properties> props = null;
+			
+			props = utils.resultSetToProperties(rs);
+			for (i = 0; i < props.size(); i++) {
+				AbstractUser user = (AbstractUser) userType.newInstance();
+				user.populate((Properties) props.get(i));
+				users.add(user);
+			}
+			
+		} catch (SQLException | InstantiationException | IllegalAccessException e) {
+			// Well, that didn't work too well. Just return an empty array,
+			// i.e. do nothing here.
+		} finally {
+			try {
+				stmt.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		return users.toArray(new AbstractUser[0]);
 	}
 
 	@Override
 	public PlatformUser[] readPlatformUsers(Properties criteria) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<PlatformUser> users = new ArrayList<PlatformUser>();
+		PreparedStatement stmt = null;
+		String query = null;
+		int i = 1;
+		
+		// First of all, remove any attempts to filter on "password"
+		criteria.remove("password");
+		
+		// Next, let's build the select query
+		query = "SELECT * FROM `se-mah-elis-services-users-PlatformUser`";
+		if (criteria.size() > 0) {
+			query += " WHERE " + StorageUtils.pairUpForSelect(criteria, true);
+		}
+		query += " ORDER BY `created` ASC;";
+		
+		try {
+			// Let's take command of the commit ship ourselves.
+			// Forward, mateys!
+			connection.setAutoCommit(false);
+			stmt = connection.prepareStatement(query);
+		
+			// Add the parameters to the query. We don't know what
+			// we'll run into. Better let someone else, i.e.
+			// addParameter() take care of that for us.
+			for (Entry<Object, Object> prop : criteria.entrySet()) {
+				utils.addParameter(stmt, prop.getValue(), i++, true);
+			}
+			
+			// Run the statement and create the new users;
+			java.sql.ResultSet rs = stmt.executeQuery();
+			ArrayList<Properties> props = null;
+			
+			props = utils.resultSetToProperties(rs);
+			for (i = 0; i < props.size(); i++) {
+				users.add((PlatformUser) factory.build((Properties) props.get(i)));
+			}
+			
+		} catch (SQLException | UserInitalizationException e) {
+			// Well, that didn't work too well. Just return an empty array,
+			// i.e. do nothing here.
+		} finally {
+			try {
+				stmt.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return (PlatformUser[]) users.toArray(new PlatformUser[0]);
 	}
 
 	/**
