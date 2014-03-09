@@ -16,6 +16,7 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 
 import se.mah.elis.services.storage.Storage;
+import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
@@ -164,21 +165,16 @@ public class UserServiceImpl implements UserService {
 	public synchronized PlatformUser createPlatformUser(String username,
 			String password)
 					throws UserExistsException, IllegalArgumentException {
-		ArrayList<User> list = null;
 		PlatformUser pu = null;
 		try {
 			pu = new PlatformUserImpl(new PlatformUserIdentifierImpl(username,
 																 password));
-		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException();
-		}
-		
-		if (!map.containsKey(pu)) {
-			((PlatformUserIdentifierImpl) pu.getIdentifier()).setId(++platformUserCounter);
+			pu.setFirstName(" ");
+			pu.setLastName(" ");
+			pu.setEmail("nn@placeholder.net");
 			
-			list = new ArrayList<User>();
-			map.put(pu, list);
-		} else {
+			storage.insert(pu);
+		} catch (StorageException e) {
 			throw new UserExistsException();
 		}
 		
@@ -212,11 +208,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public synchronized void updatePlatformUser(PlatformUser pu) throws NoSuchUserException {
-		if (map.containsKey(pu)) {
-			ArrayList<User> users = map.get(pu);
-			map.remove(pu);
-			map.put(pu, users);
-		} else {
+		try {
+			storage.update(pu);
+		} catch (StorageException e) {
 			throw new NoSuchUserException();
 		}
 	}
