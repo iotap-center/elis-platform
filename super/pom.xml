@@ -166,8 +166,7 @@
 		<!-- <module>../northbound-api/com.eclipsesource.jaxrs.publisher</module> -->
 		
 		<!-- Reference implementation modules -->
-		<module>../Elis user service implementation</module>
-		<module>../storage-impl</module>
+		<module>../Elis user and persistent storage service implementations</module>
 		<module>../Elis user web service</module>
 		
 		<!-- Misc modules -->

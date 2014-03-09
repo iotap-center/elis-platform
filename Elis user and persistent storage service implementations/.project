@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Storage API implementation</name>
+	<name>Elis user and persistent storage service implementations</name>
 	<comment></comment>
 	<projects>
 	</projects>

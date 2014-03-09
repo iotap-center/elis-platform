@@ -3,43 +3,26 @@
     <groupId>se.mah.elis</groupId>
     <artifactId>super-pom</artifactId>
     <version>0.0.1</version>
-    <relativePath>../super</relativePath>
+    <relativePath>../super/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>se.mah.elis.impl.services.storage</groupId>
-  <artifactId>storage-impl</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
+  <groupId>se.mah.elis.impl.services.users-and-storage</groupId>
+  <artifactId>user-and-storage-service-impl</artifactId>
+  <version>2.0.0</version>
   <packaging>bundle</packaging>
-  <name>Elis Persistent Storage Service API reference implementation</name>
-  <description>Elis Persistent Storage Service API reference implementation, using MySQL as its database storage engine.</description>
+  <name>The Elis User and Persistent Storage Services Implementation bundle</name>
+  
   <dependencies>
+  	<dependency>
+  		<groupId>org.easytesting</groupId>
+  		<artifactId>fest-assert</artifactId>
+  		<version>1.4</version>
+  		<scope>test</scope>
+  	</dependency>
   	<dependency>
   		<groupId>org.apache.felix</groupId>
   		<artifactId>org.apache.felix.scr.annotations</artifactId>
   		<version>1.9.6</version>
-  		<type>bundle</type>
-  	</dependency>
-  	<dependency>
-  		<groupId>se.mah.elis.services.storage</groupId>
-  		<artifactId>storage-api</artifactId>
-  		<version>2.0.0-SNAPSHOT</version>
-  		<type>bundle</type>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.apache.commons</groupId>
-  		<artifactId>commons-lang3</artifactId>
-  		<version>3.1</version>
-  		<type>bundle</type>
-  	</dependency>
-  	<dependency>
-  		<groupId>mysql</groupId>
-  		<artifactId>mysql-connector-java</artifactId>
-  		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.apache.directory.studio</groupId>
-  		<artifactId>org.apache.commons.codec</artifactId>
-  		<version>1.8</version>
   	</dependency>
   	<dependency>
   		<groupId>se.mah.elis.data</groupId>
@@ -54,28 +37,48 @@
   		<type>bundle</type>
   	</dependency>
   	<dependency>
-  		<groupId>se.mah.elis.impl.services.users</groupId>
-  		<artifactId>user-service-impl</artifactId>
-  		<version>2.0.0</version>
+  		<groupId>se.mah.elis.exceptions</groupId>
+  		<artifactId>elis-exceptions</artifactId>
+  		<version>1.0.0</version>
+  		<type>bundle</type>
+  	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.services.storage</groupId>
+  		<artifactId>storage-api</artifactId>
+  		<version>2.0.0-SNAPSHOT</version>
   		<type>bundle</type>
   	</dependency>
   	<dependency>
   		<groupId>joda-time</groupId>
   		<artifactId>joda-time</artifactId>
   		<version>2.3</version>
+  		<type>bundle</type>
+  	</dependency>
+  	<dependency>
+  		<groupId>mysql</groupId>
+  		<artifactId>mysql-connector-java</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.impl.services.storage</groupId>
+  		<artifactId>storage-impl</artifactId>
+  		<version>2.0.0-SNAPSHOT</version>
+  		<type>bundle</type>
+  		<scope>test</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.commons</groupId>
+  		<artifactId>commons-lang3</artifactId>
+  		<version>3.2.1</version>
+  		<type>bundle</type>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.directory.studio</groupId>
+  		<artifactId>org.apache.commons.codec</artifactId>
+  		<version>1.8</version>
   	</dependency>
   </dependencies>
-  
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
       <plugin>    <!-- (2) START -->
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -83,8 +86,9 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Private-Package>${project.groupId};${project.groupId}.*</Private-Package>
-            <Import-Package>*</Import-Package>
+            <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
+            <Private-Package>${project.groupId}.*</Private-Package>
+            <Import-Package>se.mah.elis.services.users;se.mah.elis.services.users.*</Import-Package>
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
