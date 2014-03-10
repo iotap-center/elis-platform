@@ -3,8 +3,11 @@ package se.mah.elis.external.users.test;
 import static org.junit.Assert.*;
 import static org.fest.assertions.Assertions.assertThat;
 
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.test.JerseyTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +27,12 @@ import se.mah.elis.impl.services.users.PlatformUserImpl;
 import se.mah.elis.impl.services.users.UserServiceImpl;
 import se.mah.elis.services.users.impl.test.mock.MockUser;
 
-public class UserWebServiceTest {
+public class UserWebServiceTest extends JerseyTest {
+	
+	@Override
+	protected Application configure() {
+		return new ResourceConfig(UserWebService.class);
+	}
 	
 	private UserWebService uws;
 	private UserService us;
