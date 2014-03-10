@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 /**
  * <p>ElisDataObject is a baseline interface for every saveable data object. By
  * implementing it, the Elis platform is able to store and retrieve the object
@@ -17,27 +19,13 @@ import java.util.UUID;
 public interface ElisDataObject extends Serializable {
 	
 	/**
-	 * <p>Returns the data object's identifier. The identifier is set on a
-	 * collection basis; that is, the identifier isn't truly unique on its own,
-	 * but constitutes a unique identifier in combination with the associated
-	 * collection's name.</p>
-	 * 
-	 * <p>This method was replaced by the getUUID() method in version 1.1.</p>
-	 * 
-	 * @return The identifier number.
-	 * @deprecated As of version 1.1, replaced by {@link #getUUID()}.
-	 * @since 1.0
-	 */
-	long getDataId();
-	
-	/**
 	 * Returns the data object's identifier. The identifier is globally unique,
 	 * making the data object traceable.
 	 * 
 	 * @return The data object's identifier.
 	 * @since 1.1
 	 */
-	UUID getUUID();
+	UUID getDataId();
 	
 	/**
 	 * Sets the data object's identifier. The identifier is globally unique,
@@ -46,16 +34,20 @@ public interface ElisDataObject extends Serializable {
 	 * @param uuid The object's identifier.
 	 * @since 1.1
 	 */
-	void setUUID(UUID uuid);
+	void setDataId(UUID uuid);
 	
 	/**
 	 * Sets the owner of this data object.
 	 * 
 	 * @param userId
+<<<<<<< HEAD
+	 * @since 2.0
+=======
 	 * @deprecated 
 	 * @since 1.0
+>>>>>>> branch 'master' of https://github.com/medeamalmo/elis-platform.git
 	 */
-	void setUniqueUserId(int userId);
+	void setOwnerId(UUID userId);
 	
 	/**
 	 * Returns the associated unique user id. This id number is associated with
@@ -63,10 +55,14 @@ public interface ElisDataObject extends Serializable {
 	 * associated with the system that provided it.
 	 * 
 	 * @return the unique user id.
+<<<<<<< HEAD
+	 * @since 2.0
+=======
 	 * @deprecated
 	 * @since 1.0
+>>>>>>> branch 'master' of https://github.com/medeamalmo/elis-platform.git
 	 */
-	int getUniqueUserId();
+	UUID getOwnerId();
 
 	/**
 	 * <p>Get a Properties-based representation of the object. This method is
@@ -113,4 +109,12 @@ public interface ElisDataObject extends Serializable {
 	 * @since 1.1
 	 */
 	void populate(Properties props);
+	
+	/**
+	 * Returns the date when the data object was first created.
+	 * 
+	 * @return The time that the data object was first created.
+	 * @since 20.
+	 */
+	DateTime created();
 }

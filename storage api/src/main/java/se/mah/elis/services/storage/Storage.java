@@ -138,20 +138,6 @@ public interface Storage {
 	void delete(Query query) throws StorageException;
 	
 	/**
-	 * <p>Reads out a specific data object from the storage.</p>
-	 * 
-	 * <p>This method was deprecated in version 2.0, and is replaced by the
-	 * readData(UUID) method.</p>
-	 * 
-	 * @param id The unique data id.
-	 * @return An ElisDataObject containing the wanted data.
-	 * @throws StorageException if the data wasn't found.
-	 * @deprecated
-	 * @since 1.0
-	 */
-	ElisDataObject readData(long id) throws StorageException;
-	
-	/**
 	 * Reads out a specific data object from the storage.
 	 * 
 	 * @param id The unique data id.
@@ -187,10 +173,11 @@ public interface Storage {
 	 * Reads out a specific user from the storage.
 	 * 
 	 * @param id An AbstractUser object containing a UserIdentifier.
+	 * @return 
 	 * @throws StorageException if the user wasn't found.
 	 * @since 2.0
 	 */
-	void readUser(AbstractUser user) throws StorageException;
+	AbstractUser readUser(AbstractUser user) throws StorageException;
 	
 	/**
 	 * Runs a select query on the Elis storage.

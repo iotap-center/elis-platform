@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import javax.ws.rs.client.ResponseProcessingException;
 
+import org.joda.time.DateTime;
 import org.json.simple.parser.ParseException;
 
 import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
@@ -30,15 +31,19 @@ import se.mah.elis.exceptions.StaticEntityException;
  * @version 1.0.0
  * @since 1.0
  */
-public class EonPowerSwitchMeter extends EonDevice implements PowerSwitch, ElectricitySampler {
+public class EonPowerSwitchMeter extends EonDevice
+		implements PowerSwitch, ElectricitySampler {
 
 	private static final long serialVersionUID = 7361404151615176359L;
 	private static final int FAIL_COUNT = 3;
 	private boolean isOnline;
 	private EonGateway gateway;
 	private DeviceIdentifier deviceId;
-	private String deviceName;
-	private UUID uuid;
+	private String deviceName = "";
+	private String description = "";
+	private UUID dataid;
+	private UUID ownerid;
+	private DateTime created = DateTime.now();
 
 	/**
 	 * Used to set initial device status when instantiating the device
@@ -71,14 +76,12 @@ public class EonPowerSwitchMeter extends EonDevice implements PowerSwitch, Elect
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return description;
 	}
 
 	@Override
 	public void setDescription(String description) throws StaticEntityException {
-		// TODO Auto-generated method stub
-
+		this.description = description;
 	}
 
 	/**
@@ -228,51 +231,68 @@ public class EonPowerSwitchMeter extends EonDevice implements PowerSwitch, Elect
 	}
 
 	@Override
-	public long getDataId() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public UUID getUUID() {
-		return this.uuid;
-	}
-
-	@Override
-	public void setUUID(UUID uuid) {
-		this.uuid = uuid;
-	}
-
-	@Override
-	public void setUniqueUserId(int userId) {
-		
-	}
-
-	@Override
-	public int getUniqueUserId() {
-		return 0;
-	}
-
-	@Override
 	public Properties getProperties() {
-		Properties props = new Properties();
-		props.put("uuid", this.uuid.toString());
-		props.put("name", this.deviceName);
+		OrderedProperties props = new OrderedProperties();
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", created);
+		props.put("identifier", deviceId);
+		props.put("name", deviceName);
+		props.put("description", description);
+		props.put("gateway", gateway.getDataId());
 		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("uuid", "256");
-		props.put("name", "256");
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", created);
+		props.putAll(deviceId.getPropertiesTemplate());
+		props.put("name", "64");
+		props.put("description", "256");
+		props.put("gateway", UUID.randomUUID());
 		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		this.uuid = UUID.fromString((String) props.get("uuid"));
-		this.deviceName = (String) props.get("name");
+		dataid = (UUID) props.get("dataid");
+		ownerid = (UUID) props.get("ownerid");
+		created = (DateTime) props.get("created");
+		deviceName = (String) props.get("name");
+		description = (String) props.get("description");
+
+		deviceId = new EonDeviceIdentifier("");
+		deviceId.populate(props);
+		
+		// TODO Create gateway
+	}
+
+	@Override
+	public UUID getDataId() {
+		return dataid;
+	}
+
+	@Override
+	public void setDataId(UUID uuid) {
+		dataid = uuid;
+	}
+
+	@Override
+	public void setOwnerId(UUID userId) {
+		ownerid = userId;
+	}
+
+	@Override
+	public UUID getOwnerId() {
+		return ownerid;
+	}
+
+	@Override
+	public DateTime created() {
+		return created;
 	}
 
 }

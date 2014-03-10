@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,7 +19,11 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 
+import se.mah.elis.data.Identifier;
 import se.mah.elis.services.storage.exceptions.StorageException;
+import se.mah.elis.services.users.UserIdentifier;
+
+import org.apache.commons.codec.binary.Hex;
 
 /**
  * This class contains a bunch of helper methods to be used by StorageImpl.
@@ -55,6 +60,7 @@ public class StorageUtils {
 		try {
 			Statement stmt = connection.createStatement();
 			stmt.execute(TableBuilder.buildModel(tableName, p));
+			stmt.close();
 		} catch (SQLException | StorageException e) {
 			// Skip this like we just don't care.
 		}
@@ -69,17 +75,20 @@ public class StorageUtils {
 	 */
 	public static String generateKeyList(Properties p) {
 		Iterator<Entry<Object, Object>> entries = p.entrySet().iterator();
-		Entry<Object, Object> entry = entries.next();
+		Entry<Object, Object> entry = null;
 		StringBuffer keys = new StringBuffer();
 		
-		while (entry != null) {
+		while (entries.hasNext()) {
+			entry = entries.next();
+			if (!(entry.getKey() instanceof String)) {
+				throw new IllegalArgumentException();
+			}
+			
 			if (keys.length() > 0) {
 				keys.append(", ");
 			}
 			
-			keys.append("`" + entry.getKey() + "`");
-			
-			entry = entries.next();
+			keys.append("`" + mysqlifyName((String) entry.getKey()) + "`");
 		}
 		
 		return keys.toString();
@@ -94,15 +103,15 @@ public class StorageUtils {
 	 */
 	public static String generateQMarks(Properties p) {
 		Iterator<Entry<Object, Object>> entries = p.entrySet().iterator();
-		Entry<Object, Object> entry = entries.next();
+		Entry<Object, Object> entry = null;
 		StringBuffer keys = new StringBuffer();
 		
-		while (entry != null) {
+		while (entries.hasNext()) {
+			entry = entries.next();
 			if (keys.length() > 0) {
 				keys.append(", ");
 			}
 			keys.append("?");
-			entry = entries.next();
 		}
 		
 		return keys.toString();
@@ -129,7 +138,7 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public static String demysqlifyName(String name) {
-		return name.replace('-', '.');
+		return name.replace('-', '.').replace("_", " ");
 	}
 
 	/**
@@ -159,10 +168,10 @@ public class StorageUtils {
 			stmt.setBytes(index, uuidToBytes((UUID) value));
 		} else if (value instanceof String) {
 			stmt.setString(index, (String) value);
+		} else if (value instanceof Byte) {
+			stmt.setByte(index, (Byte) value);
 		} else if (value instanceof DateTime) {
-			// TODO Is this the right way to do it?
-			java.sql.Date date = new java.sql.Date(((DateTime) value).getMillis());
-			stmt.setDate(index, date);
+			stmt.setTimestamp(index, new Timestamp(((DateTime) value).getMillis()));
 		} else {
 			// TODO: Implement this, mofo!
 			Blob blob = connection.createBlob();
@@ -171,21 +180,45 @@ public class StorageUtils {
 
 	/**
 	 * Generates a list of properties in the form of
-	 * <i>`key1` = ?, `key2` = ?</i> to be included in e.g. an update
-	 * query.
+	 * <i>`key1` = ?, `key2` = ?</i> to be included in e.g. an update query.
 	 * 
 	 * @param properties The properties to list.
 	 * @return A string as described above.
 	 * @since 2.0
 	 */
-	public String pairUp(Properties properties) {
+	public static String pairUp(Properties properties) {
+		return pairUp(properties, ", ");
+	}
+
+	/**
+	 *  Generates a list of properties in the form of
+	 * <i>`key1` = ? AND `key2` = ?</i> to be included in e.g. a select query.
+	 * 
+	 * @param properties The properties to list.
+	 * @return A string as described above.
+	 * @since 2.0
+	 */
+	public static String pairUpForSelect(Properties properties) {
+		return pairUp(properties, " AND ");
+	}
+	
+	/**
+	 *  Generates a list of properties in the form of
+	 * <i>`key1` = ?<connector>`key2` = ?</i> to be included in a select query.
+	 * 
+	 * @param properties The properties to list.
+	 * @param connector The string to connect the pairs.
+	 * @return A string as described above.
+	 * @since 2.0
+	 */
+	private static String pairUp(Properties properties, String connector) {
 		StringBuffer pairs = new StringBuffer();
 		
 		for (Entry e : properties.entrySet()) {
 			if (pairs.length() > 0) {
-				pairs.append(", ");
+				pairs.append(connector);
 			}
-			pairs.append("`" + e.getKey() + "` = ?");
+			pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = ?");
 		}
 		
 		return pairs.toString();
@@ -198,7 +231,7 @@ public class StorageUtils {
 	 * @return A byte array.
 	 * @since 2.0
 	 */
-	public byte[] uuidToBytes(UUID uuid) {
+	public static byte[] uuidToBytes(UUID uuid) {
 		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
 		
 		bb.putLong(uuid.getMostSignificantBits());
@@ -218,15 +251,51 @@ public class StorageUtils {
 	public Properties resultSetRowToProperties(ResultSet rs) {
 		ResultSetMetaData meta = null;
 		Properties props = new Properties();
-		int colCount = 0;
+		Object payload = null;
 		
 		try {
 			meta = rs.getMetaData();
-			colCount = meta.getColumnCount();
+			rs.next();
 			
-			for (int i = 1; i <= colCount; i++) {
-				addValueToProps(props, meta.getColumnClassName(i),
-						meta.getColumnName(i), rs.getObject(i));
+			for (int i = 1; i <= meta.getColumnCount(); i++) {
+				payload = null;
+				switch (meta.getColumnType(i)) {
+					case Types.VARBINARY:
+					case Types.BINARY:
+						byte[] bytes = rs.getBytes(i);
+						if (bytes.length == 16) {
+							payload = bytesToUUID(bytes);
+						} else {
+							payload = bytes;
+						}
+						break;
+					case Types.NULL:
+						// Don't add this to the properties, it'll not end well
+						break;
+					case Types.TINYINT:
+						payload = rs.getBoolean(i);
+					case Types.INTEGER:
+						payload = rs.getInt(i);
+						break;
+					case Types.FLOAT:
+					case Types.REAL:
+						payload = rs.getFloat(i);
+						break;
+					case Types.DOUBLE:
+						payload = rs.getDouble(i);
+						break;
+					case Types.CHAR:
+					case Types.VARCHAR:
+						payload = rs.getString(i);
+						break;
+					case Types.TIMESTAMP:
+						payload = new DateTime(rs.getTimestamp(i).getTime());
+						break;
+				}
+				if (payload != null) {
+					addValueToProps(props, payload.getClass().getName(),
+							meta.getColumnName(i), payload);
+				}
 			}
 		} catch (SQLException e) {
 			// Well, this didn't fare very well. Let's just return a null reference.
@@ -280,25 +349,24 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public String lookupUUIDTable(UUID uuid) {
-		Properties props = null;
 		String tableName = null;
 		
-		String query = "SELECT table_name FROM object_lookup_table " +
-				"WHERE id = '" + uuidToBytes(uuid) + "';";
+		String query = "SELECT stored_in FROM object_lookup_table " +
+				"WHERE id = UNHEX('" + stripDashesFromUUID(uuid) + "');";
 		try {
-			
 			// Let's take command of the commit ship ourselves.
 			// Forward, mateys!
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
 			java.sql.ResultSet rs = stmt.executeQuery(query);
-			props = resultSetRowToProperties(rs);
+			if (rs.next()) {
+				tableName = rs.getString(1);
+			}
 			rs.close();
 			stmt.close();
-			
-			tableName = (String) props.get("table_name");
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
+			e.printStackTrace();
 		}
 		
 		return tableName;
@@ -309,14 +377,20 @@ public class StorageUtils {
 	 * 
 	 * @param uuid The UUID.
 	 * @param table The table name.
+	 * @throws StorageException if the information couldn't be stored, e.g. if
+	 * 		the UUID already exists in the table.
 	 * @since 2.0
 	 */
-	public void pairUUIDWithTable(UUID uuid, String table) {
+	public void pairUUIDWithTable(UUID uuid, String table) throws StorageException {
 		// TODO: It might be possible to create a version of this method that
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
 		
-		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
+		String query = "INSERT INTO object_lookup_table VALUES(UNHEX(?), ?);";
+		
+		if (uuid == null || table == null || table.length() == 0) {
+			throw new StorageException();
+		}
 		
 		try {
 			// Let's take command of the commit ship ourselves.
@@ -325,15 +399,110 @@ public class StorageUtils {
 			PreparedStatement stmt = connection.prepareStatement(query);
 			
 			// Populate the query
-			stmt.setString(1, uuidToBytes(uuid).toString());
+			stmt.setString(1, stripDashesFromUUID(uuid));
 			stmt.setString(2, table);
 			
 			// Run the statement and end the transaction
 			stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
-			// Skip this like we just don't care
+			throw new StorageException("Couldn't write to database.");
 		}
+	}
+	
+	/**
+	 * Decouples a UUID from a table, i.e. frees it for use in another table.
+	 * 
+	 * @param uuid The UUID.
+	 * @param table The table name.
+	 * @since 1.0
+	 */
+	public void freeUUID(UUID uuid) {
+		String query = "DELETE FROM object_lookup_table WHERE id = UNHEX('" +
+				stripDashesFromUUID(uuid) + "');";
+		
+		try {
+			Statement stmt = connection.createStatement();
+			stmt.executeUpdate(query);
+			stmt.close();
+		} catch (SQLException e) {
+			// Skip this like we just don't care.
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Removes dashes from a UUID string for inclusion in MySQL queries.
+	 * 
+	 * @param uuid The UUID to prepare for MySQL usage.
+	 * @return A MySQL-friendly representation of the UUID.
+	 * @since 2.0
+	 */
+	public static String stripDashesFromUUID(UUID uuid) {
+		return uuid.toString().replace("-", "");
+	}
+
+	/**
+	 * Converts bytes to a UUID object.
+	 * 
+	 * @param bytes The bytes to be converted to a UUID.
+	 * @return A UUID object.
+	 * @since 2.0
+	 */
+	public static UUID bytesToUUID(byte[] bytes) {
+		StringBuilder build = new StringBuilder(Hex.encodeHexString(bytes));
+
+		build.insert(20, '-');
+		build.insert(16, '-');
+		build.insert(12, '-');
+		build.insert(8, '-');
+		
+		return UUID.fromString(build.toString());
+	}
+	
+	/**
+	 * Checks whether a set of properties are empty or not. A set of properties
+	 * are considered empty if all of them are deemed empty. A property is
+	 * considered empty if:<br>
+	 * <ul>
+	 *   <li>A String is empty</li>
+	 *   <li>A Number is 0</li>
+	 * </ul>
+	 * Note that property sets can't hold null values.
+	 * 
+	 * @param props The properties to check.
+	 * @return True if the property set is empty, otherwise false.
+	 * @since 2.0
+	 */
+	public static boolean isEmpty(Properties props) {
+		Iterator<Entry<Object, Object>> entries = props.entrySet().iterator();
+		Entry<Object, Object> entry = null;
+		Object value = null;
+		boolean isEmpty = true;
+		
+		while (entries.hasNext() && isEmpty) {
+			entry = entries.next();
+			value = entry.getValue();
+			if (value instanceof String) {
+				if (!entry.getKey().equals("service_name")) {
+					isEmpty = (((String) value).length() < 1);
+				}
+			} else if (value instanceof Number) {
+				isEmpty = (((Number) value).equals(0));
+			} else if (value instanceof Identifier) {
+				isEmpty = isEmpty(((Identifier) value).getProperties());
+			} else if (value instanceof DateTime) {
+				if (!entry.getKey().equals("created")) {
+					isEmpty = ((DateTime) value).isEqual(0);
+				}
+			} else if (value instanceof UUID) {
+				// Do nothing
+			} else {
+				isEmpty = false;
+			}
+		}
+		
+		return isEmpty;
 	}
 	
 	/**
@@ -370,12 +539,12 @@ public class StorageUtils {
 			props.put(colName, new DateTime((Date) value));
 		} else if (clazz.equals("java.lang.Boolean")) {
 			props.put(colName, (Boolean) value);
+		} else if (clazz.equals(byte[].class.getName()) &&
+				((byte[]) value).length == 16) {
+			byte[] bytes = (byte[]) value;
+			props.put(colName, bytesToUUID((byte[]) value));
 		} else {
 			props.put(colName, value);
 		}
-		
-		// TODO We should _really_ handle UUIDs as well. However, this seems to
-		// require some exploratory development and will be postponed for the
-		// time being.
 	}
 }

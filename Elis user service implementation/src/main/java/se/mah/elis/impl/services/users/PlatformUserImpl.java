@@ -7,6 +7,8 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.PlatformUserIdentifier;
@@ -17,7 +19,7 @@ import se.mah.elis.services.users.UserIdentifier;
  * @since 1.0
  */
 public class PlatformUserImpl
-implements PlatformUser, Comparable<PlatformUserImpl> {
+		implements PlatformUser, Comparable<PlatformUserImpl> {
 
 	public static final Pattern VALID_EMAIL = 
 			Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
@@ -27,6 +29,7 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	private String firstName;
 	private String lastName;
 	private String email;
+	private DateTime created = DateTime.now();
 
 	/**
 	 * Create a brand new, empty platform user.
@@ -169,13 +172,14 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	}
 
 	@Override
-	public Properties getProperties() {
-		Properties p = new Properties();
+	public OrderedProperties getProperties() {
+		OrderedProperties p = new OrderedProperties();
 		
 		p.put("identifier", id);
 		p.put("first_name", firstName);
 		p.put("last_name", lastName);
 		p.put("email", email);
+		p.put("created", created);
 		
 		return p;
 	}
@@ -187,6 +191,7 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 		p.put("first_name", "32");
 		p.put("last_name", "32");
 		p.put("email", "256");
+		p.put("created", created);
 		
 		return p;
 	}
@@ -195,25 +200,39 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 	public void populate(Properties props) throws IllegalArgumentException {
 		// Check the properties. Are they OK?
 		if (!props.containsKey("first_name") ||
-				props.get("first_name").getClass() != java.lang.String.class ||
+				!(props.get("first_name") instanceof String) ||
+				((String) props.get("first_name")).isEmpty() ||
 				!props.containsKey("last_name") ||
-				props.get("last_name").getClass() != java.lang.String.class ||
+				!(props.get("last_name") instanceof String) ||
+				((String) props.get("last_name")).isEmpty() ||
 				!props.containsKey("email") ||
-				props.get("email").getClass() != java.lang.String.class) {
+				!(props.get("email") instanceof String) ||
+				!validateAddress((String) props.get("email"))) {
 			// Apparently not. Let's bail out.
+			throw new IllegalArgumentException();
+		}
+		// The "created" field isn't necessary for new objects
+		if (props.containsKey("id") && ((int) props.get("id")) > 0 &&
+				!(props.containsKey("created") &&
+						props.get("created") instanceof DateTime)) {
+			throw new IllegalArgumentException();
+		}
+		if (props.containsKey("identifier") &&
+			props.get("identifier") instanceof PlatformUserIdentifier &&
+			((PlatformUserIdentifier) props.get("identifier")).getId() > 0 &&
+			!(props.containsKey("created") &&
+					props.get("created") instanceof DateTime)) {
 			throw new IllegalArgumentException();
 		}
 		// The identifier part can be of two kinds: either a full Identifier
 		// object or a flattened version.
 		if (!((props.containsKey("identifier") &&
-				props.get("identifier").getClass() ==
-					PlatformUserIdentifierImpl.class) ||
-				(props.containsKey("id")) &&
-				props.get("id").getClass() == java.lang.Integer.class &&
-				props.containsKey("username") &&
-				props.get("username").getClass() == java.lang.String.class &&
-				props.containsKey("password") &&
-				props.get("password").getClass() == java.lang.String.class)) {
+			   props.get("identifier") instanceof PlatformUserIdentifierImpl) ||
+			(((props.containsKey("id")) &&
+			   props.get("id") instanceof Integer) ||
+			   !props.containsKey("id")) &&
+			   props.containsKey("username") &&
+			   props.get("username") instanceof String)) {
 			// Apparently not. Let's bail out.
 			throw new IllegalArgumentException();
 		}
@@ -223,9 +242,20 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 		if (props.containsKey("identifier")) {
 			id = (UserIdentifier) props.get("identifier");
 		} else {
-			int idNumber = (int) props.get("id");
+			int idNumber = 0;
 			String username = (String) props.get("username");
-			String password = (String) props.get("password");
+			String password = null;
+			
+			if (props.containsKey("id")) {
+				idNumber = (int) props.get("id");
+				if (idNumber < 0)
+					idNumber = 0;
+			}
+			
+			if (props.containsKey("password")) {
+				password = (String) props.get("password");
+			}
+			
 			id = new PlatformUserIdentifierImpl(idNumber, username, password);
 		}
 		
@@ -233,10 +263,21 @@ implements PlatformUser, Comparable<PlatformUserImpl> {
 		firstName = (String) props.get("first_name");
 		lastName = (String) props.get("last_name");
 		email = (String) props.get("email");
+		
+		if (((PlatformUserIdentifier) id).getId() == 0) {
+			created = DateTime.now();
+		} else {
+			created = (DateTime) props.get("created");
+		}
 	}
 
 	@Override
 	public String getServiceName() {
 		return "se.mah.elis.services.users.PlatformUser";
+	}
+
+	@Override
+	public DateTime created() {
+		return created;
 	}
 }

@@ -44,7 +44,10 @@ public class UserServiceImplTest {
 	public void testGetUser() {
 		UserService us = new UserServiceImpl();
 		PlatformUser pu = new PlatformUserImpl();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
+		
+		mu.setUserId(uuid);
 		
 		try {
 			us.registerUserToPlatformUser(mu, pu);
@@ -52,18 +55,20 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, mu.getUserId());
+		User user = us.getUser(pu, uuid);
 		
 		assertNotNull(user);
 		assertEquals(user, mu);
-		assertEquals(mu.getUserId(), user.getUserId());
 	}
 	
 	@Test
 	public void testGetUserMultipleUserTypes() {
 		UserService us = new UserServiceImpl();
 		PlatformUser pu = new PlatformUserImpl();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
+		
+		mu.setUserId(uuid);
 		
 		try {
 			us.registerUserToPlatformUser(mu, pu);
@@ -72,7 +77,7 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, mu.getUserId());
+		User user = us.getUser(pu, uuid);
 		
 		assertNotNull(user);
 		assertEquals(user, mu);
@@ -82,7 +87,10 @@ public class UserServiceImplTest {
 	public void testGetUserMultipeUsersOfSameType() {
 		UserService us = new UserServiceImpl();
 		PlatformUser pu = new PlatformUserImpl();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
+		
+		mu.setUserId(uuid);
 		
 		try {
 			us.registerUserToPlatformUser(mu, pu);
@@ -91,7 +99,7 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, mu.getUserId());
+		User user = us.getUser(pu, uuid);
 		
 		assertNotNull(user);
 		assertEquals(user, mu);
@@ -101,7 +109,8 @@ public class UserServiceImplTest {
 	public void testGetUserNoSuchUser() {
 		UserService us = new UserServiceImpl();
 		PlatformUser pu = new PlatformUserImpl();
-		User nonRegisteredUser = new MockUser();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		User mu = new MockUser();
 		
 		try {
 			us.registerUserToPlatformUser(new AnotherMockUser(), pu);
@@ -109,7 +118,7 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, nonRegisteredUser.getUserId());
+		User user = us.getUser(pu, uuid);
 		
 		assertNull(user);
 	}
@@ -119,7 +128,10 @@ public class UserServiceImplTest {
 		UserService us = new UserServiceImpl();
 		PlatformUser pu = new PlatformUserImpl(
 				new PlatformUserIdentifierImpl(1, "a", "b"));
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
+		
+		mu.setUserId(uuid);
 		
 		try {
 			us.registerUserToPlatformUser(mu, pu);
@@ -127,7 +139,7 @@ public class UserServiceImplTest {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(new PlatformUserImpl(), mu.getUserId());
+		User user = us.getUser(new PlatformUserImpl(), uuid);
 		
 		assertNull(user);
 	}
@@ -149,7 +161,7 @@ public class UserServiceImplTest {
 		assertNotNull(users);
 		assertEquals(1, users.length);
 		assertEquals("I'm a MockUserIndentifier", users[0].getIdentifier().toString());
-		assertEquals(UUID.fromString(MockUser.MOCK_UUID), users[0].getUserId());
+		assertEquals(MockUser.MOCK_UUID, users[0].getUserId());
 	}
 
 	@Test

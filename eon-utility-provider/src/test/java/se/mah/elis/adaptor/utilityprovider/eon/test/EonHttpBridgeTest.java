@@ -101,35 +101,33 @@ public class EonHttpBridgeTest {
 		assertEquals(TEST_DEVICEID, status.get("DeviceId"));
 	}
 	
-	@Test
-	@Ignore
-	//TODO this is broken - is device connected?
-	public void testTurnOn() throws AuthenticationException {
-		String token = bridge.authenticate(TEST_USER, TEST_PASS);
-		try {
-			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5";
-			EonActionObject reply = bridge.turnOn(token, TEST_GATEWAY, tulpanLampa);
-			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to toggle device");
-		}
-	}
-	
-	@Test
-	@Ignore
-	//TODO this is broken - is device connected?
-	public void testTurnOff() throws AuthenticationException {
-		String token = bridge.authenticate(TEST_USER, TEST_PASS);
-		try {
-			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5"; 
-			EonActionObject reply = bridge.turnOff(token, TEST_GATEWAY, tulpanLampa);
-			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to toggle device");
-		}
-	}
+//	@Test
+//	public void testTurnOn() throws AuthenticationException {
+//		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+//		System.out.println(token);
+//		try {
+//			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5";
+//			EonActionObject reply = bridge.turnOn(token, TEST_GATEWAY, tulpanLampa);
+//			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			fail("Failed to toggle device");
+//		}
+//	}
+//	
+//	@Test
+//	public void testTurnOff() throws AuthenticationException {
+//		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+//		try {
+//			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5"; 
+//			EonActionObject reply = bridge.turnOff(token, TEST_GATEWAY, tulpanLampa);
+//			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			fail("Failed to toggle device");
+//		}
+//	}
+
 	
 	/**
 	 * Default action status on non-existing action is ACTION_QUEUED although 

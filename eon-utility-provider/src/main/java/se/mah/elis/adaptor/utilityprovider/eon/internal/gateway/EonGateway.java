@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import javax.ws.rs.client.ResponseProcessingException;
 
+import org.joda.time.DateTime;
 import org.json.simple.parser.ParseException;
 
 import se.mah.elis.adaptor.device.api.data.GatewayAddress;
@@ -48,8 +49,9 @@ public class EonGateway implements Gateway {
 	private GatewayUser gatewayUser;
 	private boolean gatewayHasConnected;
 	private int gatewayId;
-	private UUID uuid;
-	private int uniqueUserId;
+	private UUID dataid;
+	private UUID uniqueUserId;
+	private DateTime created = DateTime.now();
 
 	public EonGateway() {
 		this.devices = new ArrayList<Device>();
@@ -252,60 +254,58 @@ public class EonGateway implements Gateway {
 	}
 
 	@Override
-	public long getDataId() {
-		// TODO Auto-generated method stub
-		return 0;
+	public UUID getDataId() {
+		return this.dataid;
 	}
 
 	@Override
-	public UUID getUUID() {
-		return this.uuid;
-	}
-
-	@Override
-	public void setUUID(UUID uuid) {
-		this.uuid = uuid;
-	}
-
-	@Override
-	public void setUniqueUserId(int userId) {
+	public void setOwnerId(UUID userId) {
 		this.uniqueUserId = userId;
 	}
 
 	@Override
-	public int getUniqueUserId() {
+	public UUID getOwnerId() {
 		return this.uniqueUserId;
 	}
 
 	@Override
 	public Properties getProperties() {
-		Properties props = new Properties();
-		
-		props.put("uuid", this.uuid);
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", this.dataid);
 		props.put("gatewayId", this.gatewayId);
 		props.put("gatewayName", this.name);
 		props.put("uniqueUserId", this.uniqueUserId);
-		
+		props.put("created", created);
 		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-
-		props.put("uuid", "256");
-		props.put("gatewayName", "256");
-		props.put("gatewayId", new Integer(0));
-		props.put("uniqueUserId", new Integer(0));
-		
+		props.put("uuid", this.dataid);
+		props.put("gatewayId", this.gatewayId);
+		props.put("gatewayName", "64");
+		props.put("uniqueUserId", this.uniqueUserId);
+		props.put("created", created);
 		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		setUUID(UUID.fromString((String) props.get("uuid")));
-		setUniqueUserId((Integer) props.get("uniqueUserId"));
-		gatewayId = (Integer) props.get("gatewayId");
+		setDataId(UUID.fromString((String) props.get("uuid")));
+		setOwnerId((UUID) props.get("uniqueUserId"));
+		gatewayId = (int) props.get("gatewayId");
 		name = (String) props.get("gatewayName");
+		created = (DateTime) props.get("created");
+	}
+
+	@Override
+	public void setDataId(UUID uuid) {
+		this.dataid = uuid;
+	}
+
+	@Override
+	public DateTime created() {
+		return created;
 	}
 }

@@ -44,8 +44,8 @@ public class PlatformUserIdentifierTest {
 		
 		try {
 			p.setId(0);
-			fail("Didn't throw exception");
 		} catch (IllegalArgumentException e) {
+			fail("Threw an exception");
 		}
 
 		assertEquals(0, p.getId());
@@ -86,8 +86,9 @@ public class PlatformUserIdentifierTest {
 		
 		try {
 			p.setPassword(null);
-			fail("Should throw an IllegalArgumentException");
-		} catch (IllegalArgumentException e) {}
+		} catch (IllegalArgumentException e) {
+			fail("Shouldn't throw an IllegalArgumentException");
+		}
 	}
 
 	@Test

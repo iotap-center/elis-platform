@@ -15,10 +15,10 @@ public interface Identifier {
 	 * Get a Properties-based representation of the object. This method is
 	 * primarily used by the persistent storage service.
 	 * 
-	 * @return A Properties object with all of the object's properties.
+	 * @return An OrderedProperties object with all of the object's properties.
 	 * @since 1.1
 	 */
-	Properties getProperties();
+	OrderedProperties getProperties();
 
 	/**
 	 * <p>Get a description of the Identifier object. This method is primarily

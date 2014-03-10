@@ -14,8 +14,8 @@ public class MockUserIdentifier implements UserIdentifier {
 	}
 	
 	@Override
-	public Properties getProperties() {
-		Properties props = new Properties();
+	public OrderedProperties getProperties() {
+		OrderedProperties props = new OrderedProperties();
 		
 		props.put("id_number", 42);
 		
@@ -47,5 +47,11 @@ public class MockUserIdentifier implements UserIdentifier {
 						": id_number: 42";
 		
 		return output;
+	}
+
+	@Override
+	public void populate(Properties props) {
+		// TODO Auto-generated method stub
+		
 	}
 }

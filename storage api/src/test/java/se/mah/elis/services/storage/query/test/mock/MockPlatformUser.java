@@ -2,6 +2,8 @@ package se.mah.elis.services.storage.query.test.mock;
 
 import java.util.Properties;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.UserIdentifier;
@@ -19,7 +21,7 @@ public class MockPlatformUser implements PlatformUser {
 	}
 
 	@Override
-	public Properties getProperties() {
+	public OrderedProperties getProperties() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -74,6 +76,12 @@ public class MockPlatformUser implements PlatformUser {
 
 	@Override
 	public String getEmail() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DateTime created() {
 		// TODO Auto-generated method stub
 		return null;
 	}

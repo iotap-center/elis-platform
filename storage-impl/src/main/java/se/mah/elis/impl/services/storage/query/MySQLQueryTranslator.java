@@ -356,6 +356,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 			compiled += " LIMIT " + start + ", " + limit;
 		}
 		
+		compiled += " ORDER BY `created`";
 		if (oldestFirst) {
 			compiled += " ASC;";
 		} else {

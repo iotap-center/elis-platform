@@ -3,6 +3,8 @@ package se.mah.elis.services.users.impl.test.mock;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
@@ -10,21 +12,21 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 public class MockUser implements User {
 
-	public static final String MOCK_UUID = "067e6162-3b6f-4ae2-a171-2470b63dff00";
+	public static final UUID MOCK_UUID = UUID.fromString("067e6162-3b6f-4ae2-a171-2470b63dff00");
 	private String stuff;
 	private int whatever;
-	private int id;
 	private UUID uuid;
 	
 	public MockUser() {
 		stuff = "";
 		whatever = 0;
-		uuid = UUID.fromString(MockUser.MOCK_UUID);
+		uuid = MockUser.MOCK_UUID;
 	}
 	
 	public MockUser(String stuff, int whatever) {
 		this.stuff = stuff;
 		this.whatever = whatever;
+		uuid = MockUser.MOCK_UUID;
 	}
 
 	@Override
@@ -54,17 +56,7 @@ public class MockUser implements User {
 	}
 
 	@Override
-	public int getIdNumber() {
-		return id;
-	}
-
-	@Override
-	public void setIdNumber(int id) {
-		this.id = id;
-	}
-
-	@Override
-	public Properties getProperties() {
+	public OrderedProperties getProperties() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -88,12 +80,18 @@ public class MockUser implements User {
 	}
 
 	@Override
-	public UUID getUserId() {		
+	public UUID getUserId() {
 		return uuid;
 	}
 
 	@Override
 	public void setUserId(UUID id) {
 		this.uuid = id;
+	}
+
+	@Override
+	public DateTime created() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

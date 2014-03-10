@@ -192,6 +192,7 @@ public class UserWebServiceTest {
 		bean.lastName = "Wayne";
 		bean.email = "batman@batcave.org";
 		bean.gatewayUser = gw;
+		gw.id = "00001111-2222-3333-4444-555566667777";
 		gw.serviceName = "Waynecorp";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
@@ -204,7 +205,7 @@ public class UserWebServiceTest {
 				+ "      \"lastName\": \"Wayne\",\n"
 				+ "      \"email\": \"batman@batcave.org\",\n"
 				+ "      \"gatewayUser\": {\n"
-				+ "        \"id\": \"1\",\n"
+				+ "        \"id\": \"00001111-2222-3333-4444-555566667777\",\n"
 				+ "        \"serviceName\": \"Waynecorp\",\n"
 				+ "        \"serviceUserName\": \"batman\",\n"
 				+ "        \"servicePassword\": \"robin\"\n"
@@ -398,6 +399,7 @@ public class UserWebServiceTest {
 		} catch (UserExistsException e) {}
 		GatewayUserBean gw = new GatewayUserBean();
 		
+		gw.id = "deadbeef-2222-3333-4444-555566667777";
 		gw.serviceName = "Waynecorp";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
@@ -410,7 +412,7 @@ public class UserWebServiceTest {
 				+ "      \"lastName\": \"\",\n"
 				+ "      \"email\": \"\",\n"
 				+ "      \"gatewayUser\": {\n"
-				+ "        \"id\": \"1\",\n"
+				+ "        \"id\": \"deadbeef-2222-3333-4444-555566667777\",\n"
 				+ "        \"serviceName\": \"Waynecorp\",\n"
 				+ "        \"serviceUserName\": \"batman\",\n"
 				+ "        \"servicePassword\": \"robin\"\n"
@@ -469,7 +471,7 @@ public class UserWebServiceTest {
 		gw.serviceName = "Waynecorp";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
-		gw.id = "2";
+		gw.id = "deadbeef-2222-3333-4444-555566667777";
 		
 		String responseString = envelopeStart + response404 + envelopeEnd;
 		
@@ -477,7 +479,7 @@ public class UserWebServiceTest {
 		
 		assertEquals(201, r.getStatus());
 		
-		r = uws.decoupleGatewayFromUser("1", "2");
+		r = uws.decoupleGatewayFromUser("1", "deadbeef-2222-3333-4444-555566667777");
 		
 		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "1", "secret")));
 		
@@ -500,11 +502,11 @@ public class UserWebServiceTest {
 		gw.serviceName = "Waynecorp";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
-		gw.id = "2";
+		gw.id = "00001111-2222-3333-4444-555566667777";
 		
 		uws.addUser(bean);
 		
-		Response r = uws.decoupleGatewayFromUser("2", "2");
+		Response r = uws.decoupleGatewayFromUser("2", "00001111-2222-3333-4444-555566667777");
 
 		String responseString = envelopeStart + response404 + envelopeEnd;
 		
@@ -529,7 +531,7 @@ public class UserWebServiceTest {
 		gw.serviceName = "Waynecorp";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
-		gw.id = "2";
+		gw.id = "deadbeef-2222-3333-4444-555566667777";
 		
 		// TODO: This, or a 201?
 		String responseString = envelopeStart + response404 + envelopeEnd;
@@ -538,7 +540,7 @@ public class UserWebServiceTest {
 		
 		assertEquals(201, r.getStatus());
 		
-		r = uws.decoupleGatewayFromUser("1", "1");
+		r = uws.decoupleGatewayFromUser("1", "deadbeef-2222-3333-4444-555566667777");
 		
 		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "1", "secret")));
 		

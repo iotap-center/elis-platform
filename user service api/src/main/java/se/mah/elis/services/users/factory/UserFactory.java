@@ -5,6 +5,7 @@ package se.mah.elis.services.users.factory;
 
 import java.util.Properties;
 
+import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
@@ -49,6 +50,19 @@ public interface UserFactory {
 	 * @since 1.0
 	 */
 	public User build(String userType, String serviceName, Properties properties)
+			throws UserInitalizationException;
+	
+	/**
+	 * Builds a platform user.
+	 * 
+	 * @param properties The properties of the new platform user, as specified
+	 * 		  by its UserRecipe.
+	 * @return The newly built PlatformUser object.
+	 * @throws UserInitalizationException if the user couldn't be built for
+	 * 		   whatever reason.
+	 * @since 2.0
+	 */
+	public PlatformUser build(Properties properties)
 			throws UserInitalizationException;
 	
 	/**
