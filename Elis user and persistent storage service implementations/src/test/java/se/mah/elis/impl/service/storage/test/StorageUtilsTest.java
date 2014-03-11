@@ -1046,56 +1046,232 @@ public class StorageUtilsTest {
 	
 	@Test
 	public void testCoupleUsers() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		int platformUser = 1;
+		UUID user = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		
+		utils.coupleUsers(platformUser, user);
+		
+		assertEquals(1, countUserBindingsInDB());
 	}
 	
 	@Test
 	public void testCoupleUsersSeveralCouples() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		int platformUser1 = 1;
+		int platformUser2 = 2;
+		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
+		
+		utils.coupleUsers(platformUser1, user1);
+		utils.coupleUsers(platformUser1, user2);
+		utils.coupleUsers(platformUser2, user1);
+		utils.coupleUsers(platformUser2, user2);
+		
+		assertEquals(4, countUserBindingsInDB());
 	}
 	
 	@Test
 	public void testCoupleUsersExistingCouple() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		int platformUser1 = 1;
+		int platformUser2 = 2;
+		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
+		
+		utils.coupleUsers(platformUser1, user1);
+		utils.coupleUsers(platformUser1, user2);
+		utils.coupleUsers(platformUser2, user1);
+		utils.coupleUsers(platformUser2, user2);
+		utils.coupleUsers(platformUser1, user1); // Existing couple!
+		
+		assertEquals(4, countUserBindingsInDB());
 	}
 	
 	@Test
 	public void testDecoupleUsers() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		int platformUser1 = 1;
+		int platformUser2 = 2;
+		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
+		
+		utils.coupleUsers(platformUser1, user1);
+		utils.coupleUsers(platformUser1, user2);
+		utils.coupleUsers(platformUser2, user1);
+		utils.coupleUsers(platformUser2, user2);
+		
+		utils.decoupleUsers(platformUser1, user2);
+		
+		assertEquals(3, countUserBindingsInDB());
 	}
 	
 	@Test
 	public void testDecoupleUsersNonExistingCouple() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		int platformUser1 = 1;
+		int platformUser2 = 2;
+		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
+		
+		utils.coupleUsers(platformUser1, user1);
+		utils.coupleUsers(platformUser1, user2);
+		utils.coupleUsers(platformUser2, user1);
+		
+		utils.decoupleUsers(platformUser2, user2);
+		
+		assertEquals(3, countUserBindingsInDB());
 	}
 	
 	@Test
 	public void testGetUsersAssociatedWithPlatformUserOneCouple() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		int platformUser1 = 1;
+		int platformUser2 = 2;
+		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
+		UUID[] expected = new UUID[1];
+		UUID[] actual = null;
+		
+		expected[0] = user1;
+		
+		utils.coupleUsers(platformUser1, user1);
+		utils.coupleUsers(platformUser1, user2);
+		utils.coupleUsers(platformUser2, user1);
+		
+		actual = utils.getUsersAssociatedWithPlatformUser(platformUser1);
+		
+		assertNotNull(actual);
+		assertArrayEquals(expected, actual);
 	}
 	
 	@Test
 	public void testGetUsersAssociatedWithPlatformUserSeveral() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		int platformUser1 = 1;
+		int platformUser2 = 2;
+		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
+		UUID[] expected = new UUID[2];
+		UUID[] actual = null;
+		
+		expected[0] = user1;
+		expected[1] = user2;
+		
+		utils.coupleUsers(platformUser1, user1);
+		utils.coupleUsers(platformUser1, user2);
+		utils.coupleUsers(platformUser2, user1);
+		utils.coupleUsers(platformUser2, user2);
+		
+		actual = utils.getUsersAssociatedWithPlatformUser(platformUser1);
+		
+		assertNotNull(actual);
+		assertArrayEquals(expected, actual);
 	}
 	
 	@Test
 	public void testGetUsersAssociatedWithPlatformUserNoCouples() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		int platformUser1 = 1;
+		int platformUser2 = 2;
+		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
+		UUID[] expected = new UUID[0];
+		UUID[] actual = null;
+		
+		utils.coupleUsers(platformUser1, user1);
+		utils.coupleUsers(platformUser1, user2);
+		
+		actual = utils.getUsersAssociatedWithPlatformUser(platformUser2);
+		
+		assertNotNull(actual);
+		assertArrayEquals(expected, actual);
 	}
 	
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserOneCouple() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		int platformUser1 = 1;
+		int platformUser2 = 2;
+		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
+		int[] expected = new int[1];
+		int[] actual = null;
+		
+		expected[0] = platformUser1;
+		
+		utils.coupleUsers(platformUser1, user1);
+		utils.coupleUsers(platformUser1, user2);
+		utils.coupleUsers(platformUser2, user1);
+		
+		actual = utils.getPlatformUsersAssociatedWithUser(user2);
+		
+		assertNotNull(actual);
+		assertArrayEquals(expected, actual);
 	}
 	
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserSeveralCouples() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		int platformUser1 = 1;
+		int platformUser2 = 2;
+		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
+		int[] expected = new int[2];
+		int[] actual = null;
+
+		expected[0] = platformUser1;
+		expected[1] = platformUser2;
+		
+		utils.coupleUsers(platformUser1, user1);
+		utils.coupleUsers(platformUser1, user2);
+		utils.coupleUsers(platformUser2, user1);
+		utils.coupleUsers(platformUser2, user2);
+		
+		actual = utils.getPlatformUsersAssociatedWithUser(user1);
+		
+		assertNotNull(actual);
+		assertArrayEquals(expected, actual);
 	}
 	
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserNoCouples() {
-		fail("Not yet implemented");
+		setUpDatabase();
+		
+		StorageUtils utils = new StorageUtils(connection);
+		int platformUser1 = 1;
+		int platformUser2 = 2;
+		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
+		int[] expected = new int[0];
+		int[] actual = null;
+		
+		utils.coupleUsers(platformUser1, user1);
+		utils.coupleUsers(platformUser2, user1);
+		
+		actual = utils.getPlatformUsersAssociatedWithUser(user2);
+		
+		assertNotNull(actual);
+		assertArrayEquals(expected, actual);
 	}
 }
