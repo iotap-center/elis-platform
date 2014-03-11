@@ -14,6 +14,7 @@ import javax.ws.rs.core.Application;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.joda.time.DateTime;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.service.log.LogService;
@@ -35,7 +36,7 @@ import com.google.gson.Gson;
 
 public class EnergyServiceTest extends JerseyTest {
 
-	private static final String DEVICE_1 = "device1";
+	private static final String DEVICE = "device";
 	private static final Double DEVICE_1_KWH = 20.0d;
 	private static UserService userService;
 	private static PlatformUser platformUser;
@@ -52,7 +53,7 @@ public class EnergyServiceTest extends JerseyTest {
 	}
 	
 	@BeforeClass
-	public static void setup() throws SensorFailedException {
+	public static void setupSuite() {
 		log = mock(LogService.class);
 		
 		PlatformUserIdentifier uid = mock(PlatformUserIdentifier.class);
@@ -60,31 +61,42 @@ public class EnergyServiceTest extends JerseyTest {
 		
 		platformUser = mock(PlatformUser.class);
 		when(platformUser.getIdentifier()).thenReturn(uid);
+
 		
 		gatewayUser = mock(GatewayUser.class);
-		Gateway gateway = mock(Gateway.class);
-
-		List<Device> devices = new ArrayList<>();
-		ElectricitySampler meter = createSampleMeter();
-		devices.add(meter);
-		
-		when(gateway.iterator()).thenReturn(devices.iterator());
-		when(gatewayUser.getGateway()).thenReturn(gateway);
 		
 		userService = mock(UserService.class);
 		when(userService.getPlatformUser(anyString())).thenReturn(platformUser);
 		when(userService.getUsers(any(PlatformUser.class))).thenReturn(new User[] { gatewayUser });
 		
 	}
+	
+	@Before
+	public void setup() throws SensorFailedException {
+		List<Device> devices = createMeters(4);
+		Gateway gateway = mock(Gateway.class);
+		gateway.addAll(devices);
+		when(gateway.iterator()).thenReturn(devices.iterator());
+		when(gatewayUser.getGateway()).thenReturn(gateway);
+	}
 
-	private static ElectricitySampler createSampleMeter() throws SensorFailedException {
-		ElectricitySample device1sample = mock(ElectricitySample.class);
-		when(device1sample.getSampleTimestamp()).thenReturn(DateTime.now());
-		when(device1sample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_KWH);
+	private List<Device> createMeters(int numberOfMeters) throws SensorFailedException {
+		List<Device> meters = new ArrayList<>();
+		for (int i = 0; i < numberOfMeters; i++) {
+			ElectricitySampler meter = createSampleMeter(i);
+			meters.add(meter);
+		}
+		return meters;
+	}
+
+	private ElectricitySampler createSampleMeter(int id) throws SensorFailedException {
+		ElectricitySample deviceSample = mock(ElectricitySample.class);
+		when(deviceSample.getSampleTimestamp()).thenReturn(DateTime.now());
+		when(deviceSample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_KWH);
 		
 		ElectricitySampler meter = mock(ElectricitySampler.class);
-		when(meter.getName()).thenReturn(DEVICE_1);
-		when(meter.getSample()).thenReturn(device1sample);
+		when(meter.getName()).thenReturn(DEVICE + id);
+		when(meter.getSample()).thenReturn(deviceSample);
 		return meter;
 	}
 	
@@ -94,7 +106,14 @@ public class EnergyServiceTest extends JerseyTest {
 		EnergyBean bean = gson.fromJson(energyNowData, EnergyBean.class);
 		assertEquals("1", bean.puid);
 		assertEquals("now", bean.period);
-		assertEquals(DEVICE_1, bean.devices.get(0).deviceId);
+		assertEquals(DEVICE + 0, bean.devices.get(0).deviceId);
 		assertEquals(DEVICE_1_KWH, bean.devices.get(0).data.get(0).kwh, 0.01f);
+	}
+	
+	@Test
+	public void testGetNowRequestMultipleDevices() {
+		final String energyNowData = target("/energy/1/now").request().get(String.class);
+		EnergyBean bean = gson.fromJson(energyNowData, EnergyBean.class);
+		assertEquals(4, bean.devices.size());
 	}
 }
