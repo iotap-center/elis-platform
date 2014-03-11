@@ -119,6 +119,20 @@ public class StorageImpl implements Storage {
 		translator = new MySQLQueryTranslator();
 		utils = new StorageUtils(connection);
 	}
+	
+	/**
+	 * Sets the user factory without using OSGi. This method is needed to
+	 * facilitate testing, and isn't really all that kosher. It will only set
+	 * the user factory if there isn't already a user factory in place.
+	 * 
+	 * @param factory The user factory to use.
+	 * @since 2.0
+	 */
+	public void setUserFactory(UserFactory factory) {
+		if (this.factory == null) {
+			this.factory = factory;
+		}
+	}
 
 	/**
 	 * Implementation of
@@ -1206,7 +1220,7 @@ public class StorageImpl implements Storage {
 				
 				// Create a PlatformUser object
 				user = factory.build(props);
-			} catch (SQLException e) {
+			} catch (SQLException | NullPointerException e) {
 				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
 				throw new StorageException(INSTANCE_USER_ERROR);
