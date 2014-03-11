@@ -20,7 +20,7 @@ public class AnotherMockUser implements User {
 	private DateTime created = DateTime.now();
 	
 	public AnotherMockUser() {
-		uid = new MockUserIdentifier();
+		uid = new AnotherMockUserIdentifier();
 		uuid = MOCK_UUID;
 		stuff = "";
 		whatever = 0;
@@ -29,7 +29,7 @@ public class AnotherMockUser implements User {
 	}
 	
 	public AnotherMockUser(String stuff, int whatever) {
-		this.uid = new MockUserIdentifier();
+		this.uid = new AnotherMockUserIdentifier();
 		this.uuid = MOCK_UUID;
 		this.stuff = stuff;
 		this.whatever = whatever;
