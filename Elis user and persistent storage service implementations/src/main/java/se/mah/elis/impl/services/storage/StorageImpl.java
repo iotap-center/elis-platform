@@ -1213,9 +1213,20 @@ public class StorageImpl implements Storage {
 			String userType = "se.mah.elis.services.users.PlatformUser";
 			String serviceName = userType;
 			int puid = ((PlatformUserIdentifier) id).getId();
+			String username = ((PlatformUserIdentifier) id).getUsername();
+			String password = ((PlatformUserIdentifier) id).getPassword();
 			Properties props = null;
 			
-			query = "SELECT * FROM `" + tableName + "` WHERE id = " + puid;
+			query = "SELECT * FROM `" + tableName + "` WHERE ";
+			if (puid > 0) {
+				query += "id = " + puid + " ";
+			}
+			if (!username.isEmpty()) {
+				if (puid > 0) {
+					query += "AND ";
+				}
+				query += "username = '" + username + "';";
+			}
 			
 			try {
 				// Let's take command of the commit ship ourselves.
