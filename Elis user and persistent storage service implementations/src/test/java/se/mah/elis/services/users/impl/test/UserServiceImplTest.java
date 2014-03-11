@@ -17,6 +17,7 @@ import se.mah.elis.impl.services.storage.StorageImpl;
 import se.mah.elis.impl.services.users.PlatformUserIdentifierImpl;
 import se.mah.elis.impl.services.users.PlatformUserImpl;
 import se.mah.elis.impl.services.users.UserServiceImpl;
+import se.mah.elis.impl.services.users.factory.UserFactoryImpl;
 import se.mah.elis.services.storage.Storage;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
@@ -40,6 +41,10 @@ public class UserServiceImplTest {
 		populatePUTable();
 		buildAndPopulateMUTable();
 		storage = new StorageImpl(connection);
+		
+		try {
+			((StorageImpl) storage).setUserFactory(new UserFactoryImpl());
+		} catch (ClassCastException e) {}
 	}
 
 	@After
@@ -378,7 +383,7 @@ public class UserServiceImplTest {
 			pu = us.createPlatformUser("Fred", "Barney");
 		} catch (UserExistsException e) {}
 
-		assertEquals("PlatformUser Fred (1)", pu.toString());
+		assertEquals("PlatformUser Fred (4)", pu.toString());
 		assertEquals(PU_COUNT + 1, countPlatformUsers());
 		
 		actual = us.getPlatformUser(pu.getIdentifier());
@@ -473,6 +478,7 @@ public class UserServiceImplTest {
 	public void testCreatePlatformUserExistingUser() {
 		UserServiceImpl us = new UserServiceImpl(storage);
 		PlatformUser pu1;
+		
 		try {
 			pu1 = us.createPlatformUser("Fred", "Barney");
 		} catch (UserExistsException e) {
