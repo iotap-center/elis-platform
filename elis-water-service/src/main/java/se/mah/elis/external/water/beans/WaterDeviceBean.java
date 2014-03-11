@@ -6,18 +6,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class WaterBean {
+public class WaterDeviceBean {
 
 	@XmlElement
-	public String puid;
+	public String deviceId;
 	
 	@XmlElement
-	public String period;
-	
-	@XmlElement
-	public List<WaterDeviceBean> devices;
-	
-	@XmlElement
-	public WaterSummaryBean summary;
-		
+	public List<WaterDataPointBean> data;
 }

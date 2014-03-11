@@ -1,7 +1,5 @@
 package se.mah.elis.external.water;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +29,7 @@ import se.mah.elis.data.WaterSample;
 import se.mah.elis.external.water.beans.WaterBean;
 import se.mah.elis.external.water.beans.WaterBeanFactory;
 import se.mah.elis.services.users.PlatformUser;
+import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 
@@ -59,6 +58,12 @@ public class WaterService {
 	public WaterService() {
 		gson = new GsonBuilder().setPrettyPrinting().create();
 	}
+	
+	public WaterService(UserService us, LogService log) {
+		this();
+		this.userService = us;
+		this.log = log;
+	}
 
 	@GET
 	@Path("/{puid}/now")
@@ -86,10 +91,19 @@ public class WaterService {
 		ResponseBuilder response;
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getCurrentSamplesForMeters(waterMeters);
-		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_NOW);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_NOW, pu);
 		String json = gson.toJson(waterConsumptionBean);
 		response = Response.ok(json);
 		return response;
+	}
+	
+	private Map<String, List<WaterSample>> getCurrentSamplesForMeters(
+			List<WaterMeterSampler> waterMeters) {
+		Map<String, List<WaterSample>> samples = new HashMap<>();
+		for (WaterMeterSampler sampler : waterMeters) {
+			tryAdd(samples, sampler);
+		}
+		return samples;
 	}
 
 	@GET
@@ -118,7 +132,7 @@ public class WaterService {
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getDailySamplesForMeters(
 				waterMeters, from, to);
-		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_DAILY);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_DAILY, pu);
 		response = Response.ok(gson.toJson(waterConsumptionBean));
 		return response;
 	}
@@ -171,7 +185,7 @@ public class WaterService {
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getWeeklySamplesForMeters(
 				waterMeters, from, to);
-		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_WEEKLY);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_WEEKLY, pu);
 		response = Response.ok(gson.toJson(waterConsumptionBean));
 		return response;
 	}
@@ -228,7 +242,7 @@ public class WaterService {
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getMonthlySamplesForMeters(
 				waterMeters, from, to);
-		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_MONTHLY);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_MONTHLY, pu);
 		response = Response.ok(gson.toJson(waterConsumptionBean));
 		return response;
 	}
@@ -279,15 +293,6 @@ public class WaterService {
 		return meters;
 	}
 
-	private Map<String, List<WaterSample>> getCurrentSamplesForMeters(
-			List<WaterMeterSampler> waterMeters) {
-		Map<String, List<WaterSample>> samples = new HashMap<>();
-		for (WaterMeterSampler sampler : waterMeters) {
-			tryAdd(samples, sampler);
-		}
-		return samples;
-	}
-
 	private void tryAdd(Map<String, List<WaterSample>> samples,
 			WaterMeterSampler sampler) {
 		try {
@@ -317,8 +322,9 @@ public class WaterService {
 	}
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
-			String queryPeriod) {
-		return WaterBeanFactory.create(samples, queryPeriod);
+			String queryPeriod, PlatformUser pu) {
+		Integer puid = ((PlatformUserIdentifier) pu.getIdentifier()).getId();
+		return WaterBeanFactory.create(samples, queryPeriod, puid.toString());
 	}
 	
 	private void logRequest(String endpoint, String puid, String from, String to) {
