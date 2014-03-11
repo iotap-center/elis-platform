@@ -1,6 +1,7 @@
 package se.mah.elis.services.users.factory.impl.test.mock;
 
 import java.util.Properties;
+import java.util.UUID;
 
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
@@ -16,10 +17,11 @@ public class MockUserProvider implements UserProvider {
 
 	@Override
 	public User build(Properties properties) throws UserInitalizationException {
-		int id = 0;
-		if (properties.getProperty("id") != "null") {
-			id = Integer.parseInt(properties.getProperty("id"));
+		UUID id = UUID.randomUUID();
+		if (properties.containsKey("id")) {
+			id = (UUID) properties.get("id");
 		}
+		System.out.println("hello");
 		String username = properties.getProperty("serviceUserName");
 		String password = properties.getProperty("servicePassword");
 		

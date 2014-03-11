@@ -3,14 +3,18 @@ package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.data.TemperatureData;
 
 public class TemperatureDataImpl implements TemperatureData {
 
 	private static final long serialVersionUID = 512051193886837620L;
-	private float celsius;
-	private UUID uuid;
+	private float celsius = 0;
+	private UUID dataid;
+	private UUID ownerid;
+	private DateTime created = DateTime.now();
 
 	public TemperatureDataImpl(float celsiusInput) {
 		celsius = celsiusInput;
@@ -40,51 +44,60 @@ public class TemperatureDataImpl implements TemperatureData {
 	}
 
 	@Override
-	public long getDataId() {
-		// TODO Auto-generated method stub
-		return 0;
+	public UUID getDataId() {
+		return dataid;
 	}
 
 	@Override
-	public UUID getUUID() {
-		return this.uuid;
+	public void setDataId(UUID uuid) {
+		dataid = uuid;
 	}
 
 	@Override
-	public void setUUID(UUID uuid) {
-		this.uuid = uuid;
+	public void setOwnerId(UUID userId) {
+		ownerid = userId;
 	}
 
 	@Override
-	public void setUniqueUserId(int userId) {
-		
-	}
-
-	@Override
-	public int getUniqueUserId() {
-		return 0;
+	public UUID getOwnerId() {
+		return ownerid;
 	}
 
 	@Override
 	public Properties getProperties() {
-		Properties props = new Properties();
-		props.put("uuid", this.uuid.toString());
-		props.put("celsius", this.celsius);
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", dataid);
+		props.put("ownerid", ownerid);
+		props.put("created", created);
+		props.put("celsius", celsius);
+		
 		return props;
 	}
 
 	@Override
-	public OrderedProperties getPropertiesTemplate() {	
+	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("uuid", "256");
-		props.put("celsius", new Float(0.0));
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", created);
+		props.put("celsius", celsius);
+		
 		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		this.uuid = UUID.fromString((String) props.get("uuid"));
-		this.celsius = (Float) props.get("celsius");
+		dataid = (UUID) props.get("dataid");
+		ownerid = (UUID) props.get("ownerid");
+		created = (DateTime) props.get("created");
+		celsius = (float) props.get("celsius");
+	}
+
+	@Override
+	public DateTime created() {
+		return created;
 	}
 
 }

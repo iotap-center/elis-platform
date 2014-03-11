@@ -2,6 +2,7 @@ package se.mah.elis.adaptor.utilityprovider.eon.internal;
 
 import org.json.simple.JSONObject;
 
+import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.utilityprovider.eon.internal.devices.EonDevice;
@@ -94,7 +95,7 @@ public class EonDeviceFactory {
 			Device device, JSONObject any)
 			throws StaticEntityException {
 		String deviceId = (String) any.get("Id");
-		device.setId(new EonDeviceIdentifier(deviceId));
+		device.setId((DeviceIdentifier) new EonDeviceIdentifier(deviceId));
 		device.setName((String) any.get("Name")); 
 		device.setDescription((String) any.get("Description"));
 		

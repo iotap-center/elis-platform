@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
 	// TODO This is a placeholer. It has to be replaced with a persistent storage at a later stage.
 	private Map<PlatformUser, ArrayList<User>> map;
-	private int platformUserCounter, userCounter;
+	private int platformUserCounter;
 	
 	/**
 	 * 
@@ -44,7 +44,6 @@ public class UserServiceImpl implements UserService {
 		// TODO This isn't kosher
 		map = new TreeMap<PlatformUser, ArrayList<User>>();
 		platformUserCounter = 0;
-		userCounter = 0;
 	}
 
 	/* (non-Javadoc)

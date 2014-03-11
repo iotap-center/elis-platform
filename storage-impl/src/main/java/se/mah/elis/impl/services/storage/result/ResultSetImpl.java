@@ -63,7 +63,7 @@ public class ResultSetImpl implements ResultSet {
 	 * @since 2.0
 	 */
 	@Override
-	public Object get(int index) throws IndexOutOfBoundsException {
+	public synchronized Object get(int index) throws IndexOutOfBoundsException {
 		return rows[index];
 	}
 
@@ -76,7 +76,7 @@ public class ResultSetImpl implements ResultSet {
 	 * @since 2.0
 	 */
 	@Override
-	public Object[] getArray() {
+	public synchronized Object[] getArray() {
 		return rows;
 	}
 
@@ -134,7 +134,7 @@ public class ResultSetImpl implements ResultSet {
 	 * @since 2.0
 	 */
 	@Override
-	public Object first() {
+	public synchronized Object first() {
 		if (rows.length > 0) {
 			return rows[0];
 		}

@@ -12,6 +12,20 @@ import se.mah.elis.services.storage.query.Query;
  */
 public class DeleteQuery extends Query {
 	
+	private Query query;
+	
+	public DeleteQuery() {
+		this.query = new Query();
+	}
+	
+	public DeleteQuery(Query query) {
+		this.query = query;
+	}
+	
+	public void setQuery(Query query) {
+		this.query = query;
+	}
+	
 	/**
 	 * Translates a query into a string suitable for the backend database.
 	 * 

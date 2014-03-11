@@ -8,6 +8,8 @@ import java.util.Properties;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
 
+import se.mah.elis.impl.services.users.PlatformUserImpl;
+import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 import se.mah.elis.services.users.factory.UserFactory;
@@ -77,6 +79,20 @@ public class UserFactoryImpl implements UserFactory {
 		user = provider.build(properties);
 		
 		return user;
+	}
+
+	@Override
+	public PlatformUser build(Properties properties)
+			throws UserInitalizationException {
+		PlatformUser pu = new PlatformUserImpl();
+		
+		try {
+			pu.populate(properties);
+		} catch (IllegalArgumentException e) {
+			throw new UserInitalizationException();
+		}
+		
+		return pu;
 	}
 
 	@Override

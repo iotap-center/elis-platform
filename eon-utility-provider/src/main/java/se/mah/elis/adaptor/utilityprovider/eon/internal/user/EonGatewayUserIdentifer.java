@@ -16,7 +16,7 @@ public class EonGatewayUserIdentifer implements GatewayUserIdentifier {
 
 	private String username; 
 	private String password;
-	private Class clazz;
+	private Class identifies = EonGatewayUser.class;
 	
 	public String getUsername() {
 		return username;
@@ -41,35 +41,38 @@ public class EonGatewayUserIdentifer implements GatewayUserIdentifier {
 
 	@Override
 	public Class identifies() {
-		return clazz;
+		return identifies;
 	}
 
 	@Override
 	public void identifies(Class clazz) {
-		this.clazz = clazz;
+		identifies = clazz;
 	}
 
 	@Override
-	public Properties getProperties() {
-		Properties props = new Properties();
-		props.put("username", this.username);
-		props.put("password", this.password);
+	public OrderedProperties getProperties() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("username", username);
+		props.put("password", password);
+		
 		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("username", "256");
-		props.put("password", "256");
+		
+		props.put("username", 256);
+		props.put("password", 256);
+		
 		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		this.username = (String) props.get("username");
-		if (props.contains("password"))
-			this.password = (String) props.get("password");
+		username = (String) props.get("username");
+		password = (String) props.get("password");
 	}
 	
 }

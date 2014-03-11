@@ -293,6 +293,7 @@ public class EonHttpBridge {
 
 		Map<String, Object> actionObjectData = EonParser.parseActionObject(response
 				.readEntity(String.class));
+		System.out.println(actionObjectData);
 		
 		return createActionObject(actionObjectData);
 	}

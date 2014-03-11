@@ -18,7 +18,7 @@ public class MockUserIdentifier implements UserIdentifier {
 	}
 
 	@Override
-	public Properties getProperties() {
+	public OrderedProperties getProperties() {
 		// TODO Auto-generated method stub
 		return null;
 	}

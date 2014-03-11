@@ -29,21 +29,25 @@ public class EonDeviceIdentifier implements DeviceIdentifier {
 	}
 
 	@Override
-	public Properties getProperties() {
-		Properties props = new Properties();
-		props.put("id", this.id);
+	public OrderedProperties getProperties() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("id", id);
+		
 		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("id", "256");
+		
+		props.put("id", "32");
+		
 		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		this.id = (String) props.get("id");
+		id = (String) props.getProperty("id");
 	}
 }

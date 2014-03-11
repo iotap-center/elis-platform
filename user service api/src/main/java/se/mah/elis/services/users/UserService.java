@@ -29,7 +29,7 @@ public interface UserService {
 	 * id number.
 	 * 
 	 * @param pu The platform user.
-	 * @param uid The user object's id number.
+	 * @param uuid The user object's id number.
 	 * @return A User object. If no user is found, null is returned.
 	 * @since 2.0
 	 */

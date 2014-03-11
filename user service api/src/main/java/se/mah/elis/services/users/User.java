@@ -16,31 +16,6 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 public interface User extends AbstractUser {
 	
 	/**
-	 * <p>Gets this user object's id number.</p>
-	 * 
-	 * <p>This method was superseded by getUserId() in version 1.1</p>
-	 * 
-	 * @return The id number.
-	 * @deprecated As of version 1.1, replaced by {@link #getUserid()}.
-	 * @since 1.0
-	 */
-	int getIdNumber();
-	
-	/**
-	 * <p>Sets this user object's id number. This id number is used internally
-	 * by the Elis platform and shall not in any way depend on any underlying
-	 * system's identification mechanism. Any system specific identification is
-	 * handled by the {@link UserIdentifier} interface.</p>
-	 * 
-	 * <p>This method was superseded by setUserId(UUID) in version 1.1</p>
-	 * 
-	 * @param id The id number.
-	 * @deprecated As of version 1.1, replaced by {@link #getUserId(UUID)}.
-	 * @since 1.0
-	 */
-	void setIdNumber(int id);
-	
-	/**
 	 * Gets this user object's id number. The id number is unique throughout
 	 * the Elis platform.
 	 * 

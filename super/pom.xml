@@ -158,36 +158,24 @@
 		<module>../Elis exceptions</module>
 		<module>../Data definitions</module>
 		<module>../user service api</module>
-		
-		<!-- <module>../building api</module> -->
-		<!-- <module>../structure api</module> -->
+		<module>../storage api</module>
+		<module>../building api</module>
+		<module>../structure api</module>
+    <module>../utility-provider-api</module>
 		
 		<!-- External API modules -->
-		<!-- <module>../northbound-api/com.eclipsesource.jaxrs.publisher</module> -->
-		
-		<!-- Reference implementation modules -->
 		<module>../Elis user service implementation</module>
+		<module>../storage-impl</module>
+		<module>../Elis user web service</module>
 		
-		
-		
-		<!-- Misc modules -->
-		<!-- <module>../elis-branding</module> -->
-        <!-- <module>../qs-driver</module> -->
-        <!-- <module>../ninjablock</module> -->
-
-        <module>
-        	../northbound-api/com.eclipsesource.jaxrs.publisher
-        </module>
-        <module>../building api</module>
-        <module>../structure api</module>
-        <module>../eon-utility-provider</module>
-        <module>../utility-provider-api</module>
-        
-        <module>../rest-demo</module>
-        
-        <module>../elis-demo-users</module>
-        <module>../elis-device-service</module>
-        <module>../elis-water-service</module>
-        <module>../mkb-water-provider</module>
+    <module>../northbound-api/com.eclipsesource.jaxrs.publisher</module>
+    <module>../eon-utility-provider</module>
+    
+    <module>../rest-demo</module>
+    
+    <module>../elis-demo-users</module>
+    <module>../elis-device-service</module>
+    <module>../elis-water-service</module>
+    <module>../mkb-water-provider</module>
 	</modules>
 </project>
