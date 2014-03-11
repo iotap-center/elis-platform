@@ -426,7 +426,8 @@ public class UserServiceImplTest {
 		
 		actual = us.getPlatformUser("5");
 		
-		assertEquals(actual, pu2);
+		assertNotNull(actual);
+		assertEquals(pu2, actual);
 	}
 
 	@Test
@@ -699,7 +700,7 @@ public class UserServiceImplTest {
 		} catch (UserExistsException e1) {}
 		
 		
-		assertEquals("PlatformUser Fred (1)", pu1.toString());
+		assertEquals("PlatformUser Fred (4)", pu1.toString());
 		assertEquals(PU_COUNT + 1, countPlatformUsers());
 
 		pu2.setFirstName("Bruce");
