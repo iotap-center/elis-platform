@@ -88,6 +88,24 @@ public class StorageUtilsTest {
 		
 		return bindings;
 	}
+	
+	private int countUserBindingsInDB() {
+		Statement statement;
+		int bindings = -1;
+		
+		try {
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT count(*) FROM user_lookup_table");
+			rs.next();
+			bindings = rs.getInt(1);
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return bindings;
+	}
 
 	@Test
 	public void testStorageUtils() {
