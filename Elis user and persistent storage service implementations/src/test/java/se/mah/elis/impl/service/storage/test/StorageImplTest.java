@@ -3098,9 +3098,19 @@ public class StorageImplTest {
 		
 		try {
 			storage.update(pu);
-			fail("This shouldn't happen");
+			pu = null;
+			pu = (PlatformUser) storage.readUser(uid);
 		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
 		}
+		
+		assertNotNull(pu);
+		assertEquals(1, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
+		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("", ((PlatformUser) pu).getFirstName());
+		assertEquals("Wayne", ((PlatformUser) pu).getLastName());
+		assertEquals("bruce@waynecorp.com", ((PlatformUser) pu).getEmail());
 	}
 
 	@Test
@@ -3127,9 +3137,19 @@ public class StorageImplTest {
 		
 		try {
 			storage.update(pu);
-			fail("This shouldn't happen");
+			pu = null;
+			pu = (PlatformUser) storage.readUser(uid);
 		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
 		}
+		
+		assertNotNull(pu);
+		assertEquals(1, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
+		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("", ((PlatformUser) pu).getFirstName());
+		assertEquals("Wayne", ((PlatformUser) pu).getLastName());
+		assertEquals("bruce@waynecorp.com", ((PlatformUser) pu).getEmail());
 	}
 
 	@Test
@@ -3156,9 +3176,19 @@ public class StorageImplTest {
 		
 		try {
 			storage.update(pu);
-			fail("This shouldn't happen");
+			pu = null;
+			pu = (PlatformUser) storage.readUser(uid);
 		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
 		}
+		
+		assertNotNull(pu);
+		assertEquals(1, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
+		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("Bruce", ((PlatformUser) pu).getFirstName());
+		assertEquals("", ((PlatformUser) pu).getLastName());
+		assertEquals("bruce@waynecorp.com", ((PlatformUser) pu).getEmail());
 	}
 
 	@Test
@@ -3185,9 +3215,19 @@ public class StorageImplTest {
 		
 		try {
 			storage.update(pu);
-			fail("This shouldn't happen");
+			pu = null;
+			pu = (PlatformUser) storage.readUser(uid);
 		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
 		}
+		
+		assertNotNull(pu);
+		assertEquals(1, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
+		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("Bruce", ((PlatformUser) pu).getFirstName());
+		assertEquals("", ((PlatformUser) pu).getLastName());
+		assertEquals("bruce@waynecorp.com", ((PlatformUser) pu).getEmail());
 	}
 
 	@Test
@@ -3214,9 +3254,19 @@ public class StorageImplTest {
 		
 		try {
 			storage.update(pu);
-			fail("This shouldn't happen");
+			pu = null;
+			pu = (PlatformUser) storage.readUser(uid);
 		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
 		}
+		
+		assertNotNull(pu);
+		assertEquals(1, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
+		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("Bruce", ((PlatformUser) pu).getFirstName());
+		assertEquals("Wayne", ((PlatformUser) pu).getLastName());
+		assertEquals("", ((PlatformUser) pu).getEmail());
 	}
 
 	@Test
@@ -3243,9 +3293,19 @@ public class StorageImplTest {
 		
 		try {
 			storage.update(pu);
-			fail("This shouldn't happen");
+			pu = null;
+			pu = (PlatformUser) storage.readUser(uid);
 		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
 		}
+		
+		assertNotNull(pu);
+		assertEquals(1, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
+		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("Bruce", ((PlatformUser) pu).getFirstName());
+		assertEquals("Wayne", ((PlatformUser) pu).getLastName());
+		assertEquals("", ((PlatformUser) pu).getEmail());
 	}
 
 	@Test
