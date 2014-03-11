@@ -1050,6 +1050,11 @@ public class StorageUtilsTest {
 	}
 	
 	@Test
+	public void testCoupleUsersSeveralCouples() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
 	public void testCoupleUsersExistingCouple() {
 		fail("Not yet implemented");
 	}
