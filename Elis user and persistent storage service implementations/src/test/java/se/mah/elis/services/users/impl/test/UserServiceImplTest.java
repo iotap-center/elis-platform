@@ -71,6 +71,7 @@ public class UserServiceImplTest {
 		try {
 			Statement stmt = connection.createStatement();
 			stmt.execute("TRUNCATE TABLE object_lookup_table;");
+			stmt.execute("TRUNCATE TABLE user_lookup_table;");
 			stmt.execute("TRUNCATE TABLE `se-mah-elis-services-users-PlatformUser`;");
 			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-services-user-test-mock-MockUser`;");
 			stmt.close();
@@ -169,7 +170,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetUsers() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		
 		User[] users = us.getUsers(pu);
@@ -180,7 +181,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetUser() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
@@ -201,7 +202,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetUserMultipleUserTypes() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
@@ -223,7 +224,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetUserMultipeUsersOfSameType() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
@@ -245,7 +246,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetUserNoSuchUser() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		User mu = new MockUser();
@@ -263,7 +264,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetUserNoSuchPlatformUser() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl(
 				new PlatformUserIdentifierImpl(1, "a", "b"));
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
@@ -284,7 +285,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testRegisterUserToPlatformUser() {
-		UserService userService = new UserServiceImpl(storage);
+		UserService userService = new UserServiceImpl(storage, connection);
 		PlatformUser platformUser = new PlatformUserImpl();
 		User mockUser = new MockUser();
 		
@@ -304,7 +305,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testRegisterUserToPlatformUserMultiple() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		User mu = new MockUser();
 		User amu = new AnotherMockUser();
@@ -326,7 +327,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testUnregisterUserFromPlatformUser() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		User mu = new MockUser();
 		User amu = new AnotherMockUser();
@@ -349,7 +350,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testUnregisterAllUsersFromPlatformUser() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		User mu = new MockUser();
 		User amu = new AnotherMockUser();
@@ -371,7 +372,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUser() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		PlatformUser actual = null;
 		
@@ -389,7 +390,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUserMultipleUsers() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		PlatformUser actual = null;
@@ -408,7 +409,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUserWithString() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		PlatformUser actual = null;
@@ -428,7 +429,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUserNotFound() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		PlatformUser actual = null;
@@ -447,7 +448,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testCreatePlatformUser() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		try {
 			pu = us.createPlatformUser("Fred", "Barney");
@@ -459,7 +460,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testCreatePlatformUserBadData() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		try {
 			pu = us.createPlatformUser("", "Barney");
@@ -473,7 +474,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testCreatePlatformUserExistingUser() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1;
 		
 		try {
@@ -492,7 +493,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testCreatePlatformUserTwoUsers() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		try {
@@ -507,7 +508,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUsersAssociatedWithUser() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
 		try {
 			pu = us.createPlatformUser("Fred", "Barney");
@@ -534,7 +535,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserTwoPlatformUsers() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
 		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
 		User mu = new MockUser();
@@ -561,7 +562,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserNonExistingUser() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
 		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
 		User mu1 = new MockUser();
@@ -587,7 +588,7 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserNToMCase() {
-		UserService us = new UserServiceImpl(storage);
+		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
 		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
 		User mu1 = new MockUser();
@@ -615,7 +616,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testGetPlatformUsers() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1 = null, pu2 = null, pu3 = null;
 		
 		try {
@@ -635,7 +636,7 @@ public class UserServiceImplTest {
 	public void testGetPlatformUsersNoUsers() {
 		runQuery("TRUNCATE TABLE `se-mah-elis-services-users-PlatformUser`;");
 		
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 
 		PlatformUser[] pus = us.getPlatformUsers();
 		assertNotNull(pus);
@@ -646,7 +647,7 @@ public class UserServiceImplTest {
 	public void testGetPlatformUsersOneUser() {
 		runQuery("TRUNCATE TABLE `se-mah-elis-services-users-PlatformUser`;");
 		
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		
 		try {
 			us.createPlatformUser("Fred", "Barney");
@@ -659,7 +660,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testUpdatePlatformUser() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = null;
 		
 		try {
@@ -686,7 +687,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testUpdatePlatformUserNonExistingUser() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		
@@ -710,7 +711,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testDeletePlatformUser() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		try {
@@ -732,7 +733,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	public void testDeletePlatformUserNoSuchUser() {
-		UserServiceImpl us = new UserServiceImpl(storage);
+		UserServiceImpl us = new UserServiceImpl(storage, connection);
 		PlatformUser pu1 = new PlatformUserImpl();
 		PlatformUser pu2 = new PlatformUserImpl();
 		

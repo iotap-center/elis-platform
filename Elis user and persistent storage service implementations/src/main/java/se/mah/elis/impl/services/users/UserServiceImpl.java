@@ -3,9 +3,13 @@
  */
 package se.mah.elis.impl.services.users;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -16,7 +20,9 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 
 import se.mah.elis.services.storage.Storage;
+import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.PlatformUser;
+import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.UserService;
@@ -38,6 +44,9 @@ public class UserServiceImpl implements UserService {
 	@Reference
 	private Storage storage;
 	
+	// The database connection
+	private Connection connection;
+	
 	// TODO This is a placeholer. It has to be replaced with a persistent storage at a later stage.
 	private Map<PlatformUser, ArrayList<User>> map;
 	private int platformUserCounter;
@@ -46,13 +55,24 @@ public class UserServiceImpl implements UserService {
 	 * 
 	 */
 	public UserServiceImpl() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			// TODO Replace with non-static stuff later on
+			connection = DriverManager
+					.getConnection("jdbc:mysql://localhost/elis?"
+						+	"user=elis&password=notallthatsecret");
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 		// TODO This isn't kosher
 		map = new TreeMap<PlatformUser, ArrayList<User>>();
 		platformUserCounter = 0;
 	}
 	
-	public UserServiceImpl(Storage storage) {
+	public UserServiceImpl(Storage storage, Connection connection) {
 		this.storage = storage;
+		this.connection = connection;
 		
 		// TODO This isn't kosher - remove when done
 		map = new TreeMap<PlatformUser, ArrayList<User>>();
@@ -102,16 +122,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public PlatformUser getPlatformUser(UserIdentifier identifier) {
-		PlatformUser pu = null;
+		PlatformUser user = null;
 		
-		for (PlatformUser key: map.keySet()) {
-			if (key.getIdentifier().equals(identifier)) {
-				pu = key;
-				break;
-			}
-		}
+		try {
+			user = (PlatformUser) storage.readUser(identifier);
+		} catch (StorageException e) {}
 		
-		return pu;
+		return user;
 	}
 
 	@Override
@@ -164,22 +181,23 @@ public class UserServiceImpl implements UserService {
 	public synchronized PlatformUser createPlatformUser(String username,
 			String password)
 					throws UserExistsException, IllegalArgumentException {
-		ArrayList<User> list = null;
-		PlatformUser pu = null;
+		PlatformUserIdentifier id = new PlatformUserIdentifierImpl();
+		PlatformUser pu = new PlatformUserImpl(id);
+		
+		id.setUsername(username);
+		id.setPassword(password);
+		
 		try {
-			pu = new PlatformUserImpl(new PlatformUserIdentifierImpl(username,
-																 password));
-		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException();
+			storage.readUser(id);
+			// If there is an existing user, this will happen
+			throw new UserExistsException();
+		} catch (StorageException e1) {
 		}
 		
-		if (!map.containsKey(pu)) {
-			((PlatformUserIdentifierImpl) pu.getIdentifier()).setId(++platformUserCounter);
-			
-			list = new ArrayList<User>();
-			map.put(pu, list);
-		} else {
-			throw new UserExistsException();
+		try {
+			storage.insert(pu);
+		} catch (StorageException e) {
+			throw new IllegalArgumentException();
 		}
 		
 		return pu;
@@ -205,25 +223,23 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public PlatformUser[] getPlatformUsers() {
-		PlatformUser[] pus = new PlatformUserImpl[0];
-		
-		return map.keySet().toArray(pus);
+		return storage.readPlatformUsers(new Properties());
 	}
 
 	@Override
 	public synchronized void updatePlatformUser(PlatformUser pu) throws NoSuchUserException {
-		if (map.containsKey(pu)) {
-			ArrayList<User> users = map.get(pu);
-			map.remove(pu);
-			map.put(pu, users);
-		} else {
+		try {
+			storage.update(pu);
+		} catch (StorageException e) {
 			throw new NoSuchUserException();
 		}
 	}
 
 	@Override
 	public synchronized void deletePlatformUser(PlatformUser pu) throws NoSuchUserException {
-		if (map.remove(pu) == null) {
+		try {
+			storage.delete(pu);
+		} catch (StorageException e) {
 			throw new NoSuchUserException();
 		}
 	}
