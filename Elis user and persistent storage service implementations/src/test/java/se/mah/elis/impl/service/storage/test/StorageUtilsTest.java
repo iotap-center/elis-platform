@@ -1025,4 +1025,54 @@ public class StorageUtilsTest {
 		
 		assertEquals(expected, actual);
 	}
+	
+	@Test
+	public void testCoupleUsers() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testCoupleUsersExistingCouple() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testDecoupleUsers() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testDecoupleUsersNonExistingCouple() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testGetUsersAssociatedWithPlatformUserOneCouple() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testGetUsersAssociatedWithPlatformUserSeveral() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testGetUsersAssociatedWithPlatformUserNoCouples() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testGetPlatformUsersAssociatedWithUserOneCouple() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testGetPlatformUsersAssociatedWithUserSeveralCouples() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testGetPlatformUsersAssociatedWithUserNoCouples() {
+		fail("Not yet implemented");
+	}
 }

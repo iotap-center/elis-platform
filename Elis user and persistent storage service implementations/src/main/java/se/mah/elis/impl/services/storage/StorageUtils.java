@@ -21,7 +21,6 @@ import org.joda.time.DateTime;
 
 import se.mah.elis.data.Identifier;
 import se.mah.elis.services.storage.exceptions.StorageException;
-import se.mah.elis.services.users.UserIdentifier;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -441,6 +440,52 @@ public class StorageUtils {
 			// Skip this like we just don't care.
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Associates a user with a platform user.
+	 * 
+	 * @param platformUser The owning platform user.
+	 * @param user The owned user.
+	 * @since 2.0
+	 */
+	public void coupleUsers(int platformUser, UUID user) {
+		
+	}
+	
+	/**
+	 * De-associates a user with a platform user.
+	 * 
+	 * @param platformUser The owning platform user.
+	 * @param user The owned user.
+	 * @since 2.0
+	 */
+	public void decoupleUsers(int platformUser, UUID user) {
+		
+	}
+	
+	/**
+	 * Returns a list of the id numbers of all platform users associated with a
+	 * specific user.
+	 * 
+	 * @param user The user to search for.
+	 * @return An array containing a list of all associated platform users.
+	 * @since 2.0
+	 */
+	public int[] getPlatformUsersAssociatedWithUser(UUID user) {
+		return null;
+	}
+	
+	/**
+	 * Returns a list of the id numbers of all users associated with a specific
+	 * platform user.
+	 * 
+	 * @param id The platform user to search for.
+	 * @return An array containing a list of all associated users.
+	 * @since 2.0
+	 */
+	public UUID[] getUsersAssociatedWithPlatformUser(int id) {
+		return null;
 	}
 	
 	/**
