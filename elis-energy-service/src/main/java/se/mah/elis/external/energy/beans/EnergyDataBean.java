@@ -10,6 +10,6 @@ public class EnergyDataBean {
 	public String timestamp;
 	
 	@XmlElement
-	public float kwh;
+	public double kwh;
 	
 }
