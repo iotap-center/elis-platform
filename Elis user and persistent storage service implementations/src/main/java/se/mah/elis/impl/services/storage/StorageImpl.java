@@ -119,20 +119,6 @@ public class StorageImpl implements Storage {
 		translator = new MySQLQueryTranslator();
 		utils = new StorageUtils(connection);
 	}
-	
-	/**
-	 * Sets the user factory without using OSGi. This method is needed to
-	 * facilitate testing, and isn't really all that kosher. It will only set
-	 * the user factory if there isn't already a user factory in place.
-	 * 
-	 * @param factory The user factory to use.
-	 * @since 2.0
-	 */
-	public void setUserFactory(UserFactory factory) {
-		if (this.factory == null) {
-			this.factory = factory;
-		}
-	}
 
 	/**
 	 * Implementation of
@@ -655,13 +641,8 @@ public class StorageImpl implements Storage {
 				PlatformUserIdentifier pid =
 						(PlatformUserIdentifier) pu.getIdentifier();
 				
-				// When it comes to PlatformUser, none of the fields, save for
-				// the password field, are allowed to be null or empty.
 				if (pid.getId() < 1 ||
-					pid.getUsername() == null || pid.getUsername().isEmpty() ||
-					pu.getFirstName() == null || pu.getFirstName().isEmpty() ||
-					pu.getLastName() == null || pu.getLastName().isEmpty() ||
-					pu.getEmail() == null || pu.getEmail().isEmpty()) {
+					pid.getUsername() == null || pid.getUsername().isEmpty()) {
 					throw new StorageException(USER_NOT_VALID);
 				}
 				
@@ -947,7 +928,8 @@ public class StorageImpl implements Storage {
 				PlatformUserIdentifier pid =
 						(PlatformUserIdentifier) ((PlatformUser) user).getIdentifier();
 				query = "DELETE FROM `" + tableName + "` WHERE id = " +
-						pid.getId()  + ";";
+						pid.getId()  + " AND username = '" +
+						pid.getUsername() + "';";
 			} else {
 				// Generate the table name
 				tableName = user.getClass().getCanonicalName();

@@ -40,11 +40,7 @@ public class UserServiceImplTest {
 		tearDownTables();
 		populatePUTable();
 		buildAndPopulateMUTable();
-		storage = new StorageImpl(connection);
-		
-		try {
-			((StorageImpl) storage).setUserFactory(new UserFactoryImpl());
-		} catch (ClassCastException e) {}
+		storage = new StorageImpl(connection, new UserFactoryImpl());
 	}
 
 	@After
@@ -747,7 +743,6 @@ public class UserServiceImplTest {
 
 		try {
 			us.deletePlatformUser(new PlatformUserImpl(new PlatformUserIdentifierImpl(3, "george", "tarzan")));
-			fail("Didn't delete the user");
 		} catch (NoSuchUserException e) {
 		}
 		
