@@ -23,6 +23,7 @@ import se.mah.elis.data.Identifier;
 import se.mah.elis.services.storage.exceptions.StorageException;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * This class contains a bunch of helper methods to be used by StorageImpl.
@@ -447,10 +448,35 @@ public class StorageUtils {
 	 * 
 	 * @param platformUser The owning platform user.
 	 * @param user The owned user.
+	 * @throws StorageException if the couple couldn't be stored.
 	 * @since 2.0
 	 */
-	public void coupleUsers(int platformUser, UUID user) {
+	public void coupleUsers(int platformUser, UUID user)
+			throws StorageException {
+		String query = "INSERT INTO user_lookup_table VALUES(?, UNHEX(?));";
 		
+		if (user == null) {
+			throw new StorageException();
+		}
+		
+		try {
+			// Let's take command of the commit ship ourselves.
+			// Forward, mateys!
+			connection.setAutoCommit(false);
+			PreparedStatement stmt = connection.prepareStatement(query);
+			
+			// Populate the query
+			stmt.setInt(1, platformUser);
+			stmt.setString(2, stripDashesFromUUID(user));
+			
+			// Run the statement and end the transaction
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			if (e.getErrorCode() != 1062) {
+				throw new StorageException("Couldn't write to database.");
+			}
+		}
 	}
 	
 	/**
@@ -461,7 +487,18 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public void decoupleUsers(int platformUser, UUID user) {
+		String query = "DELETE FROM user_lookup_table WHERE platform_user = " +
+				platformUser + " AND user = UNHEX('" +
+				stripDashesFromUUID(user) + "');";
 		
+		try {
+			Statement stmt = connection.createStatement();
+			stmt.executeUpdate(query);
+			stmt.close();
+		} catch (SQLException e) {
+			// Skip this like we just don't care.
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -473,7 +510,27 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public int[] getPlatformUsersAssociatedWithUser(UUID user) {
-		return null;
+		ArrayList<Integer> platformUsers = new ArrayList<Integer>();
+		
+		String query = "SELECT platform_user FROM user_lookup_table " +
+				"WHERE user = UNHEX('" + stripDashesFromUUID(user) + "');";
+		try {
+			// Let's take command of the commit ship ourselves.
+			// Forward, mateys!
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			java.sql.ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				platformUsers.add(rs.getInt(1));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			// Skip this like we just don't care.
+			e.printStackTrace();
+		}
+		
+		return ArrayUtils.toPrimitive(platformUsers.toArray(new Integer[0]));
 	}
 	
 	/**
@@ -485,7 +542,27 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public UUID[] getUsersAssociatedWithPlatformUser(int id) {
-		return null;
+		ArrayList<UUID> platformUsers = new ArrayList<UUID>();
+		
+		String query = "SELECT user FROM user_lookup_table " +
+				"WHERE platform_user = " + id + ";";
+		try {
+			// Let's take command of the commit ship ourselves.
+			// Forward, mateys!
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			java.sql.ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				platformUsers.add(bytesToUUID(rs.getBytes(1)));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			// Skip this like we just don't care.
+			e.printStackTrace();
+		}
+		
+		return platformUsers.toArray(new UUID[0]);
 	}
 	
 	/**

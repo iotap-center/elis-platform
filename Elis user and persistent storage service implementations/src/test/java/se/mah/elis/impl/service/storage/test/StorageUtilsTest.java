@@ -1052,7 +1052,11 @@ public class StorageUtilsTest {
 		int platformUser = 1;
 		UUID user = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
-		utils.coupleUsers(platformUser, user);
+		try {
+			utils.coupleUsers(platformUser, user);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(1, countUserBindingsInDB());
 	}
@@ -1067,10 +1071,14 @@ public class StorageUtilsTest {
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
 		
-		utils.coupleUsers(platformUser1, user1);
-		utils.coupleUsers(platformUser1, user2);
-		utils.coupleUsers(platformUser2, user1);
-		utils.coupleUsers(platformUser2, user2);
+		try {
+			utils.coupleUsers(platformUser1, user1);
+			utils.coupleUsers(platformUser1, user2);
+			utils.coupleUsers(platformUser2, user1);
+			utils.coupleUsers(platformUser2, user2);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(4, countUserBindingsInDB());
 	}
@@ -1085,11 +1093,15 @@ public class StorageUtilsTest {
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
 		
-		utils.coupleUsers(platformUser1, user1);
-		utils.coupleUsers(platformUser1, user2);
-		utils.coupleUsers(platformUser2, user1);
-		utils.coupleUsers(platformUser2, user2);
-		utils.coupleUsers(platformUser1, user1); // Existing couple!
+		try {
+			utils.coupleUsers(platformUser1, user1);
+			utils.coupleUsers(platformUser1, user2);
+			utils.coupleUsers(platformUser2, user1);
+			utils.coupleUsers(platformUser2, user2);
+			utils.coupleUsers(platformUser1, user1); // Existing couple!
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		assertEquals(4, countUserBindingsInDB());
 	}
@@ -1104,10 +1116,14 @@ public class StorageUtilsTest {
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
 		
-		utils.coupleUsers(platformUser1, user1);
-		utils.coupleUsers(platformUser1, user2);
-		utils.coupleUsers(platformUser2, user1);
-		utils.coupleUsers(platformUser2, user2);
+		try {
+			utils.coupleUsers(platformUser1, user1);
+			utils.coupleUsers(platformUser1, user2);
+			utils.coupleUsers(platformUser2, user1);
+			utils.coupleUsers(platformUser2, user2);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		utils.decoupleUsers(platformUser1, user2);
 		
@@ -1124,9 +1140,13 @@ public class StorageUtilsTest {
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
 		
-		utils.coupleUsers(platformUser1, user1);
-		utils.coupleUsers(platformUser1, user2);
-		utils.coupleUsers(platformUser2, user1);
+		try {
+			utils.coupleUsers(platformUser1, user1);
+			utils.coupleUsers(platformUser1, user2);
+			utils.coupleUsers(platformUser2, user1);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		utils.decoupleUsers(platformUser2, user2);
 		
@@ -1147,11 +1167,15 @@ public class StorageUtilsTest {
 		
 		expected[0] = user1;
 		
-		utils.coupleUsers(platformUser1, user1);
-		utils.coupleUsers(platformUser1, user2);
-		utils.coupleUsers(platformUser2, user1);
+		try {
+			utils.coupleUsers(platformUser1, user1);
+			utils.coupleUsers(platformUser1, user2);
+			utils.coupleUsers(platformUser2, user1);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
-		actual = utils.getUsersAssociatedWithPlatformUser(platformUser1);
+		actual = utils.getUsersAssociatedWithPlatformUser(platformUser2);
 		
 		assertNotNull(actual);
 		assertArrayEquals(expected, actual);
@@ -1172,10 +1196,14 @@ public class StorageUtilsTest {
 		expected[0] = user1;
 		expected[1] = user2;
 		
-		utils.coupleUsers(platformUser1, user1);
-		utils.coupleUsers(platformUser1, user2);
-		utils.coupleUsers(platformUser2, user1);
-		utils.coupleUsers(platformUser2, user2);
+		try {
+			utils.coupleUsers(platformUser1, user1);
+			utils.coupleUsers(platformUser1, user2);
+			utils.coupleUsers(platformUser2, user1);
+			utils.coupleUsers(platformUser2, user2);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		actual = utils.getUsersAssociatedWithPlatformUser(platformUser1);
 		
@@ -1195,8 +1223,12 @@ public class StorageUtilsTest {
 		UUID[] expected = new UUID[0];
 		UUID[] actual = null;
 		
-		utils.coupleUsers(platformUser1, user1);
-		utils.coupleUsers(platformUser1, user2);
+		try {
+			utils.coupleUsers(platformUser1, user1);
+			utils.coupleUsers(platformUser1, user2);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		actual = utils.getUsersAssociatedWithPlatformUser(platformUser2);
 		
@@ -1218,9 +1250,13 @@ public class StorageUtilsTest {
 		
 		expected[0] = platformUser1;
 		
-		utils.coupleUsers(platformUser1, user1);
-		utils.coupleUsers(platformUser1, user2);
-		utils.coupleUsers(platformUser2, user1);
+		try {
+			utils.coupleUsers(platformUser1, user1);
+			utils.coupleUsers(platformUser1, user2);
+			utils.coupleUsers(platformUser2, user1);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		actual = utils.getPlatformUsersAssociatedWithUser(user2);
 		
@@ -1243,10 +1279,14 @@ public class StorageUtilsTest {
 		expected[0] = platformUser1;
 		expected[1] = platformUser2;
 		
-		utils.coupleUsers(platformUser1, user1);
-		utils.coupleUsers(platformUser1, user2);
-		utils.coupleUsers(platformUser2, user1);
-		utils.coupleUsers(platformUser2, user2);
+		try {
+			utils.coupleUsers(platformUser1, user1);
+			utils.coupleUsers(platformUser1, user2);
+			utils.coupleUsers(platformUser2, user1);
+			utils.coupleUsers(platformUser2, user2);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		actual = utils.getPlatformUsersAssociatedWithUser(user1);
 		
@@ -1266,8 +1306,12 @@ public class StorageUtilsTest {
 		int[] expected = new int[0];
 		int[] actual = null;
 		
-		utils.coupleUsers(platformUser1, user1);
-		utils.coupleUsers(platformUser2, user1);
+		try {
+			utils.coupleUsers(platformUser1, user1);
+			utils.coupleUsers(platformUser2, user1);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
 		
 		actual = utils.getPlatformUsersAssociatedWithUser(user2);
 		
