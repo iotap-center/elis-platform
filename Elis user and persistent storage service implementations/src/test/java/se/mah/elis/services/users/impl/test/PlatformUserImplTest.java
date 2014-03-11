@@ -573,6 +573,8 @@ public class PlatformUserImplTest {
 		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
+		Properties expected = new Properties();
+		Properties actual = null;
 		DateTime now = DateTime.now();
 
 		props.put("identifier", puid);
@@ -580,12 +582,17 @@ public class PlatformUserImplTest {
 		props.put("email", "batman@gotham.gov");
 		props.put("created", now);
 		
-		try {
-			pu.populate(props);
-			fail("Shouldn't get this far.");
-		} catch (IllegalArgumentException e) {
-			// This should happen.
-		}
+		pu.populate(props);
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "");
+		expected.put("last_name", "Wayne");
+		expected.put("email", "batman@gotham.gov");
+		expected.put("created", now);
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
 	}
 	
 	@Test
@@ -593,6 +600,8 @@ public class PlatformUserImplTest {
 		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
+		Properties expected = new Properties();
+		Properties actual = null;
 		DateTime now = DateTime.now();
 
 		props.put("identifier", puid);
@@ -600,12 +609,17 @@ public class PlatformUserImplTest {
 		props.put("email", "batman@gotham.gov");
 		props.put("created", now);
 		
-		try {
-			pu.populate(props);
-			fail("Shouldn't get this far.");
-		} catch (IllegalArgumentException e) {
-			// This should happen.
-		}
+		pu.populate(props);
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "Bruce");
+		expected.put("last_name", "");
+		expected.put("email", "batman@gotham.gov");
+		expected.put("created", now);
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
 	}
 	
 	@Test
@@ -613,6 +627,8 @@ public class PlatformUserImplTest {
 		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
+		Properties expected = new Properties();
+		Properties actual = null;
 		DateTime now = DateTime.now();
 
 		props.put("identifier", puid);
@@ -620,12 +636,17 @@ public class PlatformUserImplTest {
 		props.put("last_name", "Wayne");
 		props.put("created", now);
 		
-		try {
-			pu.populate(props);
-			fail("Shouldn't get this far.");
-		} catch (IllegalArgumentException e) {
-			// This should happen.
-		}
+		pu.populate(props);
+		
+		expected.put("identifier", puid);
+		expected.put("first_name", "Bruce");
+		expected.put("last_name", "Wayne");
+		expected.put("email", "");
+		expected.put("created", now);
+		
+		actual = pu.getProperties();
+		
+		assertEquals(expected, actual);
 	}
 	
 	@Test

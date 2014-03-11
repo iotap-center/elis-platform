@@ -1007,11 +1007,12 @@ public class StorageImplTest {
 		
 		try {
 			storage.insert(pu);
-			fail("This shouldn't happen");
 		} catch (StorageException e) {
+			fail("This shouldn't happen");
 		}
 		
-		assertEquals(PU_COUNT, countBindingsInDB(pu));
+		assertEquals(PU_COUNT + 1, countBindingsInDB(pu));
+		assertEquals(4, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
 		assertEquals(0, countBindingsInDB());
 	}
 
@@ -1028,11 +1029,12 @@ public class StorageImplTest {
 		
 		try {
 			storage.insert(pu);
-			fail("This shouldn't happen");
 		} catch (StorageException e) {
+			fail("This shouldn't happen");
 		}
 		
-		assertEquals(PU_COUNT, countBindingsInDB(pu));
+		assertEquals(PU_COUNT + 1, countBindingsInDB(pu));
+		assertEquals(4, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
 		assertEquals(0, countBindingsInDB());
 	}
 
@@ -1049,11 +1051,12 @@ public class StorageImplTest {
 		
 		try {
 			storage.insert(pu);
-			fail("This shouldn't happen");
 		} catch (StorageException e) {
+			fail("This shouldn't happen");
 		}
 		
-		assertEquals(PU_COUNT, countBindingsInDB(pu));
+		assertEquals(PU_COUNT + 1, countBindingsInDB(pu));
+		assertEquals(4, ((PlatformUserIdentifier) pu.getIdentifier()).getId());
 		assertEquals(0, countBindingsInDB());
 	}
 

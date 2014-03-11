@@ -198,19 +198,6 @@ public class PlatformUserImpl
 
 	@Override
 	public void populate(Properties props) throws IllegalArgumentException {
-		// Check the properties. Are they OK?
-		if (!props.containsKey("first_name") ||
-				!(props.get("first_name") instanceof String) ||
-				((String) props.get("first_name")).isEmpty() ||
-				!props.containsKey("last_name") ||
-				!(props.get("last_name") instanceof String) ||
-				((String) props.get("last_name")).isEmpty() ||
-				!props.containsKey("email") ||
-				!(props.get("email") instanceof String) ||
-				!validateAddress((String) props.get("email"))) {
-			// Apparently not. Let's bail out.
-			throw new IllegalArgumentException();
-		}
 		// The "created" field isn't necessary for new objects
 		if (props.containsKey("id") && ((int) props.get("id")) > 0 &&
 				!(props.containsKey("created") &&
@@ -260,9 +247,9 @@ public class PlatformUserImpl
 		}
 		
 		// Set the rest of the object's properties.
-		firstName = (String) props.get("first_name");
-		lastName = (String) props.get("last_name");
-		email = (String) props.get("email");
+		setFirstName((String) props.get("first_name"));
+		setLastName((String) props.get("last_name"));
+		setEmail((String) props.get("email"));
 		
 		if (((PlatformUserIdentifier) id).getId() == 0) {
 			created = DateTime.now();

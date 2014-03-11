@@ -318,12 +318,21 @@ public class StorageImpl implements Storage {
 				props = user.getProperties();
 				
 				// First of all, let's make a sanity check of the user.
-				if (pu.getFirstName() == null || pu.getFirstName().isEmpty() ||
-					pu.getLastName() == null || pu.getLastName().isEmpty() ||
-					pu.getEmail() == null || pu.getEmail().isEmpty() ||
-					pid == null || pid.isEmpty()) {
+				if (pid == null || pid.isEmpty()) {
 					throw new StorageException(OBJECT_NOT_VALID);
 				}
+				
+				// Then let's convert potential nulls to at least empty strings
+				if (pu.getFirstName() == null) {
+					pu.setFirstName("");
+				}
+				if (pu.getLastName() == null) {
+					pu.setLastName("");
+				}
+				if (pu.getEmail() == null) {
+					pu.setEmail("");
+				}
+						
 				
 				// This is indeed a new object. Insert it.
 				
