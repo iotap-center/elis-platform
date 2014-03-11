@@ -19,6 +19,7 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 
+import se.mah.elis.impl.services.storage.StorageUtils;
 import se.mah.elis.services.storage.Storage;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.PlatformUser;
@@ -44,8 +45,7 @@ public class UserServiceImpl implements UserService {
 	@Reference
 	private Storage storage;
 	
-	// The database connection
-	private Connection connection;
+	private StorageUtils utils;
 	
 	// TODO This is a placeholer. It has to be replaced with a persistent storage at a later stage.
 	private Map<PlatformUser, ArrayList<User>> map;
@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService {
 	 * 
 	 */
 	public UserServiceImpl() {
+		Connection connection = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			// TODO Replace with non-static stuff later on
@@ -64,6 +65,7 @@ public class UserServiceImpl implements UserService {
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		this.utils = new StorageUtils(connection);
 		
 		// TODO This isn't kosher
 		map = new TreeMap<PlatformUser, ArrayList<User>>();
@@ -72,7 +74,7 @@ public class UserServiceImpl implements UserService {
 	
 	public UserServiceImpl(Storage storage, Connection connection) {
 		this.storage = storage;
-		this.connection = connection;
+		this.utils = new StorageUtils(connection);
 		
 		// TODO This isn't kosher - remove when done
 		map = new TreeMap<PlatformUser, ArrayList<User>>();
