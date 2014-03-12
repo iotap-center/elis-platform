@@ -76,7 +76,8 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 
 	private EonHttpBridge createBridgeFromConfig() {
 		// TODO: this should read from standard osgi configuration
-		return new EonHttpBridge("http://ewpapi2.dev.appex.no", 80,
-				"/v0_2/api/");
+		//return new EonHttpBridge("http://ewpapi2.dev.appex.no", 80,
+		//		"/v0_2/api/");
+		return new EonHttpBridge("https://smarthome.eon.se", 443, "/v0_2/api/");
 	}
 }

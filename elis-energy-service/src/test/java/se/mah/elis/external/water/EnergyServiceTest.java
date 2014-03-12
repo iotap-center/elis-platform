@@ -6,7 +6,9 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.Application;
@@ -28,6 +30,7 @@ import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.ElectricitySample;
 import se.mah.elis.external.energy.EnergyService;
 import se.mah.elis.external.energy.beans.EnergyBean;
+import se.mah.elis.external.energy.beans.EnergyDeviceBean;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
@@ -38,7 +41,7 @@ import com.google.gson.Gson;
 public class EnergyServiceTest extends JerseyTest {
 
 	private static final String DEVICE = "device-uuid-";
-	private static final Double DEVICE_1_KWH = 20.0d;
+	private static final Double DEVICE_1_WH = 20.0d;
 	private static UserService userService;
 	private static PlatformUser platformUser;
 	private static GatewayUser gatewayUser;
@@ -93,7 +96,7 @@ public class EnergyServiceTest extends JerseyTest {
 	private ElectricitySampler createSampleMeter(int id) throws SensorFailedException {
 		ElectricitySample deviceSample = mock(ElectricitySample.class);
 		when(deviceSample.getSampleTimestamp()).thenReturn(DateTime.now());
-		when(deviceSample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_KWH);
+		when(deviceSample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_WH);
 
 		DeviceIdentifier identifier = mock(DeviceIdentifier.class);
 		when(identifier.toString()).thenReturn(DEVICE + id);
@@ -109,11 +112,22 @@ public class EnergyServiceTest extends JerseyTest {
 		EnergyBean bean = getNowRequest();
 		assertEquals("1", bean.puid);
 		assertEquals("now", bean.period);
-		assertEquals(DEVICE + 0, bean.devices.get(0).deviceId);
-		assertEquals(DEVICE_1_KWH, bean.devices.get(0).data.get(0).kwh, 0.01f);
+		assertEquals(DEVICE + 0, getFirstDevice(bean.devices));
+		assertEquals(DEVICE_1_WH/1000, bean.devices.get(0).data.get(0).kwh, 0.01f);
 	}
 
 	
+	private String getFirstDevice(List<EnergyDeviceBean> devices) {
+		List<String> names = new ArrayList<>();
+		
+		for (EnergyDeviceBean bean : devices) 
+			names.add(bean.deviceId);
+		
+		Collections.sort(names);
+		
+		return names.get(0);
+	}
+
 	@Test
 	public void testGetNowRequestMultipleDevices() {
 		EnergyBean bean = getNowRequest();
@@ -123,7 +137,7 @@ public class EnergyServiceTest extends JerseyTest {
 	@Test
 	public void testGetNowSummary() {
 		EnergyBean bean = getNowRequest();
-		assertEquals(4*DEVICE_1_KWH, bean.summary.kwh, 0.01d);
+		assertEquals(4*DEVICE_1_WH/1000, bean.summary.kwh, 0.01d);
 	}
 
 	private EnergyBean getNowRequest() {

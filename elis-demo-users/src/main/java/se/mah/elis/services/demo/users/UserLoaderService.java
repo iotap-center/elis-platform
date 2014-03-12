@@ -34,7 +34,7 @@ public class UserLoaderService {
 		demoUsers = new ArrayList<String>();
 		
 		// read from file?
-		demoUsers.add("marcus;elis;Marcus;Ljungblad;marcus@ljungblad.nu;EonUser;eon;marcus.ljungblad@mah.se;medeamah2012;MkbWaterUser;mkb-water;63408097");
+		demoUsers.add("marcus;elis;Marcus;Ljungblad;marcus@ljungblad.nu;EonUser;eon;eon2hem@gmail.com;02DCBD;MkbWaterUser;mkb-water;63408097");
 	}
 	
 	protected void bindUserService(UserService us) {
