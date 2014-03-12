@@ -52,6 +52,7 @@ public class StorageUtilsTest {
 			                  + "user=elis_test&password=elis_test");
 			Statement statement = connection.createStatement();
 			statement.execute("TRUNCATE TABLE object_lookup_table;");
+			statement.execute("TRUNCATE TABLE user_lookup_table;");
 			// c3677d61-2378-4183-b478-ec915fd32e60
 			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e60'), 'table1')");
 			// c3677d61-2378-4183-b478-ec915fd32e42

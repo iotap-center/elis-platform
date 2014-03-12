@@ -198,6 +198,7 @@ public class StorageImpl implements Storage {
 				// Run the statement and end the transaction
 				stmt.executeUpdate();
 				stmt.close();
+				connection.commit();
 				
 				utils.pairUUIDWithTable(uuid, tableName);
 			} catch (SQLException e) {
@@ -356,6 +357,7 @@ public class StorageImpl implements Storage {
 					keys.next();
 					pid.setId(keys.getInt(1));
 					stmt.close();
+					connection.commit();
 				} catch (SQLException e) {
 					// This shouldn't happen. The table should be in place
 					throw new StorageException(STORAGE_ERROR);
@@ -412,6 +414,7 @@ public class StorageImpl implements Storage {
 					
 					// Run the statement and end the transaction
 					stmt.executeUpdate();
+					connection.commit();
 					
 					utils.pairUUIDWithTable(uuid, tableName);
 				} catch (SQLException e) {
@@ -540,6 +543,7 @@ public class StorageImpl implements Storage {
 				// Run the statement and end the transaction
 				updated = stmt.executeUpdate() > 0;
 				stmt.close();
+				connection.commit();
 			} catch (SQLException e) {
 				// Try to create a non-existing table, but only once.
 				if (e.getErrorCode() == 1146 && !finalRun) {
@@ -683,6 +687,7 @@ public class StorageImpl implements Storage {
 						stmt.setString(5, pid.getPassword());
 					}
 					stmt.executeUpdate();
+					connection.commit();
 				} catch (SQLException e) {
 					// Try to create a non-existing table, but only once.
 					if (e.getErrorCode() == 1146 && !finalRun) {
@@ -845,6 +850,7 @@ public class StorageImpl implements Storage {
 					utils.freeUUID(uuid);
 				}
 				stmt.close();
+				connection.commit();
 			} catch (SQLException e) {
 				throw new StorageException(STORAGE_ERROR);
 			}
@@ -1025,6 +1031,7 @@ public class StorageImpl implements Storage {
 				Statement stmt = connection.createStatement();
 				stmt.execute(dq.compile());
 				stmt.close();
+				connection.commit();
 			} catch (SQLException e) {
 				throw new StorageException(STORAGE_ERROR);
 			} catch (ClassCastException ce) {
@@ -1141,6 +1148,7 @@ public class StorageImpl implements Storage {
 				props = utils.resultSetRowToProperties(rs);
 				rs.close();
 				stmt.close();
+				connection.commit();
 				
 				user = factory.build(className.substring(className.lastIndexOf('.')+1),
 						(String) props.get("service_name"), props);
@@ -1219,6 +1227,7 @@ public class StorageImpl implements Storage {
 				props = utils.resultSetRowToProperties(rs);
 				rs.close();
 				stmt.close();
+				connection.commit();
 				
 				// Create a PlatformUser object
 				user = factory.build(props);
@@ -1316,6 +1325,7 @@ public class StorageImpl implements Storage {
 						utils.resultSetRowToProperties(stmt.executeQuery(query));
 				user.populate(props);
 				stmt.close();
+				connection.commit();
 			} catch (SQLException | NullPointerException e) {
 				// No user type
 				throw new StorageException(STORAGE_ERROR);
@@ -1373,6 +1383,7 @@ public class StorageImpl implements Storage {
 		} finally {
 			try {
 				stmt.close();
+				connection.commit();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1427,6 +1438,7 @@ public class StorageImpl implements Storage {
 		} finally {
 			try {
 				stmt.close();
+				connection.commit();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1503,6 +1515,7 @@ public class StorageImpl implements Storage {
 				// Close the database stuff gracefully
 				rs.close();
 				stmt.close();
+				connection.commit();
 				
 				// Aaand we're done. Finish this up, then move on.
 				result = new ResultSetImpl(clazz, objs.toArray());

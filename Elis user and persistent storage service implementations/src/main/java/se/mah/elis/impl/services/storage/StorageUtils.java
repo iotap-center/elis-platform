@@ -366,9 +366,6 @@ public class StorageUtils {
 		String query = "SELECT stored_in FROM object_lookup_table " +
 				"WHERE id = UNHEX('" + stripDashesFromUUID(uuid) + "');";
 		try {
-			// Let's take command of the commit ship ourselves.
-			// Forward, mateys!
-			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
 			java.sql.ResultSet rs = stmt.executeQuery(query);
 			if (rs.next()) {
@@ -405,9 +402,6 @@ public class StorageUtils {
 		}
 		
 		try {
-			// Let's take command of the commit ship ourselves.
-			// Forward, mateys!
-			connection.setAutoCommit(false);
 			PreparedStatement stmt = connection.prepareStatement(query);
 			
 			// Populate the query
@@ -460,9 +454,6 @@ public class StorageUtils {
 		}
 		
 		try {
-			// Let's take command of the commit ship ourselves.
-			// Forward, mateys!
-			connection.setAutoCommit(false);
 			PreparedStatement stmt = connection.prepareStatement(query);
 			
 			// Populate the query
@@ -515,9 +506,6 @@ public class StorageUtils {
 		String query = "SELECT platform_user FROM user_lookup_table " +
 				"WHERE user = UNHEX('" + stripDashesFromUUID(user) + "');";
 		try {
-			// Let's take command of the commit ship ourselves.
-			// Forward, mateys!
-			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
 			java.sql.ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
