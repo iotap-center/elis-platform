@@ -66,7 +66,7 @@ public class EnergyBeanFactory {
 			for (ElectricitySample sample : samples)
 				totalWh += sample.getTotalEnergyUsageInWh(); // wont work with historic entries
 		
-		double totalKwh = totalWh / 1000;
+		double totalKwh = totalWh / 1000.0;
 		
 		return totalKwh;
 	}
@@ -83,6 +83,7 @@ public class EnergyBeanFactory {
 	private static EnergyDeviceBean createEnergyDeviceBean(ElectricitySampler meter, List<ElectricitySample> samples) {
 		EnergyDeviceBean device = new EnergyDeviceBean();
 		device.deviceId = meter.getId().toString();
+		device.deviceName = meter.getName();
 		device.data = createSampleData(samples);
 		return device;
 	}
@@ -99,7 +100,7 @@ public class EnergyBeanFactory {
 	private static EnergyDataBean createEnergyDataBeanFrom(
 			ElectricitySample sample) {
 		EnergyDataBean sampleBean = new EnergyDataBean();
-		sampleBean.kwh = sample.getTotalEnergyUsageInWh() / 1000;
+		sampleBean.kwh = sample.getTotalEnergyUsageInWh() / 1000.0;
 		sampleBean.timestamp = unixtime(sample.getSampleTimestamp());
 		return sampleBean;
 	}

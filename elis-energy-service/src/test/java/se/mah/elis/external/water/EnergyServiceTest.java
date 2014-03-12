@@ -6,7 +6,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,9 +65,7 @@ public class EnergyServiceTest extends JerseyTest {
 		platformUser = mock(PlatformUser.class);
 		when(platformUser.getIdentifier()).thenReturn(uid);
 
-		
-		gatewayUser = mock(GatewayUser.class);
-		
+		gatewayUser = mock(GatewayUser.class);	
 		userService = mock(UserService.class);
 		when(userService.getPlatformUser(anyString())).thenReturn(platformUser);
 		when(userService.getUsers(any(PlatformUser.class))).thenReturn(new User[] { gatewayUser });
@@ -103,6 +100,7 @@ public class EnergyServiceTest extends JerseyTest {
 		
 		ElectricitySampler meter = mock(ElectricitySampler.class);
 		when(meter.getId()).thenReturn(identifier);
+		when(meter.getName()).thenReturn(DEVICE + id + "-name");
 		when(meter.getSample()).thenReturn(deviceSample);
 		return meter;
 	}

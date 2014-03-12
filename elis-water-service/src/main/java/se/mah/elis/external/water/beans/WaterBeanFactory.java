@@ -39,10 +39,10 @@ public class WaterBeanFactory {
 			Map<String, List<WaterSample>> samples) {
 		WaterSummaryBean summary = new WaterSummaryBean();
 		
-		summary.totalVolume = 0;
-		for (List<WaterSample> meter : samples.values()) {
+		summary.totalVolume = 0.0f;
+		
+		for (List<WaterSample> meter : samples.values())
 			summary.totalVolume += meter.get(meter.size() - 1).getVolume();
-		}
 		
 		return summary;
 	}

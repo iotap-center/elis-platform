@@ -12,6 +12,9 @@ public class EnergyDeviceBean {
 	public String deviceId;
 	
 	@XmlElement
+	public String deviceName;
+	
+	@XmlElement
 	public List<EnergyDataBean> data;
 	
 }
