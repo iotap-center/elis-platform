@@ -1,7 +1,9 @@
 package se.mah.elis.external.energy.beans;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 
@@ -15,45 +17,79 @@ import se.mah.elis.services.users.PlatformUserIdentifier;
 public class EnergyBeanFactory {
 
 	public static EnergyBean create(List<Device> meters, String period, PlatformUser pu) {
+		Map<Device, List<ElectricitySample>> samples = collectSamples(meters);
 		EnergyBean bean = new EnergyBean();
 		bean.puid = getPuid(pu);
 		bean.period = period;
-		bean.devices = createDeviceList(meters);
-		bean.summary = createSummary(meters);
+		bean.devices = createDeviceList(samples);
+		bean.summary = createSummary(samples);
 		return bean;
 	}
 
-	private static EnergySummaryBean createSummary(List<Device> meters) {
-		return new EnergySummaryBean();
+	private static Map<Device, List<ElectricitySample>> collectSamples(
+			List<Device> meters) {
+		Map<Device, List<ElectricitySample>> deviceSampleMap = new HashMap<Device, List<ElectricitySample>>();
+		
+		for (Device device : meters)
+			if (device instanceof ElectricitySampler)
+				deviceSampleMap.put(device, collectSampleFor(device));
+		
+		return deviceSampleMap;
 	}
 
-	private static List<EnergyDeviceBean> createDeviceList(List<Device> meters) {
+	private static List<ElectricitySample> collectSampleFor(Device device) {
+		List<ElectricitySample> samples = new ArrayList<ElectricitySample>();
+		
+		try {
+			ElectricitySample sample = ((ElectricitySampler) device).getSample();
+			samples.add(sample);
+		} catch (SensorFailedException e) { }
+		
+		return samples; 
+	}
+
+	private static EnergySummaryBean createSummary(Map<Device, List<ElectricitySample>> meters) {
+		EnergySummaryBean summary = new EnergySummaryBean();
+		
+		summary.deviceId = "aggregate";
+		summary.kwh = calculateTotalConsumption(meters);
+		
+		return summary;
+	}
+
+	private static double calculateTotalConsumption(
+			Map<Device, List<ElectricitySample>> meters) {
+		
+		double total = 0.0;
+		
+		for (List<ElectricitySample> samples : meters.values())
+			for (ElectricitySample sample : samples)
+				total += sample.getTotalEnergyUsageInWh(); // wont work with historic entries
+				
+		return total;
+	}
+
+	private static List<EnergyDeviceBean> createDeviceList(Map<Device, List<ElectricitySample>> meters) {
 		List<EnergyDeviceBean> devices = new ArrayList<EnergyDeviceBean>();
-		for (Device meter : meters) {
-			if (meter instanceof ElectricitySampler) {
-				devices.add(createEnergyDeviceBean((ElectricitySampler) meter));
-			}
-		}
+		
+		for (Device meter : meters.keySet()) 
+			devices.add(createEnergyDeviceBean((ElectricitySampler) meter, meters.get(meter)));
+			
 		return devices;
 	}
 
-	private static EnergyDeviceBean createEnergyDeviceBean(ElectricitySampler meter) {
+	private static EnergyDeviceBean createEnergyDeviceBean(ElectricitySampler meter, List<ElectricitySample> samples) {
 		EnergyDeviceBean device = new EnergyDeviceBean();
 		device.deviceId = meter.getId().toString();
-		device.data = createSampleData(meter);
+		device.data = createSampleData(samples);
 		return device;
 	}
 
-	private static List<EnergyDataBean> createSampleData(ElectricitySampler meter) {
+	private static List<EnergyDataBean> createSampleData(List<ElectricitySample> samples) {
 		List<EnergyDataBean> data = new ArrayList<EnergyDataBean>();
 		
-		try {
-			EnergyDataBean sampleBean = createEnergyDataBeanFrom(meter.getSample());
-			data.add(sampleBean);
-		} catch (SensorFailedException e) {
-			// TODO: Log this
-			e.printStackTrace();
-		}
+		for (ElectricitySample sample : samples)
+			data.add(createEnergyDataBeanFrom(sample));
 		
 		return data;
 	}

@@ -19,6 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.service.log.LogService;
 
+import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
@@ -36,7 +37,7 @@ import com.google.gson.Gson;
 
 public class EnergyServiceTest extends JerseyTest {
 
-	private static final String DEVICE = "device";
+	private static final String DEVICE = "device-uuid-";
 	private static final Double DEVICE_1_KWH = 20.0d;
 	private static UserService userService;
 	private static PlatformUser platformUser;
@@ -93,27 +94,41 @@ public class EnergyServiceTest extends JerseyTest {
 		ElectricitySample deviceSample = mock(ElectricitySample.class);
 		when(deviceSample.getSampleTimestamp()).thenReturn(DateTime.now());
 		when(deviceSample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_KWH);
+
+		DeviceIdentifier identifier = mock(DeviceIdentifier.class);
+		when(identifier.toString()).thenReturn(DEVICE + id);
 		
 		ElectricitySampler meter = mock(ElectricitySampler.class);
-		when(meter.getName()).thenReturn(DEVICE + id);
+		when(meter.getId()).thenReturn(identifier);
 		when(meter.getSample()).thenReturn(deviceSample);
 		return meter;
 	}
 	
 	@Test
 	public void testGetNowRequest() {
-		final String energyNowData = target("/energy/1/now").request().get(String.class);
-		EnergyBean bean = gson.fromJson(energyNowData, EnergyBean.class);
+		EnergyBean bean = getNowRequest();
 		assertEquals("1", bean.puid);
 		assertEquals("now", bean.period);
 		assertEquals(DEVICE + 0, bean.devices.get(0).deviceId);
 		assertEquals(DEVICE_1_KWH, bean.devices.get(0).data.get(0).kwh, 0.01f);
 	}
+
 	
 	@Test
 	public void testGetNowRequestMultipleDevices() {
+		EnergyBean bean = getNowRequest();
+		assertEquals(4, bean.devices.size());
+	}
+	
+	@Test
+	public void testGetNowSummary() {
+		EnergyBean bean = getNowRequest();
+		assertEquals(4*DEVICE_1_KWH, bean.summary.kwh, 0.01d);
+	}
+
+	private EnergyBean getNowRequest() {
 		final String energyNowData = target("/energy/1/now").request().get(String.class);
 		EnergyBean bean = gson.fromJson(energyNowData, EnergyBean.class);
-		assertEquals(4, bean.devices.size());
+		return bean;
 	}
 }

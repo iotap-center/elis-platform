@@ -10,5 +10,5 @@ public class EnergySummaryBean {
 	public String deviceId;
 	
 	@XmlElement
-	public float kwh;
+	public double kwh;
 }
