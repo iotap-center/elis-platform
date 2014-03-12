@@ -16,16 +16,15 @@ public class MockUserProvider implements UserProvider {
 
 	@Override
 	public User build(Properties properties) throws UserInitalizationException {
-		String stuff = properties.getProperty("stuff");
+		User user = new MockUser();
 		
-		int whatever = 0;
 		try {
-			whatever = Integer.parseInt(properties.getProperty("whatever"));
+			user.populate(properties);
 		} catch (Exception e) {
 			throw new UserInitalizationException("whatever must be an integer");
 		}
 		
-		return new MockUser(stuff, whatever);
+		return user;
 	}
 
 	@Override

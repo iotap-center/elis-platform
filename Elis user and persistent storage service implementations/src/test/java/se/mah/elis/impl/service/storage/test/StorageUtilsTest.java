@@ -54,17 +54,17 @@ public class StorageUtilsTest {
 			statement.execute("TRUNCATE TABLE object_lookup_table;");
 			statement.execute("TRUNCATE TABLE user_lookup_table;");
 			// c3677d61-2378-4183-b478-ec915fd32e60
-			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e60'), 'table1')");
+			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e60', 'table1')");
 			// c3677d61-2378-4183-b478-ec915fd32e42
-			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e42'), 'table2')");
+			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e42', 'table2')");
 			// c3677d61-2378-4183-b478-ec915fd32e13
-			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e13'), 'table3')");
+			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e13', 'table3')");
 			// c3677d61-2378-4183-b478-ec915fd32e11
-			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e11'), 'table1')");
+			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e11', 'table1')");
 			// c3677d61-2378-4183-b478-ec915fd32e17
-			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e17'), 'table1')");
+			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e17', 'table1')");
 			// c3677d61-2378-4183-b478-ec915fd32e05
-			statement.execute("INSERT INTO object_lookup_table VALUES (UNHEX('c3677d6123784183b478ec915fd32e05'), 'table2')");
+			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e05', 'table2')");
 			statement.close();
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block

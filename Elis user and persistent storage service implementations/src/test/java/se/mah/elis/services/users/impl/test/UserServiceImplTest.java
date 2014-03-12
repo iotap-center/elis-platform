@@ -19,11 +19,15 @@ import se.mah.elis.impl.services.users.PlatformUserImpl;
 import se.mah.elis.impl.services.users.UserServiceImpl;
 import se.mah.elis.impl.services.users.factory.UserFactoryImpl;
 import se.mah.elis.services.storage.Storage;
+import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
 import se.mah.elis.services.users.exceptions.UserExistsException;
+import se.mah.elis.services.users.factory.UserFactory;
+import se.mah.elis.services.users.factory.impl.test.mock.AnotherMockUserProvider;
+import se.mah.elis.services.users.factory.impl.test.mock.MockUserProvider;
 import se.mah.elis.services.users.impl.test.mock.AnotherMockUser;
 import se.mah.elis.services.users.impl.test.mock.MockUser;
 
@@ -40,7 +44,10 @@ public class UserServiceImplTest {
 		tearDownTables();
 		populatePUTable();
 		buildAndPopulateMUTable();
-		storage = new StorageImpl(connection, new UserFactoryImpl());
+		UserFactory factory = new UserFactoryImpl();
+		storage = new StorageImpl(connection, factory);
+		factory.registerProvider(new MockUserProvider());
+		factory.registerProvider(new AnotherMockUserProvider());
 	}
 
 	@After
@@ -73,7 +80,8 @@ public class UserServiceImplTest {
 			stmt.execute("TRUNCATE TABLE object_lookup_table;");
 			stmt.execute("TRUNCATE TABLE user_lookup_table;");
 			stmt.execute("TRUNCATE TABLE `se-mah-elis-services-users-PlatformUser`;");
-			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-services-user-test-mock-MockUser`;");
+			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-services-users-impl-test-mock-MockUser`;");
+			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-services-users-impl-test-mock-AnotherMockUser`;");
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -86,7 +94,7 @@ public class UserServiceImplTest {
 		String uuid3 = "000011112222deadbeef555566667773";
 		try {
 			Statement stmt = connection.createStatement();
-			stmt.execute("CREATE TABLE `se-mah-elis-services-user-test-mock-MockUser` (" +
+			stmt.execute("CREATE TABLE `se-mah-elis-services-users-impl-test-mock-MockUser` (" +
 						"`uuid` BINARY(16) PRIMARY KEY, " +
 						"`service_name` VARCHAR(9), " +
 						"`id_number` INTEGER, " +
@@ -95,19 +103,19 @@ public class UserServiceImplTest {
 						"`stuff` VARCHAR(32), " +
 						"`whatever` INTEGER, " +
 						"`created` TIMESTAMP)");
-			stmt.execute("INSERT INTO `se-mah-elis-services-user-test-mock-MockUser` " +
+			stmt.execute("INSERT INTO `se-mah-elis-services-users-impl-test-mock-MockUser` " +
 					"VALUES (x'" + uuid1 +"', 'test', 1, 'Batman', 'Robin', 'Rajec', 21, '2000-01-01 00:00:00');");
-			stmt.execute("INSERT INTO `se-mah-elis-services-user-test-mock-MockUser` " +
+			stmt.execute("INSERT INTO `se-mah-elis-services-users-impl-test-mock-MockUser` " +
 					"VALUES (x'" + uuid2 +"', 'test', 1, 'Superman', 'Lois Lane', 'Vinea', 22, '2000-01-01 00:00:01');");
-			stmt.execute("INSERT INTO `se-mah-elis-services-user-test-mock-MockUser` " +
+			stmt.execute("INSERT INTO `se-mah-elis-services-users-impl-test-mock-MockUser` " +
 					"VALUES (x'" + uuid3 +"', 'test', 1, 'Spongebob Squarepants', 'Patrick Seastar', 'Kofola', 23, '2000-01-01 00:00:02');");
 
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid1 +"', " +
-					"'se-mah-elis-services-user-test-mock-MockUser')");
+					"'se-mah-elis-services-users-impl-test-mock-MockUser')");
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid2 +"', " +
-					"'se-mah-elis-services-user-test-mock-MockUser')");
+					"'se-mah-elis-services-users-impl-test-mock-MockUser')");
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid3 +"', " +
-					"'se-mah-elis-services-user-test-mock-MockUser')");
+					"'se-mah-elis-services-users-impl-test-mock-MockUser')");
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -183,21 +191,22 @@ public class UserServiceImplTest {
 	public void testGetUser() {
 		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
-		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
-		User mu = new MockUser();
+		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667771");
+		MockUser mu = new MockUser();
 		
 		mu.setUserId(uuid);
+		mu.setStuff("Rajec");
+		mu.setWhatever(21);
 		
-		try {
-			us.registerUserToPlatformUser(mu, pu);
-		} catch (NoSuchUserException e) {
-			fail("Register no workie");
-		}
-		
-		User user = us.getUser(pu, uuid);
+		MockUser user = (MockUser) us.getUser(pu, uuid);
+		System.out.println(user);
 		
 		assertNotNull(user);
-		assertEquals(user, mu);
+		assertEquals(mu.getIdentifier().toString(), user.getIdentifier().toString());
+		assertEquals(mu.getUserId(), user.getUserId());
+		assertEquals(mu.getStuff(), user.getStuff());
+		assertEquals(mu.getWhatever(), user.getWhatever());
+		assertTrue(user.created().isBefore(mu.created()));
 	}
 	
 	@Test
@@ -286,12 +295,16 @@ public class UserServiceImplTest {
 	@Test
 	public void testRegisterUserToPlatformUser() {
 		UserService userService = new UserServiceImpl(storage, connection);
-		PlatformUser platformUser = new PlatformUserImpl();
-		User mockUser = new MockUser();
+		PlatformUser platformUser = null;
+		MockUser mockUser = new MockUser();
+		
+		mockUser.setStuff("foo");
+		mockUser.setWhatever(1);
 		
 		try {
+			platformUser = userService.createPlatformUser("Ada", "Lovelace");
 			userService.registerUserToPlatformUser(mockUser, platformUser);
-		} catch (NoSuchUserException e) {
+		} catch (NoSuchUserException | UserExistsException e) {
 			fail("Register no workie");
 		}
 		
@@ -306,14 +319,15 @@ public class UserServiceImplTest {
 	@Test
 	public void testRegisterUserToPlatformUserMultiple() {
 		UserService us = new UserServiceImpl(storage, connection);
-		PlatformUser pu = new PlatformUserImpl();
-		User mu = new MockUser();
-		User amu = new AnotherMockUser();
+		PlatformUser pu = null;
+		MockUser mu = new MockUser();
+		AnotherMockUser amu = new AnotherMockUser();
 		
 		try {
+			pu = us.createPlatformUser("George", "Carlin");
 			us.registerUserToPlatformUser(mu, pu);
 			us.registerUserToPlatformUser(amu, pu);
-		} catch (NoSuchUserException e) {
+		} catch (NoSuchUserException | UserExistsException e) {
 			fail("Register no workie");
 		}
 		
@@ -509,11 +523,14 @@ public class UserServiceImplTest {
 	@Test
 	public void testGetPlatformUsersAssociatedWithUser() {
 		UserService us = new UserServiceImpl(storage, connection);
-		PlatformUser pu = new PlatformUserImpl();
+		PlatformUser pu = null;
+		User mu = null;
+		
 		try {
 			pu = us.createPlatformUser("Fred", "Barney");
-		} catch (UserExistsException e1) {}
-		User mu = new MockUser();
+			mu = storage.readUser(UUID.fromString("00001111-2222-dead-beef-555566667771"));
+			System.out.println(mu.getClass().getName());
+		} catch (UserExistsException | StorageException e1) {}
 		
 		try {
 			us.registerUserToPlatformUser(mu, pu);

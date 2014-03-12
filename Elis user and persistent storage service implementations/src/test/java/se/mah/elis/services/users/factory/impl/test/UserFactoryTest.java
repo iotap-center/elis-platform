@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.Properties;
+import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -49,8 +50,13 @@ public class UserFactoryTest {
 		
 		uf.registerProvider(provider);
 		
+		props.put("id_number", 1);
+		props.put("username", "alice");
+		props.put("password", "foo");
+		props.put("uuid", UUID.randomUUID());
 		props.put("stuff", "batman");
-		props.put("whatever", (new Integer(42)).toString());
+		props.put("whatever", 42);
+		props.put("created", DateTime.now());
 
 		try {
 			user = uf.build("MockUser", "test", props);
@@ -74,8 +80,13 @@ public class UserFactoryTest {
 		uf.registerProvider(provider);
 		uf.registerProvider(provider2);
 		
+		props.put("id_number", 1);
+		props.put("username", "alice");
+		props.put("password", "foo");
+		props.put("uuid", UUID.randomUUID());
 		props.put("stuff", "batman");
-		props.put("whatever", (new Integer(42)).toString());
+		props.put("whatever", 42);
+		props.put("created", DateTime.now());
 
 		try {
 			user = uf.build("MockUser", "test", props);

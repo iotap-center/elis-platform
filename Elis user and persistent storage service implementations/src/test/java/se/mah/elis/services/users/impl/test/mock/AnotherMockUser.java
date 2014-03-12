@@ -118,9 +118,13 @@ public class AnotherMockUser implements User {
 									 (String) props.getProperty("username"),
 									 (String) props.getProperty("password"));
 		uuid = (UUID) props.get("uuid");
-		stuff = (String) props.get("stuff");
-		whatever = (int) props.get("whatever");
 		created = (DateTime)props.get("created");
+		if (props.containsKey("stuff")) {
+			stuff = (String) props.get("stuff");
+		}
+		if (props.containsKey("whatever")) {
+			whatever = (int) props.get("whatever");
+		}
 	}
 
 	@Override
