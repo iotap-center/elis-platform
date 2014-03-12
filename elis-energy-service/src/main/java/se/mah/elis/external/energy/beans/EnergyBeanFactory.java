@@ -1,16 +1,14 @@
-package se.mah.elis.external.energy;
+package se.mah.elis.external.energy.beans;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.joda.time.DateTime;
 
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.ElectricitySample;
-import se.mah.elis.external.energy.beans.EnergyBean;
-import se.mah.elis.external.energy.beans.EnergyDataBean;
-import se.mah.elis.external.energy.beans.EnergyDeviceBean;
-import se.mah.elis.external.energy.beans.EnergySummaryBean;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.PlatformUserIdentifier;
 
@@ -41,7 +39,7 @@ public class EnergyBeanFactory {
 
 	private static EnergyDeviceBean createEnergyDeviceBean(ElectricitySampler meter) {
 		EnergyDeviceBean device = new EnergyDeviceBean();
-		device.deviceId = meter.getName();
+		device.deviceId = meter.getId().toString();
 		device.data = createSampleData(meter);
 		return device;
 	}
@@ -64,12 +62,17 @@ public class EnergyBeanFactory {
 			ElectricitySample sample) {
 		EnergyDataBean sampleBean = new EnergyDataBean();
 		sampleBean.kwh = sample.getTotalEnergyUsageInWh();
-		sampleBean.timestamp = sample.getSampleTimestamp().toInstant().toString();
+		sampleBean.timestamp = unixtime(sample.getSampleTimestamp());
 		return sampleBean;
 	}
 
 	private static String getPuid(PlatformUser pu) {
 		Integer puid = ((PlatformUserIdentifier) pu.getIdentifier()).getId();
 		return puid.toString();
+	}
+	
+	private static String unixtime(DateTime sampleTimestamp) {
+		Long unixtime = sampleTimestamp.getMillis();
+		return unixtime.toString();
 	}
 }

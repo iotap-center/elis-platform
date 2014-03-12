@@ -19,6 +19,7 @@ import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
 import se.mah.elis.external.energy.beans.EnergyBean;
+import se.mah.elis.external.energy.beans.EnergyBeanFactory;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
