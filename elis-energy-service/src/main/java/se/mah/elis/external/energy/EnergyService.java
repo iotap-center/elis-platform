@@ -51,7 +51,7 @@ public class EnergyService {
 	}
 
 	@GET
-	@Path("{puid}/now")
+	@Path("/{puid}/now")
 	public Response getCurrentEnergyConsumption(@PathParam("puid") String puid) {
 		ResponseBuilder response = null;
 		

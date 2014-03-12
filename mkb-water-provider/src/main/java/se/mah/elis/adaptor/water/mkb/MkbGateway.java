@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.adaptor.device.api.data.GatewayAddress;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
@@ -24,6 +26,7 @@ public class MkbGateway implements Gateway {
 	private GatewayUser gatewayUser;
 	private boolean hasConnected;
 	private boolean isOnline;
+	private UUID userOwner;
 	
 	
 	public MkbGateway() {
@@ -117,33 +120,6 @@ public class MkbGateway implements Gateway {
 	}
 
 	@Override
-	public long getDataId() {
-		// not used
-		return 0;
-	}
-
-	@Override
-	public UUID getUUID() {
-		return uuid;
-	}
-
-	@Override
-	public void setUUID(UUID uuid) {
-		this.uuid = uuid;
-	}
-
-	@Override
-	public void setUniqueUserId(int userId) {
-		// not used
-	}
-
-	@Override
-	public int getUniqueUserId() {
-		// not used
-		return 0;
-	}
-
-	@Override
 	public Properties getProperties() {
 		// TODO Auto-generated method stub
 		return null;
@@ -196,6 +172,31 @@ public class MkbGateway implements Gateway {
 	@Override
 	public boolean isOnline() {
 		return isOnline;
+	}
+
+	@Override
+	public UUID getDataId() {
+		return uuid;
+	}
+
+	@Override
+	public void setDataId(UUID uuid) {
+		this.uuid = uuid;
+	}
+
+	@Override
+	public void setOwnerId(UUID userId) {
+		this.userOwner = userId;
+	}
+
+	@Override
+	public UUID getOwnerId() {
+		return userOwner;
+	}
+
+	@Override
+	public DateTime created() {
+		return null;
 	}
 
 }

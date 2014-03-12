@@ -3,6 +3,8 @@ package se.mah.elis.adaptor.water.mkb;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
@@ -16,17 +18,6 @@ public class MkbGatwayUser implements GatewayUser {
 	private UUID uuid;
 	private UserIdentifier userIdentifier;
 	private Gateway gateway;
-
-	@Override
-	public int getIdNumber() {
-		// not used
-		return 0;
-	}
-
-	@Override
-	public void setIdNumber(int id) {
-		// not used
-	}
 
 	@Override
 	public UUID getUserId() {
@@ -69,7 +60,7 @@ public class MkbGatwayUser implements GatewayUser {
 	}
 
 	@Override
-	public Properties getProperties() {
+	public OrderedProperties getProperties() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -99,6 +90,12 @@ public class MkbGatwayUser implements GatewayUser {
 	@Override
 	public void setGateway(Gateway gateway) {
 		this.gateway = gateway;
+	}
+
+	@Override
+	public DateTime created() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

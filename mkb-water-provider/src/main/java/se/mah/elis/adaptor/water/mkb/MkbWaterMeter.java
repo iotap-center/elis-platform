@@ -39,6 +39,7 @@ public class MkbWaterMeter implements WaterMeterSampler {
 	@Reference(policy = ReferencePolicy.DYNAMIC, 
 			cardinality = ReferenceCardinality.OPTIONAL_UNARY)
 	private WaterDataService waterDataSource;
+	private UUID userOwner;
 	private static ComponentContext ctx;
 
 	public MkbWaterMeter() { } 
@@ -108,33 +109,6 @@ public class MkbWaterMeter implements WaterMeterSampler {
 	}
 
 	@Override
-	public long getDataId() {
-		// not used
-		return 0;
-	}
-
-	@Override
-	public UUID getUUID() {
-		return uuid;
-	}
-
-	@Override
-	public void setUUID(UUID uuid) {
-		this.uuid = uuid;
-	}
-
-	@Override
-	public void setUniqueUserId(int userId) {
-		// not used
-	}
-
-	@Override
-	public int getUniqueUserId() {
-		// not used
-		return 0;
-	}
-
-	@Override
 	public Properties getProperties() {
 		// TODO Auto-generated method stub
 		return null;
@@ -192,6 +166,31 @@ public class MkbWaterMeter implements WaterMeterSampler {
 				getName(), from, to);
 		WaterSample sample = new MkbWaterSample(points);
 		return sample;
+	}
+
+	@Override
+	public UUID getDataId() {
+		return uuid;
+	}
+
+	@Override
+	public void setDataId(UUID uuid) {
+		this.uuid = uuid;
+	}
+
+	@Override
+	public void setOwnerId(UUID userId) {
+		this.userOwner = userId;
+	}
+
+	@Override
+	public UUID getOwnerId() {
+		return userOwner;
+	}
+
+	@Override
+	public DateTime created() {
+		return null;
 	}
 
 }

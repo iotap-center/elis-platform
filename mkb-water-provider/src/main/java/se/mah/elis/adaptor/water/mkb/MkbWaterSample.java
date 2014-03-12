@@ -18,6 +18,7 @@ public class MkbWaterSample implements WaterSample {
 	private UUID uuid;
 	private DateTime sampleTimestamp;
 	private int sampleLength;
+	private UUID userOwner;
 
 	public MkbWaterSample(WaterDataPoint point) {
 		this.volume = point.getValue();
@@ -47,7 +48,7 @@ public class MkbWaterSample implements WaterSample {
 	}
 
 	@Override
-	public int getSampleLength() {
+	public long getSampleLength() {
 		return sampleLength;
 	}
 
@@ -61,33 +62,6 @@ public class MkbWaterSample implements WaterSample {
 		List<String> methods = new ArrayList<>();
 		methods.add("getVolume");
 		return methods;
-	}
-
-	@Override
-	public long getDataId() {
-		// not used
-		return 0;
-	}
-
-	@Override
-	public UUID getUUID() {
-		return uuid;
-	}
-
-	@Override
-	public void setUUID(UUID uuid) {
-		this.uuid = uuid;
-	}
-
-	@Override
-	public void setUniqueUserId(int userId) {
-		// not used
-	}
-
-	@Override
-	public int getUniqueUserId() {
-		// not used
-		return 0;
 	}
 
 	@Override
@@ -111,6 +85,32 @@ public class MkbWaterSample implements WaterSample {
 	@Override
 	public float getVolume() {
 		return volume;
+	}
+
+	@Override
+	public UUID getDataId() {
+		return uuid;
+	}
+
+	@Override
+	public void setDataId(UUID uuid) {
+		this.uuid = uuid;
+	}
+
+	@Override
+	public void setOwnerId(UUID userId) {
+		this.userOwner = userId;
+	}
+
+	@Override
+	public UUID getOwnerId() {
+		return userOwner;
+	}
+
+	@Override
+	public DateTime created() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
