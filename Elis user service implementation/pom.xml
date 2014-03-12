@@ -42,6 +42,11 @@
   		<version>1.0.0</version>
   		<type>bundle</type>
   	</dependency>
+  	<dependency>
+  		<groupId>joda-time</groupId>
+  		<artifactId>joda-time</artifactId>
+  		<version>2.3</version>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>
@@ -54,7 +59,7 @@
           <instructions>
             <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
             <Private-Package>${project.groupId}.*</Private-Package>
-            <Import-Package>se.mah.elis.services.users;se.mah.elis.services.users.*</Import-Package>
+            <Import-Package>se.mah.elis.services.users;se.mah.elis.services.users.*;org.joda.time.*</Import-Package>
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->

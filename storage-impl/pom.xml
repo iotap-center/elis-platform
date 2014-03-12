@@ -85,7 +85,8 @@
         <configuration>
           <instructions>
             <Private-Package>${project.groupId};${project.groupId}.*</Private-Package>
-            <Import-Package>*</Import-Package>
+            <Import-Package>*;resolution:=optional</Import-Package>
+            <Embed-Dependency>mysql-connector-java;scope=compile|runtime</Embed-Dependency>
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
