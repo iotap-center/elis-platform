@@ -21,6 +21,7 @@ import org.json.simple.parser.ParseException;
 
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.exceptions.ActuatorFailedException;
+import se.mah.elis.adaptor.utilityprovider.eon.test.Statistic;
 
 /**
  * HTTP bridge to communicate with the E.On HTTP API using JSON.
@@ -42,6 +43,7 @@ public class EonHttpBridge {
 	private static final String ACTIONSTATUS_ENDPOINT = "/Panel/GetActionStatus";
 	private static final String TEMPERATURE_ENDPOINT = "/Device/GetThermostatTemp";
 	private static final String THERMOSTAT_ENDPOINT = "/Device/SetThermostatTemp";
+	private static final String STATDATA_ENDPOINT = "/Stats/Getstat";
 
 	private static final int TURN_ON = 1;
 	private static final int TURN_OFF = 0;
@@ -51,6 +53,7 @@ public class EonHttpBridge {
 	private static final String TRUSTSTORE_SECRET = "eon-truststore-secret";
 	private static final String KEYSTORE_FILE = "./eon_keystore_client";
 	private static final String KEYSTORE_SECRET = "eon-keystore-secret";
+	private static final int VALUE_TYPE_POWER = 0;
 
 	// internal config
 	private String host;
@@ -297,6 +300,32 @@ public class EonHttpBridge {
 		
 		return createActionObject(actionObjectData);
 	}
+	
+	/**
+	 * HTTP call to retrieve statistics from a specific device
+	 * 
+	 * @param token
+	 * @param gatewayId
+	 * @param deviceId
+	 * @param from - Retrieve values from this date, string in format yyyy-MM-dd HH:MM
+	 * @param level - Sets periodicity 0 = hour, 1 = day, 2 = month, 3 = year
+	 * @return
+	 * @throws ParseException
+	 */
+	public List<Map<String, Object>> getStatData(String token, String gatewayId, 
+			String deviceId, String from, int level) throws ParseException {
+		JSONObject options = new JSONObject();
+		options.put("DeviceId", deviceId);
+		options.put("From", from);
+
+		WebTarget target = createTarget(STATDATA_ENDPOINT);
+		target = target.queryParam(EWP_PANEL_ID, gatewayId)
+				.queryParam("ValueType", VALUE_TYPE_POWER);
+		Response response = doPost(token, options.toJSONString(), target);
+		verifyResponse(response);
+		
+		return EonParser.parseStatData(response.readEntity(String.class));
+	}
 
 	private EonActionObject createActionObject(Map<String, Object> actionStatus) {
 		long id = (long) actionStatus.get("Id");
@@ -448,5 +477,4 @@ public class EonHttpBridge {
 
 		return client;
 	}
-
 }

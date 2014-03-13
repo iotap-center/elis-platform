@@ -91,4 +91,62 @@ public class EonParser {
 		double powerMeterValue = ((Number) powerMeterObject.get("CurrentKwh")).doubleValue();
 		return powerMeterValue;
 	}
+
+	public static List<Map<String, Object>> parseSummaryStats(String response) throws ParseException {
+		List<Map<String, Object>> summaries = new ArrayList<Map<String,Object>>(); 
+		JSONArray responses = (JSONArray) parser.parse(response);
+		for (Iterator<JSONObject> iterator = responses.iterator(); iterator.hasNext(); ) {
+			JSONObject obj = iterator.next();
+			
+			Map<String, Object> summary = new HashMap<>();
+			summary.put("DeviceId", obj.get("DeviceId"));
+			
+			summary.put("AverageConsumptionLastYear", 	number(obj.get("AverageConsumptionLastYear")));
+			summary.put("AverageConsumptionLastMonth", 	number(obj.get("AverageConsumptionLastMonth")));
+			summary.put("AverageConsumptionLastWeek", 	number(obj.get("AverageConsumptionLastWeek")));
+			summary.put("AverageConsumptionThisYear", 	number(obj.get("AverageConsumptionThisYear")));
+			summary.put("AverageConsumptionThisMonth", 	number(obj.get("AverageConsumptionThisMonth")));
+			summary.put("AverageConsumptionThisWeek", 	number(obj.get("AverageConsumptionThisWeek")));
+			summary.put("AverageConsumptionThisDay", 	number(obj.get("AverageConsumptionThisDay")));
+			
+			summary.put("SumConsumptionLastYear", 	number(obj.get("SumConsumptionLastYear")));
+			summary.put("SumConsumptionLastMonth", 	number(obj.get("SumConsumptionLastMonth")));
+			summary.put("SumConsumptionLastWeek", 	number(obj.get("SumConsumptionLastWeek")));
+			summary.put("SumConsumptionThisYear", 	number(obj.get("SumConsumptionThisYear")));
+			summary.put("SumConsumptionThisMonth", 	number(obj.get("SumConsumptionThisMonth")));
+			summary.put("SumConsumptionThisWeek", 	number(obj.get("SumConsumptionThisWeek")));
+			summary.put("SumConsumptionThisDay", 	number(obj.get("SumConsumptionThisDay")));
+			
+			summary.put("SumCostLastYear", 	number(obj.get("SumCostLastYear")));
+			summary.put("SumCostLastMonth", number(obj.get("SumCostLastMonth")));
+			summary.put("SumCostLastWeek", 	number(obj.get("SumCostLastWeek")));
+			summary.put("SumCostThisYear", 	number(obj.get("SumCostThisYear")));
+			summary.put("SumCostThisMonth", number(obj.get("SumCostThisMonth")));
+			summary.put("SumCostThisWeek", 	number(obj.get("SumCostThisWeek")));
+			summary.put("SumCostThisDay", 	number(obj.get("SumCostThisDay")));
+			
+			summaries.add(summary);
+		}
+		return summaries;
+	}
+
+	public static List<Map<String, Object>> parseStatData(String response) throws ParseException{
+		List<Map<String, Object>> stats = new ArrayList<Map<String,Object>>();
+		
+		JSONArray responseArray = (JSONArray) parser.parse(response);
+		for (Iterator<JSONObject> iterator = responseArray.iterator(); iterator.hasNext();) {
+			JSONObject responseStat = iterator.next();
+			Map<String, Object> stat = new HashMap<>();
+			stat.put("Key", responseStat.get("Key"));
+			stat.put("Value", responseStat.get("Value"));
+			stat.put("ValueCost", responseStat.get("ValueCost"));
+			stats.add(stat);
+		}
+		
+		return stats;
+	}
+	
+	private static double number(Object value) {
+		return ((Number) value).doubleValue();
+	}
 }

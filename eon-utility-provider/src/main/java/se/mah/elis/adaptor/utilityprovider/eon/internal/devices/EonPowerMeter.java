@@ -1,5 +1,6 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
@@ -106,6 +107,11 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		electricitySample = new ElectricitySampleImpl(value);
 
 		return electricitySample;
+	}
+	
+	public List<ElectricitySample> getSamples(DateTime from, DateTime to) throws SensorFailedException {
+		
+		return null;
 	}
 
 	@Override

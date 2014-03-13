@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.List;
+import java.util.Map;
+
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
@@ -100,6 +103,82 @@ public class EonParserTest {
 			assertTrue(EonParser.parseTemperatureValue(response) == -1); // TODO: this will break when temp = -1.1 (floats)
 		} catch (Exception ignore) { fail(); }
 	}
+	
+	@Test
+	public void testParseSummaryStats() {
+		try {
+			List<Map<String, Object>> summaries = EonParser.parseSummaryStats(SAMPLE_SUMMARYSTATS);
+			Map<String, Object> summary = summaries.get(0);
+			assertEquals("4401bdf2-6077-452c-ac73-b65a04e96b80", (String) summary.get("DeviceId"));
+			assertEquals(234.29438725997019d, (Double) summary.get("AverageConsumptionLastYear"), 0.001d);
+			assertEquals(0, (Double) summary.get("AverageConsumptionLastMonth"), 0.001d);
+			assertEquals(0, (Double) summary.get("AverageConsumptionLastWeek"), 0.001d);
+			assertEquals(0, (Double) summary.get("AverageConsumptionThisYear"), 0.001d);
+			assertEquals(0, (Double) summary.get("AverageConsumptionThisMonth"), 0.001d);
+			assertEquals(0, (Double) summary.get("AverageConsumptionThisWeek"), 0.001d);
+			assertEquals(0, (Double) summary.get("AverageConsumptionThisDay"), 0.001d);
+			assertEquals(0, (Double) summary.get("SumConsumptionThisDay"), 0.0d);
+		} catch (ParseException e) {
+			fail("Could not parse summary stats");
+		}
+	}
+	
+	@Test
+	public void testParseStatData() {
+		try {
+			List<Map<String, Object>> datas = EonParser.parseStatData(SAMPLE_STATDATA);
+			assertEquals(2, datas.size());
+			Map<String, Object> data = datas.get(0);
+			assertEquals("0001-01-01 00:00", data.get("Key"));
+			assertEquals(37805.423369955635d, data.get("Value"));
+			assertEquals(30114.022641708878d, data.get("ValueCost"));
+		} catch (ParseException e) {
+			fail("Could not parse stat data");
+		}
+	}
+	
+	public static final String SAMPLE_STATDATA = ""
+			+ "[{\"Key\":\"0001-01-01 00:00\",\"Value\":37805.423369955635,\"ValueCost\":30114.022641708878}"
+			+ ",{\"Key\":\"0001-01-01 01:00\",\"Value\":20857.415310303728,\"ValueCost\":16159.1836757256}]";
+	
+	public static final String SAMPLE_SUMMARYSTATS = ""
+			+ "[{"
+			   + "\"AverageConsumptionAllTime\" : 161.60007067797793, "
+			   + "\"AverageConsumptionAllTimeLiter\" : 0, "
+			   + "\"AverageConsumptionLastMonth\" : 0, "
+			   + "\"AverageConsumptionLastMonthLiter\" : 0, "
+			   + "\"AverageConsumptionLastWeek\" : 0, "
+			   + "\"AverageConsumptionLastWeekLiter\" : 0, "
+			   + "\"AverageConsumptionLastYear\" : 234.29438725997019, "
+			   + "\"AverageConsumptionLastYearLiter\" : 0, "
+			   + "\"AverageConsumptionThisDay\" : 0, "
+			   + "\"AverageConsumptionThisMonth\" : 0, "
+			   + "\"AverageConsumptionThisMonthLiter\" : 0, "
+			   + "\"AverageConsumptionThisWeek\" : 0, "
+			   + "\"AverageConsumptionThisWeekLiter\" : 0, "
+			   + "\"AverageConsumptionThisYear\" : 0, "
+			   + "\"AverageConsumptionThisYearLiter\" : 0, "
+			   + "\"AverageCostAllTime\" : 143.78045539743627, "
+			   + "\"AverageTemperatureAllTime\" : 0, "
+			   + "\"DeviceId\" : \"4401bdf2-6077-452c-ac73-b65a04e96b80\", "
+			   + "\"FirstObservationDate\" : \"/Date(1375034400000+0200)/\", "
+			   + "\"SumConsumptionAllTime\" : 882821.1861137934, "
+			   + "\"SumConsumptionLastMonth\" : 0, "
+			   + "\"SumConsumptionLastWeek\" : 0, "
+			   + "\"SumConsumptionLastYear\" : 882821.1861137934, "
+			   + "\"SumConsumptionThisDay\" : 0, "
+			   + "\"SumConsumptionThisMonth\" : 0, "
+			   + "\"SumConsumptionThisWeek\" : 0, "
+			   + "\"SumConsumptionThisYear\" : 0, "
+			   + "\"SumCostAllTime\" : 785472.62783619436, "
+			   + "\"SumCostLastMonth\" : 0, "
+			   + "\"SumCostLastWeek\" : 0, "
+			   + "\"SumCostLastYear\" : 785472.62783619436, "
+			   + "\"SumCostThisDay\" : 0, "
+			   + "\"SumCostThisMonth\" : 0, "
+			   + "\"SumCostThisWeek\" : 0, "
+			   + "\"SumCostThisYear\" : 0 "
+			+ "}]";
 	
 	/**
 	 * May also be used to create JSON objects
@@ -252,4 +331,5 @@ public class EonParserTest {
 			+"\"UsageAreaId\": 9,"
 			+"\"ZoneNo\": 1"
 			+"}";
+	
 }

@@ -24,6 +24,7 @@ import se.mah.elis.adaptor.utilityprovider.eon.internal.EonHttpBridge;
 
 public class EonHttpBridgeTest {
 	
+	private static final int LEVEL_HOUR = 0;
 	// test config
 	private static final String TEST_HOST = "http://ewpapi2.dev.appex.no";
 	private static final int TEST_PORT = 80;
@@ -167,6 +168,17 @@ public class EonHttpBridgeTest {
 			double value = bridge.getPowerMeterKWh(token, TEST_GATEWAY, TEST_DEVICEID);
 			assertTrue(value >= 0.0);
 		} catch (Exception ignore) { fail("No power meter value received"); }
+	}
+	
+	@Test
+	public void testGetStatData() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		String from = "2013-10-01 00:00";
+		int level = LEVEL_HOUR; 
+		try {
+			List<Map<String, Object>> stats = bridge.getStatData(token, TEST_GATEWAY, TEST_DEVICEID, from, level);
+			assertTrue(stats.size() == 24);
+		} catch (Exception ignore) { fail(); }
 	}
 	
 }
