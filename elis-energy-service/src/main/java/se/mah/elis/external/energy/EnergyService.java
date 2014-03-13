@@ -18,6 +18,7 @@ import org.osgi.service.log.LogService;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
+import se.mah.elis.adaptor.device.api.entities.devices.PowerSwitch;
 import se.mah.elis.external.energy.beans.EnergyBean;
 import se.mah.elis.external.energy.beans.EnergyBeanFactory;
 import se.mah.elis.services.users.PlatformUser;
@@ -84,7 +85,7 @@ public class EnergyService {
 	private List<Device> getMeters(GatewayUser user) {
 		List<Device> meters = new ArrayList<>();
 		for (Device device : user.getGateway()) {
-			if (device instanceof ElectricitySampler)
+			if (device instanceof ElectricitySampler && !(device instanceof PowerSwitch))
 				meters.add(device);
 		}
 		return meters;

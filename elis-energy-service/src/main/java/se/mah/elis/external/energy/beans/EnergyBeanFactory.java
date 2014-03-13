@@ -1,5 +1,7 @@
 package se.mah.elis.external.energy.beans;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,9 +85,19 @@ public class EnergyBeanFactory {
 	private static EnergyDeviceBean createEnergyDeviceBean(ElectricitySampler meter, List<ElectricitySample> samples) {
 		EnergyDeviceBean device = new EnergyDeviceBean();
 		device.deviceId = meter.getId().toString();
-		device.deviceName = meter.getName();
+		device.deviceName = encodeString(meter.getName());
 		device.data = createSampleData(samples);
 		return device;
+	}
+
+	private static String encodeString(String stringToEncode) {
+		String name = "";
+		try {
+			name = URLEncoder.encode(stringToEncode, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			name = stringToEncode;
+		}
+		return name;
 	}
 
 	private static List<EnergyDataBean> createSampleData(List<ElectricitySample> samples) {
