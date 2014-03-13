@@ -364,7 +364,8 @@ public class StorageUtils {
 		String tableName = null;
 		
 		String query = "SELECT stored_in FROM object_lookup_table " +
-				"WHERE id = UNHEX('" + stripDashesFromUUID(uuid) + "');";
+				"WHERE id = x'" + stripDashesFromUUID(uuid) + "';";
+		
 		try {
 			Statement stmt = connection.createStatement();
 			java.sql.ResultSet rs = stmt.executeQuery(query);
@@ -395,11 +396,12 @@ public class StorageUtils {
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
 		
-		String query = "INSERT INTO object_lookup_table VALUES(UNHEX(?), ?);";
+		String query = "INSERT INTO object_lookup_table VALUES(x?, ?);";
 		
 		if (uuid == null || table == null || table.length() == 0) {
 			throw new StorageException();
 		}
+		table = mysqlifyName(table);
 		
 		try {
 			PreparedStatement stmt = connection.prepareStatement(query);
@@ -424,8 +426,8 @@ public class StorageUtils {
 	 * @since 1.0
 	 */
 	public void freeUUID(UUID uuid) {
-		String query = "DELETE FROM object_lookup_table WHERE id = UNHEX('" +
-				stripDashesFromUUID(uuid) + "');";
+		String query = "DELETE FROM object_lookup_table WHERE id = x'" +
+				stripDashesFromUUID(uuid) + "';";
 		
 		try {
 			Statement stmt = connection.createStatement();
@@ -447,13 +449,14 @@ public class StorageUtils {
 	 */
 	public void coupleUsers(int platformUser, UUID user)
 			throws StorageException {
-		String query = "INSERT INTO user_lookup_table VALUES(?, UNHEX(?));";
+		String query = "INSERT INTO user_lookup_table VALUES(?, x?);";
 		
 		if (user == null) {
 			throw new StorageException();
 		}
 		
 		try {
+			connection.setAutoCommit(true);
 			PreparedStatement stmt = connection.prepareStatement(query);
 			
 			// Populate the query
@@ -479,8 +482,8 @@ public class StorageUtils {
 	 */
 	public void decoupleUsers(int platformUser, UUID user) {
 		String query = "DELETE FROM user_lookup_table WHERE platform_user = " +
-				platformUser + " AND user = UNHEX('" +
-				stripDashesFromUUID(user) + "');";
+				platformUser + " AND user = x'" +
+				stripDashesFromUUID(user) + "';";
 		
 		try {
 			Statement stmt = connection.createStatement();
@@ -504,7 +507,7 @@ public class StorageUtils {
 		ArrayList<Integer> platformUsers = new ArrayList<Integer>();
 		
 		String query = "SELECT platform_user FROM user_lookup_table " +
-				"WHERE user = UNHEX('" + stripDashesFromUUID(user) + "');";
+				"WHERE user = x'" + stripDashesFromUUID(user) + "';";
 		try {
 			Statement stmt = connection.createStatement();
 			java.sql.ResultSet rs = stmt.executeQuery(query);

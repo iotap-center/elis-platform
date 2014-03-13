@@ -8,11 +8,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.UUID;
 
 import org.apache.felix.scr.annotations.Component;
@@ -29,7 +25,6 @@ import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
 import se.mah.elis.services.users.exceptions.UserExistsException;
-import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 /**
  * An implementation of {@link se.mah.elis.services.users.UserService}. For the
@@ -47,10 +42,6 @@ public class UserServiceImpl implements UserService {
 	
 	private StorageUtils utils;
 	
-	// TODO This is a placeholer. It has to be replaced with a persistent storage at a later stage.
-	private Map<PlatformUser, ArrayList<User>> map;
-	private int platformUserCounter;
-	
 	/**
 	 * 
 	 */
@@ -66,19 +57,11 @@ public class UserServiceImpl implements UserService {
 			e.printStackTrace();
 		}
 		this.utils = new StorageUtils(connection);
-		
-		// TODO This isn't kosher
-		map = new TreeMap<PlatformUser, ArrayList<User>>();
-		platformUserCounter = 0;
 	}
 	
 	public UserServiceImpl(Storage storage, Connection connection) {
 		this.storage = storage;
 		this.utils = new StorageUtils(connection);
-		
-		// TODO This isn't kosher - remove when done
-		map = new TreeMap<PlatformUser, ArrayList<User>>();
-		platformUserCounter = 0;
 	}
 
 	/* (non-Javadoc)
@@ -86,20 +69,18 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public User[] getUsers(PlatformUser pu) {
-		// TODO This isn't kosher yet
+		UUID[] userIds = null;
+		User[] users = null;
 		
-		User[] users = new User[0];
+		userIds = utils.getUsersAssociatedWithPlatformUser(
+				((PlatformUserIdentifier) pu.getIdentifier()).getId());
 		
-		if (map.containsKey(pu)) {
-			users = (User[]) ((ArrayList<User>) map.get(pu)).toArray(users);
-		}
+		users = new User[userIds.length];
 		
-		for (User user : users) {
+		for (int i = 0; i < users.length; i++) {
 			try {
-				user.initialize();
-			} catch (UserInitalizationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				users[i] = (User) storage.readUser(userIds[i]);
+			} catch (StorageException e) {
 			}
 		}
 		
@@ -109,14 +90,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getUser(PlatformUser pu, UUID uuid) {
 		User user = null;
-		ArrayList<User> users = map.get(pu);
 		
-		if (users != null) {
-			for (User u : users) {
-				if (u.getUserId() == uuid) {
-					user = u;
-				}
+		try {
+			if (storage.readUser((PlatformUserIdentifier)
+					pu.getIdentifier()) != null) {
+				user = storage.readUser(uuid);
 			}
+		} catch (StorageException e) {
 		}
 		
 		return user;
@@ -144,39 +124,23 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public synchronized void registerUserToPlatformUser(User user, PlatformUser platformUser)
 			throws NoSuchUserException {
-		// TODO This isn't kosher
-		
-		ArrayList<User> list = null;
-		
-		if (user.getUserId() == null) {
-			user.setUserId(UUID.randomUUID());
+		try {
+			storage.insert(user);
+		} catch (StorageException e1) {
 		}
 		
-		if (!map.containsKey(platformUser)) {
-			list = new ArrayList<User>();
-			((PlatformUserIdentifierImpl) platformUser.getIdentifier()).setId(++platformUserCounter);
-			map.put(platformUser, list);
-		} else {
-			list = (ArrayList<User>) map.get(platformUser);
+		try {
+			utils.coupleUsers(((PlatformUserIdentifierImpl)
+					platformUser.getIdentifier()).getId(), user.getUserId());
+		} catch (StorageException e) {
 		}
-		
-		list.add(user);
 	}
 
 	@Override
 	public synchronized void unregisterUserFromPlatformUser(User u, PlatformUser pu)
 			throws NoSuchUserException {
-		// TODO This isn't kosher
-		
-		ArrayList<User> list = (ArrayList<User>) map.get(pu);
-		
-		if (list != null) {
-			list.remove(u);
-			
-			if (list.size() == 0) {
-				map.remove(pu);
-			}
-		}
+		utils.decoupleUsers(((PlatformUserIdentifierImpl)
+				pu.getIdentifier()).getId(), u.getUserId());
 	}
 
 	@Override
@@ -208,19 +172,19 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public PlatformUser[] getPlatformUsersAssociatedWithUser(User u)
 			throws NoSuchUserException {
+		ArrayList<PlatformUser> platformUsers = new ArrayList<PlatformUser>();
+		int[] platformUserIds = new int[0];
+		Properties props = new Properties();
 		
-		PlatformUser[] pus = new PlatformUserImpl[0];
-		Set<PlatformUser> set = new TreeSet<PlatformUser>();
+		platformUserIds = utils.getPlatformUsersAssociatedWithUser(u.getUserId());
 		
-		for (Entry<PlatformUser, ArrayList<User>> entry : map.entrySet()) {
-			for (User user : entry.getValue()) {
-				if (user == u) {
-					set.add(entry.getKey());
-				}
-			}
+		for (int i = 0; i < platformUserIds.length; i++) {
+			props.put("id", platformUserIds[i]);
+			
+			platformUsers.add(storage.readPlatformUsers(props)[0]);
 		}
 		
-		return set.toArray(pus);
+		return platformUsers.toArray(new PlatformUser[0]);
 	}
 
 	@Override
