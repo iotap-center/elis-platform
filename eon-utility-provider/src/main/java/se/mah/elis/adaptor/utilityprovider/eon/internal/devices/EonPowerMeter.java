@@ -1,7 +1,6 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -30,14 +29,14 @@ import se.mah.elis.exceptions.StaticEntityException;
 public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 
 	
-	private boolean isOnline;
-	private EonGateway gateway;
-	private DeviceIdentifier deviceId;
-	private String deviceName = "";
-	private String description = "";
-	private UUID dataid;
-	private UUID ownerid;
-	private DateTime created = DateTime.now();
+	protected boolean isOnline;
+	protected EonGateway gateway;
+	protected DeviceIdentifier deviceId;
+	protected String deviceName = "";
+	protected String description = "";
+	protected UUID dataid;
+	protected UUID ownerid;
+	protected DateTime created = DateTime.now();
 	
 	@Override
 	public DeviceIdentifier getId() {
@@ -120,7 +119,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		return null;
 	}
 	
-	private String getGatewayAddress() {
+	protected String getGatewayAddress() {
 		return getGateway().getAddress().toString();
 	}
 
@@ -133,6 +132,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		props.put("identifier", deviceId);
 		props.put("device_name", deviceName);
 		props.put("description", description);
+		props.put("gateway", gateway.getDataId());
 		return props;
 	}
 
@@ -145,6 +145,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		props.put("identifier", new EonDeviceIdentifier("a"));
 		props.put("device_name", "64");
 		props.put("description", "256");
+		props.put("gateway", UUID.randomUUID());
 		return props;
 	}
 
@@ -157,6 +158,8 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		this.deviceName = (String) props.get("deviceName");
 		this.description = (String) props.getProperty("description");
 		this.deviceId.populate(props);
+
+		// TODO Create gateway
 	}
 
 	@Override
