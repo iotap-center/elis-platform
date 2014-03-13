@@ -335,7 +335,7 @@ public class PlatformUserIdentifierTest {
 	public void testToString() {
 		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl(3, "batman", "superman");
 		
-		assertEquals("3: batman, superman", p.toString());
+		assertEquals("3: batman", p.toString());
 	}
 
 	@Test

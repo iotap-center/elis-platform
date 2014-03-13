@@ -94,7 +94,7 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	
 	@Override
 	public String toString() {
-		return id + ": " + username + ", " + password;
+		return id + ": " + username;
 	}
 	
 	@Override
