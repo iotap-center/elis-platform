@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>se.mah.elis</groupId>
 	<artifactId>super-pom</artifactId>
-	<version>1.0.0</version>
+	<version>0.0.1</version>
 	<packaging>pom</packaging>
 	<name>The Elis Platform</name>
 	
@@ -161,22 +161,28 @@
 		<module>../storage api</module>
 		<module>../building api</module>
 		<module>../structure api</module>
-    
 		
 		<!-- External API modules -->
-		<module>../Elis user service implementation</module>
-		<module>../storage-impl</module>
+		<!-- <module>../northbound-api/com.eclipsesource.jaxrs.publisher</module> -->
+		
+		<!-- Reference implementation modules -->
+		<module>../Elis user and persistent storage service implementations</module>
 		<module>../Elis user web service</module>
 		
-    <module>../northbound-api/com.eclipsesource.jaxrs.publisher</module>
-    <module>../eon-utility-provider</module>
-    
-    
-    
-    <module>../elis-demo-users</module>
-    <module>../elis-device-service</module>
-    <module>../elis-water-service</module>
-    <module>../mkb-water-provider</module>
-    <module>../elis-energy-service</module>
+		<!-- Misc modules -->
+		<module>../eon-utility-provider</module>
+		<!-- <module>../elis-branding</module> -->
+        <!-- <module>../qs-driver</module> -->
+        <!-- <module>../ninjablock</module> -->
+		
 	</modules>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.27</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
