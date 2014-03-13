@@ -1,0 +1,8 @@
+For the production environment we currently use a static user. This means, that
+there must be a user called 'elis', identified by the password
+'notallthatsecret'. The user must have full access to the database called
+'elis', which is created by running the production.sql script.
+
+For the test environment to be operational, there must be a user called
+'elis_test', identified by 'elis_test'. The user must have full access to the
+database called 'elis_test', which is created by running the test.sql script.
