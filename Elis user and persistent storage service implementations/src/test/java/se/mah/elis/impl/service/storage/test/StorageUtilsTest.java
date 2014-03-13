@@ -7,7 +7,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
@@ -52,7 +51,7 @@ public class StorageUtilsTest {
 			                  + "user=elis_test&password=elis_test");
 			Statement statement = connection.createStatement();
 			statement.execute("TRUNCATE TABLE object_lookup_table;");
-			statement.execute("TRUNCATE TABLE user_lookup_table;");
+			statement.execute("TRUNCATE TABLE user_bindings;");
 			// c3677d61-2378-4183-b478-ec915fd32e60
 			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e60', 'table1')");
 			// c3677d61-2378-4183-b478-ec915fd32e42
@@ -96,7 +95,7 @@ public class StorageUtilsTest {
 		
 		try {
 			statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT count(*) FROM user_lookup_table");
+			ResultSet rs = statement.executeQuery("SELECT count(*) FROM user_bindings");
 			rs.next();
 			bindings = rs.getInt(1);
 			statement.close();

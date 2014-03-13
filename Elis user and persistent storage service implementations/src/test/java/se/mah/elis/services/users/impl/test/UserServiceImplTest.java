@@ -78,7 +78,7 @@ public class UserServiceImplTest {
 		try {
 			Statement stmt = connection.createStatement();
 			stmt.execute("TRUNCATE TABLE object_lookup_table;");
-			stmt.execute("TRUNCATE TABLE user_lookup_table;");
+			stmt.execute("TRUNCATE TABLE user_bindings;");
 			stmt.execute("TRUNCATE TABLE `se-mah-elis-services-users-PlatformUser`;");
 			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-services-users-impl-test-mock-MockUser`;");
 			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-services-users-impl-test-mock-AnotherMockUser`;");

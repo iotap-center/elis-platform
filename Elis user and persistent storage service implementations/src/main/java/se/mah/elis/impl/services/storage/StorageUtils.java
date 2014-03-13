@@ -449,7 +449,7 @@ public class StorageUtils {
 	 */
 	public void coupleUsers(int platformUser, UUID user)
 			throws StorageException {
-		String query = "INSERT INTO user_lookup_table VALUES(?, x?);";
+		String query = "INSERT INTO user_bindings VALUES(?, x?);";
 		
 		if (user == null) {
 			throw new StorageException();
@@ -481,7 +481,7 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public void decoupleUsers(int platformUser, UUID user) {
-		String query = "DELETE FROM user_lookup_table WHERE platform_user = " +
+		String query = "DELETE FROM user_bindings WHERE platform_user = " +
 				platformUser + " AND user = x'" +
 				stripDashesFromUUID(user) + "';";
 		
@@ -506,7 +506,7 @@ public class StorageUtils {
 	public int[] getPlatformUsersAssociatedWithUser(UUID user) {
 		ArrayList<Integer> platformUsers = new ArrayList<Integer>();
 		
-		String query = "SELECT platform_user FROM user_lookup_table " +
+		String query = "SELECT platform_user FROM user_bindings " +
 				"WHERE user = x'" + stripDashesFromUUID(user) + "';";
 		try {
 			Statement stmt = connection.createStatement();
@@ -535,7 +535,7 @@ public class StorageUtils {
 	public UUID[] getUsersAssociatedWithPlatformUser(int id) {
 		ArrayList<UUID> platformUsers = new ArrayList<UUID>();
 		
-		String query = "SELECT user FROM user_lookup_table " +
+		String query = "SELECT user FROM user_bindings " +
 				"WHERE platform_user = " + id + ";";
 		try {
 			// Let's take command of the commit ship ourselves.
