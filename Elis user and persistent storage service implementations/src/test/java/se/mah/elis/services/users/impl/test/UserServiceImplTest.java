@@ -190,7 +190,7 @@ public class UserServiceImplTest {
 	@Test
 	public void testGetUser() {
 		UserService us = new UserServiceImpl(storage, connection);
-		PlatformUser pu = new PlatformUserImpl();
+		PlatformUser pu = null;
 		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667771");
 		MockUser mu = new MockUser();
 		
@@ -198,8 +198,12 @@ public class UserServiceImplTest {
 		mu.setStuff("Rajec");
 		mu.setWhatever(21);
 		
+		try {
+			pu = us.createPlatformUser("foo", "bar");
+		} catch (UserExistsException e) {
+		}
+		
 		MockUser user = (MockUser) us.getUser(pu, uuid);
-		System.out.println(user);
 		
 		assertNotNull(user);
 		assertEquals(mu.getIdentifier().toString(), user.getIdentifier().toString());
@@ -212,52 +216,62 @@ public class UserServiceImplTest {
 	@Test
 	public void testGetUserMultipleUserTypes() {
 		UserService us = new UserServiceImpl(storage, connection);
-		PlatformUser pu = new PlatformUserImpl();
-		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
-		User mu = new MockUser();
+		PlatformUser pu = null;
+		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667771");
+		MockUser mu = new MockUser();
 		
 		mu.setUserId(uuid);
+		mu.setStuff("Rajec");
+		mu.setWhatever(21);
 		
 		try {
+			pu = us.createPlatformUser("foo", "bar");
 			us.registerUserToPlatformUser(mu, pu);
 			us.registerUserToPlatformUser(new AnotherMockUser(), pu);
-		} catch (NoSuchUserException e) {
+		} catch (NoSuchUserException | UserExistsException e) {
 			fail("Register no workie");
 		}
 		
-		User user = us.getUser(pu, uuid);
+		MockUser user = (MockUser) us.getUser(pu, uuid);
 		
 		assertNotNull(user);
-		assertEquals(user, mu);
+		assertEquals(mu.getIdentifier().toString(), user.getIdentifier().toString());
+		assertEquals(mu.getUserId(), user.getUserId());
+		assertEquals(mu.getStuff(), user.getStuff());
+		assertEquals(mu.getWhatever(), user.getWhatever());
+		assertTrue(user.created().isBefore(mu.created()));
 	}
 	
 	@Test
 	public void testGetUserMultipeUsersOfSameType() {
 		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
-		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667771");
 		User mu = new MockUser();
 		
 		mu.setUserId(uuid);
 		
 		try {
+			pu = us.createPlatformUser("foo", "bar");
 			us.registerUserToPlatformUser(mu, pu);
 			us.registerUserToPlatformUser(new MockUser(), pu);
-		} catch (NoSuchUserException e) {
+		} catch (NoSuchUserException | UserExistsException e) {
 			fail("Register no workie");
 		}
 		
 		User user = us.getUser(pu, uuid);
 		
 		assertNotNull(user);
-		assertEquals(user, mu);
+		assertEquals(mu.getIdentifier().toString(), user.getIdentifier().toString());
+		assertEquals(mu.getUserId(), user.getUserId());
+		assertTrue(user.created().isBefore(mu.created()));
 	}
 	
 	@Test
 	public void testGetUserNoSuchUser() {
 		UserService us = new UserServiceImpl(storage, connection);
 		PlatformUser pu = new PlatformUserImpl();
-		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
+		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667771");
 		User mu = new MockUser();
 		
 		try {
@@ -529,7 +543,6 @@ public class UserServiceImplTest {
 		try {
 			pu = us.createPlatformUser("Fred", "Barney");
 			mu = storage.readUser(UUID.fromString("00001111-2222-dead-beef-555566667771"));
-			System.out.println(mu.getClass().getName());
 		} catch (UserExistsException | StorageException e1) {}
 		
 		try {
@@ -547,20 +560,22 @@ public class UserServiceImplTest {
 		
 		assertNotNull(pus);
 		assertEquals(1, pus.length);
-		assertEquals("1: Fred, Barney", pus[0].getIdentifier().toString());
+		assertEquals("4: Fred", pus[0].getIdentifier().toString());
 	}
 
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserTwoPlatformUsers() {
 		UserService us = new UserServiceImpl(storage, connection);
-		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
-		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
+		PlatformUser pu1 = null;
+		PlatformUser pu2 = null;
 		User mu = new MockUser();
 		
 		try {
+			pu1 = us.createPlatformUser("a", "b");
+			pu2 = us.createPlatformUser("1", "2");
 			us.registerUserToPlatformUser(mu, pu1);
 			us.registerUserToPlatformUser(mu, pu2);
-		} catch (NoSuchUserException e) {
+		} catch (NoSuchUserException | UserExistsException e) {
 			fail("Register no workie");
 		}
 		
@@ -580,15 +595,17 @@ public class UserServiceImplTest {
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserNonExistingUser() {
 		UserService us = new UserServiceImpl(storage, connection);
-		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
-		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
+		PlatformUser pu1 = null;
+		PlatformUser pu2 = null;
 		User mu1 = new MockUser();
 		User mu2 = new AnotherMockUser();
 		
 		try {
+			pu1 = us.createPlatformUser("a", "b");
+			pu2 = us.createPlatformUser("1", "2");
 			us.registerUserToPlatformUser(mu1, pu1);
 			us.registerUserToPlatformUser(mu1, pu2);
-		} catch (NoSuchUserException e) {
+		} catch (NoSuchUserException | UserExistsException e) {
 			fail("Register no workie");
 		}
 		
@@ -606,16 +623,18 @@ public class UserServiceImplTest {
 	@Test
 	public void testGetPlatformUsersAssociatedWithUserNToMCase() {
 		UserService us = new UserServiceImpl(storage, connection);
-		PlatformUser pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("a", "b"));
-		PlatformUser pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "2"));
+		PlatformUser pu1 = null;
+		PlatformUser pu2 = null;
 		User mu1 = new MockUser();
 		User mu2 = new AnotherMockUser();
 		
 		try {
+			pu1 = us.createPlatformUser("a", "b");
+			pu2 = us.createPlatformUser("1", "2");
 			us.registerUserToPlatformUser(mu1, pu1);
 			us.registerUserToPlatformUser(mu2, pu1);
 			us.registerUserToPlatformUser(mu2, pu2);
-		} catch (NoSuchUserException e) {
+		} catch (NoSuchUserException | UserExistsException e) {
 			fail("Register no workie");
 		}
 		
@@ -628,7 +647,7 @@ public class UserServiceImplTest {
 		
 		assertNotNull(pus);
 		assertEquals(1, pus.length);
-		assertEquals("1: a, b", pus[0].getIdentifier().toString());
+		assertEquals("4: a", pus[0].getIdentifier().toString());
 	}
 	
 	@Test
