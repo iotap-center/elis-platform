@@ -1,10 +1,15 @@
 package se.mah.elis.adaptor.utilityprovider.eon.internal.devices;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.simple.parser.ParseException;
 
 import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
@@ -28,6 +33,8 @@ import se.mah.elis.exceptions.StaticEntityException;
 
 public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 
+	private static final int VALUETYPE_POWER = 0;
+	private static DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
 	
 	protected boolean isOnline;
 	protected EonGateway gateway;
@@ -37,7 +44,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 	protected UUID dataid;
 	protected UUID ownerid;
 	protected DateTime created = DateTime.now();
-	
+
 	@Override
 	public DeviceIdentifier getId() {
 		return deviceId;
@@ -94,23 +101,57 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 	@Override
 	public ElectricitySample getSample() throws SensorFailedException {
 		double value;
-		
+
 		try {
-			value = httpBridge.getPowerMeterKWh(this.gateway.getAuthenticationToken(), getGatewayAddress(),
+			value = httpBridge.getPowerMeterKWh(
+					this.gateway.getAuthenticationToken(), getGatewayAddress(),
 					getId().toString());
 		} catch (ParseException e) {
 			throw new SensorFailedException();
 		}
-		
+
 		ElectricitySample electricitySample = null;
 		electricitySample = new ElectricitySampleImpl(value);
 
 		return electricitySample;
 	}
-	
-	public List<ElectricitySample> getSamples(DateTime from, DateTime to) throws SensorFailedException {
+
+	public List<ElectricitySample> getSamples(DateTime from, DateTime to)
+			throws SensorFailedException {
+		List<ElectricitySample> samples = new ArrayList<ElectricitySample>();
+
+		try {
+			List<Map<String, Object>> data = httpBridge.getStatData(
+					this.gateway.getAuthenticationToken(), getGatewayAddress(),
+					this.getId().toString(), formatDate(from), VALUETYPE_POWER);
+			samples.addAll(convertToSamples(data));
+		} catch (ParseException e) {
+			throw new SensorFailedException();
+		}
+
+		return samples;
+	}
+
+	private Collection<? extends ElectricitySample> convertToSamples(
+			List<Map<String, Object>> data) {
+		List<ElectricitySample> samples = new ArrayList<>();
 		
-		return null;
+		for (Map<String, Object> rawsample : data) {
+			double value = number(rawsample.get("Value"));
+			ElectricitySample sample = new ElectricitySampleImpl(value);
+			samples.add(sample);
+		}
+		
+		return samples;
+	}
+
+	private double number(Object object) {
+		double value = ((Number) object).doubleValue();
+		return value;
+	}
+
+	public String formatDate(DateTime from) {
+		return fmt.print(from);
 	}
 
 	@Override
@@ -118,7 +159,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		// TODO Sample the current energy usage for a given amount of time.
 		return null;
 	}
-	
+
 	protected String getGatewayAddress() {
 		return getGateway().getAddress().toString();
 	}
