@@ -48,12 +48,6 @@
   		<type>bundle</type>
   	</dependency>
   	<dependency>
-  		<groupId>se.mah.elis.impl.services.users</groupId>
-  		<artifactId>user-service-impl</artifactId>
-  		<version>2.0.0</version>
-  		<type>bundle</type>
-  	</dependency>
-  	<dependency>
   		<groupId>javax.ws.rs</groupId>
   		<artifactId>javax.ws.rs-api</artifactId>
   		<version>2.0</version>
@@ -67,6 +61,12 @@
   		</artifactId>
   		<version>2.6</version>
   		<scope>test</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.impl.services.users-and-storage</groupId>
+  		<artifactId>user-and-storage-service-impl</artifactId>
+  		<version>2.0.0</version>
+  		<type>bundle</type>
   	</dependency>
   </dependencies>
   <build>
