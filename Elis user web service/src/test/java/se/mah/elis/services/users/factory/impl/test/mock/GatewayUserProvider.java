@@ -7,11 +7,11 @@ import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 import se.mah.elis.services.users.factory.UserProvider;
 import se.mah.elis.services.users.factory.UserRecipe;
-import se.mah.elis.services.users.impl.test.mock.MockUser;
+import se.mah.elis.services.users.impl.test.mock.GatewayUser;
 
-public class MockUserProvider implements UserProvider {
+public class GatewayUserProvider implements UserProvider {
 
-	public MockUserProvider() {
+	public GatewayUserProvider() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -21,16 +21,15 @@ public class MockUserProvider implements UserProvider {
 		if (properties.containsKey("id")) {
 			id = (UUID) properties.get("id");
 		}
-		System.out.println("hello");
 		String username = properties.getProperty("serviceUserName");
 		String password = properties.getProperty("servicePassword");
 		
-		return new MockUser(id, username, password);
+		return new GatewayUser(id, username, password);
 	}
 
 	@Override
 	public UserRecipe getRecipe() {
-		return new MockUserRecipe();
+		return new GatewayUserRecipe();
 	}
 
 }

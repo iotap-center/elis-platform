@@ -5,9 +5,9 @@ import java.util.UUID;
 
 import se.mah.elis.services.users.factory.UserRecipe;
 
-public class MockUserRecipe implements UserRecipe {
+public class GatewayUserRecipe implements UserRecipe {
 
-	public MockUserRecipe() {
+	public GatewayUserRecipe() {
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class MockUserRecipe implements UserRecipe {
 
 	@Override
 	public String getServiceName() {
-		return "Waynecorp";
+		return "uwstest";
 	}
 
 	@Override

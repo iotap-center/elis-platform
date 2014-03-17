@@ -10,18 +10,19 @@ import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
-public class MockUser implements User {
+public class GatewayUser implements User {
 
 	private UUID id;
 	private String serviceUserName;
 	private String servicePassword;
+	private DateTime created = DateTime.now();
 	
-	public MockUser() {
+	public GatewayUser() {
 		id = UUID.randomUUID();
 		serviceUserName = servicePassword = "";
 	}
 	
-	public MockUser(UUID id, String serviceUserName, String servicePassword) {
+	public GatewayUser(UUID id, String serviceUserName, String servicePassword) {
 		this.id = id;
 		this.serviceUserName = serviceUserName;
 		this.servicePassword = servicePassword;
@@ -29,7 +30,7 @@ public class MockUser implements User {
 
 	@Override
 	public UserIdentifier getIdentifier() {
-		return new MockUserIdentifier("" + id);
+		return new GatewayUserIdentifier("" + id);
 	}
 
 	@Override
@@ -53,20 +54,32 @@ public class MockUser implements User {
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties properties = new OrderedProperties();
+		
+		properties.put("uuid", UUID.randomUUID());
+		properties.put("created", created);
+		properties.put("service_name", "7");
+		properties.put("serviceUserName", "32");
+		properties.put("servicePassword", "32");
+		
+		return properties;
 	}
 
 	@Override
 	public void populate(Properties props) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		
+		id = (UUID) props.get("uuid");
+		created = (DateTime) props.get("created");
+		if (props.containsKey("serviceUserName")) {
+			serviceUserName = props.getProperty("serviceUserName");
+		}
+		if (props.containsKey("servicePassword")) {
+			servicePassword = props.getProperty("servicePassword");
+		}
 	}
 
 	@Override
 	public String getServiceName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "uwstest";
 	}
 
 	@Override
@@ -81,13 +94,19 @@ public class MockUser implements User {
 
 	@Override
 	public DateTime created() {
-		// TODO Auto-generated method stub
-		return null;
+		return created;
 	}
 
 	@Override
 	public OrderedProperties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties properties = new OrderedProperties();
+
+		properties.put("uuid", id);
+		properties.put("created", created);
+		properties.put("service_name", "uwstest");
+		properties.put("serviceUserName", serviceUserName);
+		properties.put("servicePassword", servicePassword);
+		
+		return properties;
 	}
 }

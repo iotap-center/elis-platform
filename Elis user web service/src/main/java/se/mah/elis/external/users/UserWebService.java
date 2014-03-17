@@ -226,7 +226,6 @@ public class UserWebService {
 							properties = populateRecipe(input.gatewayUser, recipe);
 							u = userFactory.build(recipe.getUserType(),
 									recipe.getServiceName(), properties);
-							System.out.println(properties);
 						} catch (UserInitalizationException e) {
 							return buildBadRequestResponse(response);
 						} catch (Exception e) {

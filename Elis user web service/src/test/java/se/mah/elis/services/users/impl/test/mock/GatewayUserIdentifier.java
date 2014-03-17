@@ -5,11 +5,11 @@ import java.util.Properties;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.UserIdentifier;
 
-public class MockUserIdentifier implements UserIdentifier {
+public class GatewayUserIdentifier implements UserIdentifier {
 
 	private String id;
 	
-	public MockUserIdentifier(String id) {
+	public GatewayUserIdentifier(String id) {
 		this.id = id;
 	}
 
@@ -19,20 +19,25 @@ public class MockUserIdentifier implements UserIdentifier {
 
 	@Override
 	public OrderedProperties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("id", id);
+		
+		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("id", "32");
+		
+		return props;
 	}
 
 	@Override
 	public Class identifies() {
-		// TODO Auto-generated method stub
-		return null;
+		return GatewayUser.class;
 	}
 
 	@Override
@@ -43,7 +48,6 @@ public class MockUserIdentifier implements UserIdentifier {
 
 	@Override
 	public void populate(Properties props) {
-		// TODO Auto-generated method stub
-		
+		id =  props.getProperty("id");
 	}
 }

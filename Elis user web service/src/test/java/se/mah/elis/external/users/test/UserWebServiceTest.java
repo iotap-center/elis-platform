@@ -3,6 +3,11 @@ package se.mah.elis.external.users.test;
 import static org.junit.Assert.*;
 import static org.fest.assertions.Assertions.assertThat;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 
@@ -15,17 +20,19 @@ import org.junit.Test;
 import se.mah.elis.external.users.UserWebService;
 import se.mah.elis.external.users.jaxbeans.GatewayUserBean;
 import se.mah.elis.external.users.jaxbeans.PlatformUserBean;
+import se.mah.elis.services.storage.Storage;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.UserExistsException;
 import se.mah.elis.services.users.factory.UserFactory;
-import se.mah.elis.services.users.factory.impl.test.mock.MockUserProvider;
+import se.mah.elis.services.users.factory.impl.test.mock.GatewayUserProvider;
+import se.mah.elis.impl.services.storage.StorageImpl;
 import se.mah.elis.impl.services.users.factory.UserFactoryImpl;
 import se.mah.elis.impl.services.users.PlatformUserIdentifierImpl;
 import se.mah.elis.impl.services.users.PlatformUserImpl;
 import se.mah.elis.impl.services.users.UserServiceImpl;
-import se.mah.elis.services.users.impl.test.mock.MockUser;
+import se.mah.elis.services.users.impl.test.mock.GatewayUser;
 
 public class UserWebServiceTest extends JerseyTest {
 	
@@ -37,6 +44,9 @@ public class UserWebServiceTest extends JerseyTest {
 	private UserWebService uws;
 	private UserService us;
 	private UserFactory uf;
+	
+	private Connection connection;
+	private Storage storage;
 	
 	private static String envelopeStart = "{\n";
 	private static String envelopeEnd = "}";
@@ -68,18 +78,56 @@ public class UserWebServiceTest extends JerseyTest {
 
 	@Before
 	public void setUp() throws Exception {
-		us = new UserServiceImpl();
+		setUpDatabase();
+		tearDownTables();
+
 		uf = new UserFactoryImpl();
+		storage = new StorageImpl(connection, uf);
+		us = new UserServiceImpl(storage, connection);
 		uws = new UserWebService(us, uf);
 		
-		uf.registerProvider(new MockUserProvider());
+		uf.registerProvider(new GatewayUserProvider());
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		try {
+			if (connection != null && !connection.isClosed()) {
+				connection.close();
+				connection = null;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		us = null;
 		uf = null;
 		uws = null;
+	}
+	
+	private void setUpDatabase() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			connection =  DriverManager
+			          .getConnection("jdbc:mysql://localhost/elis_test?"
+			                  + "user=elis_test&password=elis_test");
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void tearDownTables() {
+		try {
+			Statement stmt = connection.createStatement();
+			stmt.execute("TRUNCATE TABLE `object_lookup_table`;");
+			stmt.execute("TRUNCATE TABLE `user_bindings`;");
+			stmt.execute("TRUNCATE TABLE `se-mah-elis-services-users-PlatformUser`;");
+			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-services-users-impl-test-mock-GatewayUser`;");
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -201,7 +249,7 @@ public class UserWebServiceTest extends JerseyTest {
 		bean.email = "batman@batcave.org";
 		bean.gatewayUser = gw;
 		gw.id = "00001111-2222-3333-4444-555566667777";
-		gw.serviceName = "Waynecorp";
+		gw.serviceName = "uwstest";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
 		
@@ -214,7 +262,7 @@ public class UserWebServiceTest extends JerseyTest {
 				+ "      \"email\": \"batman@batcave.org\",\n"
 				+ "      \"gatewayUser\": {\n"
 				+ "        \"id\": \"00001111-2222-3333-4444-555566667777\",\n"
-				+ "        \"serviceName\": \"Waynecorp\",\n"
+				+ "        \"serviceName\": \"uwstest\",\n"
 				+ "        \"serviceUserName\": \"batman\",\n"
 				+ "        \"servicePassword\": \"robin\"\n"
 				+ "      }\n"
@@ -233,8 +281,8 @@ public class UserWebServiceTest extends JerseyTest {
 		assertNotNull(users);
 		assertNotNull(user);
 		assertEquals(1, users.length);
-		assertThat(user.getClass().getName()).matches(MockUser.class.getName());
-		assertThat(((MockUser) user).getServiceUserName()).matches(gw.serviceUserName);
+		assertThat(user.getClass().getName()).matches(GatewayUser.class.getName());
+		assertThat(((GatewayUser) user).getServiceUserName()).matches(gw.serviceUserName);
 	}
 
 	@Test
@@ -255,7 +303,7 @@ public class UserWebServiceTest extends JerseyTest {
 		String responseString = envelopeStart + response400 + envelopeEnd;
 		
 		Response r = uws.addUser(bean);
-		
+
 		assertEquals(400, r.getStatus());
 		assertEquals(responseString, r.getEntity());
 		
@@ -277,7 +325,7 @@ public class UserWebServiceTest extends JerseyTest {
 		bean.email = "batman@batcave.org";
 		bean.gatewayUsers = new GatewayUserBean[1];
 		bean.gatewayUsers[0] = gw;
-		gw.serviceName = "Waynecorp";
+		gw.serviceName = "uwstest";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
 
@@ -304,7 +352,7 @@ public class UserWebServiceTest extends JerseyTest {
 		bean.email = "batman@batcave.org";
 		bean.gatewayUsers = new GatewayUserBean[1];
 		bean.gatewayUsers[0] = gw;
-		gw.serviceName = "Waynecorp";
+		gw.serviceName = "uwstest";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
 		gw.id = "1";
@@ -408,7 +456,7 @@ public class UserWebServiceTest extends JerseyTest {
 		GatewayUserBean gw = new GatewayUserBean();
 		
 		gw.id = "deadbeef-2222-3333-4444-555566667777";
-		gw.serviceName = "Waynecorp";
+		gw.serviceName = "uwstest";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
 
@@ -421,7 +469,7 @@ public class UserWebServiceTest extends JerseyTest {
 				+ "      \"email\": \"\",\n"
 				+ "      \"gatewayUser\": {\n"
 				+ "        \"id\": \"deadbeef-2222-3333-4444-555566667777\",\n"
-				+ "        \"serviceName\": \"Waynecorp\",\n"
+				+ "        \"serviceName\": \"uwstest\",\n"
 				+ "        \"serviceUserName\": \"batman\",\n"
 				+ "        \"servicePassword\": \"robin\"\n"
 				+ "      }\n"
@@ -436,8 +484,8 @@ public class UserWebServiceTest extends JerseyTest {
 		assertNotNull(users);
 		assertNotNull(user);
 		assertEquals(1, users.length);
-		assertThat(user.getClass().getName()).matches(MockUser.class.getName());
-		assertThat(((MockUser) user).getServiceUserName()).matches(gw.serviceUserName);
+		assertThat(user.getClass().getName()).matches(GatewayUser.class.getName());
+		assertThat(((GatewayUser) user).getServiceUserName()).matches(gw.serviceUserName);
 		assertEquals(200, r.getStatus());
 		assertEquals(responseString, r.getEntity());
 	}
@@ -450,7 +498,7 @@ public class UserWebServiceTest extends JerseyTest {
 		
 		GatewayUserBean gw = new GatewayUserBean();
 		
-		gw.serviceName = "Waynecorp";
+		gw.serviceName = "uwstest";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
 		
@@ -476,7 +524,7 @@ public class UserWebServiceTest extends JerseyTest {
 		bean.email = "batman@batcave.org";
 		bean.gatewayUsers = new GatewayUserBean[1];
 		bean.gatewayUsers[0] = gw;
-		gw.serviceName = "Waynecorp";
+		gw.serviceName = "uwstest";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
 		gw.id = "deadbeef-2222-3333-4444-555566667777";
@@ -507,7 +555,7 @@ public class UserWebServiceTest extends JerseyTest {
 		bean.lastName = "Wayne";
 		bean.email = "batman@batcave.org";
 		bean.gatewayUser = gw;
-		gw.serviceName = "Waynecorp";
+		gw.serviceName = "uwstest";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
 		gw.id = "00001111-2222-3333-4444-555566667777";
@@ -536,13 +584,22 @@ public class UserWebServiceTest extends JerseyTest {
 		bean.lastName = "Wayne";
 		bean.email = "batman@batcave.org";
 		bean.gatewayUser = gw;
-		gw.serviceName = "Waynecorp";
+		gw.serviceName = "uwstest";
 		gw.serviceUserName = "batman";
 		gw.servicePassword = "robin";
 		gw.id = "deadbeef-2222-3333-4444-555566667777";
 		
-		// TODO: This, or a 201?
-		String responseString = envelopeStart + response404 + envelopeEnd;
+		String responseString = envelopeStart + response200
+				+ "    \"user\": {\n"
+				+ "      \"userId\": \"1\",\n"
+				+ "      \"username\": \"1\",\n"
+				+ "      \"firstName\": \"Bruce\",\n"
+				+ "      \"lastName\": \"Wayne\",\n"
+				+ "      \"email\": \"batman@batcave.org\"\n"
+				+ "    }\n"
+				+ "  }\n"
+				+ envelopeEnd;
+		System.out.println(responseString);
 		
 		Response r = uws.addUser(bean);
 		
@@ -553,7 +610,7 @@ public class UserWebServiceTest extends JerseyTest {
 		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "1", "secret")));
 		
 		assertEquals(1, users.length);
-		assertEquals(404, r.getStatus());
+		assertEquals(200, r.getStatus());
 		assertEquals(responseString, r.getEntity());
 	}
 
