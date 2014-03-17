@@ -57,6 +57,7 @@
   	<dependency>
   		<groupId>mysql</groupId>
   		<artifactId>mysql-connector-java</artifactId>
+  		<version>5.1.27</version>
   	</dependency>
   	<dependency>
   		<groupId>se.mah.elis.impl.services.storage</groupId>

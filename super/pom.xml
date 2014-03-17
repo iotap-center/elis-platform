@@ -174,7 +174,14 @@
 		<!-- <module>../elis-branding</module> -->
         <!-- <module>../qs-driver</module> -->
         <!-- <module>../ninjablock</module> -->
-		
+
+        <module>../elis-device-service</module>
+        <module>../elis-energy-service</module>
+        <module>../elis-water-service</module>
+        <module>../mkb-water-provider</module>
+        <module>
+        	../northbound-api/com.eclipsesource.jaxrs.publisher
+        </module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
