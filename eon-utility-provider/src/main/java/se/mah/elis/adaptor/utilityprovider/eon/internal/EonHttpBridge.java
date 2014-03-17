@@ -21,7 +21,6 @@ import org.json.simple.parser.ParseException;
 
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.exceptions.ActuatorFailedException;
-import se.mah.elis.adaptor.utilityprovider.eon.test.Statistic;
 
 /**
  * HTTP bridge to communicate with the E.On HTTP API using JSON.

@@ -120,29 +120,47 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 			throws SensorFailedException {
 		List<ElectricitySample> samples = new ArrayList<ElectricitySample>();
 
-		try {
-			List<Map<String, Object>> data = httpBridge.getStatData(
-					this.gateway.getAuthenticationToken(), getGatewayAddress(),
-					this.getId().toString(), formatDate(from), VALUETYPE_POWER);
-			samples.addAll(convertToSamples(data));
-		} catch (ParseException e) {
-			throw new SensorFailedException();
+		DateTime start = from;
+		
+		while (start.isBefore(to)) {
+			try {
+				List<Map<String, Object>> data = httpBridge.getStatData(
+						this.gateway.getAuthenticationToken(), getGatewayAddress(),
+						this.getId().toString(), formatDate(start), VALUETYPE_POWER);
+				samples.addAll(convertToSamples(data, start));
+			} catch (ParseException e) {
+				throw new SensorFailedException();
+			}
+			
+			start = start.plusDays(1);
+			
+			if (start.equals(to)) 
+				break;
 		}
 
 		return samples;
 	}
 
 	private Collection<? extends ElectricitySample> convertToSamples(
-			List<Map<String, Object>> data) {
+			List<Map<String, Object>> data, DateTime from) {
 		List<ElectricitySample> samples = new ArrayList<>();
 		
 		for (Map<String, Object> rawsample : data) {
 			double value = number(rawsample.get("Value"));
-			ElectricitySample sample = new ElectricitySampleImpl(value);
+			DateTime sampleTime = calculateSampleTime(from, (String) rawsample.get("Key"));
+			ElectricitySample sample = new ElectricitySampleImpl(value, sampleTime);
 			samples.add(sample);
 		}
 		
 		return samples;
+	}
+
+	private DateTime calculateSampleTime(DateTime from, String offset) {
+		int HOUR_START = 11;
+		int HOUR_STOP = 13;
+		int offsetInHours = Integer.parseInt(offset.substring(HOUR_START, HOUR_STOP));
+		DateTime sampleTime = from.plusHours(offsetInHours);
+		return sampleTime;
 	}
 
 	private double number(Object object) {
