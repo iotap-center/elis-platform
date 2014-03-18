@@ -7,11 +7,19 @@ import java.util.UUID;
 import org.joda.time.DateTime;
 
 /**
- * <p>ElisDataObject is a baseline interface for every saveable data object. By
+ * <p>ElisDataObject is a baseline interface for every storable data object. By
  * implementing it, the Elis platform is able to store and retrieve the object
  * in question in a uniform way.</p>
  * 
- * <p>User classes should NOT implement this interface.</p>
+ * <p>In order for a data object to be storable its properties, as returned by
+ * {@link #getProperties()} and {@link #getPropertiesTemplate()}, must contain
+ * at least the three fields <i>dataid</i> (a {@link java.util.UUID} object
+ * identifying this data object), <i>ownerid</i> (also a {@link java.util.UUID}
+ * object, pointing to the user owning this object), and finally <i>created</i>
+ * (a {@link org.joda.time.DateTime} object, holding the date and time when
+ * this object was first created).</p>
+ * 
+ * <p>User classes must NOT implement this interface.</p>
  * 
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
