@@ -1,6 +1,7 @@
-package se.mah.elis.external.water;
+package se.mah.elis.external.energy;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -39,6 +40,8 @@ import com.google.gson.Gson;
 
 public class EnergyServiceTest extends JerseyTest {
 
+	private static final long TO_TIME = 1392685200000l;
+	private static final long FROM_TIME = 1392681600000l;
 	private static final String DEVICE = "device-uuid-";
 	private static final Double DEVICE_1_WH = 20.0d;
 	private static UserService userService;
@@ -91,8 +94,10 @@ public class EnergyServiceTest extends JerseyTest {
 	}
 
 	private ElectricitySampler createSampleMeter(int id) throws SensorFailedException {
+		DateTime from = new DateTime(FROM_TIME);
+//		DateTime to = new DateTime(1392685200000l);
 		ElectricitySample deviceSample = mock(ElectricitySample.class);
-		when(deviceSample.getSampleTimestamp()).thenReturn(DateTime.now());
+		when(deviceSample.getSampleTimestamp()).thenReturn(from);
 		when(deviceSample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_WH);
 
 		DeviceIdentifier identifier = mock(DeviceIdentifier.class);
@@ -102,9 +107,26 @@ public class EnergyServiceTest extends JerseyTest {
 		when(meter.getId()).thenReturn(identifier);
 		when(meter.getName()).thenReturn(DEVICE + id + "-name");
 		when(meter.getSample()).thenReturn(deviceSample);
+		List<ElectricitySample> samples = createSamples(24);
+		when(meter.getSamples(any(DateTime.class), any(DateTime.class))).thenReturn(samples);
 		return meter;
 	}
 	
+	private List<ElectricitySample> createSamples(int size) {
+		List<ElectricitySample> samples = new ArrayList<>();
+		for (int i = 0; i < size; i++) 
+			samples.add(createSample(i));
+		return samples;
+	}
+
+	private ElectricitySample createSample(int i) {
+		DateTime date = new DateTime(FROM_TIME).plusHours(i);
+		ElectricitySample sample = mock(ElectricitySample.class);
+		when(sample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_WH);
+		when(sample.getSampleTimestamp()).thenReturn(date);
+		return sample;
+	}
+
 	@Test
 	public void testGetNowRequest() {
 		EnergyBean bean = getNowRequest();
@@ -142,5 +164,19 @@ public class EnergyServiceTest extends JerseyTest {
 		final String energyNowData = target("/energy/1/now").request().get(String.class);
 		EnergyBean bean = gson.fromJson(energyNowData, EnergyBean.class);
 		return bean;
+	}
+	
+	@Test
+	public void testGetHourlyStatsOneDevice() {
+		final String energyHourlydata = target("/energy/1/hourly")
+				.queryParam("from", Long.toString(FROM_TIME))
+				.queryParam("to", Long.toString(TO_TIME))
+				.request()
+				.get(String.class);
+		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
+		assertEquals("hourly", bean.period);
+		assertEquals(4, bean.devices.size());
+		assertEquals(24, bean.devices.get(0).data.size());
+		assertNull(bean.summary);
 	}
 }

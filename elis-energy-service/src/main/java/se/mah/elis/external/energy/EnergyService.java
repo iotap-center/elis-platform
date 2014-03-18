@@ -3,10 +3,12 @@ package se.mah.elis.external.energy;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -73,6 +75,33 @@ public class EnergyService {
 			String period, PlatformUser pu) {
 		List<Device> availableEnergyMeters = getMeters(pu);
 		EnergyBean bean = EnergyBeanFactory.create(availableEnergyMeters, period, pu);
+		return Response.ok(gson.toJson(bean));
+	}
+	
+	@GET
+	@Path("/{puid}/hourly")
+	public Response getHourlyEnergyConsumption(@PathParam("puid") String puid,
+			@QueryParam("from") String from,
+			@DefaultValue("") @QueryParam("to") String to) {
+		ResponseBuilder response = null;
+		
+		if (userService != null) {
+			PlatformUser pu = userService.getPlatformUser(puid);
+			if (pu != null) {
+				response = buildPeriodicEnergyConsumptionResponse("hourly", from, to, pu);
+			} else {
+				response = Response.status(Response.Status.NOT_FOUND);
+			}
+		} else 
+			response = Response.serverError();
+		
+		return response.build();
+	}
+
+	private ResponseBuilder buildPeriodicEnergyConsumptionResponse(
+			String period, String from, String to, PlatformUser pu) {
+		List<Device> meters = getMeters(pu);
+		EnergyBean bean = EnergyBeanFactory.create(meters, period, from, to, pu);
 		return Response.ok(gson.toJson(bean));
 	}
 
