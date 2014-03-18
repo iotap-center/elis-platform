@@ -18,6 +18,7 @@ public class MkbGatwayUser implements GatewayUser {
 	private UUID uuid;
 	private UserIdentifier userIdentifier;
 	private Gateway gateway;
+	private DateTime created = DateTime.now();
 
 	@Override
 	public UUID getUserId() {
@@ -61,20 +62,42 @@ public class MkbGatwayUser implements GatewayUser {
 
 	@Override
 	public OrderedProperties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", uuid);
+		props.put("userIdentifier", getIdentifier());
+		props.put("created", created);
+		props.put("service_name", getServiceName());
+		props.put("meterId", getIdentifier().toString());
+		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		props.put("uuid", uuid);
+		props.put("userIdentifier", getIdentifier());
+		props.put("created", created);
+		props.put("service_name", getServiceName().length());
+		props.put("meterId", "32");
+		return props;
 	}
 
 	@Override
 	public void populate(Properties props) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-
+		if (!props.containsKey("uuid") &&
+				!props.containsKey("userIdentifier") &&
+				!props.containsKey("meterId"))
+			throw new IllegalArgumentException("Missing properties");
+		
+		if (props.containsKey("created"))
+			created = (DateTime) props.get("created");
+		
+		String meterId = (String) props.get("meterId");
+		MkbUserIdentifier id = new MkbUserIdentifier(meterId);
+		setIdentifier(id);
+		MkbGatewayUserFactory factory = new MkbGatewayUserFactory();
+		setGateway(factory.createGateway(this));
+		gateway.setUser(this);
 	}
 
 	@Override
@@ -94,8 +117,7 @@ public class MkbGatwayUser implements GatewayUser {
 
 	@Override
 	public DateTime created() {
-		// TODO Auto-generated method stub
-		return null;
+		return created;
 	}
 
 }

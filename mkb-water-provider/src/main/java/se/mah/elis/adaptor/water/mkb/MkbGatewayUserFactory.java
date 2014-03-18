@@ -18,7 +18,13 @@ public class MkbGatewayUserFactory implements GatewayUserProvider {
 		return mkbUser;
 	}
 
-	private MkbGateway createGateway(MkbGatwayUser mkbUser) {
+	/**
+	 * Create a new water gateway
+	 * 
+	 * @param mkbUser
+	 * @return
+	 */
+	public MkbGateway createGateway(MkbGatwayUser mkbUser) {
 		return new MkbGateway();
 	}
 
