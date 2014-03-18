@@ -599,7 +599,6 @@ public class UserWebServiceTest extends JerseyTest {
 				+ "    }\n"
 				+ "  }\n"
 				+ envelopeEnd;
-		System.out.println(responseString);
 		
 		Response r = uws.addUser(bean);
 		
