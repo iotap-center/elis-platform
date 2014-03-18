@@ -98,6 +98,12 @@ public class MkbGatwayUser implements GatewayUser {
 		MkbGatewayUserFactory factory = new MkbGatewayUserFactory();
 		setGateway(factory.createGateway(this));
 		gateway.setUser(this);
+		
+		try {
+			initialize();
+		} catch (UserInitalizationException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

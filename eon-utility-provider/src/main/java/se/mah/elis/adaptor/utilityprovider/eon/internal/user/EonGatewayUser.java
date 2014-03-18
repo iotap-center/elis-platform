@@ -132,6 +132,11 @@ public class EonGatewayUser implements GatewayUser {
 			throw new IllegalArgumentException(e);
 		}
 		
+		try {
+			initialize();
+		} catch (UserInitalizationException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
