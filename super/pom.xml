@@ -167,7 +167,7 @@
 		
 		<!-- Reference implementation modules -->
 		<module>../Elis user and persistent storage service implementations</module>
-		<module>../Elis user web service</module>
+		
 		
 		<!-- Misc modules -->
 		<module>../eon-utility-provider</module>
