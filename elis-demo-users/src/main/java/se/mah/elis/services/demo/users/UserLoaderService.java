@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
@@ -28,6 +29,9 @@ public class UserLoaderService {
 	
 	@Reference
 	private UserFactory userFactory;
+	
+	@Reference
+	private LogService log;
 	
 	public UserLoaderService() {
 		populated = false;
@@ -79,7 +83,7 @@ public class UserLoaderService {
 		try {
 			mkbUser = userFactory.build(userType, serviceName, props);
 		} catch (UserInitalizationException uie) {
-			uie.printStackTrace();
+			log.log(LogService.LOG_ERROR, uie.getMessage());
 		}
 		
 		return mkbUser;
@@ -89,7 +93,7 @@ public class UserLoaderService {
 		try {
 			userService.registerUserToPlatformUser(user, pu);
 		} catch (NoSuchUserException e) {
-			e.printStackTrace();
+			log.log(LogService.LOG_ERROR, e.getMessage());
 		}
 	}
 
@@ -137,5 +141,13 @@ public class UserLoaderService {
 	
 	protected void unbindUserFactory(UserFactory uf) {
 		this.userFactory = null;
+	}
+	
+	protected void bindLog(LogService l) {
+		log = l;
+	}
+	
+	protected void unbindLog(LogService l) {
+		log = null;
 	}
 }

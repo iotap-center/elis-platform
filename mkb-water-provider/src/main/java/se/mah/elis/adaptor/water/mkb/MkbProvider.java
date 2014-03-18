@@ -17,10 +17,11 @@ public class MkbProvider implements UserProvider {
 	@Override
 	public User build(Properties properties) throws UserInitalizationException {
 		String meterId = (String) properties.getProperty("id");
-		GatewayUserProvider userFactory = new MkbGatewayUserFactory();
+		System.out.println(properties);
+		GatewayUserProvider gatewayUserProvider = new MkbGatewayUserProvider();
 		GatewayUser user = null;
 		try {
-			user = userFactory.getUser(meterId, "");
+			user = gatewayUserProvider.getUser(meterId, "");
 		} catch (AuthenticationException | MethodNotSupportedException e) {
 			System.out.println("Could not get meter for id: " + meterId);
 			e.printStackTrace();

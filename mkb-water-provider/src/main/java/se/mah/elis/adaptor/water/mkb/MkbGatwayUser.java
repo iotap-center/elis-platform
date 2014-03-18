@@ -3,7 +3,9 @@ package se.mah.elis.adaptor.water.mkb;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.felix.scr.annotations.Reference;
 import org.joda.time.DateTime;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
@@ -15,6 +17,9 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 public class MkbGatwayUser implements GatewayUser {
 
+	@Reference
+	private LogService log;
+	
 	private UUID uuid;
 	private UserIdentifier userIdentifier;
 	private Gateway gateway;
@@ -93,17 +98,22 @@ public class MkbGatwayUser implements GatewayUser {
 			created = (DateTime) props.get("created");
 		
 		String meterId = (String) props.get("meterId");
+
+		log.log(LogService.LOG_INFO, "Populating MKB user: " + meterId);
+		
 		MkbUserIdentifier id = new MkbUserIdentifier(meterId);
 		setIdentifier(id);
-		MkbGatewayUserFactory factory = new MkbGatewayUserFactory();
+		MkbGatewayUserProvider factory = new MkbGatewayUserProvider();
 		setGateway(factory.createGateway(this));
 		gateway.setUser(this);
 		
 		try {
 			initialize();
 		} catch (UserInitalizationException e) {
-			e.printStackTrace();
+			log.log(LogService.LOG_ERROR, "Failed to initialise gateway for user: " + meterId);
 		}
+		
+		log.log(LogService.LOG_INFO, "Done populating MKB user: " + meterId);
 	}
 
 	@Override
@@ -124,6 +134,14 @@ public class MkbGatwayUser implements GatewayUser {
 	@Override
 	public DateTime created() {
 		return created;
+	}
+	
+	protected void bindLog(LogService log) {
+		this.log = log;
+	}
+	
+	protected void unbindLog(LogService log) {
+		this.log = null;
 	}
 
 }

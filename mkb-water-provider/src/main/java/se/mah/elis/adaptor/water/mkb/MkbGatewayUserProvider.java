@@ -5,8 +5,9 @@ import javax.naming.AuthenticationException;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.device.api.providers.GatewayUserProvider;
+import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
-public class MkbGatewayUserFactory implements GatewayUserProvider {
+public class MkbGatewayUserProvider implements GatewayUserProvider {
 
 	@Override
 	public GatewayUser getUser(String meterId, String _ignored)
@@ -15,6 +16,11 @@ public class MkbGatewayUserFactory implements GatewayUserProvider {
 		MkbGateway gateway = createGateway(mkbUser);
 		mkbUser.setGateway(gateway);
 		gateway.setUser(mkbUser);
+		try {
+			mkbUser.initialize();
+		} catch (UserInitalizationException e) {
+			e.printStackTrace();
+		}
 		return mkbUser;
 	}
 

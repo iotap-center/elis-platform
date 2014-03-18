@@ -23,6 +23,7 @@ import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.entities.devices.WaterMeterSampler;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.WaterSample;
@@ -280,11 +281,17 @@ public class WaterService {
 
 	private List<WaterMeterSampler> waterMetersForUser(PlatformUser pu) {
 		List<WaterMeterSampler> meters = new ArrayList<>();
+		logInfo("PlatformUser is: " + pu);
 		User[] users = userService.getUsers(pu);
+		logInfo("Number of users attached to " + pu.getFirstName() + " is " + users.length);
 		for (User user : users) {
+			logInfo("User is: " + user);
 			if (user instanceof GatewayUser) {
-				for (Device device : ((GatewayUser) user).getGateway()) {
+				Gateway gateway = ((GatewayUser) user).getGateway();
+				logInfo("Found " + gateway.size() + " devices");
+				for (Device device : gateway) {
 					if (device instanceof WaterMeterSampler) {
+						logInfo("Found water metering device: " + device.getName());
 						meters.add((WaterMeterSampler) device);
 					}
 				}
@@ -328,15 +335,15 @@ public class WaterService {
 	}
 	
 	private void logRequest(String endpoint, String puid, String from, String to) {
-		logRequest("Request: /water/" + puid + "/" + endpoint
+		logInfo("Request: /water/" + puid + "/" + endpoint
 				+ "?from=" + from + "&to=" + to);
 	}
 	
 	private void logRequest(String endpoint, String puid) {
-		logRequest("Request: /water/" + puid + "/" + endpoint);
+		logInfo("Request: /water/" + puid + "/" + endpoint);
 	}
 	
-	private void logRequest(String msg) {
+	private void logInfo(String msg) {
 		log.log(LogService.LOG_INFO, msg);
 	}
 	
