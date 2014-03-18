@@ -10,7 +10,16 @@ import org.joda.time.DateTime;
 import se.mah.elis.data.OrderedProperties;
 
 /**
- * The User interface describes a generic user in the platform.
+ * <p>The AbstractUser interface describes a generic user in the platform.</p>
+ * 
+ * <p>In order for a user object to be storable its properties, as returned by
+ * {@link #getProperties()} and {@link #getPropertiesTemplate()}, must contain
+ * at least the three fields <i>uuid</i> (a {@link java.util.UUID} object
+ * identifying this user object), <i>created</i> (a
+ * {@link org.joda.time.DateTime} object, holding the date and time when
+ * this object was first created), and finally <i>service_name</i> (a
+ * {@link java.lang.String} containing the name of the service providing this
+ * user type).</p>
  * 
  * @author "Johan Holmberg, Malm\u00f6 University"
  * @since 1.0
