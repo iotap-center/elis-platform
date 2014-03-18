@@ -38,6 +38,16 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 		return this.getUser(username, password, bridge);
 	}
 
+	/**
+	 * Create a gateway user and gateway using a custom HTTP bridge
+	 * 
+	 * @param username
+	 * @param password
+	 * @param bridge
+	 * @return
+	 * @throws MethodNotSupportedException
+	 * @throws AuthenticationException
+	 */
 	public GatewayUser getUser(String username, String password,
 			EonHttpBridge bridge) throws MethodNotSupportedException,
 			AuthenticationException {
@@ -47,10 +57,33 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 		return user;
 	}
 
-	private EonGateway createGateway(String username, String password,
+	/**
+	 * Create a gateway using the default E.On HTTP bridge 
+	 *  
+	 * @param username
+	 * @param password
+	 * @return
+	 * @throws AuthenticationException
+	 */
+	public EonGateway createGateway(String username, String password)
+			throws AuthenticationException {
+		EonHttpBridge bridge = createBridgeFromConfig();
+		return createGateway(username, password, bridge);
+	}
+
+	/**
+	 * Create a gateway using a custom HTTP bridge
+	 * 
+	 * @param username
+	 * @param password
+	 * @param httpBridge
+	 * @return
+	 * @throws AuthenticationException
+	 */
+	public EonGateway createGateway(String username, String password,
 			EonHttpBridge httpBridge) throws AuthenticationException {
 		EonGateway gateway = new EonGateway();
-		
+
 		String token;
 		try {
 			token = httpBridge.authenticate(username, password);
@@ -58,10 +91,10 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 			throw new AuthenticationException(
 					"Could not authenticate against E.On for " + username);
 		}
-		
+
 		gateway.setAuthenticationToken(token);
 		gateway.setHttpBridge(httpBridge);
-		
+
 		return gateway;
 	}
 
@@ -76,8 +109,8 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 
 	private EonHttpBridge createBridgeFromConfig() {
 		// TODO: this should read from standard osgi configuration
-		//return new EonHttpBridge("http://ewpapi2.dev.appex.no", 80,
-		//		"/v0_2/api/");
+		// return new EonHttpBridge("http://ewpapi2.dev.appex.no", 80,
+		// "/v0_2/api/");
 		return new EonHttpBridge("https://smarthome.eon.se", 443, "/v0_2/api/");
 	}
 }
