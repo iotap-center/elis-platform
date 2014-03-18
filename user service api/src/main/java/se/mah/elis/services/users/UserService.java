@@ -54,14 +54,13 @@ public interface UserService {
 	PlatformUser getPlatformUser(UserIdentifier identifier);
 	
 	/**
-	 * Fetches a platform user, based on a String representation of the main
-	 * identifier.
+	 * Fetches a platform user, based the user id.
 	 * 
 	 * @param id The main identifier.
 	 * @return A PlatformUser object. If no user is found, null is returned.
 	 * @since 1.0
 	 */
-	PlatformUser getPlatformUser(String id);
+	PlatformUser getPlatformUser(UUID id);
 	
 	/**
 	 * Fetches all platform users associated with this user account.
