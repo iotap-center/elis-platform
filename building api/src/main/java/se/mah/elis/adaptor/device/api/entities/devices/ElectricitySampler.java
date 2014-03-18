@@ -3,6 +3,10 @@
  */
 package se.mah.elis.adaptor.device.api.entities.devices;
 
+import java.util.List;
+
+import org.joda.time.DateTime;
+
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.ElectricitySample;
 
@@ -24,6 +28,17 @@ public interface ElectricitySampler extends Sampler {
 	 * @since 1.0
 	 */
 	ElectricitySample getSample() throws SensorFailedException;
+	
+	/**
+	 * Gets a list of energy usage samples between the from and to date.
+	 * 
+	 * @param from
+	 * @param to
+	 * @return 
+	 * @throws SensorFailedException
+	 */
+	List<ElectricitySample> getSamples(DateTime from, DateTime to)
+			throws SensorFailedException;
 	
 	/**
 	 * Sample the current energy usage for a given amount of time.

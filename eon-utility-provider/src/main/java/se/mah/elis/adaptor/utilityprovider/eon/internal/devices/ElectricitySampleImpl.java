@@ -38,6 +38,12 @@ public class ElectricitySampleImpl implements ElectricitySample {
 		currentKwh = sample;
 	}
 
+	public ElectricitySampleImpl(double value, DateTime sampleTime) {
+		sampled = sampleTime;
+		created = sampleTime;
+		currentKwh = value;
+	}
+
 	@Override
 	public long getSampleLength() {
 		return sampleLength;
