@@ -159,7 +159,7 @@ public interface Storage {
 	 * @throws StorageException if the user wasn't found.
 	 * @since 2.0
 	 */
-	User readUser(UUID id) throws StorageException;
+	AbstractUser readUser(UUID id) throws StorageException;
 	
 	/**
 	 * Reads out a specific user from the storage.
