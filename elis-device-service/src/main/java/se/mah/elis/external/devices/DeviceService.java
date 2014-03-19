@@ -28,6 +28,16 @@ import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 
+/**
+ * 
+ * This service provides a HTTP interface to retrieve information 
+ * about all devices that a platform user is connected with. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 @Path("/users/{id}")
 @Produces("application/json")
 @Component(name = "ElisDeviceService", immediate = true)
@@ -43,6 +53,14 @@ public class DeviceService {
 		gson = new GsonBuilder().setPrettyPrinting().create();
 	}
 	
+	/**
+	 * Returns a list of devices as a HTTP response. The response is 
+	 * JSON encoded. 
+	 * 
+	 * @since 1.0
+	 * @param id
+	 * @return
+	 */
 	@GET
 	@Path("/devices")
 	public Response getDeviceList(@PathParam("id") String id) {
