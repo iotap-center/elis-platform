@@ -17,6 +17,14 @@ import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.exceptions.StaticEntityException;
 
+/**
+ * MKB gateway to connect with water meters.
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 public class MkbGateway implements Gateway {
 
 	private static final long serialVersionUID = 7109328443818562681L;
