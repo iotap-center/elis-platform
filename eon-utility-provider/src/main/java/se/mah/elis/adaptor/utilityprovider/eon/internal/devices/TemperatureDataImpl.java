@@ -8,6 +8,16 @@ import org.joda.time.DateTime;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.data.TemperatureData;
 
+/**
+ * 
+ * Temperature data implementation for the E.On API.
+ * 
+ * @author Joakim Lithell
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 public class TemperatureDataImpl implements TemperatureData {
 
 	private static final long serialVersionUID = 512051193886837620L;

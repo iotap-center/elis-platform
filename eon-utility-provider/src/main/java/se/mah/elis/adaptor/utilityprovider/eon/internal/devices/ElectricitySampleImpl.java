@@ -8,11 +8,17 @@ import org.joda.time.DateTime;
 import se.mah.elis.data.ElectricitySample;
 import se.mah.elis.data.OrderedProperties;
 
+/**
+ * 
+ * An implementation of an electricity sample fitted for the E.On API. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 public class ElectricitySampleImpl implements ElectricitySample {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 9035743168231203310L;
 	private UUID dataid;
 	private UUID ownerid;
@@ -49,6 +55,12 @@ public class ElectricitySampleImpl implements ElectricitySample {
 		return sampleLength;
 	}
 
+	/**
+	 * Returns the DateTime of when the sample was created. For historic 
+	 * samples this may be well in the past. 
+	 * 
+	 * @since 1.0
+	 */
 	@Override
 	public DateTime getSampleTimestamp() {
 		return sampled;

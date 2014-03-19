@@ -31,6 +31,7 @@ public class EonGatewayUser implements GatewayUser {
 	 * Will try to initialise the gateway if that has not been done before. 
 	 * 
 	 * @throws UserInitalizationException if initialisation of gateway fails
+	 * @since 1.0
 	 */
 	@Override
 	public void initialize() throws UserInitalizationException {

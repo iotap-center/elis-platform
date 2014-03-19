@@ -4,6 +4,13 @@ import java.util.Properties;
 
 import se.mah.elis.services.users.factory.UserRecipe;
 
+/**
+ * Describes how to create E.On users. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ */
 public class EonUserRecipe implements UserRecipe {
 
 	@Override
