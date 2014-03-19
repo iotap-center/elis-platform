@@ -36,6 +36,14 @@ import se.mah.elis.services.users.UserService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * This is a HTTP service to retrieve water data statistics.
+ * 
+ * @author Marcus Ljungblad
+ * @version 1.0
+ * @since 1.0 
+ *
+ */
 @Path("/water")
 @Produces("application/json")
 @Component(name = "ElisWaterService", immediate = true)
@@ -65,6 +73,14 @@ public class WaterService {
 		this.log = log;
 	}
 
+	/**
+	 * Gets the current water meter reading, i.e., how much water has been 
+	 * consumed since the meter was last reset. Resetting cannot be done through 
+	 * the Elis platform.  
+	 * 
+	 * @param puid
+	 * @return
+	 */
 	@GET
 	@Path("/{puid}/now")
 	public Response getCurrentWaterConsumption(@PathParam("puid") String puid) {
@@ -106,6 +122,14 @@ public class WaterService {
 		return samples;
 	}
 
+	/**
+	 * Get water data usage aggregated by day between two timestamps. 
+	 * 
+	 * @param puid
+	 * @param from as unix timestamp
+	 * @param to as unix timestamp
+	 * @return
+	 */
 	@GET
 	@Path("/{puid}/daily")
 	public Response getDailyWaterConsumption(
@@ -157,6 +181,14 @@ public class WaterService {
 		return samples;
 	}
 	
+	/**
+	 * Get water data usage aggregated by week between two timestamps. 
+	 * 
+	 * @param puid
+	 * @param from as unix timestamp
+	 * @param to as unix timestamp
+	 * @return
+	 */
 	@GET
 	@Path("/{puid}/weekly")
 	public Response getWeeklyWaterConsumption(
@@ -210,6 +242,14 @@ public class WaterService {
 		return samples;
 	}
 
+	/**
+	 * Get water data usage aggregated by month between two timestamps. 
+	 * 
+	 * @param puid
+	 * @param from as unix timestamp
+	 * @param to as unix timestamp
+	 * @return
+	 */
 	@GET
 	@Path("/{puid}/monthly")
 	public Response getMonthlyWaterConsumption(
