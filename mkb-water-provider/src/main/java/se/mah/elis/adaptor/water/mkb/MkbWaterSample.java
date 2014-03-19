@@ -11,6 +11,14 @@ import se.mah.elis.adaptor.water.mkb.data.WaterDataPoint;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.data.WaterSample;
 
+/**
+ * Water sample from an MKB water meter. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 public class MkbWaterSample implements WaterSample {
 
 	private static final long serialVersionUID = 7438609549499091999L;

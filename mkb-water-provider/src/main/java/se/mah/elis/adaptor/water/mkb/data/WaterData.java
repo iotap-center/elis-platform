@@ -6,6 +6,16 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+/**
+ * 
+ * Implementation to query water data as provided by the {@link WaterDataLoader} 
+ * and reached via the {@link WaterDataService}. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 public class WaterData {
 	
 	private Map<String, List<WaterDataPoint>> userDataMap;
@@ -14,10 +24,23 @@ public class WaterData {
 		userDataMap = new HashMap<>();
 	}
 	
+	/**
+	 * Sets the water data measurement points. 
+	 *  
+	 * @param map
+	 */
 	public void setWaterData(Map<String, List<WaterDataPoint>> map) {
 		userDataMap = map;
 	}
 	
+	/**
+	 * Retrieve a range of data points for a specific meter. 
+	 * 
+	 * @param meterId
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public List<WaterDataPoint> getRange(String meterId, DateTime start, DateTime end) {
 		if (userDataMap.containsKey(meterId))
 			return getRangeInSamples(meterId, userDataMap.get(meterId), start, end);
@@ -73,26 +96,57 @@ public class WaterData {
 		return startIndex;
 	}
 
+	/**
+	 * Retrieve a range of water meter data points from a specific date up 
+	 * until the last recorded data point. 
+	 * 
+	 * @param meterId
+	 * @param fromDate
+	 * @return
+	 */
 	public List<WaterDataPoint> getRange(String meterId, DateTime fromDate) {
 		return getRange(meterId, fromDate, getLastDate(meterId));
 	}
 	
+	/**
+	 * Retrieve all values attached to a specific meter. 
+	 * 
+	 * @param meterId
+	 * @return
+	 */
 	public List<WaterDataPoint> getAllValues(String meterId) {
 		if (userDataMap.containsKey(meterId))
 			return userDataMap.get(meterId);
 		return null;
 	}
 	
+	/**
+	 * Get the {@link DateTime} for the first registered water meter data point. 
+	 * 
+	 * @param meterId
+	 * @return
+	 */
 	public DateTime getEarliestDate(String meterId) {
 		if (userDataMap.containsKey(meterId))
 			return userDataMap.get(meterId).get(0).getRecordedDateTime();
 		return null;
 	}
 	
+	/**
+	 * Get the {@link DateTime} for the last registered water meter data point.  
+	 * @param meterId
+	 * @return
+	 */
 	public DateTime getLastDate(String meterId) {
 		return getLatestSample(meterId).getRecordedDateTime();
 	}
 	
+	/**
+	 * Get the last available water meter data point for a specific meter. 
+	 * 
+	 * @param meterId
+	 * @return
+	 */
 	public WaterDataPoint getLatestSample(String meterId) {
 		if (userDataMap.containsKey(meterId)) {
 			List<WaterDataPoint> samples = userDataMap.get(meterId);

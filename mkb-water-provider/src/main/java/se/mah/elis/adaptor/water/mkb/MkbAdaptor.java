@@ -6,6 +6,15 @@ import org.apache.felix.scr.annotations.Service;
 
 import se.mah.elis.services.users.factory.UserFactory;
 
+/**
+ * 
+ * This registers an MKB water provider with the Elis platform. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 @Component(name = "MKB Water adaptor", immediate = true)
 @Service(value = MkbAdaptor.class)
 public class MkbAdaptor {

@@ -17,18 +17,15 @@ public class EonAdaptor {
 	private UserProvider eonProvider;
 	
 	public EonAdaptor() {
-		System.out.println("E.On adaptor created");
 		eonProvider = new EonUserProvider();
 	}
 	
 	protected void bindUserFactoryService(UserFactory uf) {
-		System.out.println("E.On adaptor bind UserFactory");
 		this.userFactoryService = uf;
 		userFactoryService.registerProvider(eonProvider);
 	}
 	
 	protected void unbindUserFactoryService(UserFactory uf) {
-		System.out.println("E.On adaptor unbind UserFactory");
 		userFactoryService.unregisterProvider(eonProvider);
 		this.userFactoryService = null;
 	}

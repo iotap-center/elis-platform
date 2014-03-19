@@ -12,8 +12,23 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 import se.mah.elis.services.users.factory.UserProvider;
 import se.mah.elis.services.users.factory.UserRecipe;
 
+/**
+ * Provider which is registered with the Elis user factory and is able 
+ * to create MKB users from the properties provided. 
+ * 
+ * @author Marcus Ljungblad
+ * @version 1.0
+ * @since 1.0
+ *
+ */
 public class MkbProvider implements UserProvider {
 
+	/**
+	 * Provided with a properties object containing "id" (the meter id) is able 
+	 * to instantiate {@link MkbGatwayUser}s.
+	 * 
+	 * @return an {@link MkbGatwayUser}
+	 */
 	@Override
 	public User build(Properties properties) throws UserInitalizationException {
 		String meterId = (String) properties.getProperty("id");

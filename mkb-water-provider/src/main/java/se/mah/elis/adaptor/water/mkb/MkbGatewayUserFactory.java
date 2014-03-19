@@ -6,6 +6,14 @@ import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.device.api.providers.GatewayUserProvider;
 
+/**
+ * Factory which is able to create instances of MKB water meter users.  
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 public class MkbGatewayUserFactory implements GatewayUserProvider {
 
 	@Override

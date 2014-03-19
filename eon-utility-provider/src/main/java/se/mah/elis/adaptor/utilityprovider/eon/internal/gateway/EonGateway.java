@@ -207,7 +207,7 @@ public class EonGateway implements Gateway {
 		}
 	}
 
-	// TODO clean up this mess
+	// TODO add logging
 	private void addGatewayData() {
 		Map<String, Object> data = null;
 		

@@ -25,6 +25,16 @@ import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.data.WaterSample;
 import se.mah.elis.exceptions.StaticEntityException;
 
+/**
+ * 
+ * MKB Water Meter is a virtual representation of the water meter located in
+ * users' apartments. It is primarily used to retrieve {@link MkbWaterSample}s.
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 @Component
 public class MkbWaterMeter implements WaterMeterSampler {
 

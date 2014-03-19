@@ -16,7 +16,10 @@ import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.exceptions.StaticEntityException;
 
 /**
- * Used to parse E.On HTTP response messages 
+ * Used to parse E.On HTTP response messages. 
+ * 
+ * The API is scarcely documented by the original company at 
+ * http://ewpwiki.appex.no/API.MainPage.ashx
  * 
  * @author Marcus Ljungblad
  * @version 1.0.0
@@ -26,12 +29,29 @@ public class EonParser {
 
 	private static JSONParser parser = new JSONParser();
 	
+	/**
+	 * Parses the authentication token returned by the E.On API. 
+	 * 
+	 * @param json
+	 * @return
+	 * @throws ParseException
+	 */
 	public static String parseToken(String json) throws ParseException {
 		JSONObject keyObject = (JSONObject) parser.parse(json);
 		String token = (String) keyObject.get("ewp-auth-key");
 		return token;
 	}
 
+	/**
+	 * Parses the GetPanels response from the E.On API and returns the _first_ 
+	 * gateway found. 
+	 * 
+	 * Note: This parser only supports one gateway at the moment. 
+	 * 
+	 * @param json
+	 * @return
+	 * @throws ParseException
+	 */
 	public static Map<String, Object> parseGateway(String json) throws ParseException {
 		Map<String, Object> gateway = new HashMap<String, Object>();
 		JSONArray gateways = (JSONArray) parser.parse(json);
@@ -41,7 +61,13 @@ public class EonParser {
 		return gateway;
 	}
 
-	// make this return List<Device> instead
+	/**
+	 * Parses the device list response from the E.On API. 
+	 * 
+	 * @param json
+	 * @return
+	 * @throws ParseException
+	 */
 	public static List<Device> parseDeviceList(String json) throws ParseException {
 		List<Device> deviceList = new ArrayList<Device>();
 		JSONArray devices = (JSONArray) parser.parse(json);
@@ -60,6 +86,13 @@ public class EonParser {
 		return deviceList;
 	}
 
+	/**
+	 * Parses the device status response from the E.On API
+	 * 
+	 * @param response
+	 * @return
+	 * @throws ParseException
+	 */
 	public static Map<String, Object> parseDeviceStatus(String response) throws ParseException {
 		Map<String, Object> deviceStatus = new HashMap<String, Object>();
 		JSONObject obj = (JSONObject) ((JSONArray) parser.parse(response)).get(0);
@@ -70,6 +103,14 @@ public class EonParser {
 		return deviceStatus;
 	}
 
+	/**
+	 * Parses the action objects returned for long-running requests 
+	 * (e.g., turning off a device) from the E.On API.  
+	 *  
+	 * @param response
+	 * @return
+	 * @throws ParseException
+	 */
 	public static Map<String, Object> parseActionObject(String response) throws ParseException {
 		Map<String, Object> actionObject = new HashMap<String, Object>();
 		JSONObject obj = (JSONObject) parser.parse(response);
@@ -79,12 +120,26 @@ public class EonParser {
 		return actionObject;
 	}
 
+	/**
+	 * Parse and extract the temperature from devices capable of measuring temperature. 
+	 * 
+	 * @param response
+	 * @return
+	 * @throws ParseException
+	 */
 	public static float parseTemperatureValue(String response) throws ParseException {
 		JSONObject temperatureObject = (JSONObject) parser.parse(response);
 		Number tempValue = (Number) temperatureObject.get("Temperature");
 		return tempValue.floatValue();
 	}
 	
+	/**
+	 * Parse and extract the energy usage from power meters. 
+	 * 
+	 * @param response
+	 * @return
+	 * @throws ParseException
+	 */
 	public static double parsePowerMeterValue(String response) throws ParseException{
 		// retrieves the first json object in [{ 'CurrentKwh': value }]
 		JSONObject powerMeterObject = (JSONObject) ((JSONArray) parser.parse(response)).get(0);
@@ -92,6 +147,13 @@ public class EonParser {
 		return powerMeterValue;
 	}
 
+	/**
+	 * Parse a summary of statistics from a specific device. 
+	 * 
+	 * @param response
+	 * @return
+	 * @throws ParseException
+	 */
 	public static List<Map<String, Object>> parseSummaryStats(String response) throws ParseException {
 		List<Map<String, Object>> summaries = new ArrayList<Map<String,Object>>(); 
 		JSONArray responses = (JSONArray) parser.parse(response);
@@ -130,6 +192,13 @@ public class EonParser {
 		return summaries;
 	}
 
+	/**
+	 * Parse statistics from a particular device. 
+	 * 
+	 * @param response
+	 * @return
+	 * @throws ParseException
+	 */
 	public static List<Map<String, Object>> parseStatData(String response) throws ParseException{
 		List<Map<String, Object>> stats = new ArrayList<Map<String,Object>>();
 		
