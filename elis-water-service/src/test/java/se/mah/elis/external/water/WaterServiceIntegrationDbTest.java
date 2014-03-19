@@ -22,7 +22,9 @@ import org.junit.Test;
 import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.water.mkb.MkbProvider;
+import se.mah.elis.external.water.beans.WaterBean;
 import se.mah.elis.impl.services.storage.StorageImpl;
+import se.mah.elis.impl.services.users.PlatformUserIdentifierImpl;
 import se.mah.elis.impl.services.users.UserServiceImpl;
 import se.mah.elis.impl.services.users.factory.UserFactoryImpl;
 import se.mah.elis.services.users.PlatformUser;
@@ -87,7 +89,8 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 				connection.close();
 				connection = null;
 			}
-		} catch (SQLException e) { }
+		} catch (SQLException e) {
+		}
 	}
 
 	private static void tearDownTables() {
@@ -115,19 +118,22 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 		User user = null;
 		try {
 			user = factory.build(MKB_USERTYPE, MKB_SERVICENAME, props);
-		} catch (Exception e) { }
+		} catch (Exception e) {
+		}
 		return user;
 	}
 
 	private PlatformUser createPlatformUser() {
 		PlatformUser user = null;
 		try {
-			user = userService.createPlatformUser(PLATFORMUSERNAME, PLATFORMPASSWORD);
+			user = userService.createPlatformUser(PLATFORMUSERNAME,
+					PLATFORMPASSWORD);
 			user.setFirstName("testuser");
 			user.setLastName("testuserlastname");
 			user.setEmail("test@mah.se");
 			userService.updatePlatformUser(user);
-		} catch (Exception e) { }
+		} catch (Exception e) {
+		}
 		return user;
 	}
 
@@ -142,5 +148,21 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 		assertEquals(1, users.length);
 		assertNotNull(users[0]);
 		assertEquals(METERID, users[0].getIdentifier());
+	}
+
+	@Test
+	public void testGetWaterDataNow() {
+		final String data = target(
+				"/water/" + platformUserId() + "/now")
+				.request().get(String.class);
+		WaterBean bean = gson.fromJson(data, WaterBean.class);
+		assertEquals(platformUserId(), bean.puid);
+		assertEquals("now", bean.period);
+		assertTrue(bean.devices.size() > 0);
+		assertTrue(bean.devices.get(0).data.size() > 0);
+	}
+
+	private String platformUserId() {
+		return Integer.toString(((PlatformUserIdentifierImpl) platformUser.getIdentifier()).getId());
 	}
 }
