@@ -99,6 +99,7 @@ public class EnergyServiceTest extends JerseyTest {
 		ElectricitySample deviceSample = mock(ElectricitySample.class);
 		when(deviceSample.getSampleTimestamp()).thenReturn(from);
 		when(deviceSample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_WH);
+		when(deviceSample.getCurrentPower()).thenReturn(DEVICE_1_WH);
 
 		DeviceIdentifier identifier = mock(DeviceIdentifier.class);
 		when(identifier.toString()).thenReturn(DEVICE + id);
@@ -133,7 +134,8 @@ public class EnergyServiceTest extends JerseyTest {
 		assertEquals("1", bean.puid);
 		assertEquals("now", bean.period);
 		assertEquals(DEVICE + 0, getFirstDevice(bean.devices));
-		assertEquals(DEVICE_1_WH/1000, bean.devices.get(0).data.get(0).kwh, 0.01f);
+		assertEquals(DEVICE_1_WH, bean.devices.get(0).data.get(0).watts, 0.01f);
+		assertEquals(0, bean.devices.get(0).data.get(0).kwh, 0.01f);
 	}
 
 	

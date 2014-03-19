@@ -129,7 +129,7 @@ public class ElectricitySampleImpl implements ElectricitySample {
 
 	@Override
 	public double getTotalEnergyUsageInWh() {
-		double wh = currentKwh*1000;
+		double wh = currentKwh;
 		return wh;
 	}
 
