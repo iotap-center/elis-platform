@@ -387,7 +387,7 @@ public class StorageImpl implements Storage {
 				Properties userProps = user.getProperties();
 				
 				// Flatten the user properties
-				userProps = StorageUtils.flattenPropertiesWithIdentifier(userProps);
+				userProps = StorageUtils.flattenPropertiesWithIdentifier(userProps, false);
 				
 				// Generate the table name
 				tableName = user.getClass().getCanonicalName();
@@ -418,7 +418,7 @@ public class StorageImpl implements Storage {
 				} catch (SQLException e) {
 					// Try to create a non-existing table, but only once.
 					Properties propTemplate = user.getPropertiesTemplate();
-					propTemplate = StorageUtils.flattenPropertiesWithIdentifier(propTemplate);
+					propTemplate = StorageUtils.flattenPropertiesWithIdentifier(propTemplate, true);
 					
 					if (e.getErrorCode() == 1146 && !finalRun) {
 						utils.createTableIfNotExisting(tableName,
@@ -717,7 +717,7 @@ public class StorageImpl implements Storage {
 				
 				// Flatten the user properties
 				Properties userProps = user.getProperties();
-				userProps = StorageUtils.flattenPropertiesWithIdentifier(userProps);
+				userProps = StorageUtils.flattenPropertiesWithIdentifier(userProps, false);
 				
 				// This will be used by the parameter loop below
 				int i = 1;
@@ -753,7 +753,7 @@ public class StorageImpl implements Storage {
 					if (e.getErrorCode() == 1146 && !finalRun) {
 						// Flatten the user properties
 						Properties template = new Properties();
-						template = StorageUtils.flattenPropertiesWithIdentifier(template);
+						template = StorageUtils.flattenPropertiesWithIdentifier(template, true);
 						utils.createTableIfNotExisting(tableName,
 								user.getPropertiesTemplate());
 						update(user, true);

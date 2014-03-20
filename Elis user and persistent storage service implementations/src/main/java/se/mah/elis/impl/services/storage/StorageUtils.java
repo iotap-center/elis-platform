@@ -640,16 +640,23 @@ public class StorageUtils {
 	}
 	
 	/**
+	 * Flatten a set of properties prior to saving them to the database.
 	 * 
-	 * @param props
+	 * @param props The properties to flatten.
+	 * @param isTemplate If set to true, the method will call the
+	 * 		getPropertiesTemplate() method on the identifier.
 	 * @since 2.0
 	 */
-	public static Properties flattenPropertiesWithIdentifier(Properties props) {
+	public static Properties flattenPropertiesWithIdentifier(Properties props, boolean isTemplate) {
 		OrderedProperties flatProps = new OrderedProperties();
 		
 		for (Entry<Object, Object> prop : props.entrySet()) {
 			if (prop.getValue() instanceof UserIdentifier) {
-				flatProps.putAll(((UserIdentifier) prop.getValue()).getProperties());
+				if (isTemplate ) {
+					flatProps.putAll(((UserIdentifier) prop.getValue()).getPropertiesTemplate());
+				} else {
+					flatProps.putAll(((UserIdentifier) prop.getValue()).getProperties());
+				}
 			} else {
 				flatProps.put(prop.getKey(), prop.getValue());
 			}
