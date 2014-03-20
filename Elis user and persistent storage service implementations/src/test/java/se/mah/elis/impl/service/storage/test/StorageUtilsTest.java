@@ -1318,91 +1318,211 @@ public class StorageUtilsTest {
 	
 	@Test
 	public void testValidateEDOProperties() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertTrue(StorageUtils.validateEDOProperties(props));
 	}
 	
 	@Test
 	public void testValidateEDOPropertiesNoDataId() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props));
 	}
 	
 	@Test
 	public void testValidateEDOPropertiesDataIdIsNotUUID() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", "00001111-2222-3333-4444-555566667777");
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props));
 	}
 	
 	@Test
 	public void testValidateEDOPropertiesDataIdIsNotFirstObject() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("alice", "bob");
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props));
 	}
 	
 	@Test
 	public void testValidateEDOPropertiesNoOwnerId() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props));
 	}
 	
 	@Test
 	public void testValidateEDOPropertiesOwnerIdIsNotUUID() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", "00001111-2222-3333-4444-555566667777");
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props));
 	}
 	
 	@Test
 	public void testValidateEDOPropertiesNoCreated() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props));
 	}
 	
 	@Test
 	public void testValidateEDOPropertiesCreatedIsNotJodaDateTime() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", "2014-03-20 19:31:00");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props));
 	}
 	
 	@Test
 	public void testValidateEDOPropertiesNoExtraElement() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		
+		assertFalse(StorageUtils.validateEDOProperties(props));
 	}
 	
 	@Test
 	public void testValidateAbstractUserProperties() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertTrue(StorageUtils.validateAbstractUserProperties(props));
 	}
 	
 	@Test
 	public void testValidateAbstractUserPropertiesNoUUID() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props));
 	}
 	
 	@Test
 	public void testValidateAbstractUserPropertiesUUIDIsNotUUID() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", "00001111-2222-3333-4444-555566667777");
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props));
 	}
 	
 	@Test
 	public void testValidateAbstractUserPropertiesUUIDIsNotFirstObject() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("alice", "bob");
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props));
 	}
 	
 	@Test
 	public void testValidateAbstractUserPropertiesNoServiceName() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props));
 	}
 	
 	@Test
 	public void testValidateAbstractUserPropertiesServiceNameIsNotString() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("service_name", new Integer(42));
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props));
 	}
 	
 	@Test
 	public void testValidateAbstractUserPropertiesNoCreated() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props));
 	}
 	
 	@Test
 	public void testValidateAbstractUserPropertiesCreatedIsNotJodaDateTime() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", "2014-03-20 19:35:00");
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props));
 	}
 	
 	@Test
 	public void testValidateAbstractUserPropertiesNoExtraElement() {
-		fail("Not yet defined");
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props));
 	}
 }
