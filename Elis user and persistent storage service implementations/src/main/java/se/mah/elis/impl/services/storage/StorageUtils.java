@@ -111,7 +111,11 @@ public class StorageUtils {
 			if (keys.length() > 0) {
 				keys.append(", ");
 			}
-			keys.append("?");
+			if (entry.getValue() instanceof UUID) {
+				keys.append("x?");
+			} else {
+				keys.append("?");
+			}
 		}
 		
 		return keys.toString();
@@ -166,7 +170,7 @@ public class StorageUtils {
 		} else if (value instanceof Boolean) {
 			stmt.setBoolean(index, ((Boolean) value).booleanValue());
 		} else if (value instanceof UUID) {
-			stmt.setBytes(index, uuidToBytes((UUID) value));
+			stmt.setString(index, stripDashesFromUUID((UUID) value));
 		} else if (value instanceof String) {
 			if (useLike) {
 				stmt.setString(index, '%' + (String) value + '%');
@@ -226,8 +230,11 @@ public class StorageUtils {
 			if (pairs.length() > 0) {
 				pairs.append(connector);
 			}
+			// TODO Manage UUIDs as well
 			if (e.getValue() instanceof String && useLike) {
 				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` LIKE ?");
+			} else if (e.getValue() instanceof UUID) {
+				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = x?");
 			} else {
 				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = ?");
 			}
@@ -447,9 +454,9 @@ public class StorageUtils {
 	 * @throws StorageException if the couple couldn't be stored.
 	 * @since 2.0
 	 */
-	public void coupleUsers(int platformUser, UUID user)
+	public void coupleUsers(UUID platformUser, UUID user)
 			throws StorageException {
-		String query = "INSERT INTO user_bindings VALUES(?, x?);";
+		String query = "INSERT INTO user_bindings VALUES(x?, x?);";
 		
 		if (user == null) {
 			throw new StorageException();
@@ -460,7 +467,7 @@ public class StorageUtils {
 			PreparedStatement stmt = connection.prepareStatement(query);
 			
 			// Populate the query
-			stmt.setInt(1, platformUser);
+			stmt.setString(1, stripDashesFromUUID(platformUser));
 			stmt.setString(2, stripDashesFromUUID(user));
 			
 			// Run the statement and end the transaction
@@ -480,9 +487,9 @@ public class StorageUtils {
 	 * @param user The owned user.
 	 * @since 2.0
 	 */
-	public void decoupleUsers(int platformUser, UUID user) {
-		String query = "DELETE FROM user_bindings WHERE platform_user = " +
-				platformUser + " AND user = x'" +
+	public void decoupleUsers(UUID platformUser, UUID user) {
+		String query = "DELETE FROM user_bindings WHERE platform_user = x'" +
+				stripDashesFromUUID(platformUser) + "' AND user = x'" +
 				stripDashesFromUUID(user) + "';";
 		
 		try {
@@ -503,8 +510,8 @@ public class StorageUtils {
 	 * @return An array containing a list of all associated platform users.
 	 * @since 2.0
 	 */
-	public int[] getPlatformUsersAssociatedWithUser(UUID user) {
-		ArrayList<Integer> platformUsers = new ArrayList<Integer>();
+	public UUID[] getPlatformUsersAssociatedWithUser(UUID user) {
+		ArrayList<UUID> platformUsers = new ArrayList<UUID>();
 		
 		String query = "SELECT platform_user FROM user_bindings " +
 				"WHERE user = x'" + stripDashesFromUUID(user) + "';";
@@ -512,7 +519,7 @@ public class StorageUtils {
 			Statement stmt = connection.createStatement();
 			java.sql.ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
-				platformUsers.add(rs.getInt(1));
+				platformUsers.add(bytesToUUID(rs.getBytes(1)));
 			}
 			rs.close();
 			stmt.close();
@@ -521,7 +528,7 @@ public class StorageUtils {
 			e.printStackTrace();
 		}
 		
-		return ArrayUtils.toPrimitive(platformUsers.toArray(new Integer[0]));
+		return platformUsers.toArray(new UUID[0]);
 	}
 	
 	/**
@@ -532,11 +539,11 @@ public class StorageUtils {
 	 * @return An array containing a list of all associated users.
 	 * @since 2.0
 	 */
-	public UUID[] getUsersAssociatedWithPlatformUser(int id) {
+	public UUID[] getUsersAssociatedWithPlatformUser(UUID id) {
 		ArrayList<UUID> platformUsers = new ArrayList<UUID>();
 		
 		String query = "SELECT user FROM user_bindings " +
-				"WHERE platform_user = " + id + ";";
+				"WHERE platform_user = x'" + stripDashesFromUUID(id) + "';";
 		try {
 			// Let's take command of the commit ship ourselves.
 			// Forward, mateys!

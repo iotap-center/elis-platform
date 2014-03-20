@@ -8,7 +8,6 @@ import se.mah.elis.services.users.PlatformUserIdentifier;
 
 public class MockPlatformUserIdentifier implements PlatformUserIdentifier {
 
-	private int id;
 	private String username;
 	private String password;
 	
@@ -18,7 +17,6 @@ public class MockPlatformUserIdentifier implements PlatformUserIdentifier {
 	}
 	
 	public MockPlatformUserIdentifier(String username, String password) {
-		id = 0;
 		this.username = username;
 		this.password = password;
 	}
@@ -38,7 +36,6 @@ public class MockPlatformUserIdentifier implements PlatformUserIdentifier {
 	public OrderedProperties getProperties() {
 		OrderedProperties p = new OrderedProperties();
 		
-		p.put("id", id);
 		if (username != null) {
 			p.put("username", username);
 		}
@@ -53,21 +50,10 @@ public class MockPlatformUserIdentifier implements PlatformUserIdentifier {
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties p = new OrderedProperties();
 		
-		p.put("id", new Integer(0));
 		p.put("username", "256");
 		p.put("password", "256");
 		
 		return p;
-	}
-
-	@Override
-	public void setId(int id) throws IllegalArgumentException {
-		this.id = id;
-	}
-
-	@Override
-	public int getId() {
-		return id;
 	}
 
 	@Override
