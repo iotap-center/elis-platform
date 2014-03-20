@@ -3,6 +3,7 @@ package se.mah.elis.external.devices;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -65,15 +66,22 @@ public class DeviceService {
 	@Path("/devices")
 	public Response getDeviceList(@PathParam("id") String id) {
 		ResponseBuilder response = null;
+		UUID uuid = null;
 		
-		if (userService != null) {
-			PlatformUser pu = userService.getPlatformUser(id);
+		try {
+			uuid = UUID.fromString(id);
+		} catch (Exception e) {
+			response = Response.status(Response.Status.BAD_REQUEST);
+		}
+		
+		if (userService != null && uuid != null) {
+			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null) {
 				response = buildDeviceListResponseFrom(pu);
 			} else {
 				response = Response.status(Response.Status.NOT_FOUND);
 			}
-		} else {
+		} else if (response == null) {
 			response = Response.serverError();
 		}
 		

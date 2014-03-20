@@ -173,8 +173,7 @@ public class EnergyBeanFactory {
 	}
 
 	private static String getPuid(PlatformUser pu) {
-		Integer puid = ((PlatformUserIdentifier) pu.getIdentifier()).getId();
-		return puid.toString();
+		return pu.getUserId().toString();
 	}
 	
 	private static String unixtime(DateTime sampleTimestamp) {
