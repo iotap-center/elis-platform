@@ -1103,6 +1103,24 @@ public class StorageImpl implements Storage {
 
 	/**
 	 * Implementation of
+	 * {@link se.mah.elis.services.storage.Storage#readData(ElisDataObject) readData(ElisDataObject)}.
+	 * 
+	 * @param edo The object to be read.
+	 * @return The data object we're looking for.
+	 * @throws StorageException if the data object wasn't found.
+	 * @since 2.0
+	 */
+	@Override
+	public ElisDataObject readData(ElisDataObject edo) throws StorageException {
+		if (edo.getDataId() == null) {
+			throw new StorageException(OBJECT_NOT_VALID);
+		}
+		
+		return readData(edo.getDataId());
+	}
+
+	/**
+	 * Implementation of
 	 * {@link se.mah.elis.services.storage.Storage#readUser(UserIdentifier) readUser(UserIdentifier)}.
 	 * 
 	 * @param id The unique data id.
