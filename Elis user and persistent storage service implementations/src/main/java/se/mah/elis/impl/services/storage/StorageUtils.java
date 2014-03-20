@@ -671,28 +671,40 @@ public class StorageUtils {
 	 * for a valid set of properties are:</p>
 	 * 
 	 * <ul>
-	 *   <li>The first value is a UUID object called "dataid"</li>
+	 *   <li>The first value is a UUID object called "dataid" if this is an
+	 *   existing data object or a template</li>
 	 *   <li>A UUID object called "ownerid"</li>
 	 *   <li>A Joda DateTime object called "created"</li>
 	 *   <li>At least one more element</li>
 	 * </ul>
 	 * 
 	 * @param props The property set to validate.
+	 * @param checkForDataId If set to true, the "dataid" field is checked.
 	 * @return True of the property set is OK, otherwise false.
 	 * @since 2.0
 	 */
-	public static boolean validateEDOProperties(Properties props) {
+	public static boolean validateEDOProperties(Properties props,
+			boolean checkForDataId) {
 		boolean result = false;
-		Iterator<Entry<Object, Object>> entries = props.entrySet().iterator();
-		Entry<Object, Object> firstEntry = entries.next();
 		
-		result = props.size() > 3 &&
-				"dataid".equals(firstEntry.getKey()) &&
-				firstEntry.getValue() instanceof UUID &&
-				props.containsKey("ownerid") &&
-				props.get("ownerid") instanceof UUID &&
-				props.containsKey("created") &&
-				props.get("created") instanceof DateTime;
+		if (checkForDataId) {
+			Iterator<Entry<Object, Object>> entries = props.entrySet().iterator();
+			Entry<Object, Object> firstEntry = entries.next();
+			
+			result = props.size() > 3 &&
+					"dataid".equals(firstEntry.getKey()) &&
+					firstEntry.getValue() instanceof UUID &&
+					props.containsKey("ownerid") &&
+					props.get("ownerid") instanceof UUID &&
+					props.containsKey("created") &&
+					props.get("created") instanceof DateTime;
+		} else {
+			result = props.size() > 2 &&
+					props.containsKey("ownerid") &&
+					props.get("ownerid") instanceof UUID &&
+					props.containsKey("created") &&
+					props.get("created") instanceof DateTime;
+		}
 		
 		return result;
 	}
@@ -702,28 +714,40 @@ public class StorageUtils {
 	 * for a valid set of properties are:</p>
 	 * 
 	 * <ul>
-	 *   <li>The first value is a UUID object called "dataid"</li>
+	 *   <li>The first value is a UUID object called "uuid" if this is an
+	 *   existing user object or a template</li>
 	 *   <li>A Joda DateTime object called "created"</li>
 	 *   <li>A String object called "service_name"</li>
 	 *   <li>At least one more element</li>
 	 * </ul>
 	 * 
 	 * @param props The property set to validate.
+	 * @param checkForUUID If set to true, the "uuid" field is checked.
 	 * @return True of the property set is OK, otherwise false.
 	 * @since 2.0
 	 */
-	public static boolean validateAbstractUserProperties(Properties props) {
+	public static boolean validateAbstractUserProperties(Properties props,
+			boolean checkForUUID) {
 		boolean result = false;
-		Iterator<Entry<Object, Object>> entries = props.entrySet().iterator();
-		Entry<Object, Object> firstEntry = entries.next();
 		
-		result = props.size() > 3 &&
-				"uuid".equals(firstEntry.getKey()) &&
-				firstEntry.getValue() instanceof UUID &&
-				props.containsKey("service_name") &&
-				props.get("service_name") instanceof String &&
-				props.containsKey("created") &&
-				props.get("created") instanceof DateTime;
+		if (checkForUUID) {
+			Iterator<Entry<Object, Object>> entries = props.entrySet().iterator();
+			Entry<Object, Object> firstEntry = entries.next();
+			
+			result = props.size() > 3 &&
+					"uuid".equals(firstEntry.getKey()) &&
+					firstEntry.getValue() instanceof UUID &&
+					props.containsKey("service_name") &&
+					props.get("service_name") instanceof String &&
+					props.containsKey("created") &&
+					props.get("created") instanceof DateTime;
+		} else {
+			result = props.size() > 2 &&
+					props.containsKey("service_name") &&
+					props.get("service_name") instanceof String &&
+					props.containsKey("created") &&
+					props.get("created") instanceof DateTime;
+		}
 		
 		return result;
 	}

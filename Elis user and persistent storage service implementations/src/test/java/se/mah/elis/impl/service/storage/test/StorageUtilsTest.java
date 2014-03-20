@@ -1325,7 +1325,7 @@ public class StorageUtilsTest {
 		props.put("created", DateTime.now());
 		props.put("foo", "bar");
 		
-		assertTrue(StorageUtils.validateEDOProperties(props));
+		assertTrue(StorageUtils.validateEDOProperties(props, true));
 	}
 	
 	@Test
@@ -1336,7 +1336,7 @@ public class StorageUtilsTest {
 		props.put("created", DateTime.now());
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateEDOProperties(props));
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
 	}
 	
 	@Test
@@ -1348,7 +1348,7 @@ public class StorageUtilsTest {
 		props.put("created", DateTime.now());
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateEDOProperties(props));
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
 	}
 	
 	@Test
@@ -1361,7 +1361,7 @@ public class StorageUtilsTest {
 		props.put("created", DateTime.now());
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateEDOProperties(props));
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
 	}
 	
 	@Test
@@ -1372,7 +1372,7 @@ public class StorageUtilsTest {
 		props.put("created", DateTime.now());
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateEDOProperties(props));
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
 	}
 	
 	@Test
@@ -1384,7 +1384,7 @@ public class StorageUtilsTest {
 		props.put("created", DateTime.now());
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateEDOProperties(props));
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
 	}
 	
 	@Test
@@ -1395,7 +1395,7 @@ public class StorageUtilsTest {
 		props.put("ownerid", UUID.randomUUID());
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateEDOProperties(props));
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
 	}
 	
 	@Test
@@ -1407,7 +1407,7 @@ public class StorageUtilsTest {
 		props.put("created", "2014-03-20 19:31:00");
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateEDOProperties(props));
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
 	}
 	
 	@Test
@@ -1418,7 +1418,70 @@ public class StorageUtilsTest {
 		props.put("ownerid", UUID.randomUUID());
 		props.put("created", DateTime.now());
 		
-		assertFalse(StorageUtils.validateEDOProperties(props));
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertTrue(StorageUtils.validateEDOProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoOwnerIdNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesOwnerIdIsNotUUIDNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", "00001111-2222-3333-4444-555566667777");
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoCreatedNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", UUID.randomUUID());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesCreatedIsNotJodaDateTimeNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", "2014-03-20 19:31:00");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoExtraElementNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, false));
 	}
 	
 	@Test
@@ -1430,7 +1493,7 @@ public class StorageUtilsTest {
 		props.put("service_name", "mock_service");
 		props.put("foo", "bar");
 		
-		assertTrue(StorageUtils.validateAbstractUserProperties(props));
+		assertTrue(StorageUtils.validateAbstractUserProperties(props, true));
 	}
 	
 	@Test
@@ -1441,7 +1504,7 @@ public class StorageUtilsTest {
 		props.put("service_name", "mock_service");
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateAbstractUserProperties(props));
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
 	}
 	
 	@Test
@@ -1453,7 +1516,7 @@ public class StorageUtilsTest {
 		props.put("service_name", "mock_service");
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateAbstractUserProperties(props));
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
 	}
 	
 	@Test
@@ -1466,7 +1529,7 @@ public class StorageUtilsTest {
 		props.put("service_name", "mock_service");
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateAbstractUserProperties(props));
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
 	}
 	
 	@Test
@@ -1477,7 +1540,7 @@ public class StorageUtilsTest {
 		props.put("created", DateTime.now());
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateAbstractUserProperties(props));
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
 	}
 	
 	@Test
@@ -1489,7 +1552,7 @@ public class StorageUtilsTest {
 		props.put("service_name", new Integer(42));
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateAbstractUserProperties(props));
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
 	}
 	
 	@Test
@@ -1500,7 +1563,7 @@ public class StorageUtilsTest {
 		props.put("service_name", "mock_service");
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateAbstractUserProperties(props));
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
 	}
 	
 	@Test
@@ -1512,7 +1575,7 @@ public class StorageUtilsTest {
 		props.put("service_name", "mock_service");
 		props.put("foo", "bar");
 		
-		assertFalse(StorageUtils.validateAbstractUserProperties(props));
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
 	}
 	
 	@Test
@@ -1523,6 +1586,69 @@ public class StorageUtilsTest {
 		props.put("created", DateTime.now());
 		props.put("service_name", "mock_service");
 		
-		assertFalse(StorageUtils.validateAbstractUserProperties(props));
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertTrue(StorageUtils.validateAbstractUserProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoServiceNameNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesServiceNameIsNotStringNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("service_name", new Integer(42));
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoCreatedNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesCreatedIsNotJodaDateTimeNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", "2014-03-20 19:35:00");
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoExtraElementNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, false));
 	}
 }
