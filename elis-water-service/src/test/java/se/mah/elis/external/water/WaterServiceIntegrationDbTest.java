@@ -163,6 +163,6 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 	}
 
 	private String platformUserId() {
-		return Integer.toString(((PlatformUserIdentifierImpl) platformUser.getIdentifier()).getId());
+		return platformUser.getUserId().toString();
 	}
 }
