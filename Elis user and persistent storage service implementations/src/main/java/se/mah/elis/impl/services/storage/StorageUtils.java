@@ -682,7 +682,19 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public static boolean validateEDOProperties(Properties props) {
-		return false;
+		boolean result = false;
+		Iterator<Entry<Object, Object>> entries = props.entrySet().iterator();
+		Entry<Object, Object> firstEntry = entries.next();
+		
+		result = props.size() > 3 &&
+				"dataid".equals(firstEntry.getKey()) &&
+				firstEntry.getValue() instanceof UUID &&
+				props.containsKey("ownerid") &&
+				props.get("ownerid") instanceof UUID &&
+				props.containsKey("created") &&
+				props.get("created") instanceof DateTime;
+		
+		return result;
 	}
 	
 	/**
@@ -701,7 +713,19 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public static boolean validateAbstractUserProperties(Properties props) {
-		return false;
+		boolean result = false;
+		Iterator<Entry<Object, Object>> entries = props.entrySet().iterator();
+		Entry<Object, Object> firstEntry = entries.next();
+		
+		result = props.size() > 3 &&
+				"uuid".equals(firstEntry.getKey()) &&
+				firstEntry.getValue() instanceof UUID &&
+				props.containsKey("service_name") &&
+				props.get("service_name") instanceof String &&
+				props.containsKey("created") &&
+				props.get("created") instanceof DateTime;
+		
+		return result;
 	}
 	
 	/**
