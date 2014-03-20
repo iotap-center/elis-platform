@@ -1196,6 +1196,25 @@ public class StorageImplTest {
 	}
 
 	@Test
+	public void testInsertAbstractUserWithIdentifier() {
+		buildAndPopulateMU2Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser2 mu = new MockUser2(null, "Horses");
+		
+		try {
+			storage.insert(mu);
+		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
+		}
+		
+		assertNotNull(mu.getUserId());
+		assertEquals(AU2_COUNT + 1, countBindingsInDB(mu));
+		assertEquals(AU2_COUNT + 1, countBindingsInDB());
+	}
+
+	@Test
 	public void testInsertAbstractUserArray() {
 		buildAndPopulateMU1Table();
 		

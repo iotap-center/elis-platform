@@ -372,7 +372,6 @@ public class StorageImpl implements Storage {
 				
 				// This might be a new user. Insert it.
 				UUID uuid = null;
-				
 				if (((User) user).getUserId() == null) {
 					// Generate the UUID
 					uuid = UUID.randomUUID();
@@ -381,13 +380,14 @@ public class StorageImpl implements Storage {
 					uuid = ((User) user).getUserId();
 				}
 				
-				props = user.getProperties();
-				
 				// This will be used by the parameter loop below
 				int i = 1;
 				
 				// Get the user properties
 				Properties userProps = user.getProperties();
+				
+				// Flatten the user properties
+				userProps = StorageUtils.flattenPropertiesWithIdentifier(userProps);
 				
 				// Generate the table name
 				tableName = user.getClass().getCanonicalName();
@@ -417,9 +417,12 @@ public class StorageImpl implements Storage {
 					utils.pairUUIDWithTable(uuid, tableName);
 				} catch (SQLException e) {
 					// Try to create a non-existing table, but only once.
+					Properties propTemplate = user.getPropertiesTemplate();
+					propTemplate = StorageUtils.flattenPropertiesWithIdentifier(propTemplate);
+					
 					if (e.getErrorCode() == 1146 && !finalRun) {
 						utils.createTableIfNotExisting(tableName,
-								user.getPropertiesTemplate());
+								propTemplate);
 						insert(user, true);
 					} else {
 						// Well, that didn't work too well. Give up
@@ -712,6 +715,10 @@ public class StorageImpl implements Storage {
 					throw new StorageException(USER_NOT_FOUND);
 				}
 				
+				// Flatten the user properties
+				Properties userProps = user.getProperties();
+				userProps = StorageUtils.flattenPropertiesWithIdentifier(userProps);
+				
 				// This will be used by the parameter loop below
 				int i = 1;
 				
@@ -721,7 +728,7 @@ public class StorageImpl implements Storage {
 				// Create a query to be run as a prepared statement and do
 				// some magic MySQL stuff to it.
 				query = "UPDATE `" + StorageUtils.mysqlifyName(tableName) +
-						"` SET " + StorageUtils.pairUp(user.getProperties()) +
+						"` SET " + StorageUtils.pairUp(userProps) +
 						" WHERE uuid = x'" +
 						StorageUtils.stripDashesFromUUID(((User) user).getUserId()) + "';";
 
@@ -734,7 +741,7 @@ public class StorageImpl implements Storage {
 					// Add the parameters to the query. We don't know what
 					// we'll run into. Better let someone else, i.e.
 					// addParameter() take care of that for us.
-					for (Entry<Object, Object> prop : user.getProperties().entrySet()) {
+					for (Entry<Object, Object> prop : userProps.entrySet()) {
 						utils.addParameter(stmt, prop.getValue(), i++, false);
 					}
 					
@@ -746,10 +753,7 @@ public class StorageImpl implements Storage {
 					if (e.getErrorCode() == 1146 && !finalRun) {
 						// Flatten the user properties
 						Properties template = new Properties();
-						template.putAll(user.getIdentifier()
-								.getPropertiesTemplate());
-						template.putAll(user.getPropertiesTemplate());
-						template.remove("identifier");
+						template = StorageUtils.flattenPropertiesWithIdentifier(template);
 						utils.createTableIfNotExisting(tableName,
 								user.getPropertiesTemplate());
 						update(user, true);
