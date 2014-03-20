@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ws.rs.core.Application;
 
@@ -62,15 +63,12 @@ public class EnergyServiceTest extends JerseyTest {
 	public static void setupSuite() {
 		log = mock(LogService.class);
 		
-		PlatformUserIdentifier uid = mock(PlatformUserIdentifier.class);
-		when(uid.getId()).thenReturn(1); // same as in tests
-		
 		platformUser = mock(PlatformUser.class);
-		when(platformUser.getIdentifier()).thenReturn(uid);
+		when(platformUser.getUserId()).thenReturn(UUID.fromString("00001111-2222-3333-4444-555566667777"));
 
 		gatewayUser = mock(GatewayUser.class);	
 		userService = mock(UserService.class);
-		when(userService.getPlatformUser(anyString())).thenReturn(platformUser);
+		when(userService.getPlatformUser(any(UUID.class))).thenReturn(platformUser);
 		when(userService.getUsers(any(PlatformUser.class))).thenReturn(new User[] { gatewayUser });
 		
 	}
@@ -130,7 +128,7 @@ public class EnergyServiceTest extends JerseyTest {
 	@Test
 	public void testGetNowRequest() {
 		EnergyBean bean = getNowRequest();
-		assertEquals("1", bean.puid);
+		assertEquals("00001111-2222-3333-4444-555566667777", bean.puid);
 		assertEquals("now", bean.period);
 		assertEquals(DEVICE + 0, getFirstDevice(bean.devices));
 		assertEquals(DEVICE_1_WH/1000, bean.devices.get(0).data.get(0).kwh, 0.01f);
@@ -161,14 +159,15 @@ public class EnergyServiceTest extends JerseyTest {
 	}
 
 	private EnergyBean getNowRequest() {
-		final String energyNowData = target("/energy/1/now").request().get(String.class);
+		final String energyNowData = target("/energy/00001111-2222-3333-4444-555566667777/now")
+				.request().get(String.class);
 		EnergyBean bean = gson.fromJson(energyNowData, EnergyBean.class);
 		return bean;
 	}
 	
 	@Test
 	public void testGetHourlyStatsOneDevice() {
-		final String energyHourlydata = target("/energy/1/hourly")
+		final String energyHourlydata = target("/energy/00001111-2222-3333-4444-555566667777/hourly")
 				.queryParam("from", Long.toString(FROM_TIME))
 				.queryParam("to", Long.toString(TO_TIME))
 				.request()
