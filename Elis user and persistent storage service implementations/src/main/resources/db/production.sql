@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `object_lookup_table` (
   `id` binary(16) NOT NULL,
   `stored_in` varchar(256) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `user_bindings` (
   `platform_user` binary(16) NOT NULL,
   `user` binary(16) NOT NULL,
   UNIQUE KEY `platform_user` (`platform_user`,`user`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
