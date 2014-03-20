@@ -645,6 +645,7 @@ public class StorageUtils {
 	 * @param props The properties to flatten.
 	 * @param isTemplate If set to true, the method will call the
 	 * 		getPropertiesTemplate() method on the identifier.
+	 * @return Returns a flattened Properties object.
 	 * @since 2.0
 	 */
 	public static Properties flattenPropertiesWithIdentifier(Properties props, boolean isTemplate) {
@@ -663,6 +664,44 @@ public class StorageUtils {
 		}
 		
 		return flatProps;
+	}
+	
+	/**
+	 * <p>Validates that a set of properties are OK for storing. The criteria
+	 * for a valid set of properties are:</p>
+	 * 
+	 * <ul>
+	 *   <li>The first value is a UUID object called "dataid"</li>
+	 *   <li>A UUID object called "ownerid"</li>
+	 *   <li>A Joda DateTime object called "created"</li>
+	 *   <li>At least one more element</li>
+	 * </ul>
+	 * 
+	 * @param props The property set to validate.
+	 * @return True of the property set is OK, otherwise false.
+	 * @since 2.0
+	 */
+	public static boolean validateEDOProperties(Properties props) {
+		return false;
+	}
+	
+	/**
+	 * <p>Validates that a set of properties are OK for storing. The criteria
+	 * for a valid set of properties are:</p>
+	 * 
+	 * <ul>
+	 *   <li>The first value is a UUID object called "dataid"</li>
+	 *   <li>A Joda DateTime object called "created"</li>
+	 *   <li>A String object called "service_name"</li>
+	 *   <li>At least one more element</li>
+	 * </ul>
+	 * 
+	 * @param props The property set to validate.
+	 * @return True of the property set is OK, otherwise false.
+	 * @since 2.0
+	 */
+	public static boolean validateAbstractUserProperties(Properties props) {
+		return false;
 	}
 	
 	/**

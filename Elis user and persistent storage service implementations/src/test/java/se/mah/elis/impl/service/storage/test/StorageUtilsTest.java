@@ -1315,4 +1315,94 @@ public class StorageUtilsTest {
 		assertNotNull(actual);
 		assertArrayEquals(expected, actual);
 	}
+	
+	@Test
+	public void testValidateEDOProperties() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoDataId() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesDataIdIsNotUUID() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesDataIdIsNotFirstObject() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoOwnerId() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesOwnerIdIsNotUUID() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoCreated() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesCreatedIsNotJodaDateTime() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoExtraElement() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateAbstractUserProperties() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoUUID() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesUUIDIsNotUUID() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesUUIDIsNotFirstObject() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoServiceName() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesServiceNameIsNotString() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoCreated() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesCreatedIsNotJodaDateTime() {
+		fail("Not yet defined");
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoExtraElement() {
+		fail("Not yet defined");
+	}
 }
