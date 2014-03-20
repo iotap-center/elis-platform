@@ -282,8 +282,9 @@ public class StorageUtilsTest {
 		props.put("col 2", "Batman!");
 		props.put("col 3", false);
 		props.put("col 4", 1.3);
+		props.put("col 5", UUID.randomUUID());
 		
-		expected = "?, ?, ?, ?";
+		expected = "?, ?, ?, ?, x?";
 		actual = StorageUtils.generateQMarks(props);
 		
 		assertEquals(expected, actual);
@@ -642,17 +643,13 @@ public class StorageUtilsTest {
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
 		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
-		StringBuffer expected = new StringBuffer();
+		String expected = StorageUtils.stripDashesFromUUID(uuid);
 		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
 		byte[] bytes = null;
 
 		bb.putLong(uuid.getMostSignificantBits());
 		bb.putLong(uuid.getLeastSignificantBits());
 		bytes = bb.array();
-		
-		for (int i = 0; i < bytes.length; i++) {
-			expected.append(bytes[i]);
-		}
 		
 		try {
 			stmt = connection.prepareStatement(query);
@@ -662,7 +659,7 @@ public class StorageUtilsTest {
 			// This should NEVER happen with a mock object.
 		}
 		
-		assertEquals("Byte[]: " + expected.toString(), (String) objectStore.get(0));
+		assertEquals("String: " + expected, (String) objectStore.get(0));
 	}
 
 //	@Test
@@ -1049,7 +1046,7 @@ public class StorageUtilsTest {
 		setUpDatabase();
 		
 		StorageUtils utils = new StorageUtils(connection);
-		int platformUser = 1;
+		UUID platformUser = UUID.fromString("11111111-1111-1111-1111-111111111111");
 		UUID user = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
 		try {
@@ -1066,8 +1063,8 @@ public class StorageUtilsTest {
 		setUpDatabase();
 		
 		StorageUtils utils = new StorageUtils(connection);
-		int platformUser1 = 1;
-		int platformUser2 = 2;
+		UUID platformUser1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+		UUID platformUser2 = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
 		
@@ -1088,8 +1085,8 @@ public class StorageUtilsTest {
 		setUpDatabase();
 		
 		StorageUtils utils = new StorageUtils(connection);
-		int platformUser1 = 1;
-		int platformUser2 = 2;
+		UUID platformUser1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+		UUID platformUser2 = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
 		
@@ -1111,8 +1108,8 @@ public class StorageUtilsTest {
 		setUpDatabase();
 		
 		StorageUtils utils = new StorageUtils(connection);
-		int platformUser1 = 1;
-		int platformUser2 = 2;
+		UUID platformUser1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+		UUID platformUser2 = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
 		
@@ -1135,8 +1132,8 @@ public class StorageUtilsTest {
 		setUpDatabase();
 		
 		StorageUtils utils = new StorageUtils(connection);
-		int platformUser1 = 1;
-		int platformUser2 = 2;
+		UUID platformUser1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+		UUID platformUser2 = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
 		
@@ -1158,8 +1155,8 @@ public class StorageUtilsTest {
 		setUpDatabase();
 		
 		StorageUtils utils = new StorageUtils(connection);
-		int platformUser1 = 1;
-		int platformUser2 = 2;
+		UUID platformUser1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+		UUID platformUser2 = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
 		UUID[] expected = new UUID[1];
@@ -1186,8 +1183,8 @@ public class StorageUtilsTest {
 		setUpDatabase();
 		
 		StorageUtils utils = new StorageUtils(connection);
-		int platformUser1 = 1;
-		int platformUser2 = 2;
+		UUID platformUser1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+		UUID platformUser2 = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
 		UUID[] expected = new UUID[2];
@@ -1216,8 +1213,8 @@ public class StorageUtilsTest {
 		setUpDatabase();
 		
 		StorageUtils utils = new StorageUtils(connection);
-		int platformUser1 = 1;
-		int platformUser2 = 2;
+		UUID platformUser1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+		UUID platformUser2 = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
 		UUID[] expected = new UUID[0];
@@ -1241,12 +1238,12 @@ public class StorageUtilsTest {
 		setUpDatabase();
 		
 		StorageUtils utils = new StorageUtils(connection);
-		int platformUser1 = 1;
-		int platformUser2 = 2;
+		UUID platformUser1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+		UUID platformUser2 = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
-		int[] expected = new int[1];
-		int[] actual = null;
+		UUID[] expected = new UUID[1];
+		UUID[] actual = null;
 		
 		expected[0] = platformUser1;
 		
@@ -1269,12 +1266,12 @@ public class StorageUtilsTest {
 		setUpDatabase();
 		
 		StorageUtils utils = new StorageUtils(connection);
-		int platformUser1 = 1;
-		int platformUser2 = 2;
+		UUID platformUser1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+		UUID platformUser2 = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
-		int[] expected = new int[2];
-		int[] actual = null;
+		UUID[] expected = new UUID[2];
+		UUID[] actual = null;
 
 		expected[0] = platformUser1;
 		expected[1] = platformUser2;
@@ -1299,12 +1296,12 @@ public class StorageUtilsTest {
 		setUpDatabase();
 		
 		StorageUtils utils = new StorageUtils(connection);
-		int platformUser1 = 1;
-		int platformUser2 = 2;
+		UUID platformUser1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+		UUID platformUser2 = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		UUID user1 = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		UUID user2 = UUID.fromString("00001111-2222-3333-4444-555566667778");
-		int[] expected = new int[0];
-		int[] actual = null;
+		UUID[] expected = new UUID[0];
+		UUID[] actual = null;
 		
 		try {
 			utils.coupleUsers(platformUser1, user1);

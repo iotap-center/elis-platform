@@ -5,6 +5,13 @@ import java.util.Properties;
 import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.data.OrderedProperties;
 
+/**
+ * Identifier for E.On devices. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ */
 public class EonDeviceIdentifier implements DeviceIdentifier {
 	private String id; 
 	

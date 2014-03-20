@@ -25,43 +25,8 @@ public class PlatformUserIdentifierTest {
 	public void testPlainObject() {
 		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
 
-		assertEquals(0, p.getId());
 		assertEquals("", p.getUsername());
 		assertEquals("", p.getPassword());
-	}
-	
-	@Test
-	public void testSetId() {
-		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
-		p.setId(17);
-
-		assertEquals(17, p.getId());
-	}
-	
-	@Test
-	public void testSetIdZero() {
-		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
-		
-		try {
-			p.setId(0);
-		} catch (IllegalArgumentException e) {
-			fail("Threw an exception");
-		}
-
-		assertEquals(0, p.getId());
-	}
-	
-	@Test
-	public void testSetIdNegativeValue() {
-		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl();
-		
-		try {
-			p.setId(-1);
-			fail("Didn't throw exception");
-		} catch (IllegalArgumentException e) {
-		}
-
-		assertEquals(0, p.getId());
 	}
 
 	@Test
@@ -196,10 +161,9 @@ public class PlatformUserIdentifierTest {
 	}
 
 	@Test
-	public void testExtendedConstructorWithSaneArgument() {
-		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl(13, "horses", "martians");
+	public void testExtendedConstructorWithSaneArguments() {
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl("horses", "martians");
 
-		assertEquals(13, p.getId());
 		assertEquals("horses", p.getUsername());
 		assertEquals("martians", p.getPassword());
 	}
@@ -209,7 +173,7 @@ public class PlatformUserIdentifierTest {
 		PlatformUserIdentifierImpl p = null;
 		
 		try {
-			p = new PlatformUserIdentifierImpl(13, "batman", "");
+			p = new PlatformUserIdentifierImpl("batman", "");
 		} catch (IllegalArgumentException e) {
 			assertNull(p);
 		}
@@ -220,18 +184,7 @@ public class PlatformUserIdentifierTest {
 		PlatformUserIdentifierImpl p = null;
 		
 		try {
-			p = new PlatformUserIdentifierImpl(13, "", "superman");
-		} catch (IllegalArgumentException e) {
-			assertNull(p);
-		}
-	}
-
-	@Test
-	public void testExtendedConstructorWithNonPositiveId() {
-		PlatformUserIdentifierImpl p = null;
-		
-		try {
-			p = new PlatformUserIdentifierImpl(0, "batman", "superman");
+			p = new PlatformUserIdentifierImpl("", "superman");
 		} catch (IllegalArgumentException e) {
 			assertNull(p);
 		}
@@ -242,7 +195,7 @@ public class PlatformUserIdentifierTest {
 		PlatformUserIdentifierImpl p = null;
 		
 		try {
-			p = new PlatformUserIdentifierImpl(0, "", "");
+			p = new PlatformUserIdentifierImpl("", "");
 		} catch (IllegalArgumentException e) {
 			assertNull(p);
 		}
@@ -333,17 +286,9 @@ public class PlatformUserIdentifierTest {
 
 	@Test
 	public void testToString() {
-		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl(3, "batman", "superman");
+		PlatformUserIdentifierImpl p = new PlatformUserIdentifierImpl("batman", "superman");
 		
-		assertEquals("3: batman", p.toString());
-	}
-
-	@Test
-	public void testEqualsSameId() {
-		PlatformUserIdentifierImpl pu1 = new PlatformUserIdentifierImpl(1, "batman", "superman");
-		PlatformUserIdentifierImpl pu2 = new PlatformUserIdentifierImpl(1, "fred", "barney");
-		
-		assertTrue(pu1.equals(pu2));
+		assertEquals("PlatformUserIdentifier: batman", p.toString());
 	}
 
 	@Test
@@ -355,24 +300,16 @@ public class PlatformUserIdentifierTest {
 	}
 
 	@Test
-	public void testEqualsSameUsernameAndId() {
-		PlatformUserIdentifierImpl pu1 = new PlatformUserIdentifierImpl(1, "batman", "superman");
-		PlatformUserIdentifierImpl pu2 = new PlatformUserIdentifierImpl(1, "batman", "superman");
-		
-		assertTrue(pu1.equals(pu2));
-	}
-
-	@Test
 	public void testEqualsDifferentStuff() {
-		PlatformUserIdentifierImpl pu1 = new PlatformUserIdentifierImpl(1, "batman", "superman");
-		PlatformUserIdentifierImpl pu2 = new PlatformUserIdentifierImpl(2, "fred", "barney");
+		PlatformUserIdentifierImpl pu1 = new PlatformUserIdentifierImpl("batman", "superman");
+		PlatformUserIdentifierImpl pu2 = new PlatformUserIdentifierImpl("fred", "barney");
 		
 		assertFalse(pu1.equals(pu2));
 	}
 	
 	@Test
 	public void testIdentifies() {
-		PlatformUserIdentifierImpl pu = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl pu = new PlatformUserIdentifierImpl("batman", "superman");
 		Class expected = se.mah.elis.services.users.PlatformUser.class;
 		Class actual = pu.identifies();
 		
@@ -381,11 +318,10 @@ public class PlatformUserIdentifierTest {
 	
 	@Test
 	public void testGetProperties() {
-		PlatformUserIdentifierImpl pu = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl pu = new PlatformUserIdentifierImpl("batman", "superman");
 		Properties expected = new Properties();
 		Properties actual = pu.getProperties();
 		
-		expected.put("id", 1);
 		expected.put("username", "batman");
 		expected.put("password", "superman");
 		
@@ -398,7 +334,6 @@ public class PlatformUserIdentifierTest {
 		Properties expected = new Properties();
 		Properties actual = pu.getProperties();
 		
-		expected.put("id", 0);
 		expected.put("username", "");
 		expected.put("password", "");
 		
@@ -411,7 +346,6 @@ public class PlatformUserIdentifierTest {
 		Properties expected = new Properties();
 		Properties actual = pu.getProperties();
 		
-		expected.put("id", 0);
 		expected.put("username", "batman");
 		expected.put("password", "superman");
 		
@@ -420,11 +354,10 @@ public class PlatformUserIdentifierTest {
 	
 	@Test
 	public void getGetPropertiesTemplate() {
-		PlatformUserIdentifierImpl pu = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl pu = new PlatformUserIdentifierImpl("batman", "superman");
 		Properties expected = new Properties();
 		Properties actual = pu.getPropertiesTemplate();
 		
-		expected.put("id", 0);
 		expected.put("username", "256");
 		expected.put("password", "256");
 		

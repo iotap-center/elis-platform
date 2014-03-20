@@ -63,6 +63,14 @@ public class EonHttpBridge {
 	private Client client;
 	private Object switchPSSLock = new Object();
 
+	/**
+	 * Creates a http bridge based on host, port and a basepath. For example, 
+	 * EonHttpBridge("smarthome.eon.se", 443, "/v0_2/api")
+	 * 
+	 * @param host
+	 * @param port
+	 * @param basepath
+	 */
 	public EonHttpBridge(String host, int port, String basepath) {
 		this.host = host;
 		this.port = port;

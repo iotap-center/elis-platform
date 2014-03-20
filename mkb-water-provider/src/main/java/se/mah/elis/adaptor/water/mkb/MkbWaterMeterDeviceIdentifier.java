@@ -5,6 +5,15 @@ import java.util.Properties;
 import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.data.OrderedProperties;
 
+/**
+ * 
+ * Identifier for MKB water meters. Based on the meter's id. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 public class MkbWaterMeterDeviceIdentifier implements DeviceIdentifier {
 
 	private String meterId;

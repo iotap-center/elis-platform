@@ -15,6 +15,16 @@ import se.mah.elis.exceptions.StaticEntityException;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
+/**
+ * 
+ * MKB Gateway user. When initialised also adds the meter registered with the user 
+ * account. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 public class MkbGatwayUser implements GatewayUser {
 
 	@Reference

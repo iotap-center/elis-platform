@@ -23,11 +23,12 @@ import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.exceptions.StaticEntityException;
 
 /**
- * A virtual representation of the E.On power meter
+ * A virtual representation of the E.On power meter. Powerswitches which is 
+ * capable of metering also inherits from this class. 
  * 
  * @author Joakim Lithell
  * @author Marcus Ljungblad
- * @version 1.1.0
+ * @version 1.2.0
  * @since 1.0
  */
 
@@ -116,6 +117,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		return electricitySample;
 	}
 
+	@Override
 	public List<ElectricitySample> getSamples(DateTime from, DateTime to)
 			throws SensorFailedException {
 		List<ElectricitySample> samples = new ArrayList<ElectricitySample>();

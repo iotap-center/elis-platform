@@ -17,6 +17,17 @@ import se.mah.elis.services.users.exceptions.UserExistsException;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 import se.mah.elis.services.users.factory.UserFactory;
 
+/**
+ * This OSGI service installs the list of demo users defined in the constructor. The 
+ * user must be linked to one E.On account and one MKB water meter.  
+ * 
+ * In a future version, the demo users should be loaded from a file rather
+ * than hard coded in this class. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0 
+ * @version 1.0
+ */
 @Component(name = "ElisUserLoader", immediate = true)
 @Service(value = UserLoaderService.class)
 public class UserLoaderService {

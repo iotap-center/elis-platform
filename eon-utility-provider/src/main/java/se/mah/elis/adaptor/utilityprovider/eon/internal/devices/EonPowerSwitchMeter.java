@@ -13,8 +13,6 @@ import se.mah.elis.adaptor.utilityprovider.eon.internal.EonActionStatus;
 /**
  * A virtual representation of the E.On power switch
  * 
- * @TODO implemenation for sampling still missing
- * 
  * @author Marcus Ljungblad
  * @version 1.0.0
  * @since 1.0
@@ -36,6 +34,7 @@ public class EonPowerSwitchMeter extends EonPowerMeter
 
 	/**
 	 * Turns on the device
+	 * @since 1.0
 	 */
 	@Override
 	public void turnOn() throws ActuatorFailedException {
@@ -48,6 +47,7 @@ public class EonPowerSwitchMeter extends EonPowerMeter
 
 	/**
 	 * Turns off the device
+	 * @since 1.0 
 	 */
 	@Override
 	public void turnOff() throws ActuatorFailedException {
@@ -110,6 +110,7 @@ public class EonPowerSwitchMeter extends EonPowerMeter
 
 	/**
 	 * Toggle the device on and off
+	 * @since 1.0
 	 */
 	@Override
 	public void toggle() throws ActuatorFailedException {

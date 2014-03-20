@@ -1,6 +1,7 @@
 package se.mah.elis.impl.service.storage.test.mock;
 
 import java.util.Properties;
+import java.util.UUID;
 
 import org.joda.time.DateTime;
 
@@ -15,6 +16,7 @@ public class MockPlatformUser implements PlatformUser {
 	private String firstName;
 	private String lastName;
 	private String email;
+	private UUID uuid;
 	private DateTime created = DateTime.now();
 
 	/**
@@ -22,6 +24,7 @@ public class MockPlatformUser implements PlatformUser {
 	 */
 	public MockPlatformUser() {
 		id = new MockPlatformUserIdentifier();
+		uuid = null;
 		firstName = "";
 		lastName = "";
 		email = "";
@@ -34,6 +37,7 @@ public class MockPlatformUser implements PlatformUser {
 	 */
 	public MockPlatformUser(PlatformUserIdentifier id) {
 		this.id = id;
+		uuid = null;
 		firstName = "";
 		lastName = "";
 		email = "";
@@ -53,6 +57,9 @@ public class MockPlatformUser implements PlatformUser {
 	public OrderedProperties getProperties() {
 		OrderedProperties props = new OrderedProperties();
 		
+		if (uuid != null) {
+			props.put("uuid", uuid);
+		}
 		if (id != null) {
 			props.putAll(id.getProperties());
 		}
@@ -117,6 +124,16 @@ public class MockPlatformUser implements PlatformUser {
 	@Override
 	public DateTime created() {
 		return created;
+	}
+
+	@Override
+	public UUID getUserId() {
+		return uuid;
+	}
+
+	@Override
+	public void setUserId(UUID id) {
+		uuid = id;
 	}
 
 }
