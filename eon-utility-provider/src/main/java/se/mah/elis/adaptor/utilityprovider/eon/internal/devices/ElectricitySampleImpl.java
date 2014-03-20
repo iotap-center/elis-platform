@@ -22,7 +22,7 @@ public class ElectricitySampleImpl implements ElectricitySample {
 	private static final long serialVersionUID = 9035743168231203310L;
 	private UUID dataid;
 	private UUID ownerid;
-	private double currentKwh = 0;
+	private double measuredValue = 0;
 	private double maxCurrent = 0;
 	private double minCurrent = 0;
 	private double meanCurrent = 0;
@@ -41,13 +41,13 @@ public class ElectricitySampleImpl implements ElectricitySample {
 	
 	public ElectricitySampleImpl(double sample){
 		sampled = created;
-		currentKwh = sample;
+		measuredValue = sample;
 	}
 
 	public ElectricitySampleImpl(double value, DateTime sampleTime) {
 		sampled = sampleTime;
 		created = sampleTime;
-		currentKwh = value;
+		measuredValue = value;
 	}
 
 	@Override
@@ -135,19 +135,19 @@ public class ElectricitySampleImpl implements ElectricitySample {
 
 	@Override
 	public double getTotalEnergyUsageInJoules() {
-		double joules = currentKwh*3600000;
+		double joules = measuredValue*3600000;
 		return joules;
 	}
 
 	@Override
 	public double getTotalEnergyUsageInWh() {
-		double wh = currentKwh;
+		double wh = measuredValue*1000;
 		return wh;
 	}
 
 	private double getPowerInWatts() {
 		int timeInHours = 1;
-		double watts = 1000*currentKwh/timeInHours;
+		double watts = 1000*measuredValue/timeInHours;
 		return watts;
 	}
 
@@ -182,7 +182,7 @@ public class ElectricitySampleImpl implements ElectricitySample {
 		props.put("created", created);
 		props.put("sampled", sampled);
 		props.put("sample_length", sampleLength);
-		props.put("currentKwh", currentKwh);
+		props.put("currentKwh", measuredValue);
 		props.put("max_current", maxCurrent);
 		props.put("min_current", minCurrent);
 		props.put("mean_current", meanCurrent);
@@ -208,7 +208,7 @@ public class ElectricitySampleImpl implements ElectricitySample {
 		props.put("created", created);
 		props.put("sampled", sampled);
 		props.put("sample_length", sampleLength);
-		props.put("currentKwh", currentKwh);
+		props.put("currentKwh", measuredValue);
 		props.put("max_current", maxCurrent);
 		props.put("min_current", minCurrent);
 		props.put("mean_current", meanCurrent);
@@ -232,7 +232,7 @@ public class ElectricitySampleImpl implements ElectricitySample {
 		created = (DateTime) props.get("created");
 		sampled = (DateTime) props.get("sampled");
 		sampleLength = (long) props.get("sample_length");
-		currentKwh = (double) props.get("currentKwh");
+		measuredValue = (double) props.get("currentKwh");
 		maxCurrent = (double) props.get("max_current");
 		minCurrent = (double) props.get("min_current");
 		meanCurrent = (double) props.get("mean_current");
