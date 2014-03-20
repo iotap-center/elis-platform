@@ -1196,6 +1196,25 @@ public class StorageImplTest {
 	}
 
 	@Test
+	public void testInsertAbstractUserWithIdentifier() {
+		buildAndPopulateMU2Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser2 mu = new MockUser2(null, "Horses");
+		
+		try {
+			storage.insert(mu);
+		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
+		}
+		
+		assertNotNull(mu.getUserId());
+		assertEquals(AU2_COUNT + 1, countBindingsInDB(mu));
+		assertEquals(AU2_COUNT + 1, countBindingsInDB());
+	}
+
+	@Test
 	public void testInsertAbstractUserArray() {
 		buildAndPopulateMU1Table();
 		
@@ -1445,6 +1464,75 @@ public class StorageImplTest {
 		}
 		
 		assertNull(edo);
+	}
+
+	@Test
+	public void testReadDataEDO() {
+		buildAndPopulateMDO1Table();
+		
+		Storage storage = new StorageImpl(connection);
+		ElisDataObject expected = new MockDataObject1();
+		ElisDataObject actual = null;
+		UUID dataid = UUID.fromString("00001111-2222-3333-4444-555566667779");
+		UUID ownerid = UUID.fromString("00001111-2222-dead-beef-555566667771");
+		
+		expected.setDataId(dataid);
+		
+		try {
+			actual = storage.readData(expected);
+		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
+		}
+		
+		assertNotNull(actual);
+		assertTrue(actual instanceof MockDataObject1);
+		assertEquals(dataid, ((MockDataObject1) actual).getDataId());
+		assertEquals("Jezibaba", ((MockDataObject1) actual).getBar());
+		assertEquals(17, ((MockDataObject1) actual).getFoo());
+		assertEquals(ownerid, ((MockDataObject1) actual).getOwnerId());
+	}
+
+	@Test
+	public void testReadDataEDODataNotFound() {
+		buildAndPopulateMDO1Table();
+		
+		Storage storage = new StorageImpl(connection);
+		ElisDataObject expected = new MockDataObject1();
+		ElisDataObject actual = null;
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-123466667779");
+		
+		expected.setDataId(uuid);
+		
+		try {
+			actual = storage.readData(uuid);
+		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
+		}
+		
+		assertNull(actual);
+	}
+
+	@Test
+	public void testReadDataEDOIsUser() {
+		buildAndPopulateMDO1Table();
+		
+		Storage storage = new StorageImpl(connection);
+		ElisDataObject expected = new MockDataObject1();
+		ElisDataObject actual = null;
+		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667772");
+		
+		expected.setDataId(uuid);
+		
+		try {
+			actual = storage.readData(uuid);
+		} catch (StorageException e) {
+			e.printStackTrace();
+			fail("This shouldn't happen");
+		}
+		
+		assertNull(actual);
 	}
 
 	@Test
