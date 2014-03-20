@@ -20,7 +20,9 @@ import java.util.UUID;
 import org.joda.time.DateTime;
 
 import se.mah.elis.data.Identifier;
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.storage.exceptions.StorageException;
+import se.mah.elis.services.users.UserIdentifier;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.ArrayUtils;
@@ -635,6 +637,25 @@ public class StorageUtils {
 		}
 		
 		return isEmpty;
+	}
+	
+	/**
+	 * 
+	 * @param props
+	 * @since 2.0
+	 */
+	public static Properties flattenPropertiesWithIdentifier(Properties props) {
+		OrderedProperties flatProps = new OrderedProperties();
+		
+		for (Entry<Object, Object> prop : props.entrySet()) {
+			if (prop.getValue() instanceof UserIdentifier) {
+				flatProps.putAll(((UserIdentifier) prop.getValue()).getProperties());
+			} else {
+				flatProps.put(prop.getKey(), prop.getValue());
+			}
+		}
+		
+		return flatProps;
 	}
 	
 	/**
