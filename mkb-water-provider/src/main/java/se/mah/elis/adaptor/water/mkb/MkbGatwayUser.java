@@ -79,10 +79,9 @@ public class MkbGatwayUser implements GatewayUser {
 	public OrderedProperties getProperties() {
 		OrderedProperties props = new OrderedProperties();
 		props.put("uuid", uuid);
-		props.put("userIdentifier", getIdentifier());
+		props.put("identifier", getIdentifier());
 		props.put("created", created);
 		props.put("service_name", getServiceName());
-		props.put("meterId", getIdentifier().toString());
 		return props;
 	}
 
@@ -90,18 +89,15 @@ public class MkbGatwayUser implements GatewayUser {
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
 		props.put("uuid", uuid);
-		props.put("userIdentifier", getIdentifier());
+		props.put("identifier", getIdentifier());
 		props.put("created", created);
 		props.put("service_name", getServiceName().length());
-		props.put("meterId", "32");
 		return props;
 	}
 
 	@Override
 	public void populate(Properties props) throws IllegalArgumentException {
-		if (!props.containsKey("uuid") &&
-				!props.containsKey("userIdentifier") &&
-				!props.containsKey("meterId"))
+		if (!props.containsKey("uuid") && !props.containsKey("userIdentifier"))
 			throw new IllegalArgumentException("Missing properties");
 		
 		if (props.containsKey("created"))
@@ -128,7 +124,7 @@ public class MkbGatwayUser implements GatewayUser {
 
 	@Override
 	public String getServiceName() {
-		return "mkb-water-gateway-user";
+		return new MkbUserRecipe().getServiceName();
 	}
 
 	@Override

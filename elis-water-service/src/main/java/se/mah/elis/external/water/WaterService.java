@@ -31,7 +31,6 @@ import se.mah.elis.data.WaterSample;
 import se.mah.elis.external.water.beans.WaterBean;
 import se.mah.elis.external.water.beans.WaterBeanFactory;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 
@@ -89,13 +88,14 @@ public class WaterService {
 		ResponseBuilder response = null;
 		UUID uuid = null;
 		
+		logRequest("now", puid);
+
 		try {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
-			response = Response.status(Response.Status.BAD_GATEWAY);
+			response = Response.status(Response.Status.BAD_REQUEST);
+			logWarning("Bad UUID");
 		}
-		
-		logRequest("now", puid);
 
 		if (userService != null && uuid != null) {
 			PlatformUser pu = userService.getPlatformUser(uuid);
@@ -103,9 +103,11 @@ public class WaterService {
 				response = buildCurrentWaterConsumptionResponseFrom(pu);
 			} else {
 				response = Response.status(Response.Status.NOT_FOUND);
+				logWarning("Could not find user: " + uuid.toString());
 			}
 		} else if (response == null) {
 			response = Response.serverError();
+			logError("User service not available");
 		}
 
 		return response.build();
