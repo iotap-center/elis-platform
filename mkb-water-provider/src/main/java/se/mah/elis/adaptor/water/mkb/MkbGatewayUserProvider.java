@@ -15,7 +15,7 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
  * @version 1.0
  *
  */
-public class MkbGatewayUserFactory implements GatewayUserProvider {
+public class MkbGatewayUserProvider implements GatewayUserProvider {
 
 	@Override
 	public GatewayUser getUser(String meterId, String _ignored)
