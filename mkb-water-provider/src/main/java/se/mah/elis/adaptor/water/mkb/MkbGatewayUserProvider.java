@@ -20,7 +20,7 @@ public class MkbGatewayUserProvider implements GatewayUserProvider {
 	@Override
 	public GatewayUser getUser(String meterId, String _ignored)
 			throws MethodNotSupportedException, AuthenticationException {
-		MkbGatwayUser mkbUser = createUser(meterId);
+		MkbGatewayUser mkbUser = createUser(meterId);
 		MkbGateway gateway = createGateway(mkbUser);
 		mkbUser.setGateway(gateway);
 		gateway.setUser(mkbUser);
@@ -38,12 +38,12 @@ public class MkbGatewayUserProvider implements GatewayUserProvider {
 	 * @param mkbUser
 	 * @return
 	 */
-	public MkbGateway createGateway(MkbGatwayUser mkbUser) {
+	public MkbGateway createGateway(MkbGatewayUser mkbUser) {
 		return new MkbGateway();
 	}
 
-	private MkbGatwayUser createUser(String meterId) {
-		MkbGatwayUser user = new MkbGatwayUser();
+	private MkbGatewayUser createUser(String meterId) {
+		MkbGatewayUser user = new MkbGatewayUser();
 		user.setIdentifier(new MkbUserIdentifier(meterId));
 		return user;
 	}

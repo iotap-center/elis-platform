@@ -25,7 +25,7 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
  * @version 1.0
  *
  */
-public class MkbGatwayUser implements GatewayUser {
+public class MkbGatewayUser implements GatewayUser {
 
 	@Reference
 	private LogService log;
@@ -91,13 +91,13 @@ public class MkbGatwayUser implements GatewayUser {
 		props.put("uuid", uuid);
 		props.put("identifier", getIdentifier());
 		props.put("created", created);
-		props.put("service_name", getServiceName().length());
+		props.put("service_name", "32");
 		return props;
 	}
 
 	@Override
 	public void populate(Properties props) throws IllegalArgumentException {
-		if (!props.containsKey("uuid") && !props.containsKey("userIdentifier"))
+		if (!props.containsKey("uuid") && !props.containsKey("meterId"))
 			throw new IllegalArgumentException("Missing properties");
 		
 		if (props.containsKey("created"))

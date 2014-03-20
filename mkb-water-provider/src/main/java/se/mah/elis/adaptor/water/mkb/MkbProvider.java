@@ -1,6 +1,7 @@
 package se.mah.elis.adaptor.water.mkb;
 
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.naming.AuthenticationException;
 
@@ -25,22 +26,29 @@ public class MkbProvider implements UserProvider {
 
 	/**
 	 * Provided with a properties object containing "id" (the meter id) is able 
-	 * to instantiate {@link MkbGatwayUser}s.
+	 * to instantiate {@link MkbGatewayUser}s.
 	 * 
-	 * @return an {@link MkbGatwayUser}
+	 * @return an {@link MkbGatewayUser}
 	 */
 	@Override
 	public User build(Properties properties) throws UserInitalizationException {
-		String meterId = (String) properties.getProperty("id");
-		System.out.println(properties);
+		if (!properties.containsKey("meterId")) {
+			throw new UserInitalizationException();
+		}
+		
+		String meterId = (String) properties.getProperty("meterId");
+		
 		GatewayUserProvider gatewayUserProvider = new MkbGatewayUserProvider();
 		GatewayUser user = null;
+
 		try {
 			user = gatewayUserProvider.getUser(meterId, "");
+			if (properties.containsKey("uuid"))
+				user.setUserId((UUID) properties.get("uuid"));
 		} catch (AuthenticationException | MethodNotSupportedException e) {
-			System.out.println("Could not get meter for id: " + meterId);
-			e.printStackTrace();
+			throw new UserInitalizationException();
 		}
+		
 		return user;
 	}
 

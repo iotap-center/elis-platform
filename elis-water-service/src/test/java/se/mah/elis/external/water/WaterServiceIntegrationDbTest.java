@@ -39,7 +39,7 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 
 	private static final String METERID = "63408097";
 	private static final String MKB_SERVICENAME = "mkb-water";
-	private static final String MKB_USERTYPE = "MkbWaterUser";
+	private static final String MKB_USERTYPE = "MkbGatewayUser";
 	private static final String PLATFORMPASSWORD = "elis_platform_password";
 	private static final String PLATFORMUSERNAME = "elis_platform_username";
 	private static UserServiceImpl userService;
@@ -100,7 +100,7 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 			stmt.execute("TRUNCATE TABLE object_lookup_table;");
 			stmt.execute("TRUNCATE TABLE user_bindings;");
 			stmt.execute("TRUNCATE TABLE `se-mah-elis-services-users-PlatformUser`;");
-			// TODO vattentabell
+			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-adaptor-water-mkb-MkbGatewayUser`;");
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -117,7 +117,7 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 
 	private User createMkbUser() {
 		Properties props = new Properties();
-		props.put("id", METERID);
+		props.put("meterId", METERID);
 		User user = null;
 		try {
 			user = factory.build(MKB_USERTYPE, MKB_SERVICENAME, props);
@@ -151,12 +151,14 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 		User[] users = userService.getUsers(platformUser);
 		assertEquals(1, users.length);
 		assertNotNull(users[0]);
-		assertEquals(METERID, users[0].getIdentifier());
+		assertNotNull(users[0].getUserId());
+		assertEquals(METERID, users[0].getIdentifier().toString());
 	}
 
 	@Test
 	@Ignore
 	public void testGetWaterDataNow() {
+		// TODO: Find way to run without the OSGI environment providing the WaterDataService
 		final String data = target(
 				"/water/" + platformUserId() + "/now")
 				.request().get(String.class);

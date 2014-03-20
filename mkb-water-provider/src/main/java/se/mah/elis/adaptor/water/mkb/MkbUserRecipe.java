@@ -16,7 +16,7 @@ public class MkbUserRecipe implements UserRecipe {
 
 	@Override
 	public String getUserType() {
-		return "MkbWaterUser";
+		return MkbGatewayUser.class.getSimpleName();
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class MkbUserRecipe implements UserRecipe {
 	@Override
 	public Properties getProperties() {
 		Properties props = new Properties();
-		props.put("id", "string");
+		props.put("meterId", "32");
 		return props;
 	}
 
