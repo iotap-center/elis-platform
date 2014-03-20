@@ -75,7 +75,7 @@ public class MockUser2 implements User {
 			props.put("uuid", uuid);
 		}
 		props.put("service_name", "test");
-		props.putAll((new MockUserIdentifier()).getProperties());
+		props.put("identifier", new MockUserIdentifier());
 		if (stuff != null) {
 			props.put("stuff", stuff);
 		}
@@ -90,7 +90,7 @@ public class MockUser2 implements User {
 		
 		props.put("uuid", uuid);
 		props.put("service_name", "9");
-		props.putAll((new MockUserIdentifier()).getPropertiesTemplate());
+		props.put("identifier", new MockUserIdentifier());
 		props.put("stuff", "32");
 		props.put("created", created);
 		
