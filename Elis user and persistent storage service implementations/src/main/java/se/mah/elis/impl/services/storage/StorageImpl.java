@@ -152,7 +152,7 @@ public class StorageImpl implements Storage {
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
 		
-		if (data != null && !StorageUtils.isEmpty(data.getProperties())) {
+		if (data != null && StorageUtils.validateEDOProperties(data.getProperties(), false)) {
 			// Basically, this is a new object. Let's insert it.
 			Properties props = null;
 			UUID uuid = null;
@@ -204,10 +204,16 @@ public class StorageImpl implements Storage {
 			} catch (SQLException e) {
 				// Try to create a non-existing table, but only once.
 				if (e.getErrorCode() == 1146 && !finalRun) {
-					utils.createTableIfNotExisting(
-							utils.mysqlifyName(tableName),
-							data.getPropertiesTemplate());
-					insert(data, true);
+					if (StorageUtils.validateEDOProperties(
+							data.getPropertiesTemplate(), false)) {
+						utils.createTableIfNotExisting(
+								StorageUtils.mysqlifyName(tableName),
+								data.getPropertiesTemplate());
+						insert(data, true);
+					} else {
+						// Bad properties. Bail out.
+						throw new StorageException(STORAGE_ERROR);
+					}
 				} else {
 					// Well, that didn't work too well. Give up and die.
 					throw new StorageException(STORAGE_ERROR);
@@ -289,7 +295,6 @@ public class StorageImpl implements Storage {
 		String tableName = null;
 		Properties props = null;
 		PreparedStatement stmt = null;
-		java.sql.ResultSet keys = null;
 		
 		if (user != null) {
 			if (user.getServiceName() == null ||
@@ -364,6 +369,9 @@ public class StorageImpl implements Storage {
 				// Just a generic User object.
 				
 				// Let's sanity check it first
+				if (!StorageUtils.validateAbstractUserProperties(user.getProperties(), false)) {
+					throw new IllegalArgumentException();
+				}
 				if (user.getIdentifier() == null ||
 						StorageUtils.isEmpty(user.getIdentifier()
 								.getProperties())) {
@@ -421,9 +429,11 @@ public class StorageImpl implements Storage {
 					propTemplate = StorageUtils.flattenPropertiesWithIdentifier(propTemplate, true);
 					
 					if (e.getErrorCode() == 1146 && !finalRun) {
-						utils.createTableIfNotExisting(tableName,
-								propTemplate);
-						insert(user, true);
+							if (StorageUtils.validateAbstractUserProperties(propTemplate, true)) {
+							utils.createTableIfNotExisting(tableName,
+									propTemplate);
+							insert(user, true);
+						}
 					} else {
 						// Well, that didn't work too well. Give up
 						// and die.
@@ -510,7 +520,7 @@ public class StorageImpl implements Storage {
 		boolean updated = false;
 		
 		if (data != null) {
-			if (data.getDataId() == null) {
+			if (!StorageUtils.validateEDOProperties(data.getProperties(), true)) {
 				throw new StorageException(OBJECT_NOT_FOUND);
 			}
 			
@@ -548,10 +558,13 @@ public class StorageImpl implements Storage {
 			} catch (SQLException e) {
 				// Try to create a non-existing table, but only once.
 				if (e.getErrorCode() == 1146 && !finalRun) {
-					utils.createTableIfNotExisting(
-							StorageUtils.mysqlifyName(tableName),
-							data.getPropertiesTemplate());
-					update(data, true);
+					if (StorageUtils.validateEDOProperties(
+							data.getPropertiesTemplate(), false)) {
+						utils.createTableIfNotExisting(
+								StorageUtils.mysqlifyName(tableName),
+								data.getPropertiesTemplate());
+						update(data, true);
+					}
 				} else {
 					// Well, that didn't work too well. Give up and die.
 					throw new StorageException(STORAGE_ERROR);
@@ -634,9 +647,10 @@ public class StorageImpl implements Storage {
 		String tableName = null;
 		Properties props = user.getProperties();
 		
-		if (user != null && !StorageUtils.isEmpty(props)) {
+		if (user != null) {
 			if (user.getIdentifier() == null ||
-				StorageUtils.isEmpty(user.getIdentifier().getProperties())) {
+				StorageUtils.isEmpty(user.getIdentifier().getProperties()) ||
+				user.getUserId() == null) {
 				throw new StorageException(USER_NOT_FOUND);
 			}
 			
@@ -710,9 +724,9 @@ public class StorageImpl implements Storage {
 				}	
 			} else {
 				// Just a generic AbstractUser object.
-				// First, let's see if we will be able to find it
-				if (((User) user).getUserId() == null) {
-					throw new StorageException(USER_NOT_FOUND);
+				// First, let's see if we will be able to find and store it
+				if (!StorageUtils.validateAbstractUserProperties(user.getProperties(), true)) {
+					throw new IllegalArgumentException();
 				}
 				
 				// Flatten the user properties
@@ -754,9 +768,11 @@ public class StorageImpl implements Storage {
 						// Flatten the user properties
 						Properties template = new Properties();
 						template = StorageUtils.flattenPropertiesWithIdentifier(template, true);
-						utils.createTableIfNotExisting(tableName,
-								user.getPropertiesTemplate());
-						update(user, true);
+						if (StorageUtils.validateAbstractUserProperties(template, true)) {
+							utils.createTableIfNotExisting(tableName,
+									user.getPropertiesTemplate());
+							update(user, true);
+						}
 					} else {
 						// Well, that didn't work too well. Give up and die.
 						throw new StorageException(STORAGE_ERROR);

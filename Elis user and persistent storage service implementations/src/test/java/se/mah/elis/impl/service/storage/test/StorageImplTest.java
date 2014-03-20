@@ -2710,7 +2710,7 @@ public class StorageImplTest {
 		try {
 			storage.update(mdo);
 			fail("This shouldn't happen");
-		} catch (StorageException e) {
+		} catch (StorageException | IllegalArgumentException e) {
 		}
 		
 		try {
@@ -2905,7 +2905,7 @@ public class StorageImplTest {
 		try {
 			storage.update(edos);
 			fail("This shouldn't happen");
-		} catch (StorageException e) {
+		} catch (StorageException | IllegalArgumentException e) {
 		}
 		
 		mdo1 = null;
@@ -2914,7 +2914,6 @@ public class StorageImplTest {
 			mdo1 = (MockDataObject1) storage.readData(uuid1);
 			mdo2 = (MockDataObject1) storage.readData(uuid2);
 		} catch (StorageException e) {
-			e.printStackTrace();
 			fail("This shouldn't happen");
 		}
 	
@@ -3462,7 +3461,7 @@ public class StorageImplTest {
 		try {
 			storage.update(mu);
 			fail("This shouldn't happen");
-		} catch (StorageException e) {
+		} catch (StorageException | IllegalArgumentException e) {
 		}
 	}
 
@@ -3480,8 +3479,8 @@ public class StorageImplTest {
 		
 		try {
 			storage.update(mu);
-		} catch (StorageException e) {
 			fail("This shouldn't happen");
+		} catch (StorageException e) {
 		}
 	}
 
@@ -3624,7 +3623,7 @@ public class StorageImplTest {
 		try {
 			storage.update(users);
 			fail("This shouldn't happen");
-		} catch (StorageException e) {
+		} catch (StorageException | IllegalArgumentException e) {
 		}
 	}
 
@@ -3675,8 +3674,8 @@ public class StorageImplTest {
 		
 		try {
 			storage.update(users);
-		} catch (StorageException e) {
 			fail("This shouldn't happen");
+		} catch (StorageException e) {
 		}
 	}
 
