@@ -2,6 +2,7 @@ package se.mah.elis.external.water;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ws.rs.core.Application;
 
@@ -57,16 +58,13 @@ public class WaterServiceTest extends JerseyTest {
 	public static void setupClass() throws SensorFailedException {
 		log = mock(LogService.class);
 		
-		PlatformUserIdentifier uid = mock(PlatformUserIdentifier.class);
-		when(uid.getId()).thenReturn(1); // same as in tests
-		
 		platformUser = mock(PlatformUser.class);
-		when(platformUser.getIdentifier()).thenReturn(uid);
+		when(platformUser.getUserId()).thenReturn(UUID.fromString("00001111-2222-3333-4444-555566667777"));
 		
 		gatewayUser = mock(GatewayUser.class);
 		
 		userService = mock(UserService.class);
-		when(userService.getPlatformUser(anyString())).thenReturn(platformUser);
+		when(userService.getPlatformUser(any(UUID.class))).thenReturn(platformUser);
 		when(userService.getUsers(any(PlatformUser.class))).thenReturn(new User[] { gatewayUser });
 	}
 	
@@ -100,8 +98,8 @@ public class WaterServiceTest extends JerseyTest {
 	
 	@Test
 	public void testGetNowRequest() {
-		WaterBean bean = makeRequest("/water/1/now");
-		assertEquals("1", bean.puid);
+		WaterBean bean = makeRequest("/water/00001111-2222-3333-4444-555566667777/now");
+		assertEquals("00001111-2222-3333-4444-555566667777", bean.puid);
 		assertEquals("now", bean.period);
 		assertEquals(SAMPLE_VOLUME, bean.summary.totalVolume, 0.001f);
 		assertEquals(SAMPLER_NAME, bean.devices.get(0).deviceId);
@@ -109,7 +107,7 @@ public class WaterServiceTest extends JerseyTest {
 	
 	@Test
 	public void testGetDailyRequestOneHour() {
-		final String waterData = target("/water/1/daily")
+		final String waterData = target("/water/00001111-2222-3333-4444-555566667777/daily")
 				.queryParam("from", 1392681600000l)
 				.queryParam("to", 1392685200000l)
 				.request()

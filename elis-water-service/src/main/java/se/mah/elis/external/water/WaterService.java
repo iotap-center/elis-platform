@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -86,17 +87,24 @@ public class WaterService {
 	@Path("/{puid}/now")
 	public Response getCurrentWaterConsumption(@PathParam("puid") String puid) {
 		ResponseBuilder response = null;
+		UUID uuid = null;
+		
+		try {
+			uuid = UUID.fromString(puid);
+		} catch (Exception e) {
+			response = Response.status(Response.Status.BAD_GATEWAY);
+		}
 		
 		logRequest("now", puid);
 
-		if (userService != null) {
-			PlatformUser pu = userService.getPlatformUser(puid);
+		if (userService != null && uuid != null) {
+			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null) {
 				response = buildCurrentWaterConsumptionResponseFrom(pu);
 			} else {
 				response = Response.status(Response.Status.NOT_FOUND);
 			}
-		} else {
+		} else if (response == null) {
 			response = Response.serverError();
 		}
 
@@ -138,15 +146,23 @@ public class WaterService {
 			@QueryParam("from") String from,
 			@DefaultValue("") @QueryParam("to") String to) {
 		ResponseBuilder response = null;
+		UUID uuid = null;
+		
+		try {
+			uuid = UUID.fromString(puid);
+		} catch (Exception e) {
+			response = Response.status(Response.Status.BAD_GATEWAY);
+		}
 
-		if (userService != null) {
-			PlatformUser pu = userService.getPlatformUser(puid);
+		if (userService != null && uuid != null) {
+			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null)
 				response = buildDailyWaterConsumptionResponseFrom(pu, from, to);
 			else
 				response = Response.status(Response.Status.NOT_FOUND);
-		} else
+		} else if (response == null) {
 			response = Response.serverError();
+		}
 		
 		return response.build();
 	}
@@ -197,17 +213,25 @@ public class WaterService {
 			@QueryParam("from") String from,
 			@DefaultValue("") @QueryParam("to") String to) {
 		ResponseBuilder response = null;
+		UUID uuid = null;
+		
+		try {
+			uuid = UUID.fromString(puid);
+		} catch (Exception e) {
+			response = Response.status(Response.Status.BAD_GATEWAY);
+		}
 
 		logRequest("weekly", puid, from, to);
 		
-		if (userService != null) {
-			PlatformUser pu = userService.getPlatformUser(puid);
+		if (userService != null && uuid != null) {
+			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null)
 				response = buildWeeklyWaterConsumptionResponseFrom(pu, from, to);
 			else
 				response = Response.status(Response.Status.NOT_FOUND);
-		} else
+		} else if (response == null) {
 			response = Response.serverError();
+		}
 		
 		return response.build();
 	}
@@ -258,18 +282,25 @@ public class WaterService {
 			@QueryParam("from") String from,
 			@DefaultValue("") @QueryParam("to") String to) {
 		ResponseBuilder response = null;
+		UUID uuid = null;
+		
+		try {
+			uuid = UUID.fromString(puid);
+		} catch (Exception e) {
+			response = Response.status(Response.Status.BAD_GATEWAY);
+		}
 
 		logRequest("monthly", puid, from, to);
 		
-		if (userService != null) {
-			PlatformUser pu = userService.getPlatformUser(puid);
+		if (userService != null && uuid != null) {
+			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null)
 				response = buildMonthlyWaterConsumptionResponseFrom(pu, from, to);
 			else {
 				logWarning("No such user: " + puid);
 				response = Response.status(Response.Status.NOT_FOUND);
 			}
-		} else {
+		} else if (response == null) {
 			logError("No user service found");
 			response = Response.serverError();
 		}
@@ -370,8 +401,7 @@ public class WaterService {
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
 			String queryPeriod, PlatformUser pu) {
-		Integer puid = ((PlatformUserIdentifier) pu.getIdentifier()).getId();
-		return WaterBeanFactory.create(samples, queryPeriod, puid.toString());
+		return WaterBeanFactory.create(samples, queryPeriod, pu.getUserId().toString());
 	}
 	
 	private void logRequest(String endpoint, String puid, String from, String to) {

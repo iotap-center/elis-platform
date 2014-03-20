@@ -159,7 +159,7 @@
 		<module>../Data definitions</module>
 		<module>../user service api</module>
 		<module>../storage api</module>
-		<module>../building api</module>
+		<module>../device api</module>
 		<module>../structure api</module>
 		
 		<!-- External API modules -->

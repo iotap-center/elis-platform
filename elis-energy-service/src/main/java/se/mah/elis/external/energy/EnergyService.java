@@ -2,6 +2,7 @@ package se.mah.elis.external.energy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -58,15 +59,23 @@ public class EnergyService {
 	@Path("/{puid}/now")
 	public Response getCurrentEnergyConsumption(@PathParam("puid") String puid) {
 		ResponseBuilder response = null;
+		UUID uuid = null;
 		
-		if (userService != null) {
-			PlatformUser pu = userService.getPlatformUser(puid);
+		try {
+			uuid = UUID.fromString(puid);
+		} catch (Exception e) {
+			response = Response.status(Response.Status.BAD_REQUEST);
+		}
+		
+		if (userService != null && uuid != null) {
+			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null)
 				response = buildCurrentEnergyConsumptionResponse("now", pu);
 			else
 				response = Response.status(Response.Status.NOT_FOUND);	
-		} else
+		} else if (response == null) {
 			response = Response.serverError();
+		}
 
 		return response.build();
 	}
@@ -84,16 +93,24 @@ public class EnergyService {
 			@QueryParam("from") String from,
 			@DefaultValue("") @QueryParam("to") String to) {
 		ResponseBuilder response = null;
+		UUID uuid = null;
 		
-		if (userService != null) {
-			PlatformUser pu = userService.getPlatformUser(puid);
+		try {
+			uuid = UUID.fromString(puid);
+		} catch (Exception e) {
+			response = Response.status(Response.Status.BAD_REQUEST);
+		}
+		
+		if (userService != null && uuid != null) {
+			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null) {
 				response = buildPeriodicEnergyConsumptionResponse("hourly", from, to, pu);
 			} else {
 				response = Response.status(Response.Status.NOT_FOUND);
 			}
-		} else 
+		} else if (response == null) {
 			response = Response.serverError();
+		}
 		
 		return response.build();
 	}
