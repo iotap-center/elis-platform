@@ -49,7 +49,9 @@ public class UserLoaderService {
 		demoUsers = new ArrayList<String>();
 		
 		// read from file?
-		demoUsers.add("marcus;elis;Marcus;Ljungblad;marcus@ljungblad.nu;EonUser;eon;eon2hem@gmail.com;02DCBD;MkbWaterUser;mkb-water;63408097");
+		demoUsers.add("marcus;elis;Marcus;Ljungblad;marcus@ljungblad.nu;"
+				+ "EonGatewayUser;eon;eon2hem@gmail.com;02DCBD;"
+				+ "MkbGatewayUser;mkb-water;63408097");
 	}
 	
 	protected void bindUserService(UserService us) {
@@ -88,7 +90,7 @@ public class UserLoaderService {
 	
 	private User createMkbUser(String userType, String serviceName, String meterId) {
 		Properties props = new Properties();
-		props.put("id", meterId);
+		props.put("meterId", meterId);
 		User mkbUser = null;
 		
 		try {
@@ -113,7 +115,7 @@ public class UserLoaderService {
 		User eonUser = null;
 
 		Properties props = new Properties();
-		props.put("email", username);
+		props.put("username", username);
 		props.put("password", password);
 		
 		try {
