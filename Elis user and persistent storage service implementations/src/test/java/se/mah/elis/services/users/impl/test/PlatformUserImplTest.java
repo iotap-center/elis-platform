@@ -3,12 +3,14 @@ package se.mah.elis.services.users.impl.test;
 import static org.junit.Assert.*;
 
 import java.util.Properties;
+import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.impl.services.users.PlatformUserIdentifierImpl;
 import se.mah.elis.impl.services.users.PlatformUserImpl;
 import se.mah.elis.services.users.UserIdentifier;
@@ -38,9 +40,55 @@ public class PlatformUserImplTest {
 		assertEquals("batman", ((PlatformUserIdentifierImpl) pu.getIdentifier()).getUsername());
 		assertEquals("superman", ((PlatformUserIdentifierImpl) pu.getIdentifier()).getPassword());
 	}
+	
+	@Test
+	public void testSetUserId() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		UUID uuid = UUID.randomUUID();
+		
+		try {
+			pu.setUserId(uuid);
+		} catch (Exception e) {
+			fail("This shouldn't happen");
+		}
+	}
+	
+	@Test
+	public void testSetUserIdNull() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		UUID uuid = UUID.randomUUID();
+		
+		try {
+			pu.setUserId(uuid);
+		} catch (Exception e) {
+			fail("This shouldn't happen");
+		}
+	}
+	
+	@Test
+	public void testGetUserId() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		UUID expected = UUID.randomUUID();
+		UUID actual = null;
+		
+		pu.setUserId(expected);
+		actual = pu.getUserId();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testSetUserIdNotSet() {
+		PlatformUserImpl pu = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		UUID actual = null;
+		
+		actual = pu.getUserId();
+		
+		assertNull(actual);
+	}
 
 	@Test
-	public void testGetId() {
+	public void testGetIdentifier() {
 		PlatformUserImpl pu = new PlatformUserImpl();
 
 		assertEquals("", ((PlatformUserIdentifierImpl) pu.getIdentifier()).getUsername());
@@ -48,7 +96,7 @@ public class PlatformUserImplTest {
 	}
 
 	@Test
-	public void testSetId() {
+	public void testSetIdentifier() {
 		PlatformUserImpl pu = new PlatformUserImpl();
 		
 		assertEquals("", ((PlatformUserIdentifierImpl) pu.getIdentifier()).getUsername());
@@ -206,63 +254,73 @@ public class PlatformUserImplTest {
 	@Test
 	public void testToString() {
 		PlatformUserImpl pu = new PlatformUserImpl();
-		pu.setIdentifier(new PlatformUserIdentifierImpl(1, "batman", "superman"));
+		pu.setIdentifier(new PlatformUserIdentifierImpl("batman", "superman"));
 		
-		assertEquals("PlatformUser batman (1)", pu.toString());
+		assertEquals("PlatformUser batman (null)", pu.toString());
 	}
 
 	@Test
 	public void testEqualsSameId() {
-		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "batman", "superman"));
-		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "fred", "barney"));
+		UUID uuid = UUID.randomUUID();
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("fred", "barney"));
+		
+		pu1.setUserId(uuid);
+		pu2.setUserId(uuid);
 		
 		assertTrue(pu1.equals(pu2));
 	}
 
 	@Test
 	public void testEqualsSameName() {
-		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "batman", "superman"));
-		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl(2, "batman", "superman"));
+		UUID uuid = UUID.randomUUID();
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		
+		pu1.setUserId(uuid);
+		pu2.setUserId(uuid);
 		
 		assertTrue(pu1.equals(pu2));
 	}
 
 	@Test
 	public void testEqualsSameNameAndId() {
-		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "batman", "superman"));
-		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "batman", "superman"));
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
 		
 		assertTrue(pu1.equals(pu2));
 	}
 
 	@Test
 	public void testEqualsDifferentStuff() {
-		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "batman", "superman"));
-		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl(2, "fred", "barney"));
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("fred", "barney"));
 		
 		assertFalse(pu1.equals(pu2));
 	}
 	
 	@Test
 	public void testCompareToABeforeB() {
-		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "batman", "superman"));
-		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl(2, "fred", "barney"));
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("fred", "barney"));
 		
-		assertEquals(-1, pu1.compareTo(pu2));
+		assertTrue(pu2.compareTo(pu1) < 0);
 	}
 	
 	@Test
 	public void testCompareToAAfterB() {
-		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "batman", "superman"));
-		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl(2, "fred", "barney"));
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl("fred", "barney"));
 		
-		assertEquals(1, pu2.compareTo(pu1));
+		assertTrue(pu1.compareTo(pu2) > 0);
 	}
 	
 	@Test
 	public void testCompareToAEqualToB() {
-		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "batman", "superman"));
-		PlatformUserImpl pu2 = new PlatformUserImpl(new PlatformUserIdentifierImpl(1, "fred", "barney"));
+		PlatformUserImpl pu1 = new PlatformUserImpl(new PlatformUserIdentifierImpl("batman", "superman"));
+		PlatformUserImpl pu2 = pu1;
+		
+		pu2.setIdentifier(new PlatformUserIdentifierImpl("fred", "barney"));
 		
 		assertEquals(0, pu1.compareTo(pu2));
 	}
@@ -287,20 +345,23 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testGetPropertiesTemplate() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl(puid);
-		Properties expected = new Properties();
+		Properties expected = new OrderedProperties();
 		Properties actual = pu.getPropertiesTemplate();
 		
-		expected.put("id", 0);
 		expected.put("username", "256");
 		expected.put("password", "256");
 		expected.put("first_name", "32");
 		expected.put("last_name", "32");
 		expected.put("email", "256");
 		
-		assertNotNull(pu.created());
-		assertFalse(DateTime.now().isBefore(((DateTime) actual.get("created")).getMillis()));
+		assertNotNull(actual.get("uuid"));
+		assertTrue(actual.get("uuid") instanceof UUID);
+		actual.remove("uuid");
+		
+		assertNotNull(actual.get("created"));
+		assertTrue(actual.get("created") instanceof DateTime);
 		actual.remove("created");
 		
 		assertEquals(expected, actual);
@@ -308,12 +369,15 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testGetProperties() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl(puid);
 		Properties expected = new Properties();
 		Properties actual = null;
+		UUID uuid = UUID.randomUUID();
 		
-		expected.put("identifier", puid);
+		pu.setUserId(uuid);
+		
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "Bruce");
 		expected.put("last_name", "Wayne");
 		expected.put("email", "batman@gotham.gov");
@@ -323,6 +387,9 @@ public class PlatformUserImplTest {
 		pu.setEmail("batman@gotham.gov");
 		
 		actual = pu.getProperties();
+		
+		assertNotNull(pu.getUserId());
+		actual.remove("uuid");
 		
 		assertNotNull(pu.created());
 		assertFalse(DateTime.now().isBefore(((DateTime) actual.get("created")).getMillis()));
@@ -337,8 +404,11 @@ public class PlatformUserImplTest {
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties expected = new Properties();
 		Properties actual = null;
+		UUID uuid = UUID.randomUUID();
 		
-		expected.put("identifier", puid);
+		pu.setUserId(uuid);
+		
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "Bruce");
 		expected.put("last_name", "Wayne");
 		expected.put("email", "batman@gotham.gov");
@@ -348,6 +418,9 @@ public class PlatformUserImplTest {
 		pu.setEmail("batman@gotham.gov");
 		
 		actual = pu.getProperties();
+		
+		assertNotNull(pu.getUserId());
+		actual.remove("uuid");
 		
 		assertNotNull(pu.created());
 		assertFalse(DateTime.now().isBefore((DateTime) actual.get("created")));
@@ -358,12 +431,15 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testGetPropertiesEmptyFirstName() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl(puid);
 		Properties expected = new Properties();
 		Properties actual = null;
+		UUID uuid = UUID.randomUUID();
 		
-		expected.put("identifier", puid);
+		pu.setUserId(uuid);
+		
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "");
 		expected.put("last_name", "Wayne");
 		expected.put("email", "batman@gotham.gov");
@@ -372,6 +448,9 @@ public class PlatformUserImplTest {
 		pu.setEmail("batman@gotham.gov");
 		
 		actual = pu.getProperties();
+		
+		assertNotNull(pu.getUserId());
+		actual.remove("uuid");
 		
 		assertNotNull(pu.created());
 		assertFalse(DateTime.now().isBefore((DateTime) actual.get("created")));
@@ -382,23 +461,29 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testGetPropertiesEmptyLastName() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl(puid);
 		Properties expected = new Properties();
 		Properties actual = null;
+		UUID uuid = UUID.randomUUID();
 		
-		expected.put("identifier", puid);
+		pu.setUserId(uuid);
+		
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "Bruce");
 		expected.put("last_name", "");
 		expected.put("email", "batman@gotham.gov");
 
 		pu.setFirstName("Bruce");
 		pu.setEmail("batman@gotham.gov");
+		
 		actual = pu.getProperties();
+		
+		assertNotNull(pu.getUserId());
+		actual.remove("uuid");
 		
 		assertNotNull(pu.created());
 		assertFalse(DateTime.now().isBefore((DateTime) actual.get("created")));
-		
 		actual.remove("created");
 		
 		assertEquals(expected, actual);
@@ -406,12 +491,15 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testGetPropertiesEmptyEmail() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl(puid);
 		Properties expected = new Properties();
 		Properties actual = null;
+		UUID uuid = UUID.randomUUID();
 		
-		expected.put("identifier", puid);
+		pu.setUserId(uuid);
+		
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "Bruce");
 		expected.put("last_name", "Wayne");
 		expected.put("email", "");
@@ -420,6 +508,9 @@ public class PlatformUserImplTest {
 		pu.setLastName("Wayne");
 		
 		actual = pu.getProperties();
+		
+		assertNotNull(pu.getUserId());
+		actual.remove("uuid");
 		
 		assertNotNull(pu.created());
 		assertFalse(DateTime.now().isBefore((DateTime) actual.get("created")));
@@ -430,13 +521,15 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testPopulate() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
 		Properties expected = new Properties();
 		Properties actual = null;
 		DateTime now = DateTime.now();
+		UUID uuid = UUID.randomUUID();
 		
+		props.put("uuid", uuid);
 		props.put("identifier", puid);
 		props.put("first_name", "Bruce");
 		props.put("last_name", "Wayne");
@@ -445,7 +538,8 @@ public class PlatformUserImplTest {
 		
 		pu.populate(props);
 		
-		expected.put("identifier", puid);
+		expected.put("uuid", uuid);
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "Bruce");
 		expected.put("last_name", "Wayne");
 		expected.put("email", "batman@gotham.gov");
@@ -458,14 +552,15 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testPopulateFlatIdentifier() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
 		Properties expected = new Properties();
 		Properties actual = null;
 		DateTime now = DateTime.now();
+		UUID uuid = UUID.randomUUID();
 
-		props.put("id", 1);
+		props.put("uuid", uuid);
 		props.put("username", "batman");
 		props.put("password", "superman");
 		props.put("first_name", "Bruce");
@@ -475,7 +570,8 @@ public class PlatformUserImplTest {
 		
 		pu.populate(props);
 		
-		expected.put("identifier", puid);
+		expected.put("uuid", uuid);
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "Bruce");
 		expected.put("last_name", "Wayne");
 		expected.put("email", "batman@gotham.gov");
@@ -488,7 +584,7 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testPopulateNoId() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
 		Properties expected = new Properties();
@@ -500,51 +596,21 @@ public class PlatformUserImplTest {
 		props.put("first_name", "Bruce");
 		props.put("last_name", "Wayne");
 		props.put("email", "batman@gotham.gov");
+		props.put("created", now);
 		
-		pu.populate(props);
+		try {
+			pu.populate(props);
+		} catch (IllegalArgumentException e) {
+			fail("This shouldn't happen.");
+		}
 		
-		expected.put("identifier", puid);
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "Bruce");
 		expected.put("last_name", "Wayne");
 		expected.put("email", "batman@gotham.gov");
+		expected.put("created", now);
 		
 		actual = pu.getProperties();
-		
-		assertNotNull(pu.created());
-		assertFalse(DateTime.now().isBefore(((DateTime) actual.get("created")).getMillis()));
-		actual.remove("created");
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void testPopulateIdIsZero() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
-		PlatformUserImpl pu = new PlatformUserImpl();
-		Properties props = new Properties();
-		Properties expected = new Properties();
-		Properties actual = null;
-		DateTime now = DateTime.now();
-
-		props.put("id", 0);
-		props.put("username", "batman");
-		props.put("password", "superman");
-		props.put("first_name", "Bruce");
-		props.put("last_name", "Wayne");
-		props.put("email", "batman@gotham.gov");
-		
-		pu.populate(props);
-		
-		expected.put("identifier", puid);
-		expected.put("first_name", "Bruce");
-		expected.put("last_name", "Wayne");
-		expected.put("email", "batman@gotham.gov");
-		
-		actual = pu.getProperties();
-		
-		assertNotNull(pu.created());
-		assertFalse(DateTime.now().isBefore(((DateTime) actual.get("created")).getMillis()));
-		actual.remove("created");
 		
 		assertEquals(expected, actual);
 	}
@@ -570,21 +636,24 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testPopulateMissingFirstName() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
 		Properties expected = new Properties();
 		Properties actual = null;
 		DateTime now = DateTime.now();
+		UUID uuid = UUID.randomUUID();
 
-		props.put("identifier", puid);
+		props.put("uuid", uuid);
+		props.putAll(puid.getProperties());
 		props.put("last_name", "Wayne");
 		props.put("email", "batman@gotham.gov");
 		props.put("created", now);
 		
 		pu.populate(props);
 		
-		expected.put("identifier", puid);
+		expected.put("uuid", uuid);
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "");
 		expected.put("last_name", "Wayne");
 		expected.put("email", "batman@gotham.gov");
@@ -597,21 +666,24 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testPopulateMissingLastName() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
 		Properties expected = new Properties();
 		Properties actual = null;
 		DateTime now = DateTime.now();
+		UUID uuid = UUID.randomUUID();
 
-		props.put("identifier", puid);
+		props.put("uuid", uuid);
+		props.putAll(puid.getProperties());
 		props.put("first_name", "Bruce");
 		props.put("email", "batman@gotham.gov");
 		props.put("created", now);
 		
 		pu.populate(props);
 		
-		expected.put("identifier", puid);
+		expected.put("uuid", uuid);
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "Bruce");
 		expected.put("last_name", "");
 		expected.put("email", "batman@gotham.gov");
@@ -624,21 +696,24 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testPopulateMissingEmail() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
 		Properties expected = new Properties();
 		Properties actual = null;
 		DateTime now = DateTime.now();
+		UUID uuid = UUID.randomUUID();
 
-		props.put("identifier", puid);
+		props.put("uuid", uuid);
+		props.putAll(puid.getProperties());
 		props.put("first_name", "Bruce");
 		props.put("last_name", "Wayne");
 		props.put("created", now);
 		
 		pu.populate(props);
 		
-		expected.put("identifier", puid);
+		expected.put("uuid", uuid);
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "Bruce");
 		expected.put("last_name", "Wayne");
 		expected.put("email", "");
@@ -651,11 +726,13 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testPopulateMissingCreated() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
 		DateTime now = DateTime.now();
-
+		UUID uuid = UUID.randomUUID();
+		
+		props.put("uuid", uuid);
 		props.put("identifier", puid);
 		props.put("first_name", "Bruce");
 		props.put("last_name", "Wayne");
@@ -671,14 +748,16 @@ public class PlatformUserImplTest {
 	
 	@Test
 	public void testPopulateExcessiveProperties() {
-		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl(1, "batman", "superman");
+		PlatformUserIdentifierImpl puid = new PlatformUserIdentifierImpl("batman", "superman");
 		PlatformUserImpl pu = new PlatformUserImpl();
 		Properties props = new Properties();
 		Properties expected = new Properties();
 		Properties actual = null;
 		DateTime now = DateTime.now();
+		UUID uuid = UUID.randomUUID();
 		
-		props.put("identifier", puid);
+		props.put("uuid", uuid);
+		props.putAll(puid.getProperties());
 		props.put("first_name", "Bruce");
 		props.put("last_name", "Wayne");
 		props.put("email", "batman@gotham.gov");
@@ -687,7 +766,8 @@ public class PlatformUserImplTest {
 		
 		pu.populate(props);
 		
-		expected.put("identifier", puid);
+		expected.put("uuid", uuid);
+		expected.putAll(puid.getProperties());
 		expected.put("first_name", "Bruce");
 		expected.put("last_name", "Wayne");
 		expected.put("email", "batman@gotham.gov");

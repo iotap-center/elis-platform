@@ -4,6 +4,7 @@
 package se.mah.elis.impl.services.users;
 
 import java.util.Properties;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +27,7 @@ public class PlatformUserImpl
 					Pattern.CASE_INSENSITIVE);
 	
 	private UserIdentifier id;
+	private UUID uuid;
 	private String firstName;
 	private String lastName;
 	private String email;
@@ -36,6 +38,7 @@ public class PlatformUserImpl
 	 */
 	public PlatformUserImpl() {
 		id = new PlatformUserIdentifierImpl();
+		uuid = null;
 		firstName = "";
 		lastName = "";
 		email = "";
@@ -48,6 +51,7 @@ public class PlatformUserImpl
 	 */
 	public PlatformUserImpl(PlatformUserIdentifier id) {
 		this.id = id;
+		uuid = null;
 		firstName = "";
 		lastName = "";
 		email = "";
@@ -59,15 +63,12 @@ public class PlatformUserImpl
 	 * @param p The user information stored in the database.
 	 */
 	public PlatformUserImpl(Properties p) {
-		PlatformUserIdentifier id = new PlatformUserIdentifierImpl();
-		id.setId((Integer) p.get("id"));
-		id.setUsername(p.getProperty("username"));
-		// We won't set the password form the storage
-		// id.setPassword((String) p.get("password"));
-		this.id = id;
-		this.firstName = p.getProperty("first_name");
-		this.lastName = p.getProperty("last_name");
-		
+		id = null;
+		uuid = null;
+		firstName = "";
+		lastName = "";
+		email = "";
+		populate(p);
 	}
 
 	/* (non-Javadoc)
@@ -93,7 +94,7 @@ public class PlatformUserImpl
 	@Override
 	public String toString() {
 		return "PlatformUser " + ((PlatformUserIdentifierImpl) id).getUsername() +
-				" (" + ((PlatformUserIdentifierImpl) id).getId() + ")";
+				" (" + getUserId() + ")";
 	}
 
 	@Override
@@ -141,7 +142,9 @@ public class PlatformUserImpl
 	@Override
 	public boolean equals(Object o) {
 		if (o.getClass().getName().equals(this.getClass().getName())) {
-			return this.id.equals(((PlatformUserImpl) o).getIdentifier());
+			return this.id.equals(((PlatformUserImpl) o).getIdentifier()) ||
+					this.getUserId() != null &&
+					this.getUserId() == ((PlatformUser) o).getUserId();
 		}
 		
 		return false;
@@ -151,21 +154,15 @@ public class PlatformUserImpl
 	public int compareTo(PlatformUserImpl pu) {
 		PlatformUserIdentifierImpl puId = (PlatformUserIdentifierImpl) pu.getIdentifier();
 		PlatformUserIdentifierImpl thisId = (PlatformUserIdentifierImpl) id;
-		int result = 0;
 		
-		if (!puId.getUsername().equals(thisId.getUsername()) &&
-				thisId.getId() != puId.getId()) {
-			if (thisId.getId() > puId.getId()) {
-				result = 1;
-			} else  {
-				result = -1;
-			}
-		}
-		
-		return result;
+		return puId.getUsername().compareTo(thisId.getUsername());
 	}
 	
 	private boolean validateAddress(String address) {
+		if (address == null) {
+			return false;
+		}
+		
 		Matcher matcher = VALID_EMAIL.matcher(address);
 		
 		return matcher.find();
@@ -175,7 +172,10 @@ public class PlatformUserImpl
 	public OrderedProperties getProperties() {
 		OrderedProperties p = new OrderedProperties();
 		
-		p.put("identifier", id);
+		if (uuid != null) {
+			p.put("uuid", uuid);
+		}
+		p.putAll(id.getProperties());
 		p.put("first_name", firstName);
 		p.put("last_name", lastName);
 		p.put("email", email);
@@ -188,6 +188,7 @@ public class PlatformUserImpl
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties p = id.getPropertiesTemplate();
 		
+		p.put("uuid", UUID.randomUUID());
 		p.put("first_name", "32");
 		p.put("last_name", "32");
 		p.put("email", "256");
@@ -199,14 +200,13 @@ public class PlatformUserImpl
 	@Override
 	public void populate(Properties props) throws IllegalArgumentException {
 		// The "created" field isn't necessary for new objects
-		if (props.containsKey("id") && ((int) props.get("id")) > 0 &&
+		if (props.containsKey("uuid") &&
 				!(props.containsKey("created") &&
 						props.get("created") instanceof DateTime)) {
 			throw new IllegalArgumentException();
 		}
 		if (props.containsKey("identifier") &&
 			props.get("identifier") instanceof PlatformUserIdentifier &&
-			((PlatformUserIdentifier) props.get("identifier")).getId() > 0 &&
 			!(props.containsKey("created") &&
 					props.get("created") instanceof DateTime)) {
 			throw new IllegalArgumentException();
@@ -215,11 +215,8 @@ public class PlatformUserImpl
 		// object or a flattened version.
 		if (!((props.containsKey("identifier") &&
 			   props.get("identifier") instanceof PlatformUserIdentifierImpl) ||
-			(((props.containsKey("id")) &&
-			   props.get("id") instanceof Integer) ||
-			   !props.containsKey("id")) &&
-			   props.containsKey("username") &&
-			   props.get("username") instanceof String)) {
+			(props.containsKey("username") &&
+			   props.get("username") instanceof String))) {
 			// Apparently not. Let's bail out.
 			throw new IllegalArgumentException();
 		}
@@ -229,31 +226,27 @@ public class PlatformUserImpl
 		if (props.containsKey("identifier")) {
 			id = (UserIdentifier) props.get("identifier");
 		} else {
-			int idNumber = 0;
 			String username = (String) props.get("username");
 			String password = null;
-			
-			if (props.containsKey("id")) {
-				idNumber = (int) props.get("id");
-				if (idNumber < 0)
-					idNumber = 0;
-			}
 			
 			if (props.containsKey("password")) {
 				password = (String) props.get("password");
 			}
 			
-			id = new PlatformUserIdentifierImpl(idNumber, username, password);
+			id = new PlatformUserIdentifierImpl(username, password);
 		}
 		
 		// Set the rest of the object's properties.
+		if (props.containsKey("uuid")) {
+			setUserId((UUID) props.get("uuid"));
+		}
 		setFirstName((String) props.get("first_name"));
 		setLastName((String) props.get("last_name"));
-		setEmail((String) props.get("email"));
+		if (validateAddress(props.getProperty("email"))) {
+			setEmail((String) props.get("email"));
+		}
 		
-		if (((PlatformUserIdentifier) id).getId() == 0) {
-			created = DateTime.now();
-		} else {
+		if (props.containsKey("created")) {
 			created = (DateTime) props.get("created");
 		}
 	}
@@ -266,5 +259,15 @@ public class PlatformUserImpl
 	@Override
 	public DateTime created() {
 		return created;
+	}
+
+	@Override
+	public UUID getUserId() {
+		return uuid;
+	}
+
+	@Override
+	public void setUserId(UUID id) {
+		uuid = id;
 	}
 }
