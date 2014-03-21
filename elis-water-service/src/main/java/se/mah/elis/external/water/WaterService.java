@@ -24,13 +24,13 @@ import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.entities.devices.WaterMeterSampler;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.WaterSample;
 import se.mah.elis.external.water.beans.WaterBean;
 import se.mah.elis.external.water.beans.WaterBeanFactory;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 
@@ -88,13 +88,14 @@ public class WaterService {
 		ResponseBuilder response = null;
 		UUID uuid = null;
 		
+		logRequest("now", puid);
+
 		try {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
-			response = Response.status(Response.Status.BAD_GATEWAY);
+			response = Response.status(Response.Status.BAD_REQUEST);
+			logWarning("Bad UUID");
 		}
-		
-		logRequest("now", puid);
 
 		if (userService != null && uuid != null) {
 			PlatformUser pu = userService.getPlatformUser(uuid);
@@ -102,9 +103,11 @@ public class WaterService {
 				response = buildCurrentWaterConsumptionResponseFrom(pu);
 			} else {
 				response = Response.status(Response.Status.NOT_FOUND);
+				logWarning("Could not find user: " + uuid.toString());
 			}
 		} else if (response == null) {
 			response = Response.serverError();
+			logError("User service not available");
 		}
 
 		return response.build();
@@ -124,9 +127,11 @@ public class WaterService {
 	private Map<String, List<WaterSample>> getCurrentSamplesForMeters(
 			List<WaterMeterSampler> waterMeters) {
 		Map<String, List<WaterSample>> samples = new HashMap<>();
+		
 		for (WaterMeterSampler sampler : waterMeters) {
 			tryAdd(samples, sampler);
 		}
+		
 		return samples;
 	}
 
@@ -147,20 +152,26 @@ public class WaterService {
 		ResponseBuilder response = null;
 		UUID uuid = null;
 		
+		logRequest("daily", puid, from, to);
+		
 		try {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
-			response = Response.status(Response.Status.BAD_GATEWAY);
+			response = Response.status(Response.Status.BAD_REQUEST);
+			logWarning("Bad UUID");
 		}
 
 		if (userService != null && uuid != null) {
 			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null)
 				response = buildDailyWaterConsumptionResponseFrom(pu, from, to);
-			else
+			else {
 				response = Response.status(Response.Status.NOT_FOUND);
+				logWarning("Could not find user: " + uuid.toString());
+			}
 		} else if (response == null) {
 			response = Response.serverError();
+			logError("User service not available");
 		}
 		
 		return response.build();
@@ -218,6 +229,7 @@ public class WaterService {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
 			response = Response.status(Response.Status.BAD_GATEWAY);
+			logWarning("Bad UUID");
 		}
 
 		logRequest("weekly", puid, from, to);
@@ -226,10 +238,13 @@ public class WaterService {
 			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null)
 				response = buildWeeklyWaterConsumptionResponseFrom(pu, from, to);
-			else
+			else {
 				response = Response.status(Response.Status.NOT_FOUND);
+				logWarning("Could not find user: " + uuid.toString());
+			}
 		} else if (response == null) {
 			response = Response.serverError();
+			logError("User service not available");
 		}
 		
 		return response.build();
@@ -300,8 +315,8 @@ public class WaterService {
 				response = Response.status(Response.Status.NOT_FOUND);
 			}
 		} else if (response == null) {
-			logError("No user service found");
 			response = Response.serverError();
+			logError("No user service found");
 		}
 
 		return response.build();
@@ -351,11 +366,16 @@ public class WaterService {
 
 	private List<WaterMeterSampler> waterMetersForUser(PlatformUser pu) {
 		List<WaterMeterSampler> meters = new ArrayList<>();
+		
 		User[] users = userService.getUsers(pu);
+		
 		for (User user : users) {
 			if (user instanceof GatewayUser) {
-				for (Device device : ((GatewayUser) user).getGateway()) {
+				Gateway gateway = ((GatewayUser) user).getGateway();
+				logInfo("Found " + gateway.size() + " devices");
+				for (Device device : gateway) {
 					if (device instanceof WaterMeterSampler) {
+						logInfo("Found water metering device: " + device.getName());
 						meters.add((WaterMeterSampler) device);
 					}
 				}
@@ -398,15 +418,15 @@ public class WaterService {
 	}
 	
 	private void logRequest(String endpoint, String puid, String from, String to) {
-		logRequest("Request: /water/" + puid + "/" + endpoint
+		logInfo("Request: /water/" + puid + "/" + endpoint
 				+ "?from=" + from + "&to=" + to);
 	}
 	
 	private void logRequest(String endpoint, String puid) {
-		logRequest("Request: /water/" + puid + "/" + endpoint);
+		logInfo("Request: /water/" + puid + "/" + endpoint);
 	}
 	
-	private void logRequest(String msg) {
+	private void logInfo(String msg) {
 		log.log(LogService.LOG_INFO, msg);
 	}
 	

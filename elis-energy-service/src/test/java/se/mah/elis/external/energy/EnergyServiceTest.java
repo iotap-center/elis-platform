@@ -3,7 +3,6 @@ package se.mah.elis.external.energy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,11 +28,9 @@ import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.ElectricitySample;
-import se.mah.elis.external.energy.EnergyService;
 import se.mah.elis.external.energy.beans.EnergyBean;
 import se.mah.elis.external.energy.beans.EnergyDeviceBean;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 
@@ -97,6 +94,7 @@ public class EnergyServiceTest extends JerseyTest {
 		ElectricitySample deviceSample = mock(ElectricitySample.class);
 		when(deviceSample.getSampleTimestamp()).thenReturn(from);
 		when(deviceSample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_WH);
+		when(deviceSample.getCurrentPower()).thenReturn(DEVICE_1_WH);
 
 		DeviceIdentifier identifier = mock(DeviceIdentifier.class);
 		when(identifier.toString()).thenReturn(DEVICE + id);
@@ -131,7 +129,8 @@ public class EnergyServiceTest extends JerseyTest {
 		assertEquals("00001111-2222-3333-4444-555566667777", bean.puid);
 		assertEquals("now", bean.period);
 		assertEquals(DEVICE + 0, getFirstDevice(bean.devices));
-		assertEquals(DEVICE_1_WH/1000, bean.devices.get(0).data.get(0).kwh, 0.01f);
+		assertEquals(DEVICE_1_WH, bean.devices.get(0).data.get(0).watts, 0.01f);
+		assertEquals(0, bean.devices.get(0).data.get(0).kwh, 0.01f);
 	}
 
 	

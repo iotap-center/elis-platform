@@ -11,5 +11,8 @@ public class EnergyDataBean {
 	
 	@XmlElement
 	public double kwh;
+
+	@XmlElement
+	public double watts;
 	
 }

@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
@@ -40,12 +41,17 @@ public class UserLoaderService {
 	@Reference
 	private UserFactory userFactory;
 	
+	@Reference
+	private LogService log;
+	
 	public UserLoaderService() {
 		populated = false;
 		demoUsers = new ArrayList<String>();
 		
 		// read from file?
-		demoUsers.add("marcus;elis;Marcus;Ljungblad;marcus@ljungblad.nu;EonUser;eon;eon2hem@gmail.com;02DCBD;MkbWaterUser;mkb-water;63408097");
+		demoUsers.add("marcus;elis;Marcus;Ljungblad;marcus@ljungblad.nu;"
+				+ "EonGatewayUser;eon;eon2hem@gmail.com;02DCBD;"
+				+ "MkbGatewayUser;mkb-water;63408097");
 	}
 	
 	protected void bindUserService(UserService us) {
@@ -84,13 +90,13 @@ public class UserLoaderService {
 	
 	private User createMkbUser(String userType, String serviceName, String meterId) {
 		Properties props = new Properties();
-		props.put("id", meterId);
+		props.put("meterId", meterId);
 		User mkbUser = null;
 		
 		try {
 			mkbUser = userFactory.build(userType, serviceName, props);
 		} catch (UserInitalizationException uie) {
-			uie.printStackTrace();
+			log.log(LogService.LOG_ERROR, uie.getMessage());
 		}
 		
 		return mkbUser;
@@ -100,7 +106,7 @@ public class UserLoaderService {
 		try {
 			userService.registerUserToPlatformUser(user, pu);
 		} catch (NoSuchUserException e) {
-			e.printStackTrace();
+			log.log(LogService.LOG_ERROR, e.getMessage());
 		}
 	}
 
@@ -109,7 +115,7 @@ public class UserLoaderService {
 		User eonUser = null;
 
 		Properties props = new Properties();
-		props.put("email", username);
+		props.put("username", username);
 		props.put("password", password);
 		
 		try {
@@ -148,5 +154,13 @@ public class UserLoaderService {
 	
 	protected void unbindUserFactory(UserFactory uf) {
 		this.userFactory = null;
+	}
+	
+	protected void bindLog(LogService l) {
+		log = l;
+	}
+	
+	protected void unbindLog(LogService l) {
+		log = null;
 	}
 }

@@ -117,8 +117,7 @@ public class MkbWaterSample implements WaterSample {
 
 	@Override
 	public DateTime created() {
-		// TODO Auto-generated method stub
-		return null;
+		return sampleTimestamp;
 	}
 
 }
