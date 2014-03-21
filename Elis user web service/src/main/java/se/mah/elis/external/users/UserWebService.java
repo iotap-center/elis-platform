@@ -163,7 +163,7 @@ public class UserWebService {
 		for (int i = 0; i < pus.length; i++) {
 			bean = new PlatformUserBean();
 			id = (PlatformUserIdentifier) pus[i].getIdentifier();
-			bean.userId = Integer.toString(id.getId());
+			bean.userId = pus[i].getUserId().toString();
 			bean.username = id.getUsername();
 			bean.firstName = pus[i].getFirstName();
 			bean.lastName = pus[i].getLastName();
@@ -237,6 +237,7 @@ public class UserWebService {
 					}
 					
 					userService.registerUserToPlatformUser(u, pu);
+					input.userId = pu.getUserId().toString();
 					input.gatewayUser.id = u.getUserId().toString();
 				}
 				
@@ -277,14 +278,14 @@ public class UserWebService {
 		UserContainerBean userContainer = new UserContainerBean();
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		
-		PlatformUser pu = userService.getPlatformUser(userId);
+		PlatformUser pu = userService.getPlatformUser(UUID.fromString(userId));
 		
 		if (pu != null) {
 			PlatformUserIdentifier id =
 					(PlatformUserIdentifier) pu.getIdentifier();
 			PlatformUserBean bean = new PlatformUserBean();
 			
-			bean.userId = Integer.toString(id.getId());
+			bean.userId = pu.getUserId().toString();
 			bean.username = id.getUsername();
 			bean.firstName = pu.getFirstName();
 			bean.lastName = pu.getLastName();
@@ -318,7 +319,7 @@ public class UserWebService {
 		EnvelopeBean envelope = new EnvelopeBean();
 		UserContainerBean container = new UserContainerBean();
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		PlatformUser pu = userService.getPlatformUser(userId);
+		PlatformUser pu = userService.getPlatformUser(UUID.fromString(userId));
 		
 		if (pu != null) {
 			pu.setFirstName(input.firstName);
@@ -359,7 +360,7 @@ public class UserWebService {
 	public Response deleteUser(@PathParam("userId") String userId) {
 		Response response = null;
 
-		PlatformUser pu = userService.getPlatformUser(userId);
+		PlatformUser pu = userService.getPlatformUser(UUID.fromString(userId));
 		if (pu != null) {
 			try {
 				userService.deletePlatformUser(pu);
@@ -411,7 +412,7 @@ public class UserWebService {
 			}
 			
 			try {
-				pu = userService.getPlatformUser(userId);
+				pu = userService.getPlatformUser(UUID.fromString(userId));
 				
 				if (pu == null) {
 					throw new NoSuchUserException();
@@ -421,8 +422,7 @@ public class UserWebService {
 						recipe.getServiceName(), properties);
 				userService.registerUserToPlatformUser(user, pu);
 
-				bean.userId = Integer.toString(((PlatformUserIdentifier) pu
-						.getIdentifier()).getId());
+				bean.userId = pu.getUserId().toString();
 				bean.username = ((PlatformUserIdentifier) pu.getIdentifier())
 						.getUsername();
 				bean.firstName = pu.getFirstName();
@@ -459,7 +459,7 @@ public class UserWebService {
 		UserContainerBean container = new UserContainerBean();
 		EnvelopeBean envelope = new EnvelopeBean();
 		PlatformUserBean bean = new PlatformUserBean();
-		PlatformUser pu = userService.getPlatformUser(platformUserId);
+		PlatformUser pu = userService.getPlatformUser(UUID.fromString(platformUserId));
 		User u = null;
 		
 		if (pu != null) {

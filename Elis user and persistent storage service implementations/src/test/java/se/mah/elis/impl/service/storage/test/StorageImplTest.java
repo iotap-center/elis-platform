@@ -1733,7 +1733,7 @@ public class StorageImplTest {
 		assertTrue(au instanceof PlatformUser);
 		assertEquals(uuid, au.getUserId());
 		assertEquals("Batman", ((PlatformUserIdentifier) au.getIdentifier()).getUsername());
-		assertFalse(((PlatformUserIdentifier) au.getIdentifier()).getPassword().isEmpty());
+		assertNull(((PlatformUserIdentifier) au.getIdentifier()).getPassword());
 		assertEquals("Bruce", ((PlatformUser) au).getFirstName());
 		assertEquals("Wayne", ((PlatformUser) au).getLastName());
 		assertEquals("bruce@waynecorp.com", ((PlatformUser) au).getEmail());
@@ -2986,7 +2986,7 @@ public class StorageImplTest {
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
 		assertEquals("George", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
-		assertFalse(password.equals(((PlatformUserIdentifier) pu.getIdentifier()).getPassword()));
+		assertNull(((PlatformUserIdentifier) pu.getIdentifier()).getPassword());
 		assertEquals("George", ((PlatformUser) pu).getFirstName());
 		assertEquals("Ofthejungle", ((PlatformUser) pu).getLastName());
 		assertEquals("george@djungle.za", ((PlatformUser) pu).getEmail());
@@ -3118,7 +3118,7 @@ public class StorageImplTest {
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
 		assertEquals("George", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
-		assertEquals(password, ((PlatformUserIdentifier) pu.getIdentifier()).getPassword());
+		assertNull(((PlatformUserIdentifier) pu.getIdentifier()).getPassword());
 		assertEquals("George", ((PlatformUser) pu).getFirstName());
 		assertEquals("Ofthejungle", ((PlatformUser) pu).getLastName());
 		assertEquals("george@djungle.za", ((PlatformUser) pu).getEmail());
@@ -3166,7 +3166,7 @@ public class StorageImplTest {
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
 		assertEquals("George", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
-		assertEquals(password, ((PlatformUserIdentifier) pu.getIdentifier()).getPassword());
+		assertNull(((PlatformUserIdentifier) pu.getIdentifier()).getPassword());
 		assertEquals("George", ((PlatformUser) pu).getFirstName());
 		assertEquals("Ofthejungle", ((PlatformUser) pu).getLastName());
 		assertEquals("george@djungle.za", ((PlatformUser) pu).getEmail());

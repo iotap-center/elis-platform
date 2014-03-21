@@ -667,7 +667,7 @@ public class StorageImpl implements Storage {
 				 * |int id|String username|String password|String first_name|
 				 * 		String last_name|String e-mail|
 				 */
-				if (pid.getPassword().isEmpty()) {
+				if (pid.getPassword() == null || pid.getPassword().isEmpty()) {
 					query = "UPDATE `" + tableName + "` SET " +
 							"username = ?, " +
 							"first_name = ?, last_name = ?, `email` = ? " + 
@@ -694,7 +694,7 @@ public class StorageImpl implements Storage {
 					stmt.setString(2, pu.getFirstName());
 					stmt.setString(3, pu.getLastName());
 					stmt.setString(4, pu.getEmail());
-					if (pid.getPassword().length() > 0) {
+					if (pid.getPassword() != null && pid.getPassword().length() > 0) {
 						// Only update the password if it is being changed
 						stmt.setString(5, pid.getPassword());
 					}
@@ -1186,6 +1186,7 @@ public class StorageImpl implements Storage {
 				} else if (className.equals("se.mah.elis.services.users.PlatformUser")) {
 					// A platform user
 					user = factory.build(props);
+					((PlatformUserIdentifier) user.getIdentifier()).setPassword(null);
 				} else {
 					throw new StorageException(INSTANCE_USER_ERROR);
 				}
@@ -1243,16 +1244,19 @@ public class StorageImpl implements Storage {
 			
 			query = "SELECT * FROM `" + tableName + "` WHERE ";
 			if (!username.isEmpty()) {
-				query += "username = '" + username +
-						"' AND password = PASSWORD('" + password + "');";
+				query += "username = ? AND password = PASSWORD(?);";
 			}
 			
 			try {
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
 				connection.setAutoCommit(false);
-				Statement stmt = connection.createStatement();
-				java.sql.ResultSet rs = stmt.executeQuery(query);
+				PreparedStatement stmt = connection.prepareStatement(query);
+				
+				stmt.setString(1, username);
+				stmt.setString(2, password);
+				
+				java.sql.ResultSet rs = stmt.executeQuery();
 				props = utils.resultSetRowToProperties(rs);
 				rs.close();
 				stmt.close();
@@ -1260,6 +1264,7 @@ public class StorageImpl implements Storage {
 				
 				// Create a PlatformUser object
 				user = factory.build(props);
+				((PlatformUserIdentifier) user.getIdentifier()).setPassword(null);
 			} catch (SQLException | NullPointerException e) {
 				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
