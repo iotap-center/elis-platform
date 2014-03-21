@@ -6,8 +6,8 @@ package se.mah.elis.impl.services.users;
 import java.util.Properties;
 
 import se.mah.elis.data.OrderedProperties;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.PlatformUser;
+import se.mah.elis.services.users.PlatformUserIdentifier;
 
 /**
  * Implements the UserIdentifier interface.
@@ -107,7 +107,7 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	}
 
 	@Override
-	public Class identifies() {
+	public Class<PlatformUser> identifies() {
 		return se.mah.elis.services.users.PlatformUser.class;
 	}
 

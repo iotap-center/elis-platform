@@ -25,7 +25,6 @@ import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.UserIdentifier;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * This class contains a bunch of helper methods to be used by StorageImpl.
@@ -228,11 +227,10 @@ public class StorageUtils {
 			boolean useLike) {
 		StringBuffer pairs = new StringBuffer();
 		
-		for (Entry e : properties.entrySet()) {
+		for (Entry<?, ?> e : properties.entrySet()) {
 			if (pairs.length() > 0) {
 				pairs.append(connector);
 			}
-			// TODO Manage UUIDs as well
 			if (e.getValue() instanceof String && useLike) {
 				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` LIKE ?");
 			} else if (e.getValue() instanceof UUID) {
@@ -790,7 +788,6 @@ public class StorageUtils {
 			props.put(colName, (Boolean) value);
 		} else if (clazz.equals(byte[].class.getName()) &&
 				((byte[]) value).length == 16) {
-			byte[] bytes = (byte[]) value;
 			props.put(colName, bytesToUUID((byte[]) value));
 		} else {
 			props.put(colName, value);
