@@ -61,20 +61,26 @@ public class EnergyService {
 		ResponseBuilder response = null;
 		UUID uuid = null;
 		
+		logRequest("now", puid);
+		
 		try {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
 			response = Response.status(Response.Status.BAD_REQUEST);
+			logWarning("Bad UUID");
 		}
 		
 		if (userService != null && uuid != null) {
 			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null)
 				response = buildCurrentEnergyConsumptionResponse("now", pu);
-			else
-				response = Response.status(Response.Status.NOT_FOUND);	
+			else {
+				response = Response.status(Response.Status.NOT_FOUND);
+				logWarning("Could not find user: " + uuid.toString());
+			}
 		} else if (response == null) {
 			response = Response.serverError();
+			logError("User service not available");
 		}
 
 		return response.build();
@@ -95,10 +101,13 @@ public class EnergyService {
 		ResponseBuilder response = null;
 		UUID uuid = null;
 		
+		logRequest("hourly", puid, from, to);
+		
 		try {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
 			response = Response.status(Response.Status.BAD_REQUEST);
+			logWarning("Bad UUID");
 		}
 		
 		if (userService != null && uuid != null) {
@@ -107,9 +116,11 @@ public class EnergyService {
 				response = buildPeriodicEnergyConsumptionResponse("hourly", from, to, pu);
 			} else {
 				response = Response.status(Response.Status.NOT_FOUND);
+				logWarning("Could not find user: " + uuid.toString());
 			}
 		} else if (response == null) {
 			response = Response.serverError();
+			logError("User service not available");
 		}
 		
 		return response.build();
@@ -143,7 +154,29 @@ public class EnergyService {
 			if (user instanceof GatewayUser) 
 				meters.addAll(getMeters((GatewayUser) user));
 		}
+		logInfo("Found " + meters.size() + " devices");
 		return meters;
+	}
+	
+	private void logRequest(String endpoint, String puid, String from, String to) {
+		logInfo("Request: /energy/" + puid + "/" + endpoint
+				+ "?from=" + from + "&to=" + to);
+	}
+	
+	private void logRequest(String endpoint, String puid) {
+		logInfo("Request: /energy/" + puid + "/" + endpoint);
+	}
+	
+	private void logInfo(String msg) {
+		log.log(LogService.LOG_INFO, msg);
+	}
+	
+	private void logWarning(String msg) {
+		log.log(LogService.LOG_WARNING, msg);
+	}
+	
+	private void logError(String msg) {
+		log.log(LogService.LOG_ERROR, msg);
 	}
 
 	protected void unbindUserService() {

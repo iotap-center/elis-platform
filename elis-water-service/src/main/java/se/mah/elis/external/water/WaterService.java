@@ -127,9 +127,11 @@ public class WaterService {
 	private Map<String, List<WaterSample>> getCurrentSamplesForMeters(
 			List<WaterMeterSampler> waterMeters) {
 		Map<String, List<WaterSample>> samples = new HashMap<>();
+		
 		for (WaterMeterSampler sampler : waterMeters) {
 			tryAdd(samples, sampler);
 		}
+		
 		return samples;
 	}
 
@@ -150,20 +152,26 @@ public class WaterService {
 		ResponseBuilder response = null;
 		UUID uuid = null;
 		
+		logRequest("daily", puid, from, to);
+		
 		try {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
-			response = Response.status(Response.Status.BAD_GATEWAY);
+			response = Response.status(Response.Status.BAD_REQUEST);
+			logWarning("Bad UUID");
 		}
 
 		if (userService != null && uuid != null) {
 			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null)
 				response = buildDailyWaterConsumptionResponseFrom(pu, from, to);
-			else
+			else {
 				response = Response.status(Response.Status.NOT_FOUND);
+				logWarning("Could not find user: " + uuid.toString());
+			}
 		} else if (response == null) {
 			response = Response.serverError();
+			logError("User service not available");
 		}
 		
 		return response.build();
@@ -221,6 +229,7 @@ public class WaterService {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
 			response = Response.status(Response.Status.BAD_GATEWAY);
+			logWarning("Bad UUID");
 		}
 
 		logRequest("weekly", puid, from, to);
@@ -229,10 +238,13 @@ public class WaterService {
 			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null)
 				response = buildWeeklyWaterConsumptionResponseFrom(pu, from, to);
-			else
+			else {
 				response = Response.status(Response.Status.NOT_FOUND);
+				logWarning("Could not find user: " + uuid.toString());
+			}
 		} else if (response == null) {
 			response = Response.serverError();
+			logError("User service not available");
 		}
 		
 		return response.build();
@@ -303,8 +315,8 @@ public class WaterService {
 				response = Response.status(Response.Status.NOT_FOUND);
 			}
 		} else if (response == null) {
-			logError("No user service found");
 			response = Response.serverError();
+			logError("No user service found");
 		}
 
 		return response.build();
@@ -354,11 +366,10 @@ public class WaterService {
 
 	private List<WaterMeterSampler> waterMetersForUser(PlatformUser pu) {
 		List<WaterMeterSampler> meters = new ArrayList<>();
-		logInfo("PlatformUser is: " + pu);
+		
 		User[] users = userService.getUsers(pu);
-		logInfo("Number of users attached to " + pu.getFirstName() + " is " + users.length);
+		
 		for (User user : users) {
-			logInfo("User is: " + user);
 			if (user instanceof GatewayUser) {
 				Gateway gateway = ((GatewayUser) user).getGateway();
 				logInfo("Found " + gateway.size() + " devices");
