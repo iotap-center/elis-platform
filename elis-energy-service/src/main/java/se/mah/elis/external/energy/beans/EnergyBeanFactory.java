@@ -36,7 +36,7 @@ public class EnergyBeanFactory {
 		bean.puid = getPuid(pu);
 		bean.period = period;
 		bean.devices = createDeviceList(samples);
-		bean.summary = createSummary(samples);
+		//bean.summary = createSummary(samples);
 		return bean;
 	}
 
@@ -58,6 +58,7 @@ public class EnergyBeanFactory {
 		bean.puid = getPuid(pu);
 		bean.period = period;
 		bean.devices = createDeviceList(samples, HISTORY);
+		bean.summary = createSummary(samples);
 		return bean;
 	}
 
@@ -117,7 +118,6 @@ public class EnergyBeanFactory {
 			Map<Device, List<ElectricitySample>> meters) {
 		EnergySummaryBean summary = new EnergySummaryBean();
 
-		summary.deviceId = "aggregate";
 		summary.kwh = calculateTotalConsumption(meters);
 
 		return summary;
@@ -126,17 +126,13 @@ public class EnergyBeanFactory {
 	private static double calculateTotalConsumption(
 			Map<Device, List<ElectricitySample>> meters) {
 
-		double totalWh = 0.0;
+		double totalkWh = 0.0;
 
 		for (List<ElectricitySample> samples : meters.values())
 			for (ElectricitySample sample : samples)
-				totalWh += sample.getTotalEnergyUsageInWh(); // wont work with
-																// historic
-																// entries
+				totalkWh += sample.getTotalEnergyUsageInWh() / 1000.0;  
 
-		double totalKwh = totalWh / 1000.0;
-
-		return totalKwh;
+		return totalkWh;
 	}
 
 	private static List<EnergyDeviceBean> createDeviceList(
@@ -192,7 +188,7 @@ public class EnergyBeanFactory {
 		if (isHistory)
 			sampleBean.kwh = sample.getTotalEnergyUsageInWh() / 1000.0;
 		else 
-			sampleBean.watts = sample.getCurrentPower();
+			sampleBean.watts = sample.getCurrentPower() / 1000.0;
 		
 		sampleBean.timestamp = unixtime(sample.getSampleTimestamp());
 		

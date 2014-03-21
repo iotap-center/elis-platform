@@ -1,7 +1,6 @@
 package se.mah.elis.external.devices;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,16 +8,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
@@ -29,62 +25,78 @@ import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * 
- * This service provides a HTTP interface to retrieve information 
- * about all devices that a platform user is connected with. 
+ * This service provides a HTTP interface to retrieve information about all
+ * devices that a platform user is connected with.
  * 
  * @author Marcus Ljungblad
  * @since 1.0
  * @version 1.0
- *
+ * 
  */
-@Path("/users/{id}")
+@Path("/devices/{id}")
 @Produces("application/json")
 @Component(name = "ElisDeviceService", immediate = true)
 @Service(value = DeviceService.class)
 public class DeviceService {
 
 	private Gson gson;
-	
+
 	@Reference
 	private UserService userService;
-	
+
+	@Reference
+	private LogService log;
+
 	public DeviceService() {
 		gson = new GsonBuilder().setPrettyPrinting().create();
 	}
-	
+
+	public DeviceService(UserService us, LogService log) {
+		this();
+		userService = us;
+	}
+
 	/**
-	 * Returns a list of devices as a HTTP response. The response is 
-	 * JSON encoded. 
+	 * Returns a list of devices as a HTTP response. The response is JSON
+	 * encoded.
 	 * 
 	 * @since 1.0
 	 * @param id
 	 * @return
 	 */
 	@GET
-	@Path("/devices")
+	@Path("/")
 	public Response getDeviceList(@PathParam("id") String id) {
 		ResponseBuilder response = null;
 		UUID uuid = null;
-		
+
+		logThis("Request: /devices/" + id + "/");
+
 		try {
 			uuid = UUID.fromString(id);
 		} catch (Exception e) {
 			response = Response.status(Response.Status.BAD_REQUEST);
+			logWarning("Bad UUID");
 		}
-		
+
 		if (userService != null && uuid != null) {
 			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null) {
 				response = buildDeviceListResponseFrom(pu);
 			} else {
 				response = Response.status(Response.Status.NOT_FOUND);
+				logWarning("Could not find user: " + id);
 			}
 		} else if (response == null) {
 			response = Response.serverError();
+			logError("User service not available");
 		}
-		
+
 		return response.build();
 	}
 
@@ -92,13 +104,14 @@ public class DeviceService {
 		ResponseBuilder response;
 		User[] users = userService.getUsers(pu);
 		DeviceSetBean deviceset = new DeviceSetBean();
+		deviceset.puid = pu.getUserId().toString();
 		deviceset.devices = getAllDevicesFor(users);
 		response = Response.ok(gson.toJson(deviceset));
 		return response;
 	}
 
 	private List<DeviceBean> getAllDevicesFor(User[] users) {
-		List<DeviceBean> devices = new ArrayList<>(); 
+		List<DeviceBean> devices = new ArrayList<>();
 		for (User user : users) {
 			if (user instanceof GatewayUser) {
 				GatewayUser gatewayUser = (GatewayUser) user;
@@ -108,7 +121,7 @@ public class DeviceService {
 		}
 		return devices;
 	}
-	
+
 	private List<DeviceBean> convertDevicesToBeans(Gateway gateway) {
 		List<DeviceBean> devices = new ArrayList<>();
 		for (Device device : gateway) {
@@ -123,10 +136,26 @@ public class DeviceService {
 
 	protected void bindUserService(UserService us) {
 		this.userService = us;
-		System.out.println("DeviceService bound to UserService");
 	}
-	
+
 	protected void unbindUserService(UserService us) {
 		this.userService = null;
+	}
+
+	private void logWarning(String msg) {
+		logThis(LogService.LOG_WARNING, msg);
+	}
+
+	private void logError(String msg) {
+		logThis(LogService.LOG_ERROR, msg);
+	}
+
+	private void logThis(String msg) {
+		logThis(LogService.LOG_INFO, msg);
+	}
+
+	private void logThis(int logError, String msg) {
+		if (log != null)
+			log.log(logError, msg);
 	}
 }

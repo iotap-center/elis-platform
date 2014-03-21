@@ -146,8 +146,7 @@ public class ElectricitySampleImpl implements ElectricitySample {
 	}
 
 	private double getPowerInWatts() {
-		int timeInHours = 1;
-		double watts = 1000*measuredValue/timeInHours;
+		double watts = 1000*measuredValue;
 		return watts;
 	}
 

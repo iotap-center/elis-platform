@@ -1,6 +1,7 @@
 package se.mah.elis.external.energy;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -41,7 +42,7 @@ public class EnergyServiceTest extends JerseyTest {
 	private static final long TO_TIME = 1392685200000l;
 	private static final long FROM_TIME = 1392681600000l;
 	private static final String DEVICE = "device-uuid-";
-	private static final Double DEVICE_1_WH = 20.0d;
+	private static final Double DEVICE_1_KWH = 0.02d;
 	private static UserService userService;
 	private static PlatformUser platformUser;
 	private static GatewayUser gatewayUser;
@@ -93,8 +94,8 @@ public class EnergyServiceTest extends JerseyTest {
 //		DateTime to = new DateTime(1392685200000l);
 		ElectricitySample deviceSample = mock(ElectricitySample.class);
 		when(deviceSample.getSampleTimestamp()).thenReturn(from);
-		when(deviceSample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_WH);
-		when(deviceSample.getCurrentPower()).thenReturn(DEVICE_1_WH);
+		when(deviceSample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_KWH*1000);
+		when(deviceSample.getCurrentPower()).thenReturn(DEVICE_1_KWH*1000);
 
 		DeviceIdentifier identifier = mock(DeviceIdentifier.class);
 		when(identifier.toString()).thenReturn(DEVICE + id);
@@ -118,7 +119,7 @@ public class EnergyServiceTest extends JerseyTest {
 	private ElectricitySample createSample(int i) {
 		DateTime date = new DateTime(FROM_TIME).plusHours(i);
 		ElectricitySample sample = mock(ElectricitySample.class);
-		when(sample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_WH);
+		when(sample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_KWH);
 		when(sample.getSampleTimestamp()).thenReturn(date);
 		return sample;
 	}
@@ -129,7 +130,7 @@ public class EnergyServiceTest extends JerseyTest {
 		assertEquals("00001111-2222-3333-4444-555566667777", bean.puid);
 		assertEquals("now", bean.period);
 		assertEquals(DEVICE + 0, getFirstDevice(bean.devices));
-		assertEquals(DEVICE_1_WH, bean.devices.get(0).data.get(0).watts, 0.01f);
+		assertEquals(DEVICE_1_KWH, bean.devices.get(0).data.get(0).watts, 0.01f);
 		assertEquals(0, bean.devices.get(0).data.get(0).kwh, 0.01f);
 	}
 
@@ -150,12 +151,6 @@ public class EnergyServiceTest extends JerseyTest {
 		EnergyBean bean = getNowRequest();
 		assertEquals(4, bean.devices.size());
 	}
-	
-	@Test
-	public void testGetNowSummary() {
-		EnergyBean bean = getNowRequest();
-		assertEquals(4*DEVICE_1_WH/1000, bean.summary.kwh, 0.01d);
-	}
 
 	private EnergyBean getNowRequest() {
 		final String energyNowData = target("/energy/00001111-2222-3333-4444-555566667777/now")
@@ -175,6 +170,7 @@ public class EnergyServiceTest extends JerseyTest {
 		assertEquals("hourly", bean.period);
 		assertEquals(4, bean.devices.size());
 		assertEquals(24, bean.devices.get(0).data.size());
-		assertNull(bean.summary);
+		assertNotNull(bean.summary);
+		assertEquals(4*DEVICE_1_KWH/1000, bean.summary.kwh, 0.01d);
 	}
 }

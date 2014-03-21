@@ -8,6 +8,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class DeviceSetBean {
 	
+	@XmlElement
+	public String puid;
+	
 	@XmlElement(required = true)
 	public List<DeviceBean> devices;
 }
