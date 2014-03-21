@@ -3,12 +3,16 @@ package se.mah.elis.adaptor.energy.eon.internal.user;
 import javax.naming.AuthenticationException;
 import javax.ws.rs.client.ResponseProcessingException;
 
+import org.apache.felix.scr.annotations.Reference;
+import org.osgi.service.log.LogService;
+
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.device.api.providers.GatewayUserProvider;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
+import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 /**
  * E.On user factory
@@ -23,6 +27,9 @@ import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
  */
 public class EonGatewayUserFactory implements GatewayUserProvider {
 
+	@Reference
+	private LogService log;
+	
 	/**
 	 * Creates an gateway user with an uninitialised gateway
 	 * 
@@ -54,6 +61,14 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 		EonGatewayUser user = createGatewayUser(username, password);
 		EonGateway gateway = createGateway(username, password, bridge);
 		user.setGateway((Gateway) gateway);
+		
+		try {
+			user.initialize();
+		} catch (UserInitalizationException e) {
+			if (log != null)
+				log.log(LogService.LOG_ERROR, "Failed to initialise: " + username);
+		}
+		
 		return user;
 	}
 
@@ -112,5 +127,13 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 		// return new EonHttpBridge("http://ewpapi2.dev.appex.no", 80,
 		// "/v0_2/api/");
 		return new EonHttpBridge("https://smarthome.eon.se", 443, "/v0_2/api/");
+	}
+	
+	protected void bindLog(LogService service) {
+		log = service;
+	}
+	
+	protected void unbindLog(LogService service) {
+		log = null;
 	}
 }
