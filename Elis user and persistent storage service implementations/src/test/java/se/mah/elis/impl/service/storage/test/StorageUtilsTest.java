@@ -1315,4 +1315,340 @@ public class StorageUtilsTest {
 		assertNotNull(actual);
 		assertArrayEquals(expected, actual);
 	}
+	
+	@Test
+	public void testValidateEDOProperties() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertTrue(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoDataId() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesDataIdIsNotUUID() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", "00001111-2222-3333-4444-555566667777");
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesDataIdIsNotFirstObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("alice", "bob");
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoOwnerId() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesOwnerIdIsNotUUID() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", "00001111-2222-3333-4444-555566667777");
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoCreated() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesCreatedIsNotJodaDateTime() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", "2014-03-20 19:31:00");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoExtraElement() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertTrue(StorageUtils.validateEDOProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoOwnerIdNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesOwnerIdIsNotUUIDNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", "00001111-2222-3333-4444-555566667777");
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoCreatedNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", UUID.randomUUID());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesCreatedIsNotJodaDateTimeNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", "2014-03-20 19:31:00");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateEDOPropertiesNoExtraElementNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("ownerid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		
+		assertFalse(StorageUtils.validateEDOProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateAbstractUserProperties() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertTrue(StorageUtils.validateAbstractUserProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoUUID() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesUUIDIsNotUUID() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", "00001111-2222-3333-4444-555566667777");
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesUUIDIsNotFirstObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("alice", "bob");
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoServiceName() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesServiceNameIsNotString() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("service_name", new Integer(42));
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoCreated() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesCreatedIsNotJodaDateTime() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", "2014-03-20 19:35:00");
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoExtraElement() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("uuid", UUID.randomUUID());
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, true));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertTrue(StorageUtils.validateAbstractUserProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoServiceNameNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesServiceNameIsNotStringNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("service_name", new Integer(42));
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoCreatedNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesCreatedIsNotJodaDateTimeNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", "2014-03-20 19:35:00");
+		props.put("service_name", "mock_service");
+		props.put("foo", "bar");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, false));
+	}
+	
+	@Test
+	public void testValidateAbstractUserPropertiesNoExtraElementNewObject() {
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("created", DateTime.now());
+		props.put("service_name", "mock_service");
+		
+		assertFalse(StorageUtils.validateAbstractUserProperties(props, false));
+	}
 }

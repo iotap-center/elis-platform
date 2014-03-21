@@ -84,10 +84,13 @@ public interface AbstractUser {
 	OrderedProperties getProperties();
 
 	/**
-	 * <p>Get a description of the AbstractUser object, the identifier included
-	 * as the first object under key "identifier". This method is primarily
-	 * used by the persistent storage service to determine the layout to be
-	 * used by the underlying storage engine.</p>
+	 * <p>Get a description of the AbstractUser object.</p>
+	 * 
+	 * <p>The first object in the properties collection must be the global user
+	 * id, which must be a UUID object. The identifier object may be included
+	 * under the key "identifier", or in its flattened form. This method is
+	 * primarily used by the persistent storage service to determine the layout
+	 * to be used by the underlying storage engine.</p>
 	 * 
 	 * <p>Each key-value pair must consist of a String (the key name, which
 	 * will be used to identify the value in the storage) and the value itself.
