@@ -1243,16 +1243,19 @@ public class StorageImpl implements Storage {
 			
 			query = "SELECT * FROM `" + tableName + "` WHERE ";
 			if (!username.isEmpty()) {
-				query += "username = '" + username +
-						"' AND password = PASSWORD('" + password + "');";
+				query += "username = ? AND password = PASSWORD(?);";
 			}
 			
 			try {
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
 				connection.setAutoCommit(false);
-				Statement stmt = connection.createStatement();
-				java.sql.ResultSet rs = stmt.executeQuery(query);
+				PreparedStatement stmt = connection.prepareStatement(query);
+				
+				stmt.setString(1, username);
+				stmt.setString(2, password);
+				
+				java.sql.ResultSet rs = stmt.executeQuery();
 				props = utils.resultSetRowToProperties(rs);
 				rs.close();
 				stmt.close();
