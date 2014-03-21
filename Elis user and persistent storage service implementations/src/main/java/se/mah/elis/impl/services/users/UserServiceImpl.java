@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User[] getUsers(PlatformUser pu) {
 		UUID[] userIds = null;
-		User[] users = null;
+		User[] users = new User[0];
 		
 		if (pu.getUserId() != null) {
 			userIds = utils.getUsersAssociatedWithPlatformUser(pu.getUserId());

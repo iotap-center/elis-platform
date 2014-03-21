@@ -91,7 +91,11 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 		OrderedProperties p = new OrderedProperties();
 		
 		p.put("username", username);
-		p.put("password", password);
+		if (password != null) {
+			p.put("password", password);
+		} else {
+			p.put("password", "");
+		}
 		
 		return p;
 	}
