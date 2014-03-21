@@ -3,11 +3,9 @@ package se.mah.elis.impl.services.storage;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -18,7 +16,6 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 
 import se.mah.elis.data.ElisDataObject;
-import se.mah.elis.impl.services.storage.exceptions.YouAreDoingItWrongException;
 import se.mah.elis.impl.services.storage.query.DeleteQuery;
 import se.mah.elis.impl.services.storage.query.MySQLQueryTranslator;
 import se.mah.elis.impl.services.storage.result.ResultSetImpl;
@@ -176,8 +173,8 @@ public class StorageImpl implements Storage {
 			
 			// Create a query to be run as a prepared statement and do some
 			// magic MySQL stuff to it.
-			String query = "INSERT INTO `" + utils.mysqlifyName(tableName) +
-					"` VALUES (" + utils.generateQMarks(data.getProperties()) + ");";
+			String query = "INSERT INTO `" + StorageUtils.mysqlifyName(tableName) +
+					"` VALUES (" + StorageUtils.generateQMarks(data.getProperties()) + ");";
 			
 			// This will be used by the parameter loop below
 			int i = 1;
@@ -293,7 +290,6 @@ public class StorageImpl implements Storage {
 		
 		String query = null;
 		String tableName = null;
-		Properties props = null;
 		PreparedStatement stmt = null;
 		
 		if (user != null) {
@@ -307,7 +303,6 @@ public class StorageImpl implements Storage {
 				PlatformUser pu = (PlatformUser) user;
 				PlatformUserIdentifier pid =
 						(PlatformUserIdentifier) pu.getIdentifier();
-				props = user.getProperties();
 				
 				// First of all, let's make a sanity check of the user.
 				if (pid == null || pid.isEmpty()) {
@@ -645,7 +640,6 @@ public class StorageImpl implements Storage {
 		
 		String query = null;
 		String tableName = null;
-		Properties props = user.getProperties();
 		
 		if (user != null) {
 			if (user.getIdentifier() == null ||
@@ -666,7 +660,7 @@ public class StorageImpl implements Storage {
 				}
 				
 				// Generate the table name and bestow MySQL magic onto it
-				tableName = utils.mysqlifyName("se.mah.elis.services.users.PlatformUser");
+				tableName = StorageUtils.mysqlifyName("se.mah.elis.services.users.PlatformUser");
 				
 				/*
 				 * PlatformUser objects are stored as
@@ -1091,7 +1085,7 @@ public class StorageImpl implements Storage {
 		Properties props = null;
 		
 		if (tableName != null) {
-			className = utils.demysqlifyName(tableName);
+			className = StorageUtils.demysqlifyName(tableName);
 			try {
 				edo = (ElisDataObject) Class.forName(className).newInstance();
 				
@@ -1236,14 +1230,13 @@ public class StorageImpl implements Storage {
 	private AbstractUser readUser(UserIdentifier id, boolean finalRun)
 			throws StorageException {
 		AbstractUser user = null;
-		Class clazz = id.identifies();
+		Class<?> clazz = id.identifies();
 		String className = clazz.getName();
-		String tableName = utils.mysqlifyName(className);
+		String tableName = StorageUtils.mysqlifyName(className);
 		String query = null;
 
 		if (clazz == se.mah.elis.services.users.PlatformUser.class) {
 			// This is a platform user.
-			String userType = "se.mah.elis.services.users.PlatformUser";
 			String username = ((PlatformUserIdentifier) id).getUsername();
 			String password = ((PlatformUserIdentifier) id).getPassword();
 			Properties props = null;
@@ -1280,7 +1273,7 @@ public class StorageImpl implements Storage {
 			// We'll run this as a prepared statement, since we don't know what
 			// we'll run into.
 			query = "SELECT * FROM `" + tableName + "` WHERE " +
-					utils.pairUpForSelect(id.getProperties(), false) +
+					StorageUtils.pairUpForSelect(id.getProperties(), false) +
 					" ORDER BY uuid ASC;";
 			
 			try {
@@ -1342,7 +1335,7 @@ public class StorageImpl implements Storage {
 			
 			if (user instanceof User) {
 				id = StorageUtils.stripDashesFromUUID(((User) user).getUserId());
-				query = "SELECT * FROM `" + utils.mysqlifyName(tableName) +
+				query = "SELECT * FROM `" + StorageUtils.mysqlifyName(tableName) +
 						"` WHERE uuid = x'" + id + "';";
 			}
 

@@ -1,7 +1,6 @@
 package se.mah.elis.impl.services.storage.exceptions;
 
 import se.mah.elis.exceptions.TypeMismatchException;
-import se.mah.elis.services.storage.exceptions.StorageException;
 
 /**
  * This exception is thrown when an impossible predicate is created.
@@ -10,6 +9,11 @@ import se.mah.elis.services.storage.exceptions.StorageException;
  * @since 2.0
  */
 public class YouAreDoingItWrongException extends TypeMismatchException {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5973472834648561399L;
 
 	/**
 	 * Initializes an instance of this exception.

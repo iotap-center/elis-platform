@@ -11,6 +11,11 @@ import se.mah.elis.services.storage.exceptions.StorageException;
 public class YouAreBreakingTheInternetException extends StorageException {
 	
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2673197740248490235L;
+
+	/**
 	 * Initializes an instance of this exception.
 	 * 
 	 * @since 2.0
