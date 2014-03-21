@@ -5,9 +5,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class EnergySummaryBean {
-
-	@XmlElement
-	public String deviceId;
 	
 	@XmlElement
 	public double kwh;
