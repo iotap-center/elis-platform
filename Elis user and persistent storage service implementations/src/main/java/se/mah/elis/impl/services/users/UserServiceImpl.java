@@ -7,7 +7,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -70,17 +69,18 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User[] getUsers(PlatformUser pu) {
 		UUID[] userIds = null;
-		User[] users = null;
+		User[] users = new User[0];
 		
-		userIds = utils.getUsersAssociatedWithPlatformUser(
-				((PlatformUserIdentifier) pu.getIdentifier()).getId());
-		
-		users = new User[userIds.length];
-		
-		for (int i = 0; i < users.length; i++) {
-			try {
-				users[i] = (User) storage.readUser(userIds[i]);
-			} catch (StorageException e) {
+		if (pu.getUserId() != null) {
+			userIds = utils.getUsersAssociatedWithPlatformUser(pu.getUserId());
+			
+			users = new User[userIds.length];
+			
+			for (int i = 0; i < users.length; i++) {
+				try {
+					users[i] = (User) storage.readUser(userIds[i]);
+				} catch (StorageException e) {
+				}
 			}
 		}
 		
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
 		try {
 			if (storage.readUser((PlatformUserIdentifier)
 					pu.getIdentifier()) != null) {
-				user = storage.readUser(uuid);
+				user = (User) storage.readUser(uuid);
 			}
 		} catch (StorageException e) {
 		}
@@ -114,24 +114,40 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public PlatformUser getPlatformUser(String id) {
-		PlatformUserIdentifierImpl identifier = new PlatformUserIdentifierImpl();
-		identifier.setId(Integer.parseInt(id));
+	public PlatformUser getPlatformUser(UUID id) {
+		PlatformUser user = null;
 		
-		return getPlatformUser(identifier);
+		try {
+			user = (PlatformUser) storage.readUser(id);
+		} catch (StorageException e) {
+		}
+		
+		return user;
 	}
 
 	@Override
 	public synchronized void registerUserToPlatformUser(User user, PlatformUser platformUser)
 			throws NoSuchUserException {
+		if (platformUser.getUserId() == null) {
+			throw new NoSuchUserException();
+		} else {
+			try {
+				if (storage.readUser(platformUser.getUserId()) == null) {
+					throw new NoSuchUserException();
+				}
+			} catch (StorageException e) {
+				throw new NoSuchUserException();
+			}
+		}
+		
+		
 		try {
 			storage.insert(user);
 		} catch (StorageException e1) {
 		}
 		
 		try {
-			utils.coupleUsers(((PlatformUserIdentifierImpl)
-					platformUser.getIdentifier()).getId(), user.getUserId());
+			utils.coupleUsers(platformUser.getUserId(), user.getUserId());
 		} catch (StorageException e) {
 		}
 	}
@@ -139,8 +155,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public synchronized void unregisterUserFromPlatformUser(User u, PlatformUser pu)
 			throws NoSuchUserException {
-		utils.decoupleUsers(((PlatformUserIdentifierImpl)
-				pu.getIdentifier()).getId(), u.getUserId());
+		utils.decoupleUsers(pu.getUserId(), u.getUserId());
 	}
 
 	@Override
@@ -173,13 +188,13 @@ public class UserServiceImpl implements UserService {
 	public PlatformUser[] getPlatformUsersAssociatedWithUser(User u)
 			throws NoSuchUserException {
 		ArrayList<PlatformUser> platformUsers = new ArrayList<PlatformUser>();
-		int[] platformUserIds = new int[0];
+		UUID[] platformUserIds = new UUID[0];
 		Properties props = new Properties();
 		
 		platformUserIds = utils.getPlatformUsersAssociatedWithUser(u.getUserId());
 		
 		for (int i = 0; i < platformUserIds.length; i++) {
-			props.put("id", platformUserIds[i]);
+			props.put("uuid", platformUserIds[i]);
 			
 			platformUsers.add(storage.readPlatformUsers(props)[0]);
 		}

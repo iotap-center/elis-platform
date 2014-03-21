@@ -2,14 +2,17 @@ package se.mah.elis.external.water;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.service.log.LogService;
 
@@ -36,6 +39,7 @@ import se.mah.elis.services.users.UserService;
 
 public class WaterServiceTest extends JerseyTest {
 
+	private static final String TEST_UUID = "00001111-2222-3333-4444-555566667777";
 	private static final float SAMPLE_VOLUME = 1.1f;
 	private static final String SAMPLER_NAME = "sampler";
 	private static final Float HISTORIC_SAMPLE_VOLUME = 2.2f;
@@ -57,16 +61,13 @@ public class WaterServiceTest extends JerseyTest {
 	public static void setupClass() throws SensorFailedException {
 		log = mock(LogService.class);
 		
-		PlatformUserIdentifier uid = mock(PlatformUserIdentifier.class);
-		when(uid.getId()).thenReturn(1); // same as in tests
-		
 		platformUser = mock(PlatformUser.class);
-		when(platformUser.getIdentifier()).thenReturn(uid);
+		when(platformUser.getUserId()).thenReturn(UUID.fromString(TEST_UUID));
 		
 		gatewayUser = mock(GatewayUser.class);
 		
 		userService = mock(UserService.class);
-		when(userService.getPlatformUser(anyString())).thenReturn(platformUser);
+		when(userService.getPlatformUser(any(UUID.class))).thenReturn(platformUser);
 		when(userService.getUsers(any(PlatformUser.class))).thenReturn(new User[] { gatewayUser });
 	}
 	
@@ -88,7 +89,6 @@ public class WaterServiceTest extends JerseyTest {
 		when(sampler.getName()).thenReturn(SAMPLER_NAME);
 		when(sampler.getSample()).thenReturn(sample);
 		
-		
 		DateTime from = new DateTime(1392681600000l);
 		DateTime to = new DateTime(1392685200000l);
 		DateTime sampleTime = to;
@@ -100,8 +100,8 @@ public class WaterServiceTest extends JerseyTest {
 	
 	@Test
 	public void testGetNowRequest() {
-		WaterBean bean = makeRequest("/water/1/now");
-		assertEquals("1", bean.puid);
+		WaterBean bean = makeRequest("/water/" + TEST_UUID + "/now");
+		assertEquals(TEST_UUID, bean.puid);
 		assertEquals("now", bean.period);
 		assertEquals(SAMPLE_VOLUME, bean.summary.totalVolume, 0.001f);
 		assertEquals(SAMPLER_NAME, bean.devices.get(0).deviceId);
@@ -109,7 +109,7 @@ public class WaterServiceTest extends JerseyTest {
 	
 	@Test
 	public void testGetDailyRequestOneHour() {
-		final String waterData = target("/water/1/daily")
+		final String waterData = target("/water/" + TEST_UUID + "/daily")
 				.queryParam("from", 1392681600000l)
 				.queryParam("to", 1392685200000l)
 				.request()
@@ -124,5 +124,29 @@ public class WaterServiceTest extends JerseyTest {
 		final String waterData = target(uri).request().get(String.class);
 		WaterBean bean = gson.fromJson(waterData, WaterBean.class);
 		return bean;
+	}
+	
+	@Test
+	public void testBadUUID() {
+		final Response response = target("/water/saasdf/now").request().get();
+		assertEquals(400, response.getStatus());
+	}
+	
+	@Test
+	public void testNoSuchUser() {
+		when(userService.getPlatformUser(any(UUID.class))).thenReturn(null);
+		final Response response = target("/water/00001111-2222-3333-4444-555566667778/now")
+				.request().get();
+		assertEquals(404, response.getStatus());
+		when(userService.getPlatformUser(any(UUID.class))).thenReturn(platformUser);
+	}
+	
+	@Test 
+	@Ignore
+	public void testNoUserServiceAvailable() {
+		// TODO: Find a way to reset userService
+		userService = null;
+		final Response response = target("/water/" + TEST_UUID + "/now").request().get();
+		assertEquals(500, response.getStatus());
 	}
 }

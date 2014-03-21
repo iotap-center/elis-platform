@@ -14,6 +14,14 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+/**
+ * Parser to read files synchronised from the Elvaco FTP server. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 public class WaterDataLoader {
 
 	private static DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
@@ -25,6 +33,13 @@ public class WaterDataLoader {
 		return data;
 	}
 
+	/**
+	 * Read data points from a text file. 
+	 * 
+	 * @param path 
+	 * @return
+	 * @throws FileNotFoundException
+	 */
 	private static Map<String, List<WaterDataPoint>> getSamplesFromFile(String path) throws FileNotFoundException {
 		Map<String, List<WaterDataPoint>> samples = new HashMap<>();
 		BufferedReader bufferedReader = null;
@@ -47,6 +62,11 @@ public class WaterDataLoader {
 		return samples;
 	}
 	
+	/**
+	 * Used for test purposes to generate a small sample of data points. 
+	 * 
+	 * @return
+	 */
 	public static WaterData loadFromCode() {
 		WaterData data = new WaterData();
 		data.setWaterData(createFromCode());

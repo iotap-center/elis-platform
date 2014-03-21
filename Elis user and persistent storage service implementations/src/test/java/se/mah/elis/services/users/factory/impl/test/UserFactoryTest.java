@@ -166,8 +166,9 @@ public class UserFactoryTest {
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
-		props.put("id", 42);
+		props.put("uuid", uuid);
 		props.put("username", "arthur");
 		props.put("password", "don't panic");
 		props.put("first_name", "Arthur");
@@ -183,43 +184,13 @@ public class UserFactoryTest {
 		
 		pid = (PlatformUserIdentifier) pu.getIdentifier();
 		
-		assertEquals(42, pid.getId());
+		assertEquals(uuid, pu.getUserId());
 		assertEquals("arthur", pid.getUsername());
 		assertEquals("don't panic", pid.getPassword());
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("arthur@heartofgold.net", pu.getEmail());
 		assertEquals(now, pu.created());
-	}
-	
-	@Test
-	public void testBuildPlatformUserZeroId() {
-		Properties props = new Properties();
-		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
-		
-		props.put("id", 0);
-		props.put("username", "arthur");
-		props.put("password", "don't panic");
-		props.put("first_name", "Arthur");
-		props.put("last_name", "Dent");
-		props.put("email", "arthur@heartofgold.net");
-		
-		try {
-			pu = uf.build(props);
-		} catch (UserInitalizationException e) {
-			fail("User should have been initialized");
-		}
-		
-		pid = (PlatformUserIdentifier) pu.getIdentifier();
-		
-		assertEquals(0, pid.getId());
-		assertEquals("arthur", pid.getUsername());
-		assertEquals("don't panic", pid.getPassword());
-		assertEquals("Arthur", pu.getFirstName());
-		assertEquals("Dent", pu.getLastName());
-		assertEquals("arthur@heartofgold.net", pu.getEmail());
-		assertFalse(DateTime.now().isBefore(pu.created()));
 	}
 	
 	@Test
@@ -242,7 +213,7 @@ public class UserFactoryTest {
 		
 		pid = (PlatformUserIdentifier) pu.getIdentifier();
 		
-		assertEquals(0, pid.getId());
+		assertNull(pu.getUserId());
 		assertEquals("arthur", pid.getUsername());
 		assertEquals("don't panic", pid.getPassword());
 		assertEquals("Arthur", pu.getFirstName());
@@ -296,8 +267,9 @@ public class UserFactoryTest {
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
-		props.put("id", 42);
+		props.put("uuid", uuid);
 		props.put("username", "arthur");
 		props.put("first_name", "Arthur");
 		props.put("last_name", "Dent");
@@ -312,7 +284,7 @@ public class UserFactoryTest {
 		
 		pid = (PlatformUserIdentifier) pu.getIdentifier();
 		
-		assertEquals(42, pid.getId());
+		assertEquals(uuid, pu.getUserId());
 		assertEquals("arthur", pid.getUsername());
 		assertNull(pid.getPassword());
 		assertEquals("Arthur", pu.getFirstName());
@@ -326,13 +298,16 @@ public class UserFactoryTest {
 		Properties props = new Properties();
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
+		DateTime now = DateTime.now();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
-		props.put("id", 42);
+		props.put("uuid", uuid);
 		props.put("username", "arthur");
 		props.put("password", "");
 		props.put("first_name", "Arthur");
 		props.put("last_name", "Dent");
 		props.put("email", "arthur@heartofgold.net");
+		props.put("created", now);
 		
 		try {
 			pu = uf.build(props);
@@ -346,19 +321,32 @@ public class UserFactoryTest {
 		Properties props = new Properties();
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
+		DateTime now = DateTime.now();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
-		props.put("id", 42);
+		props.put("uuid", uuid);
 		props.put("username", "arthur");
 		props.put("password", "don't panic");
 		props.put("first_name", "");
 		props.put("last_name", "Dent");
 		props.put("email", "arthur@heartofgold.net");
+		props.put("created", now);
 		
 		try {
 			pu = uf.build(props);
-			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {
+			fail("This should not happen");
 		}
+		
+		pid = (PlatformUserIdentifier) pu.getIdentifier();
+		
+		assertEquals(uuid, pu.getUserId());
+		assertEquals("arthur", pid.getUsername());
+		assertEquals("don't panic", pid.getPassword());
+		assertEquals("", pu.getFirstName());
+		assertEquals("Dent", pu.getLastName());
+		assertEquals("arthur@heartofgold.net", pu.getEmail());
+		assertEquals(now, pu.created());
 	}
 	
 	@Test
@@ -366,18 +354,31 @@ public class UserFactoryTest {
 		Properties props = new Properties();
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
+		DateTime now = DateTime.now();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
-		props.put("id", 42);
+		props.put("uuid", uuid);
 		props.put("username", "arthur");
 		props.put("password", "don't panic");
 		props.put("last_name", "Dent");
 		props.put("email", "arthur@heartofgold.net");
+		props.put("created", now);
 		
 		try {
 			pu = uf.build(props);
-			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {
+			fail("This should not happen");
 		}
+		
+		pid = (PlatformUserIdentifier) pu.getIdentifier();
+		
+		assertEquals(uuid, pu.getUserId());
+		assertEquals("arthur", pid.getUsername());
+		assertEquals("don't panic", pid.getPassword());
+		assertEquals("", pu.getFirstName());
+		assertEquals("Dent", pu.getLastName());
+		assertEquals("arthur@heartofgold.net", pu.getEmail());
+		assertEquals(now, pu.created());
 	}
 	
 	@Test
@@ -385,19 +386,32 @@ public class UserFactoryTest {
 		Properties props = new Properties();
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
+		DateTime now = DateTime.now();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
-		props.put("id", 42);
+		props.put("uuid", uuid);
 		props.put("username", "arthur");
 		props.put("password", "don't panic");
 		props.put("first_name", "Arthur");
 		props.put("last_name", "");
 		props.put("email", "arthur@heartofgold.net");
+		props.put("created", now);
 		
 		try {
 			pu = uf.build(props);
-			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {
+			fail("This should not happen");
 		}
+		
+		pid = (PlatformUserIdentifier) pu.getIdentifier();
+		
+		assertEquals(uuid, pu.getUserId());
+		assertEquals("arthur", pid.getUsername());
+		assertEquals("don't panic", pid.getPassword());
+		assertEquals("Arthur", pu.getFirstName());
+		assertEquals("", pu.getLastName());
+		assertEquals("arthur@heartofgold.net", pu.getEmail());
+		assertEquals(now, pu.created());
 	}
 	
 	@Test
@@ -405,18 +419,31 @@ public class UserFactoryTest {
 		Properties props = new Properties();
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
+		DateTime now = DateTime.now();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
-		props.put("id", 42);
+		props.put("uuid", uuid);
 		props.put("username", "arthur");
 		props.put("password", "don't panic");
 		props.put("first_name", "Arthur");
 		props.put("email", "arthur@heartofgold.net");
+		props.put("created", now);
 		
 		try {
 			pu = uf.build(props);
-			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {
+			fail("User should not be initialized");
 		}
+		
+		pid = (PlatformUserIdentifier) pu.getIdentifier();
+		
+		assertEquals(uuid, pu.getUserId());
+		assertEquals("arthur", pid.getUsername());
+		assertEquals("don't panic", pid.getPassword());
+		assertEquals("Arthur", pu.getFirstName());
+		assertEquals("", pu.getLastName());
+		assertEquals("arthur@heartofgold.net", pu.getEmail());
+		assertEquals(now, pu.created());
 	}
 	
 	@Test
@@ -424,19 +451,32 @@ public class UserFactoryTest {
 		Properties props = new Properties();
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
+		DateTime now = DateTime.now();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
-		props.put("id", 42);
+		props.put("uuid", uuid);
 		props.put("username", "arthur");
 		props.put("password", "don't panic");
 		props.put("first_name", "Arthur");
 		props.put("last_name", "Dent");
 		props.put("email", "");
+		props.put("created", now);
 		
 		try {
 			pu = uf.build(props);
-			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {
+			fail("User should not be initialized");
 		}
+		
+		pid = (PlatformUserIdentifier) pu.getIdentifier();
+		
+		assertEquals(uuid, pu.getUserId());
+		assertEquals("arthur", pid.getUsername());
+		assertEquals("don't panic", pid.getPassword());
+		assertEquals("Arthur", pu.getFirstName());
+		assertEquals("Dent", pu.getLastName());
+		assertEquals("", pu.getEmail());
+		assertEquals(now, pu.created());
 	}
 	
 	@Test
@@ -444,18 +484,31 @@ public class UserFactoryTest {
 		Properties props = new Properties();
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
+		DateTime now = DateTime.now();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
-		props.put("id", 42);
+		props.put("uuid", uuid);
 		props.put("username", "arthur");
 		props.put("password", "don't panic");
 		props.put("first_name", "Arthur");
 		props.put("last_name", "Dent");
+		props.put("created", now);
 		
 		try {
 			pu = uf.build(props);
-			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {
+			fail("User should not be initialized");
 		}
+		
+		pid = (PlatformUserIdentifier) pu.getIdentifier();
+		
+		assertEquals(uuid, pu.getUserId());
+		assertEquals("arthur", pid.getUsername());
+		assertEquals("don't panic", pid.getPassword());
+		assertEquals("Arthur", pu.getFirstName());
+		assertEquals("Dent", pu.getLastName());
+		assertEquals("", pu.getEmail());
+		assertEquals(now, pu.created());
 	}
 	
 	@Test
@@ -463,19 +516,32 @@ public class UserFactoryTest {
 		Properties props = new Properties();
 		PlatformUser pu = null;
 		PlatformUserIdentifier pid = null;
+		DateTime now = DateTime.now();
+		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
-		props.put("id", 42);
+		props.put("uuid", uuid);
 		props.put("username", "arthur");
 		props.put("password", "don't panic");
 		props.put("first_name", "Arthur");
 		props.put("last_name", "Dent");
 		props.put("email", "arthur@earth");
+		props.put("created", now);
 		
 		try {
 			pu = uf.build(props);
-			fail("User should not be initialized");
 		} catch (UserInitalizationException e) {
+			fail("User should not be initialized");
 		}
+		
+		pid = (PlatformUserIdentifier) pu.getIdentifier();
+		
+		assertEquals(uuid, pu.getUserId());
+		assertEquals("arthur", pid.getUsername());
+		assertEquals("don't panic", pid.getPassword());
+		assertEquals("Arthur", pu.getFirstName());
+		assertEquals("Dent", pu.getLastName());
+		assertEquals("", pu.getEmail());
+		assertEquals(now, pu.created());
 	}
 
 	@Test

@@ -4,6 +4,7 @@
 package se.mah.elis.services.users;
 
 import java.util.Properties;
+import java.util.UUID;
 
 import org.joda.time.DateTime;
 
@@ -25,6 +26,30 @@ import se.mah.elis.data.OrderedProperties;
  * @since 1.0
  */
 public interface AbstractUser {
+	
+	/**
+	 * Gets this user object's id number. The id number is unique throughout
+	 * the Elis platform.
+	 * 
+	 * @return The id number.
+	 * @since 2.0
+	 */
+	UUID getUserId();
+	
+	/**
+	 * <p>Sets this user object's id number. This id number is used internally
+	 * by the Elis platform and shall not in any way depend on any underlying
+	 * system's identification mechanism. Any system specific identification is
+	 * handled by the {@link UserIdentifier} interface.</p>
+	 * 
+	 * <p>If no user id is set, the Elis system will assign the user id on its
+	 * own when storing it persistently. This is the recommended way of working
+	 * with user objects.</p>
+	 * 
+	 * @param id The id number.
+	 * @since 2.0
+	 */
+	void setUserId(UUID id);
 	
 	/**
 	 * Get this user's identifier.
@@ -59,10 +84,13 @@ public interface AbstractUser {
 	OrderedProperties getProperties();
 
 	/**
-	 * <p>Get a description of the AbstractUser object, the identifier included
-	 * as the first object under key "identifier". This method is primarily
-	 * used by the persistent storage service to determine the layout to be
-	 * used by the underlying storage engine.</p>
+	 * <p>Get a description of the AbstractUser object.</p>
+	 * 
+	 * <p>The first object in the properties collection must be the global user
+	 * id, which must be a UUID object. The identifier object may be included
+	 * under the key "identifier", or in its flattened form. This method is
+	 * primarily used by the persistent storage service to determine the layout
+	 * to be used by the underlying storage engine.</p>
 	 * 
 	 * <p>Each key-value pair must consist of a String (the key name, which
 	 * will be used to identify the value in the storage) and the value itself.

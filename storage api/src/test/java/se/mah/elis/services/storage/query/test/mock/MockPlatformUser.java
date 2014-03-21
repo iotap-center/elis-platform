@@ -1,6 +1,7 @@
 package se.mah.elis.services.storage.query.test.mock;
 
 import java.util.Properties;
+import java.util.UUID;
 
 import org.joda.time.DateTime;
 
@@ -84,6 +85,18 @@ public class MockPlatformUser implements PlatformUser {
 	public DateTime created() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public UUID getUserId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setUserId(UUID id) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

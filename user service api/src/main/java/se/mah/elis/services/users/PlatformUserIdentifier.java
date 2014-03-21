@@ -14,23 +14,6 @@ import se.mah.elis.services.users.UserIdentifier;
  * @since 1.0
  */
 public interface PlatformUserIdentifier extends UserIdentifier {
-
-	/**
-	 * Sets the id number of this platform user.
-	 * 
-	 * @param id The platform user's id number. Must not be less than 1. 
-	 * @throws IllegalArgumentException if the user id is malformed.
-	 * @since 1.0
-	 */
-	public void setId(int id) throws IllegalArgumentException;
-	
-	/**
-	 * Gets the id number of this platform user.
-	 * 
-	 * @return The platform user's id number. Zero if not set.
-	 * @since 1.0
-	 */
-	public int getId();
 	
 	
 	/**

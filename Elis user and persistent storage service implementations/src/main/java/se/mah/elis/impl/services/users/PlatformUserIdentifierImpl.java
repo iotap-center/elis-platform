@@ -6,8 +6,8 @@ package se.mah.elis.impl.services.users;
 import java.util.Properties;
 
 import se.mah.elis.data.OrderedProperties;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.PlatformUser;
+import se.mah.elis.services.users.PlatformUserIdentifier;
 
 /**
  * Implements the UserIdentifier interface.
@@ -17,7 +17,6 @@ import se.mah.elis.services.users.PlatformUser;
  */
 public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 
-	private int id;
 	private String username;
 	private String password;
 	
@@ -28,28 +27,8 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	
 	public PlatformUserIdentifierImpl(String username, String password)
 			throws IllegalArgumentException {
-		id = 0;
 		setUsername(username);
 		setPassword(password);
-	}
-	
-	public PlatformUserIdentifierImpl(int id, String username, String password)
-			throws IllegalArgumentException {
-		setId(id);
-		setUsername(username);
-		setPassword(password);
-	}
-	
-	public void setId(int id) throws IllegalArgumentException {
-		if (id >= 0) {
-			this.id = id;
-		} else {
-			throw new IllegalArgumentException("Id can't be negative");
-		}
-	}
-	
-	public int getId() {
-		return id;
 	}
 
 	public void setUsername(String username) throws IllegalArgumentException {
@@ -94,14 +73,14 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	
 	@Override
 	public String toString() {
-		return id + ": " + username;
+		return "PlatformUserIdentifier: " + username;
 	}
 	
 	@Override
 	public boolean equals(Object o) {
 		if (o.getClass().getName().equals(this.getClass().getName())) {
 			PlatformUserIdentifierImpl oid = (PlatformUserIdentifierImpl) o;
-			return (id == oid.getId() || username.equals(oid.getUsername()));
+			return username.equals(oid.getUsername());
 		}
 		
 		return false;
@@ -111,9 +90,12 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	public OrderedProperties getProperties() {
 		OrderedProperties p = new OrderedProperties();
 		
-		p.put("id", id);
 		p.put("username", username);
-		p.put("password", password);
+		if (password != null) {
+			p.put("password", password);
+		} else {
+			p.put("password", "");
+		}
 		
 		return p;
 	}
@@ -122,7 +104,6 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties p = new OrderedProperties();
 		
-		p.put("id", new Integer(0));
 		p.put("username", "256");
 		p.put("password", "256");
 		
@@ -130,7 +111,7 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	}
 
 	@Override
-	public Class identifies() {
+	public Class<PlatformUser> identifies() {
 		return se.mah.elis.services.users.PlatformUser.class;
 	}
 
@@ -142,7 +123,11 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 
 	@Override
 	public void populate(Properties props) {
-		// TODO Auto-generated method stub
-		
+		if (props.containsKey("username")) {
+			setUsername(props.getProperty("username"));
+		}
+		if (props.containsKey("password")) {
+			setPassword(props.getProperty("password"));
+		}
 	}
 }

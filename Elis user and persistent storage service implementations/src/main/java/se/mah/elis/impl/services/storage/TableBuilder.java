@@ -1,9 +1,7 @@
 package se.mah.elis.impl.services.storage;
 
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Properties;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.joda.time.DateTime;

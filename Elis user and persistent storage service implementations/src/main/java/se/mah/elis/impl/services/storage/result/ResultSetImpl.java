@@ -1,9 +1,5 @@
 package se.mah.elis.impl.services.storage.result;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.result.ResultSet;
 
@@ -19,7 +15,7 @@ public class ResultSetImpl implements ResultSet {
 	private int pointer;
 	
 	// Holds information on the class of the elements.
-	private Class objectType;
+	private Class<?> objectType;
 	
 	// The result elements.
 	private Object[] rows;
@@ -167,7 +163,7 @@ public class ResultSetImpl implements ResultSet {
 	 * @since 2.0
 	 */
 	@Override
-	public Class getObjectType() {
+	public Class<?> getObjectType() {
 		return objectType;
 	}
 

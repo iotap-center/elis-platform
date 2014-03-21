@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Värd: localhost
--- Skapad: 13 mars 2014 kl 17:34
+-- Skapad: 19 mars 2014 kl 17:46
 -- Serverversion: 5.5.35-0ubuntu0.13.10.2
 -- PHP-version: 5.5.3-1ubuntu2.2
 
@@ -32,24 +32,7 @@ CREATE TABLE IF NOT EXISTS `object_lookup_table` (
   `id` binary(16) NOT NULL,
   `stored_in` varchar(256) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Tabellstruktur `se-mah-elis-impl-service-storage-test-mock-MockUser3`
---
-
-CREATE TABLE IF NOT EXISTS `se-mah-elis-impl-service-storage-test-mock-MockUser3` (
-  `uuid` binary(16) NOT NULL,
-  `service_name` varchar(9) DEFAULT NULL,
-  `id_number` int(11) DEFAULT NULL,
-  `username` varchar(32) DEFAULT NULL,
-  `password` varchar(32) DEFAULT NULL,
-  `id` int(11) DEFAULT NULL,
-  `stuff` varchar(32) DEFAULT NULL,
-  PRIMARY KEY (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -58,16 +41,16 @@ CREATE TABLE IF NOT EXISTS `se-mah-elis-impl-service-storage-test-mock-MockUser3
 --
 
 CREATE TABLE IF NOT EXISTS `se-mah-elis-services-users-PlatformUser` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(256) NOT NULL,
-  `password` varchar(256) NOT NULL,
+  `uuid` binary(16) NOT NULL,
+  `username` varchar(128) NOT NULL,
+  `password` varchar(70) NOT NULL,
   `first_name` varchar(32) NOT NULL,
   `last_name` varchar(32) NOT NULL,
   `email` varchar(256) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`uuid`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -76,10 +59,10 @@ CREATE TABLE IF NOT EXISTS `se-mah-elis-services-users-PlatformUser` (
 --
 
 CREATE TABLE IF NOT EXISTS `user_bindings` (
-  `platform_user` int(11) NOT NULL,
+  `platform_user` binary(16) NOT NULL,
   `user` binary(16) NOT NULL,
   UNIQUE KEY `platform_user` (`platform_user`,`user`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

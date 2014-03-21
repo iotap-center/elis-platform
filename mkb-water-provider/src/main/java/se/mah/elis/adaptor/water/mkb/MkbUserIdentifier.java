@@ -5,6 +5,14 @@ import java.util.Properties;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.UserIdentifier;
 
+/**
+ * User identifier for MKB users. Based on the meter id. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 public class MkbUserIdentifier implements UserIdentifier {
 
 	private String meterId;

@@ -7,6 +7,18 @@ import org.apache.felix.scr.annotations.Service;
 import org.joda.time.DateTime;
 import org.osgi.service.component.ComponentContext;
 
+/**
+ * 
+ * OSGI service that provides a way for other bundles to query and retrieve 
+ * water data points. 
+ * 
+ * The data is refreshed once every hour. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 @Component(name = "MkbWaterData", immediate = true)
 @Service(value = WaterDataService.class)
 public class WaterDataService {

@@ -150,6 +150,16 @@ public interface Storage {
 	ElisDataObject readData(UUID id) throws StorageException;
 	
 	/**
+	 * Reads out a specific data object from the storage.
+	 * 
+	 * @param edo The data object to read.
+	 * @return An ElisDataObject containing the wanted data.
+	 * @throws StorageException if the data wasn't found.
+	 * @since 2.0
+	 */
+	ElisDataObject readData(ElisDataObject edo) throws StorageException;
+	
+	/**
 	 * Reads out a specific user from the storage. This method will not look
 	 * for any PlatformUsers. Instead, use {@link #readUser(AbstractUser)} or
 	 * {@link #readUser(UserIdentifier)} for that.
@@ -159,7 +169,7 @@ public interface Storage {
 	 * @throws StorageException if the user wasn't found.
 	 * @since 2.0
 	 */
-	User readUser(UUID id) throws StorageException;
+	AbstractUser readUser(UUID id) throws StorageException;
 	
 	/**
 	 * Reads out a specific user from the storage.

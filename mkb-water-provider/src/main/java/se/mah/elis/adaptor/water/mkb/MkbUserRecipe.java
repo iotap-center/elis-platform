@@ -4,11 +4,19 @@ import java.util.Properties;
 
 import se.mah.elis.services.users.factory.UserRecipe;
 
+/**
+ * Describes how to create MKB users. 
+ * 
+ * @author Marcus Ljungblad
+ * @since 1.0
+ * @version 1.0
+ *
+ */
 public class MkbUserRecipe implements UserRecipe {
 
 	@Override
 	public String getUserType() {
-		return "MkbWaterUser";
+		return MkbGatewayUser.class.getSimpleName();
 	}
 
 	@Override
@@ -19,7 +27,7 @@ public class MkbUserRecipe implements UserRecipe {
 	@Override
 	public Properties getProperties() {
 		Properties props = new Properties();
-		props.put("id", "string");
+		props.put("meterId", "32");
 		return props;
 	}
 

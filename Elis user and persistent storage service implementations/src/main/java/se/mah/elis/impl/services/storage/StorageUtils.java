@@ -20,10 +20,11 @@ import java.util.UUID;
 import org.joda.time.DateTime;
 
 import se.mah.elis.data.Identifier;
+import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.storage.exceptions.StorageException;
+import se.mah.elis.services.users.UserIdentifier;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * This class contains a bunch of helper methods to be used by StorageImpl.
@@ -111,7 +112,11 @@ public class StorageUtils {
 			if (keys.length() > 0) {
 				keys.append(", ");
 			}
-			keys.append("?");
+			if (entry.getValue() instanceof UUID) {
+				keys.append("x?");
+			} else {
+				keys.append("?");
+			}
 		}
 		
 		return keys.toString();
@@ -166,7 +171,7 @@ public class StorageUtils {
 		} else if (value instanceof Boolean) {
 			stmt.setBoolean(index, ((Boolean) value).booleanValue());
 		} else if (value instanceof UUID) {
-			stmt.setBytes(index, uuidToBytes((UUID) value));
+			stmt.setString(index, stripDashesFromUUID((UUID) value));
 		} else if (value instanceof String) {
 			if (useLike) {
 				stmt.setString(index, '%' + (String) value + '%');
@@ -222,12 +227,14 @@ public class StorageUtils {
 			boolean useLike) {
 		StringBuffer pairs = new StringBuffer();
 		
-		for (Entry e : properties.entrySet()) {
+		for (Entry<?, ?> e : properties.entrySet()) {
 			if (pairs.length() > 0) {
 				pairs.append(connector);
 			}
 			if (e.getValue() instanceof String && useLike) {
 				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` LIKE ?");
+			} else if (e.getValue() instanceof UUID) {
+				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = x?");
 			} else {
 				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = ?");
 			}
@@ -447,9 +454,9 @@ public class StorageUtils {
 	 * @throws StorageException if the couple couldn't be stored.
 	 * @since 2.0
 	 */
-	public void coupleUsers(int platformUser, UUID user)
+	public void coupleUsers(UUID platformUser, UUID user)
 			throws StorageException {
-		String query = "INSERT INTO user_bindings VALUES(?, x?);";
+		String query = "INSERT INTO user_bindings VALUES(x?, x?);";
 		
 		if (user == null) {
 			throw new StorageException();
@@ -460,7 +467,7 @@ public class StorageUtils {
 			PreparedStatement stmt = connection.prepareStatement(query);
 			
 			// Populate the query
-			stmt.setInt(1, platformUser);
+			stmt.setString(1, stripDashesFromUUID(platformUser));
 			stmt.setString(2, stripDashesFromUUID(user));
 			
 			// Run the statement and end the transaction
@@ -480,9 +487,9 @@ public class StorageUtils {
 	 * @param user The owned user.
 	 * @since 2.0
 	 */
-	public void decoupleUsers(int platformUser, UUID user) {
-		String query = "DELETE FROM user_bindings WHERE platform_user = " +
-				platformUser + " AND user = x'" +
+	public void decoupleUsers(UUID platformUser, UUID user) {
+		String query = "DELETE FROM user_bindings WHERE platform_user = x'" +
+				stripDashesFromUUID(platformUser) + "' AND user = x'" +
 				stripDashesFromUUID(user) + "';";
 		
 		try {
@@ -503,8 +510,8 @@ public class StorageUtils {
 	 * @return An array containing a list of all associated platform users.
 	 * @since 2.0
 	 */
-	public int[] getPlatformUsersAssociatedWithUser(UUID user) {
-		ArrayList<Integer> platformUsers = new ArrayList<Integer>();
+	public UUID[] getPlatformUsersAssociatedWithUser(UUID user) {
+		ArrayList<UUID> platformUsers = new ArrayList<UUID>();
 		
 		String query = "SELECT platform_user FROM user_bindings " +
 				"WHERE user = x'" + stripDashesFromUUID(user) + "';";
@@ -512,7 +519,7 @@ public class StorageUtils {
 			Statement stmt = connection.createStatement();
 			java.sql.ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
-				platformUsers.add(rs.getInt(1));
+				platformUsers.add(bytesToUUID(rs.getBytes(1)));
 			}
 			rs.close();
 			stmt.close();
@@ -521,7 +528,7 @@ public class StorageUtils {
 			e.printStackTrace();
 		}
 		
-		return ArrayUtils.toPrimitive(platformUsers.toArray(new Integer[0]));
+		return platformUsers.toArray(new UUID[0]);
 	}
 	
 	/**
@@ -532,11 +539,11 @@ public class StorageUtils {
 	 * @return An array containing a list of all associated users.
 	 * @since 2.0
 	 */
-	public UUID[] getUsersAssociatedWithPlatformUser(int id) {
+	public UUID[] getUsersAssociatedWithPlatformUser(UUID id) {
 		ArrayList<UUID> platformUsers = new ArrayList<UUID>();
 		
 		String query = "SELECT user FROM user_bindings " +
-				"WHERE platform_user = " + id + ";";
+				"WHERE platform_user = x'" + stripDashesFromUUID(id) + "';";
 		try {
 			// Let's take command of the commit ship ourselves.
 			// Forward, mateys!
@@ -631,6 +638,119 @@ public class StorageUtils {
 	}
 	
 	/**
+	 * Flatten a set of properties prior to saving them to the database.
+	 * 
+	 * @param props The properties to flatten.
+	 * @param isTemplate If set to true, the method will call the
+	 * 		getPropertiesTemplate() method on the identifier.
+	 * @return Returns a flattened Properties object.
+	 * @since 2.0
+	 */
+	public static Properties flattenPropertiesWithIdentifier(Properties props, boolean isTemplate) {
+		OrderedProperties flatProps = new OrderedProperties();
+		
+		for (Entry<Object, Object> prop : props.entrySet()) {
+			if (prop.getValue() instanceof UserIdentifier) {
+				if (isTemplate ) {
+					flatProps.putAll(((UserIdentifier) prop.getValue()).getPropertiesTemplate());
+				} else {
+					flatProps.putAll(((UserIdentifier) prop.getValue()).getProperties());
+				}
+			} else {
+				flatProps.put(prop.getKey(), prop.getValue());
+			}
+		}
+		
+		return flatProps;
+	}
+	
+	/**
+	 * <p>Validates that a set of properties are OK for storing. The criteria
+	 * for a valid set of properties are:</p>
+	 * 
+	 * <ul>
+	 *   <li>The first value is a UUID object called "dataid" if this is an
+	 *   existing data object or a template</li>
+	 *   <li>A UUID object called "ownerid"</li>
+	 *   <li>A Joda DateTime object called "created"</li>
+	 *   <li>At least one more element</li>
+	 * </ul>
+	 * 
+	 * @param props The property set to validate.
+	 * @param checkForDataId If set to true, the "dataid" field is checked.
+	 * @return True of the property set is OK, otherwise false.
+	 * @since 2.0
+	 */
+	public static boolean validateEDOProperties(Properties props,
+			boolean checkForDataId) {
+		boolean result = false;
+		
+		if (checkForDataId) {
+			Iterator<Entry<Object, Object>> entries = props.entrySet().iterator();
+			Entry<Object, Object> firstEntry = entries.next();
+			
+			result = props.size() > 3 &&
+					"dataid".equals(firstEntry.getKey()) &&
+					firstEntry.getValue() instanceof UUID &&
+					props.containsKey("ownerid") &&
+					props.get("ownerid") instanceof UUID &&
+					props.containsKey("created") &&
+					props.get("created") instanceof DateTime;
+		} else {
+			result = props.size() > 2 &&
+					props.containsKey("ownerid") &&
+					props.get("ownerid") instanceof UUID &&
+					props.containsKey("created") &&
+					props.get("created") instanceof DateTime;
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * <p>Validates that a set of properties are OK for storing. The criteria
+	 * for a valid set of properties are:</p>
+	 * 
+	 * <ul>
+	 *   <li>The first value is a UUID object called "uuid" if this is an
+	 *   existing user object or a template</li>
+	 *   <li>A Joda DateTime object called "created"</li>
+	 *   <li>A String object called "service_name"</li>
+	 *   <li>At least one more element</li>
+	 * </ul>
+	 * 
+	 * @param props The property set to validate.
+	 * @param checkForUUID If set to true, the "uuid" field is checked.
+	 * @return True of the property set is OK, otherwise false.
+	 * @since 2.0
+	 */
+	public static boolean validateAbstractUserProperties(Properties props,
+			boolean checkForUUID) {
+		boolean result = false;
+		
+		if (checkForUUID) {
+			Iterator<Entry<Object, Object>> entries = props.entrySet().iterator();
+			Entry<Object, Object> firstEntry = entries.next();
+			
+			result = props.size() > 3 &&
+					"uuid".equals(firstEntry.getKey()) &&
+					firstEntry.getValue() instanceof UUID &&
+					props.containsKey("service_name") &&
+					props.get("service_name") instanceof String &&
+					props.containsKey("created") &&
+					props.get("created") instanceof DateTime;
+		} else {
+			result = props.size() > 2 &&
+					props.containsKey("service_name") &&
+					props.get("service_name") instanceof String &&
+					props.containsKey("created") &&
+					props.get("created") instanceof DateTime;
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Adds a value to a Properties object, as something else than a simple
 	 * Object, i.e. as an int, a String, or what not.
 	 * 
@@ -668,7 +788,6 @@ public class StorageUtils {
 			props.put(colName, (Boolean) value);
 		} else if (clazz.equals(byte[].class.getName()) &&
 				((byte[]) value).length == 16) {
-			byte[] bytes = (byte[]) value;
 			props.put(colName, bytesToUUID((byte[]) value));
 		} else {
 			props.put(colName, value);
