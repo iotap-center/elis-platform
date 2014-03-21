@@ -1500,7 +1500,7 @@ public class StorageImpl implements Storage {
 	 */
 	private ResultSet select(Query query, boolean finalRun) throws StorageException {
 		ResultSet result = null;
-		Class clazz = query.getDataType();
+		Class<?> clazz = query.getDataType();
 		
 		if (query != null) {
 			query.setTranslator(new MySQLQueryTranslator());
