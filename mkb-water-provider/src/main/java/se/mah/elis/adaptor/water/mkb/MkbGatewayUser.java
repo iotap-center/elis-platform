@@ -78,7 +78,8 @@ public class MkbGatewayUser implements GatewayUser {
 	@Override
 	public OrderedProperties getProperties() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("uuid", uuid);
+		if (uuid != null)
+			props.put("uuid", uuid);
 		props.put("identifier", getIdentifier());
 		props.put("created", created);
 		props.put("service_name", getServiceName());
