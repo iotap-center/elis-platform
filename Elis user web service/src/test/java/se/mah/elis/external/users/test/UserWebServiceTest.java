@@ -16,6 +16,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import se.mah.elis.external.users.UserWebService;
@@ -132,6 +133,7 @@ public class UserWebServiceTest extends JerseyTest {
 	}
 
 	@Test
+	@Ignore
 	public void testGetUsers() {
 		PlatformUser pu1 = null, pu2 = null, pu3 = null;
 		
