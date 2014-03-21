@@ -84,7 +84,6 @@
           <instructions>
           	<Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
             <Export-Package>${project.groupId}</Export-Package>
-            <Private-Package>${project.groupId}.internal.*</Private-Package>
           </instructions>
         </configuration>
       </plugin>    <!-- (2) END -->
