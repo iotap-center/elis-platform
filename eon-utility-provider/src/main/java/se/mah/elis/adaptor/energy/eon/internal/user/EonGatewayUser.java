@@ -79,7 +79,8 @@ public class EonGatewayUser implements GatewayUser {
 	public OrderedProperties getProperties() {
 		OrderedProperties props = new OrderedProperties();
 		
-		props.put("uuid", uuid);
+		if (uuid != null)
+			props.put("uuid", uuid);
 		props.put("identifier", gatewayUserIdentifier);
 		props.put("gateway", gateway.getId());
 		props.put("created", created);
