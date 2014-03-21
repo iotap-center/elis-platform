@@ -952,11 +952,8 @@ public class StorageImpl implements Storage {
 			if (user instanceof PlatformUser) {
 				// Create a query to be run and do some MySQL stuff to it.
 				tableName = "se-mah-elis-services-users-PlatformUser";
-				PlatformUserIdentifier pid =
-						(PlatformUserIdentifier) ((PlatformUser) user).getIdentifier();
 				query = "DELETE FROM `" + tableName + "` WHERE uuid = x'" +
-						StorageUtils.stripDashesFromUUID(uuid) +
-						"' AND username = '" + pid.getUsername() + "';";
+						StorageUtils.stripDashesFromUUID(uuid) + "';";
 			} else {
 				// Generate the table name
 				tableName = user.getClass().getCanonicalName();
