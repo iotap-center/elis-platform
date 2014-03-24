@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.osgi.service.command.CommandProcessor;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.external.users.jaxbeans.EnvelopeBean;
 import se.mah.elis.external.users.jaxbeans.ErrorBean;
@@ -47,7 +48,7 @@ import se.mah.elis.services.users.factory.UserRecipe;
  * @author "Johan Holmberg, Malm�� University"
  * @since 1.0
  */
-@Path("/user")
+@Path("/users")
 @Component(name = "Elis User web service")
 @Service(value=UserWebService.class)
 @org.apache.felix.scr.annotations.Properties({
@@ -61,6 +62,9 @@ public class UserWebService {
 	
 	@Reference
 	private UserFactory userFactory;
+	
+	@Reference
+	private LogService log;
 	
 	/**
 	 * Creates an instance of this class.
@@ -81,8 +85,20 @@ public class UserWebService {
 	 * @since 1.0
 	 */
 	public UserWebService(UserService us, UserFactory uf) {
+		this(us, uf, null);
+	}
+	
+	/**
+	 * Create an instance with User Service, User Factory and Log Service
+	 * @param us The UserService to be used.
+	 * @param uf The UserFactory to be used.
+	 * @param ls The LogService to be used. 
+	 * @since 1.0
+	 */
+	public UserWebService(UserService us, UserFactory uf, LogService ls) {
 		userService = us;
 		userFactory = uf;
+		log = ls;
 	}
 	
 	@Descriptor("Lists current User Web Service configuration")
@@ -95,10 +111,6 @@ public class UserWebService {
 		if (null != userFactory) {
 			uf = userFactory.toString();
 		}
-		
-		System.out.println("User Web Service running with:");
-		System.out.println("UserService: " + us);
-		System.out.println("UserFactory: " + uf);
 	}
 
 	/**
@@ -112,12 +124,10 @@ public class UserWebService {
 	}
 	
 	public void bindUserService(UserService us) {
-		System.out.println("Binding UserService");
 		setUserService(us);
 	}
 	
 	public void unbindUserService(UserService us) {
-		System.out.println("Unbinding UserService");
 		setUserService(null);
 	}
 	
@@ -132,13 +142,19 @@ public class UserWebService {
 	}
 	
 	public void bindUserFactory(UserFactory uf) {
-		System.out.println("Binding UserFactory");
 		setUserFactory(uf);
 	}
 	
 	public void unbindUserFactory(UserFactory uf) {
-		System.out.println("Unbinding UserFactory");
 		setUserFactory(null);
+	}
+	
+	public void bindLog(LogService ls) {
+		log = ls;
+	}
+	
+	public void unbindLog(LogService ls) {
+		log = null;
 	}
 	
 	/**
@@ -157,13 +173,15 @@ public class UserWebService {
 		PlatformUserBean bean = null;
 		PlatformUserIdentifier id = null;
 		
+		logThis("GET /users");
+		
 		PlatformUser[] pus = userService.getPlatformUsers();
 		beans = new PlatformUserBean[pus.length];
 		
 		for (int i = 0; i < pus.length; i++) {
 			bean = new PlatformUserBean();
 			id = (PlatformUserIdentifier) pus[i].getIdentifier();
-			bean.userId = Integer.toString(id.getId());
+			bean.userId = pus[i].getUserId().toString();
 			bean.username = id.getUsername();
 			bean.firstName = pus[i].getFirstName();
 			bean.lastName = pus[i].getLastName();
@@ -202,6 +220,8 @@ public class UserWebService {
 		User u = null;
 		Properties properties;
 		
+		logThis("POST /users");
+		
 		// First of all, count on things being bad.
 		response = buildBadRequestResponse(response);
 		
@@ -229,6 +249,7 @@ public class UserWebService {
 						} catch (UserInitalizationException e) {
 							return buildBadRequestResponse(response);
 						} catch (Exception e) {
+							logError("UserFactory Could not build user - server error");
 							return buildInternalServerErrorResponse(response);
 						}
 					} else {
@@ -237,7 +258,9 @@ public class UserWebService {
 					}
 					
 					userService.registerUserToPlatformUser(u, pu);
+					input.userId = pu.getUserId().toString();
 					input.gatewayUser.id = u.getUserId().toString();
+					logThis("Created " + input.userId);
 				}
 				
 				input.password = null;
@@ -250,13 +273,16 @@ public class UserWebService {
 				response = Response.status(Status.CREATED)
 						.entity(gson.toJson(envelope)).build();
 			} catch (UserExistsException e) {
+				logWarning("User already exists: " + input.email);
 				response = buildConflictResponse(response);
 			} catch (IllegalArgumentException e) {
+				logWarning("Bad request: " + input.email);
 				response = buildBadRequestResponse(response);
 			} catch (NoSuchUserException e) {
 				response = buildInternalServerErrorResponse(response);
 			}
 		} else {
+			logError("No UserFactory or UserService available");
 			response = Response.serverError().build();
 		}
 		
@@ -277,14 +303,16 @@ public class UserWebService {
 		UserContainerBean userContainer = new UserContainerBean();
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		
-		PlatformUser pu = userService.getPlatformUser(userId);
+		logThis("GET /users/" + userId);
+		
+		PlatformUser pu = userService.getPlatformUser(UUID.fromString(userId));
 		
 		if (pu != null) {
 			PlatformUserIdentifier id =
 					(PlatformUserIdentifier) pu.getIdentifier();
 			PlatformUserBean bean = new PlatformUserBean();
 			
-			bean.userId = Integer.toString(id.getId());
+			bean.userId = pu.getUserId().toString();
 			bean.username = id.getUsername();
 			bean.firstName = pu.getFirstName();
 			bean.lastName = pu.getLastName();
@@ -318,7 +346,9 @@ public class UserWebService {
 		EnvelopeBean envelope = new EnvelopeBean();
 		UserContainerBean container = new UserContainerBean();
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		PlatformUser pu = userService.getPlatformUser(userId);
+		PlatformUser pu = userService.getPlatformUser(UUID.fromString(userId));
+		
+		logThis("PUT /users/" + userId);
 		
 		if (pu != null) {
 			pu.setFirstName(input.firstName);
@@ -358,8 +388,10 @@ public class UserWebService {
 	@Path("/{userId}")
 	public Response deleteUser(@PathParam("userId") String userId) {
 		Response response = null;
-
-		PlatformUser pu = userService.getPlatformUser(userId);
+		
+		logThis("DELETE /users/" + userId);
+		
+		PlatformUser pu = userService.getPlatformUser(UUID.fromString(userId));
 		if (pu != null) {
 			try {
 				userService.deletePlatformUser(pu);
@@ -394,6 +426,8 @@ public class UserWebService {
 		UserContainerBean container = new UserContainerBean();
 		User user = null;
 		
+		logThis("POST /users/" + type + "/" + userId);
+		
 		// First of all, count on things being bad.
 		response = buildBadRequestResponse(response);
 		
@@ -411,7 +445,7 @@ public class UserWebService {
 			}
 			
 			try {
-				pu = userService.getPlatformUser(userId);
+				pu = userService.getPlatformUser(UUID.fromString(userId));
 				
 				if (pu == null) {
 					throw new NoSuchUserException();
@@ -421,8 +455,7 @@ public class UserWebService {
 						recipe.getServiceName(), properties);
 				userService.registerUserToPlatformUser(user, pu);
 
-				bean.userId = Integer.toString(((PlatformUserIdentifier) pu
-						.getIdentifier()).getId());
+				bean.userId = pu.getUserId().toString();
 				bean.username = ((PlatformUserIdentifier) pu.getIdentifier())
 						.getUsername();
 				bean.firstName = pu.getFirstName();
@@ -438,6 +471,8 @@ public class UserWebService {
 				
 				response = Response.status(200).entity(gson.toJson(envelope)).build();
 			} catch (UserInitalizationException | NoSuchUserException e) {}
+		} else {
+			logWarning("No such recipe: " + input.serviceName);
 		}
 		
 		return response;
@@ -459,8 +494,10 @@ public class UserWebService {
 		UserContainerBean container = new UserContainerBean();
 		EnvelopeBean envelope = new EnvelopeBean();
 		PlatformUserBean bean = new PlatformUserBean();
-		PlatformUser pu = userService.getPlatformUser(platformUserId);
+		PlatformUser pu = userService.getPlatformUser(UUID.fromString(platformUserId));
 		User u = null;
+		
+		logThis("DELETE /users/" + platformUserId + "/:userType/" + userId);
 		
 		if (pu != null) {
 			u = userService.getUser(pu, UUID.fromString(userId));
@@ -589,5 +626,22 @@ public class UserWebService {
 				.entity(gson.toJson(envelope)).build();
 		
 		return response;
+	}
+	
+	private void logThis(String msg) {
+		logThis(LogService.LOG_INFO, msg);
+	}
+
+	private void logThis(int level, String msg) {
+		if (log != null)
+			log.log(level, msg);
+	}
+	
+	private void logWarning(String msg) {
+		logThis(LogService.LOG_WARNING, msg);
+	}
+	
+	private void logError(String msg) {
+		logThis(LogService.LOG_ERROR, msg);
 	}
 }

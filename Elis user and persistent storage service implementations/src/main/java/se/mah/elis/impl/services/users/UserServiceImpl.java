@@ -69,16 +69,18 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User[] getUsers(PlatformUser pu) {
 		UUID[] userIds = null;
-		User[] users = null;
+		User[] users = new User[0];
 		
-		userIds = utils.getUsersAssociatedWithPlatformUser(pu.getUserId());
-		
-		users = new User[userIds.length];
-		
-		for (int i = 0; i < users.length; i++) {
-			try {
-				users[i] = (User) storage.readUser(userIds[i]);
-			} catch (StorageException e) {
+		if (pu.getUserId() != null) {
+			userIds = utils.getUsersAssociatedWithPlatformUser(pu.getUserId());
+			
+			users = new User[userIds.length];
+			
+			for (int i = 0; i < users.length; i++) {
+				try {
+					users[i] = (User) storage.readUser(userIds[i]);
+				} catch (StorageException e) {
+				}
 			}
 		}
 		

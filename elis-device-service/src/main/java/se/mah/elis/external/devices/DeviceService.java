@@ -70,7 +70,6 @@ public class DeviceService {
 	 * @return
 	 */
 	@GET
-	@Path("/")
 	public Response getDeviceList(@PathParam("id") String id) {
 		ResponseBuilder response = null;
 		UUID uuid = null;
