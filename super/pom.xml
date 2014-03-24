@@ -182,6 +182,7 @@
         <module>
         	../northbound-api/com.eclipsesource.jaxrs.publisher
         </module>
+        <module>../Elis user web service</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
