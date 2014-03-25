@@ -27,7 +27,7 @@ public class EonAdaptor implements ManagedService {
 	public static String TARGET_PORT = "se.mah.elis.adaptor.energy.eon.port";
 	public static String TARGET_APIPREFIX = "se.mah.elis.adaptor.energy.eon.prefix";
 	
-	public static Dictionary<String, ?> properties;
+	public static Dictionary<String, ?> properties = getDefaultConfiguration();
 
 	@Reference
 	private LogService log;
@@ -97,11 +97,11 @@ public class EonAdaptor implements ManagedService {
 		}		
 	}
 
-	private Dictionary<String, ?> getDefaultConfiguration() {
+	private static Dictionary<String, ?> getDefaultConfiguration() {
 		Dictionary props = new Hashtable<>();
-		props.put(TARGET_HOST, "");
-		props.put(TARGET_PORT, 0);
-		props.put(TARGET_APIPREFIX, "");
+		props.put(TARGET_HOST, "https://smarthome.eon.se");
+		props.put(TARGET_PORT, 443);
+		props.put(TARGET_APIPREFIX, "/v0_2/api/");
 		return props;
 	}
 	
