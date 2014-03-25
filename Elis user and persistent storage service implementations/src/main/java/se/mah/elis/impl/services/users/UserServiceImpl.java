@@ -24,6 +24,7 @@ import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
 import se.mah.elis.services.users.exceptions.UserExistsException;
+import se.mah.elis.services.users.factory.UserFactory;
 
 /**
  * An implementation of {@link se.mah.elis.services.users.UserService}. For the
@@ -223,5 +224,13 @@ public class UserServiceImpl implements UserService {
 		} catch (StorageException e) {
 			throw new NoSuchUserException();
 		}
+	}
+
+	protected void bindStorage(Storage storage) {
+		this.storage = storage;
+	}
+
+	protected void unbindStorage(Storage storage) {
+		this.storage = null;
 	}
 }
