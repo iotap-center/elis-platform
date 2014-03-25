@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.impl.services.storage.query.DeleteQuery;
@@ -40,7 +41,7 @@ import se.mah.elis.services.users.factory.UserFactory;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-@Component(name = "Elis Persistent Storage")
+@Component(name = "ElisPersistentStorage")
 @Service(value=Storage.class)
 public class StorageImpl implements Storage {
 	
@@ -49,13 +50,16 @@ public class StorageImpl implements Storage {
 
 	// The user factory
 	@Reference
-	private UserFactory factory;
+	private UserFactory userFactory;
 	
 	// The database connection
 	private Connection connection;
 	
 	// Some storage utilities
 	private StorageUtils utils;
+	
+	@Reference
+	private LogService log;
 	
 	// Some error messages
 	private static String OBJECT_NOT_FOUND = "Couldn't find object in data store";
@@ -86,6 +90,7 @@ public class StorageImpl implements Storage {
 		// TODO Replace the MySQL query translator with more generic stuff.
 		translator = new MySQLQueryTranslator();
 		utils = new StorageUtils(connection);
+		log(LogService.LOG_INFO, "Connecting as user 'elis'");
 	}
 	
 	/**
@@ -100,6 +105,7 @@ public class StorageImpl implements Storage {
 		// TODO Replace the MySQL query translator with more generic stuff.
 		translator = new MySQLQueryTranslator();
 		utils = new StorageUtils(connection);
+		log(LogService.LOG_INFO, "Connecting as other user");
 	}
 	
 	/**
@@ -111,10 +117,11 @@ public class StorageImpl implements Storage {
 	 */
 	public StorageImpl(Connection connection, UserFactory factory) {
 		this.connection = connection;
-		this.factory = factory;
+		this.userFactory = factory;
 		// TODO Replace the MySQL query translator with more generic stuff.
 		translator = new MySQLQueryTranslator();
 		utils = new StorageUtils(connection);
+		log(LogService.LOG_INFO, "Connecting as other user");
 	}
 
 	/**
@@ -1181,11 +1188,11 @@ public class StorageImpl implements Storage {
 				
 				if (props.containsKey("service_name")) {
 					// Not a platform user
-					user = factory.build(className.substring(className.lastIndexOf('.')+1),
+					user = userFactory.build(className.substring(className.lastIndexOf('.')+1),
 							(String) props.get("service_name"), props);
 				} else if (className.equals("se.mah.elis.services.users.PlatformUser")) {
 					// A platform user
-					user = factory.build(props);
+					user = userFactory.build(props);
 					((PlatformUserIdentifier) user.getIdentifier()).setPassword(null);
 				} else {
 					throw new StorageException(INSTANCE_USER_ERROR);
@@ -1263,7 +1270,7 @@ public class StorageImpl implements Storage {
 				connection.commit();
 				
 				// Create a PlatformUser object
-				user = factory.build(props);
+				user = userFactory.build(props);
 				((PlatformUserIdentifier) user.getIdentifier()).setPassword(null);
 			} catch (SQLException | NullPointerException e) {
 				throw new StorageException(USER_NOT_FOUND);
@@ -1294,7 +1301,7 @@ public class StorageImpl implements Storage {
 				props = utils.resultSetRowToProperties(rs);
 				rs.close();
 				stmt.close();
-				user = factory.build(userType,
+				user = userFactory.build(userType,
 						(String) props.get("service_name"), props);
 			} catch (SQLException | NullPointerException e) {
 				throw new StorageException(USER_NOT_FOUND);
@@ -1458,7 +1465,7 @@ public class StorageImpl implements Storage {
 			
 			props = utils.resultSetToProperties(rs);
 			for (i = 0; i < props.size(); i++) {
-				users.add((PlatformUser) factory.build((Properties) props.get(i)));
+				users.add((PlatformUser) userFactory.build((Properties) props.get(i)));
 			}
 			
 		} catch (SQLException | UserInitalizationException e) {
@@ -1556,5 +1563,27 @@ public class StorageImpl implements Storage {
 		}
 				
 		return result;
+	}
+	
+	private void log(int level, String message) {
+		if (log != null) {
+			log.log(level, message);
+		}
+	}
+
+	protected void bindUserFactory(UserFactory uf) {
+		this.userFactory = uf;
+	}
+
+	protected void unbindUserFactory(UserFactory uf) {
+		this.userFactory = null;
+	}
+	
+	protected void bindLog(LogService log) {
+		this.log = log;
+	}
+	
+	protected void unbindLog(LogService log) {
+		this.log = null;
 	}
 }
