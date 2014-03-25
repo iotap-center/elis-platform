@@ -155,4 +155,13 @@ public class WaterData {
 		return null;
 	}
 	
+	/**
+	 * Get the total number of samples 
+	 * 
+	 * @return number of samples
+	 */
+	protected int size() {
+		return userDataMap.size();
+	}
+	
 }

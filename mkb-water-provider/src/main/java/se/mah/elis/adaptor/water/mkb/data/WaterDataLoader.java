@@ -94,9 +94,21 @@ public class WaterDataLoader {
 		try {
 			
 			String[] parts = line.split(";");
+			
+			if (parts.length < 3) // we can survive w/o meter value, just say 0
+				throw new Exception("Insufficient arguments online");
+			
 			DateTime registered = fmt.parseDateTime(parts[0]);
 			String meterId = parts[1];
-			float value = Float.parseFloat(parts[3].replace(',', '.'));
+			
+			String measuredValue = null;
+			if (parts.length == 4)
+				measuredValue = parts[3];
+			
+			if (measuredValue == null)
+				measuredValue = "0";
+			
+			float value = Float.parseFloat(measuredValue.replace(',', '.'));
 			sample = new WaterDataPoint(registered, value);
 		
 			if (samples.containsKey(meterId))
