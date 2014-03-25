@@ -100,6 +100,62 @@ LogService log = mock(LogService.class);
 instanceOfLoggingExample.bindLog(log);
 ```
 
+## Configuration
+
+Elis uses the OSGI Configuration Admin service to manage configuration properties for bundles. The configuration management interface can be reached in the [Web Console](http://195.178.234.87:8080/system/console/configMgr).
+
+An OSGI service that needs to be configurable must implement the `ManagedService` Java interface. Configuration updates are propagated through the `updated(Dictionary<String, ?>)` method. 
+
+```java
+@Component(name = "ExampleConfigurationService", immediate = true)
+@Service
+public class ExampleService implements ManagedService {
+
+  // properties
+  public static String SERVICE_PID = "se.mah.elis.adaptor.example.service";
+  public static String PROPERTY_1 = "se.mah.elis.adaptor.example.service.some_property";
+
+  public static Dictionary<String, ?> properties;
+
+  @Reference
+  private ConfigurationAdmin configAdmin;
+
+  protected void bindConfigAdmin(ConfigurationAdmin ca) {
+    configAdmin = ca;
+    setConfig();
+  }
+
+  private void setConfig() {
+    try {
+      Configuration config = configAdmin.getConfiguration(SERVICE_PID);
+      properties = config.getProperties();
+      
+      if (properties == null) 
+        properties = getDefaultConfiguration(); // not implemented here
+      
+      config.update(properties);
+    } catch (IOException e) {
+      // handle this
+    }
+  }
+  
+  protected void unbindConfigAdmin(ConfigurationAdmin ca) {
+    configAdmin = null;
+  }
+
+  @Override
+  public void updated(Dictionary<String, ?> props)
+      throws ConfigurationException {
+    if (props != null) {
+      properties = props;
+      // do something is properties change
+    }   
+  }
+}
+```
+
+By default, all Elis specific configuration files are stored in `$FELIX_HOME/elis_conf` and persistent across restarts. 
+
 ## Development tools
 
 ### Tickets

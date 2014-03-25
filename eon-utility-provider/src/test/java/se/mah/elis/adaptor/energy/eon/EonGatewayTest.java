@@ -22,8 +22,10 @@ import org.junit.Test;
 import se.mah.elis.adaptor.device.api.data.GatewayAddress;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
+import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
+import se.mah.elis.adaptor.energy.eon.internal.user.EonGatewayUser;
 
 public class EonGatewayTest {
 
@@ -116,6 +118,19 @@ public class EonGatewayTest {
 			assertTrue(token.endsWith(",marcus.ljungblad@mah.se,medeamah2012"));
 		} catch (AuthenticationException | ResponseProcessingException e) {
 			fail("exception thrown");
+		}
+	}
+	
+	@Test
+	public void testConnectShouldThrowGatewayCommunicationExceptionOnNoData()
+			throws ResponseProcessingException, ParseException,
+			AuthenticationException, MethodNotSupportedException {
+		Map<String, Object> value = new HashMap<>();
+		when(bridge.getGateway(anyString())).thenReturn(value);
+		try {
+			gateway.connect();
+			fail("Gateway should have thrown an exception and didn't");
+		} catch (GatewayCommunicationException e) {
 		}
 	}
 

@@ -10,6 +10,7 @@ import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.device.api.providers.GatewayUserProvider;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
+import se.mah.elis.adaptor.energy.eon.EonAdaptor;
 import se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
@@ -123,10 +124,11 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 	}
 
 	private EonHttpBridge createBridgeFromConfig() {
-		// TODO: this should read from standard osgi configuration
-		// return new EonHttpBridge("http://ewpapi2.dev.appex.no", 80,
-		// "/v0_2/api/");
-		return new EonHttpBridge("https://smarthome.eon.se", 443, "/v0_2/api/");
+		String host = (String) EonAdaptor.properties.get(EonAdaptor.TARGET_HOST);
+		int port = (Integer) EonAdaptor.properties.get(EonAdaptor.TARGET_PORT);
+		String prefix = (String) EonAdaptor.properties.get(EonAdaptor.TARGET_APIPREFIX);
+		
+		return new EonHttpBridge(host, port, prefix);
 	}
 	
 	protected void bindLog(LogService service) {

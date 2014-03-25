@@ -10,8 +10,10 @@ import java.util.UUID;
 
 import javax.ws.rs.client.ResponseProcessingException;
 
+import org.apache.felix.scr.annotations.Reference;
 import org.joda.time.DateTime;
 import org.json.simple.parser.ParseException;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.data.GatewayAddress;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
@@ -28,13 +30,14 @@ import se.mah.elis.exceptions.StaticEntityException;
 /**
  * Implementation of an E.On panel (in Elis terms: gateway)
  * 
- * An instance of gateway must have a {@link se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge} to function properly. 
- * Most likely you also want to populate the gateway with data from the E.On service. 
- * This is done using {@link EonGateway#connect()}. 
+ * An instance of gateway must have a
+ * {@link se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge} to function
+ * properly. Most likely you also want to populate the gateway with data from
+ * the E.On service. This is done using {@link EonGateway#connect()}.
  * 
- * The recommended way to retrieve a new gateway instance is to use 
- * {@link EonGatewayUserFactory#getUser(String, String)} and retrieve the gateway instance
- * via the {@link EonGatewayUser} object. 
+ * The recommended way to retrieve a new gateway instance is to use
+ * {@link EonGatewayUserFactory#getUser(String, String)} and retrieve the
+ * gateway instance via the {@link EonGatewayUser} object.
  * 
  * @author Marcus Ljungblad
  * @version 1.0.0
@@ -59,6 +62,9 @@ public class EonGateway implements Gateway {
 		this.devices = new ArrayList<Device>();
 		this.gatewayHasConnected = false;
 	}
+
+	@Reference
+	private LogService log;
 
 	/**
 	 * Get the active E.On authentication token
@@ -202,45 +208,48 @@ public class EonGateway implements Gateway {
 			getAllDevices();
 			markAsConnected();
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new GatewayCommunicationException();
+			throw new GatewayCommunicationException(e);
 		}
+
+		log("Gateway connected: " + getName());
 	}
 
-	// TODO add logging
-	private void addGatewayData() {
+	private void addGatewayData() throws GatewayCommunicationException {
 		Map<String, Object> data = null;
-		
+
 		try {
 			data = httpBridge.getGateway(getAuthenticationToken());
-		} catch (ResponseProcessingException e1) {
-			e1.printStackTrace();
-		} catch (ParseException e1) {
-			e1.printStackTrace();
+		} catch (ResponseProcessingException | ParseException e1) {
+			logWarning("Could not establish contact with E.On API for gatewayUser: "
+					+ getUser().getUserId());
+			throw new GatewayCommunicationException(e1);
 		}
-		
+
+		// ensure variables are available
+		if (!data.containsKey("Name") && !data.containsKey("EwpPanelId"))
+			throw new GatewayCommunicationException();
 		
 		try {
 			setName((String) data.get("Name"));
-		} catch (StaticEntityException e) {
-			e.printStackTrace();
-		}
-		
-		setAddress(new EonGatewayAddress(data.get("EwpPanelId").toString()));
+		} catch (StaticEntityException e) { }
+
+		String panelId = data.get("EwpPanelId").toString();
+		EonGatewayAddress address = new EonGatewayAddress(panelId);
+		setAddress(address);
 	}
 
 	private void getAllDevices() {
-		
+
 		List<Device> devices = null;
 		try {
-			devices = httpBridge.getDevices(
-					getAuthenticationToken(), getAddress().toString());
+			devices = httpBridge.getDevices(getAuthenticationToken(),
+					getAddress().toString());
 		} catch (ResponseProcessingException e1) {
 			e1.printStackTrace();
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		for (Device device : devices) {
 			try {
 				setEonProperties(device);
@@ -258,7 +267,7 @@ public class EonGateway implements Gateway {
 			EonDevice eonDevice = (EonDevice) device;
 			eonDevice.setHttpBridge(getHttpBridge());
 		}
-		
+
 	}
 
 	private void markAsConnected() {
@@ -330,5 +339,26 @@ public class EonGateway implements Gateway {
 	@Override
 	public DateTime created() {
 		return created;
+	}
+
+	private void log(String message) {
+		log(LogService.LOG_INFO, message);
+	}
+
+	private void logWarning(String message) {
+		log(LogService.LOG_WARNING, message);
+	}
+
+	private void log(int level, String message) {
+		if (log != null)
+			log.log(level, message);
+	}
+
+	protected void bindLog(LogService ls) {
+		log = ls;
+	}
+
+	protected void unbindLog(LogService ls) {
+		log = null;
 	}
 }
