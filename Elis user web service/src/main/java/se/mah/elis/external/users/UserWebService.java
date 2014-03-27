@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.util.Properties;
 import java.util.UUID;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,6 +15,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -164,6 +167,7 @@ public class UserWebService {
 	 * @since 1.0
 	 */
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response getUsers() {
 		Response response = null;
 		EnvelopeBean envelope = new EnvelopeBean();
@@ -209,8 +213,9 @@ public class UserWebService {
 	 * @since 1.0
 	 */
 	@POST
-	@Consumes("application/json")
-	public Response addUser(final PlatformUserBean input) {
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addUser(@BeanParam final PlatformUserBean input) {
 		Response response = null;
 		EnvelopeBean envelope = new EnvelopeBean();
 		UserContainerBean container = new UserContainerBean();
@@ -297,6 +302,7 @@ public class UserWebService {
 	 */
 	@GET
 	@Path("/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response getUser(@PathParam("userId") String userId) {
 		Response response = null;
 		EnvelopeBean envelope = new EnvelopeBean();
@@ -338,10 +344,11 @@ public class UserWebService {
 	 * @since 1.0
 	 */
 	@PUT
-	@Consumes("application/json")
 	@Path("/{userId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateUser(@PathParam("userId") String userId,
-						final PlatformUserBean input) {
+						@BeanParam final PlatformUserBean input) {
 		Response response = null;
 		EnvelopeBean envelope = new EnvelopeBean();
 		UserContainerBean container = new UserContainerBean();
@@ -386,6 +393,7 @@ public class UserWebService {
 	 */
 	@DELETE
 	@Path("/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteUser(@PathParam("userId") String userId) {
 		Response response = null;
 		
@@ -413,8 +421,9 @@ public class UserWebService {
 	 * @since 1.0
 	 */
 	@POST
-	@Consumes("application/json")
 	@Path("/{pwUserId}/{usertype}/{userid}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response coupleGatewayWithUser(@PathParam("usertype") String type,
 			@PathParam("userid") String userId,
 			final GatewayUserBean input) {		
@@ -486,6 +495,7 @@ public class UserWebService {
 	 */
 	@DELETE
 	@Path("/{platformUserId}/{userType}/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response decoupleGatewayFromUser(
 			@PathParam("platformUserId") String platformUserId,
 			@PathParam("userId") String userId) {
