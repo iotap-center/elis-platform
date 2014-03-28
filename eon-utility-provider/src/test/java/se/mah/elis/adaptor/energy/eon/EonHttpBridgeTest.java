@@ -22,6 +22,7 @@ import se.mah.elis.adaptor.energy.eon.internal.EonActionObject;
 import se.mah.elis.adaptor.energy.eon.internal.EonActionStatus;
 import se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge;
 
+@Ignore
 public class EonHttpBridgeTest {
 	
 	private static final int LEVEL_HOUR = 0;
