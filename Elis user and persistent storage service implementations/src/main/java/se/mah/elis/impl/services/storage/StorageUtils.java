@@ -58,12 +58,17 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public void createTableIfNotExisting(String tableName, Properties p) {
+		Statement stmt = null;
+		
 		try {
-			Statement stmt = connection.createStatement();
+			stmt = connection.createStatement();
 			stmt.execute(TableBuilder.buildModel(tableName, p));
-			stmt.close();
 		} catch (SQLException | StorageException e) {
 			// Skip this like we just don't care.
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 	}
 
@@ -369,21 +374,26 @@ public class StorageUtils {
 	 */
 	public String lookupUUIDTable(UUID uuid) {
 		String tableName = null;
+		Statement stmt = null;
+		java.sql.ResultSet rs = null;
 		
 		String query = "SELECT stored_in FROM object_lookup_table " +
 				"WHERE id = x'" + stripDashesFromUUID(uuid) + "';";
 		
 		try {
-			Statement stmt = connection.createStatement();
-			java.sql.ResultSet rs = stmt.executeQuery(query);
+			stmt = connection.createStatement();
+			rs = stmt.executeQuery(query);
 			if (rs.next()) {
 				tableName = rs.getString(1);
 			}
-			rs.close();
-			stmt.close();
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
 			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 		
 		return tableName;
@@ -403,6 +413,7 @@ public class StorageUtils {
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
 		
+		PreparedStatement stmt = null;
 		String query = "INSERT INTO object_lookup_table VALUES(x?, ?);";
 		
 		if (uuid == null || table == null || table.length() == 0) {
@@ -411,7 +422,7 @@ public class StorageUtils {
 		table = mysqlifyName(table);
 		
 		try {
-			PreparedStatement stmt = connection.prepareStatement(query);
+			stmt = connection.prepareStatement(query);
 			
 			// Populate the query
 			stmt.setString(1, stripDashesFromUUID(uuid));
@@ -419,9 +430,12 @@ public class StorageUtils {
 			
 			// Run the statement and end the transaction
 			stmt.executeUpdate();
-			stmt.close();
 		} catch (SQLException e) {
 			throw new StorageException("Couldn't write to database.");
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 	}
 	
@@ -433,16 +447,20 @@ public class StorageUtils {
 	 * @since 1.0
 	 */
 	public void freeUUID(UUID uuid) {
+		Statement stmt = null;
 		String query = "DELETE FROM object_lookup_table WHERE id = x'" +
 				stripDashesFromUUID(uuid) + "';";
 		
 		try {
-			Statement stmt = connection.createStatement();
+			stmt = connection.createStatement();
 			stmt.executeUpdate(query);
-			stmt.close();
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
 			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 	}
 	
@@ -456,6 +474,7 @@ public class StorageUtils {
 	 */
 	public void coupleUsers(UUID platformUser, UUID user)
 			throws StorageException {
+		PreparedStatement stmt = null;
 		String query = "INSERT INTO user_bindings VALUES(x?, x?);";
 		
 		if (user == null) {
@@ -464,7 +483,7 @@ public class StorageUtils {
 		
 		try {
 			connection.setAutoCommit(true);
-			PreparedStatement stmt = connection.prepareStatement(query);
+			stmt = connection.prepareStatement(query);
 			
 			// Populate the query
 			stmt.setString(1, stripDashesFromUUID(platformUser));
@@ -472,11 +491,14 @@ public class StorageUtils {
 			
 			// Run the statement and end the transaction
 			stmt.executeUpdate();
-			stmt.close();
 		} catch (SQLException e) {
 			if (e.getErrorCode() != 1062) {
 				throw new StorageException("Couldn't write to database.");
 			}
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 	}
 	
@@ -488,17 +510,21 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public void decoupleUsers(UUID platformUser, UUID user) {
+		Statement stmt = null;
 		String query = "DELETE FROM user_bindings WHERE platform_user = x'" +
 				stripDashesFromUUID(platformUser) + "' AND user = x'" +
 				stripDashesFromUUID(user) + "';";
 		
 		try {
-			Statement stmt = connection.createStatement();
+			stmt = connection.createStatement();
 			stmt.executeUpdate(query);
-			stmt.close();
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
 			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 	}
 	
@@ -512,20 +538,25 @@ public class StorageUtils {
 	 */
 	public UUID[] getPlatformUsersAssociatedWithUser(UUID user) {
 		ArrayList<UUID> platformUsers = new ArrayList<UUID>();
+		Statement stmt = null;
+		java.sql.ResultSet rs = null;
 		
 		String query = "SELECT platform_user FROM user_bindings " +
 				"WHERE user = x'" + stripDashesFromUUID(user) + "';";
 		try {
-			Statement stmt = connection.createStatement();
-			java.sql.ResultSet rs = stmt.executeQuery(query);
+			stmt = connection.createStatement();
+			rs = stmt.executeQuery(query);
 			while (rs.next()) {
 				platformUsers.add(bytesToUUID(rs.getBytes(1)));
 			}
-			rs.close();
-			stmt.close();
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
 			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 		
 		return platformUsers.toArray(new UUID[0]);
@@ -541,6 +572,8 @@ public class StorageUtils {
 	 */
 	public UUID[] getUsersAssociatedWithPlatformUser(UUID id) {
 		ArrayList<UUID> platformUsers = new ArrayList<UUID>();
+		Statement stmt = null;
+		java.sql.ResultSet rs = null;
 		
 		String query = "SELECT user FROM user_bindings " +
 				"WHERE platform_user = x'" + stripDashesFromUUID(id) + "';";
@@ -548,16 +581,19 @@ public class StorageUtils {
 			// Let's take command of the commit ship ourselves.
 			// Forward, mateys!
 			connection.setAutoCommit(false);
-			Statement stmt = connection.createStatement();
-			java.sql.ResultSet rs = stmt.executeQuery(query);
+			stmt = connection.createStatement();
+			rs = stmt.executeQuery(query);
 			while (rs.next()) {
 				platformUsers.add(bytesToUUID(rs.getBytes(1)));
 			}
-			rs.close();
-			stmt.close();
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
 			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 		
 		return platformUsers.toArray(new UUID[0]);
