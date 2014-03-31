@@ -18,6 +18,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.data.Identifier;
 import se.mah.elis.data.OrderedProperties;
@@ -25,6 +26,8 @@ import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.UserIdentifier;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 
 /**
  * This class contains a bunch of helper methods to be used by StorageImpl.
@@ -34,11 +37,23 @@ import org.apache.commons.codec.binary.Hex;
  * @author "Johan Holmberg, Malmö University"
  * @since 2.0
  */
+@Component(name = "Elis StorageUtils")
 public class StorageUtils {
 	
 	// The MySQL connection. Ideally, this should be shared with the
 	// StorageImpl object.
 	private Connection connection;
+	
+	@Reference
+	private LogService log;
+	
+	/**
+	 * Creates an instance of StorageUtils.
+	 * 
+	 * @since 2.0
+	 */
+	public StorageUtils() {
+	}
 	
 	/**
 	 * Creates an instance of StorageUtils.
@@ -47,6 +62,16 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public StorageUtils(Connection connection) {
+		this.connection = connection;
+	}
+	
+	/**
+	 * Sets the connection.
+	 * 
+	 * @param connection The MySQL connection to use.
+	 * @since 2.0
+	 */
+	public void setConnection(Connection connection) {
 		this.connection = connection;
 	}
 
@@ -58,12 +83,18 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public void createTableIfNotExisting(String tableName, Properties p) {
+		Statement stmt = null;
+		
 		try {
-			Statement stmt = connection.createStatement();
+			stmt = connection.createStatement();
 			stmt.execute(TableBuilder.buildModel(tableName, p));
-			stmt.close();
+			log(LogService.LOG_INFO, "Created new table " + tableName);
 		} catch (SQLException | StorageException e) {
 			// Skip this like we just don't care.
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 	}
 
@@ -318,6 +349,8 @@ public class StorageUtils {
 			}
 		} catch (SQLException e) {
 			// Well, this didn't fare very well. Let's just return a null reference.
+			log(LogService.LOG_WARNING, "Failed to convert result set to properties. " +
+					"Current properties object is " + props, e);
 			props = null;
 		}
 		
@@ -354,6 +387,7 @@ public class StorageUtils {
 			}
 		} catch (SQLException e) {
 			// Well, this didn't fare very well. Let's just skip this row.
+			log(LogService.LOG_WARNING, "Failed to convert result set to properties.", e);
 		}
 		
 		return propArray;
@@ -369,21 +403,26 @@ public class StorageUtils {
 	 */
 	public String lookupUUIDTable(UUID uuid) {
 		String tableName = null;
+		Statement stmt = null;
+		java.sql.ResultSet rs = null;
 		
 		String query = "SELECT stored_in FROM object_lookup_table " +
 				"WHERE id = x'" + stripDashesFromUUID(uuid) + "';";
 		
 		try {
-			Statement stmt = connection.createStatement();
-			java.sql.ResultSet rs = stmt.executeQuery(query);
+			stmt = connection.createStatement();
+			rs = stmt.executeQuery(query);
 			if (rs.next()) {
 				tableName = rs.getString(1);
 			}
-			rs.close();
-			stmt.close();
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
 			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 		
 		return tableName;
@@ -403,6 +442,7 @@ public class StorageUtils {
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
 		
+		PreparedStatement stmt = null;
 		String query = "INSERT INTO object_lookup_table VALUES(x?, ?);";
 		
 		if (uuid == null || table == null || table.length() == 0) {
@@ -411,7 +451,7 @@ public class StorageUtils {
 		table = mysqlifyName(table);
 		
 		try {
-			PreparedStatement stmt = connection.prepareStatement(query);
+			stmt = connection.prepareStatement(query);
 			
 			// Populate the query
 			stmt.setString(1, stripDashesFromUUID(uuid));
@@ -419,9 +459,13 @@ public class StorageUtils {
 			
 			// Run the statement and end the transaction
 			stmt.executeUpdate();
-			stmt.close();
 		} catch (SQLException e) {
+			log(LogService.LOG_ERROR, "Couldn't write to database", e);
 			throw new StorageException("Couldn't write to database.");
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 	}
 	
@@ -433,16 +477,20 @@ public class StorageUtils {
 	 * @since 1.0
 	 */
 	public void freeUUID(UUID uuid) {
+		Statement stmt = null;
 		String query = "DELETE FROM object_lookup_table WHERE id = x'" +
 				stripDashesFromUUID(uuid) + "';";
 		
 		try {
-			Statement stmt = connection.createStatement();
+			stmt = connection.createStatement();
 			stmt.executeUpdate(query);
-			stmt.close();
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
 			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 	}
 	
@@ -456,6 +504,7 @@ public class StorageUtils {
 	 */
 	public void coupleUsers(UUID platformUser, UUID user)
 			throws StorageException {
+		PreparedStatement stmt = null;
 		String query = "INSERT INTO user_bindings VALUES(x?, x?);";
 		
 		if (user == null) {
@@ -464,7 +513,7 @@ public class StorageUtils {
 		
 		try {
 			connection.setAutoCommit(true);
-			PreparedStatement stmt = connection.prepareStatement(query);
+			stmt = connection.prepareStatement(query);
 			
 			// Populate the query
 			stmt.setString(1, stripDashesFromUUID(platformUser));
@@ -472,11 +521,15 @@ public class StorageUtils {
 			
 			// Run the statement and end the transaction
 			stmt.executeUpdate();
-			stmt.close();
 		} catch (SQLException e) {
 			if (e.getErrorCode() != 1062) {
-				throw new StorageException("Couldn't write to database.");
+				log(LogService.LOG_INFO, "Users already coupled: " + platformUser + " and " + user);
+				throw new StorageException("Users already coupled.");
 			}
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 	}
 	
@@ -488,17 +541,22 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public void decoupleUsers(UUID platformUser, UUID user) {
+		Statement stmt = null;
 		String query = "DELETE FROM user_bindings WHERE platform_user = x'" +
 				stripDashesFromUUID(platformUser) + "' AND user = x'" +
 				stripDashesFromUUID(user) + "';";
 		
 		try {
-			Statement stmt = connection.createStatement();
+			stmt = connection.createStatement();
 			stmt.executeUpdate(query);
-			stmt.close();
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
+			log(LogService.LOG_INFO, "Users already decoupled: " + platformUser + " and " + user);
 			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 	}
 	
@@ -512,20 +570,25 @@ public class StorageUtils {
 	 */
 	public UUID[] getPlatformUsersAssociatedWithUser(UUID user) {
 		ArrayList<UUID> platformUsers = new ArrayList<UUID>();
+		Statement stmt = null;
+		java.sql.ResultSet rs = null;
 		
 		String query = "SELECT platform_user FROM user_bindings " +
 				"WHERE user = x'" + stripDashesFromUUID(user) + "';";
 		try {
-			Statement stmt = connection.createStatement();
-			java.sql.ResultSet rs = stmt.executeQuery(query);
+			stmt = connection.createStatement();
+			rs = stmt.executeQuery(query);
 			while (rs.next()) {
 				platformUsers.add(bytesToUUID(rs.getBytes(1)));
 			}
-			rs.close();
-			stmt.close();
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
 			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 		
 		return platformUsers.toArray(new UUID[0]);
@@ -541,6 +604,8 @@ public class StorageUtils {
 	 */
 	public UUID[] getUsersAssociatedWithPlatformUser(UUID id) {
 		ArrayList<UUID> platformUsers = new ArrayList<UUID>();
+		Statement stmt = null;
+		java.sql.ResultSet rs = null;
 		
 		String query = "SELECT user FROM user_bindings " +
 				"WHERE platform_user = x'" + stripDashesFromUUID(id) + "';";
@@ -548,16 +613,19 @@ public class StorageUtils {
 			// Let's take command of the commit ship ourselves.
 			// Forward, mateys!
 			connection.setAutoCommit(false);
-			Statement stmt = connection.createStatement();
-			java.sql.ResultSet rs = stmt.executeQuery(query);
+			stmt = connection.createStatement();
+			rs = stmt.executeQuery(query);
 			while (rs.next()) {
 				platformUsers.add(bytesToUUID(rs.getBytes(1)));
 			}
-			rs.close();
-			stmt.close();
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
 			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				stmt.close();
+			} catch (SQLException e) {}
 		}
 		
 		return platformUsers.toArray(new UUID[0]);
@@ -792,5 +860,25 @@ public class StorageUtils {
 		} else {
 			props.put(colName, value);
 		}
+	}
+	
+	private void log(int level, String message, Throwable t) {
+		if (log != null) {
+			log.log(level, message, t);
+		}
+	}
+	
+	private void log(int level, String message) {
+		if (log != null) {
+			log.log(level, message);
+		}
+	}
+	
+	protected void bindLog(LogService log) {
+		this.log = log;
+	}
+	
+	protected void unbindLog(LogService log) {
+		this.log = null;
 	}
 }
