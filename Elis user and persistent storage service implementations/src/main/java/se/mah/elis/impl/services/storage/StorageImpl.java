@@ -41,7 +41,7 @@ import se.mah.elis.services.users.factory.UserFactory;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-@Component(name = "ElisPersistentStorage")
+@Component(name = "Elis Persistent Storage")
 @Service(value=Storage.class)
 public class StorageImpl implements Storage {
 	
@@ -217,10 +217,13 @@ public class StorageImpl implements Storage {
 						insert(data, true);
 					} else {
 						// Bad properties. Bail out.
+						log(LogService.LOG_WARNING, STORAGE_ERROR + ": Bad template " +
+								data.getPropertiesTemplate());
 						throw new StorageException(STORAGE_ERROR);
 					}
 				} else {
 					// Well, that didn't work too well. Give up and die.
+					log(LogService.LOG_ERROR, STORAGE_ERROR + ": General error", e);
 					throw new StorageException(STORAGE_ERROR);
 				}
 			} finally {
@@ -307,6 +310,7 @@ public class StorageImpl implements Storage {
 		if (user != null) {
 			if (user.getServiceName() == null ||
 					user.getServiceName().isEmpty()) {
+				log(LogService.LOG_WARNING, USER_NOT_VALID + ": No service name");
 				throw new StorageException(USER_NOT_VALID);
 			}
 			
@@ -318,7 +322,8 @@ public class StorageImpl implements Storage {
 				
 				// First of all, let's make a sanity check of the user.
 				if (pid == null || pid.isEmpty()) {
-					throw new StorageException(OBJECT_NOT_VALID);
+					log(LogService.LOG_WARNING, USER_NOT_VALID + ": Empty identifier");
+					throw new StorageException(USER_NOT_VALID);
 				}
 				
 				// Then let's convert potential nulls to at least empty strings
@@ -369,6 +374,7 @@ public class StorageImpl implements Storage {
 					utils.pairUUIDWithTable(pu.getUserId(), tableName);
 				} catch (SQLException e) {
 					// This shouldn't happen. The table should be in place
+					log(LogService.LOG_WARNING, STORAGE_ERROR + ": Table " + tableName + " not found", e);
 					throw new StorageException(STORAGE_ERROR);
 				} finally {
 					try {
@@ -439,7 +445,7 @@ public class StorageImpl implements Storage {
 					propTemplate = StorageUtils.flattenPropertiesWithIdentifier(propTemplate, true);
 					
 					if (e.getErrorCode() == 1146 && !finalRun) {
-							if (StorageUtils.validateAbstractUserProperties(propTemplate, true)) {
+						if (StorageUtils.validateAbstractUserProperties(propTemplate, true)) {
 							utils.createTableIfNotExisting(tableName,
 									propTemplate);
 							insert(user, true);
@@ -447,6 +453,7 @@ public class StorageImpl implements Storage {
 					} else {
 						// Well, that didn't work too well. Give up
 						// and die.
+						log(LogService.LOG_WARNING, STORAGE_ERROR + ": Table " + tableName + " not found");
 						throw new StorageException(STORAGE_ERROR);
 					}
 				} finally {
@@ -530,6 +537,7 @@ public class StorageImpl implements Storage {
 		
 		if (data != null) {
 			if (!StorageUtils.validateEDOProperties(data.getProperties(), true)) {
+				log(LogService.LOG_WARNING, OBJECT_NOT_FOUND + ": " + data.toString());
 				throw new StorageException(OBJECT_NOT_FOUND);
 			}
 			
@@ -575,6 +583,7 @@ public class StorageImpl implements Storage {
 					}
 				} else {
 					// Well, that didn't work too well. Give up and die.
+					log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't find table " + tableName);
 					throw new StorageException(STORAGE_ERROR);
 				}
 			} finally {
@@ -663,6 +672,7 @@ public class StorageImpl implements Storage {
 			if (user.getIdentifier() == null ||
 				StorageUtils.isEmpty(user.getIdentifier().getProperties()) ||
 				user.getUserId() == null) {
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": No identifier");
 				throw new StorageException(USER_NOT_FOUND);
 			}
 			
@@ -674,6 +684,7 @@ public class StorageImpl implements Storage {
 				
 				if (pu.getUserId() == null ||
 					pid.getUsername() == null || pid.getUsername().isEmpty()) {
+					log(LogService.LOG_WARNING, USER_NOT_VALID + ": Missing identifier or username");
 					throw new StorageException(USER_NOT_VALID);
 				}
 				
@@ -731,6 +742,7 @@ public class StorageImpl implements Storage {
 						insert(user, true);
 					} else {
 						// Well, that didn't work too well. Give up and die.
+						log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't find table " + tableName, e);
 						throw new StorageException(STORAGE_ERROR);
 					}
 				} finally {
@@ -790,6 +802,7 @@ public class StorageImpl implements Storage {
 						}
 					} else {
 						// Well, that didn't work too well. Give up and die.
+						log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't find table " + tableName, e);
 						throw new StorageException(STORAGE_ERROR);
 					}
 				} finally {
@@ -893,6 +906,7 @@ public class StorageImpl implements Storage {
 				}
 				connection.commit();
 			} catch (SQLException e) {
+				log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't delete object " + data, e);
 				throw new StorageException(STORAGE_ERROR);
 			} finally {
 				try {
@@ -995,6 +1009,7 @@ public class StorageImpl implements Storage {
 					utils.freeUUID(uuid);
 				}
 			} catch (SQLException e) {
+				log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't delete user " + user, e);
 				throw new StorageException(STORAGE_ERROR);
 			} finally {
 				try {
@@ -1079,8 +1094,10 @@ public class StorageImpl implements Storage {
 				stmt.execute(dq.compile());
 				connection.commit();
 			} catch (SQLException e) {
+				log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't run delete query", e);
 				throw new StorageException(STORAGE_ERROR);
-			} catch (ClassCastException ce) {
+			} catch (ClassCastException e) {
+				log(LogService.LOG_WARNING, DELETE_QUERY + ": Couldn't run delete query", e);
 				throw new StorageException(DELETE_QUERY);
 			} finally {
 				try {
@@ -1142,8 +1159,10 @@ public class StorageImpl implements Storage {
 				edo.populate(props);
 			} catch (InstantiationException | IllegalAccessException
 					| ClassNotFoundException e) {
+				log(LogService.LOG_WARNING, INSTANCE_OBJECT_ERROR + ": " + id, e);
 				throw new StorageException(INSTANCE_OBJECT_ERROR);
 			} catch (SQLException e) {
+				log(LogService.LOG_WARNING, OBJECT_NOT_FOUND + ": " + id, e);
 				throw new StorageException(OBJECT_NOT_FOUND);
 			} finally {
 				try {
@@ -1168,6 +1187,7 @@ public class StorageImpl implements Storage {
 	@Override
 	public ElisDataObject readData(ElisDataObject edo) throws StorageException {
 		if (edo.getDataId() == null) {
+			log(LogService.LOG_WARNING, OBJECT_NOT_VALID + ": " + edo);
 			throw new StorageException(OBJECT_NOT_VALID);
 		}
 		
@@ -1235,11 +1255,14 @@ public class StorageImpl implements Storage {
 					throw new StorageException(INSTANCE_USER_ERROR);
 				}
 			} catch (SQLException e) {
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id, e);
 				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
+				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": " + id, e);
 				throw new StorageException(INSTANCE_USER_ERROR);
 			} catch (NullPointerException e) {
 				// This is not a User object.
+				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": Not a user " + id, e);
 				throw new StorageException(INSTANCE_USER_ERROR);
 			} finally {
 				try {
@@ -1317,8 +1340,10 @@ public class StorageImpl implements Storage {
 				user = userFactory.build(props);
 				((PlatformUserIdentifier) user.getIdentifier()).setPassword(null);
 			} catch (SQLException | NullPointerException e) {
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id, e);
 				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
+				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": " + id, e);
 				throw new StorageException(INSTANCE_USER_ERROR);
 			} finally {
 				try {
@@ -1354,8 +1379,10 @@ public class StorageImpl implements Storage {
 				user = userFactory.build(userType,
 						(String) props.get("service_name"), props);
 			} catch (SQLException | NullPointerException e) {
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id, e);
 				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
+				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": " + id, e);
 				throw new StorageException(INSTANCE_USER_ERROR);
 			} finally {
 				try {
@@ -1419,6 +1446,7 @@ public class StorageImpl implements Storage {
 				connection.commit();
 			} catch (SQLException | NullPointerException e) {
 				// No user type
+				log(LogService.LOG_WARNING, STORAGE_ERROR + ": " + user, e);
 				throw new StorageException(STORAGE_ERROR);
 			} finally {
 				try {
@@ -1600,6 +1628,8 @@ public class StorageImpl implements Storage {
 						// Well, this was awkward. We don't know what this is.
 						// Rather than trying to guess and potentially destroy
 						// things, just give up and die.
+						stmt.close();
+						log(LogService.LOG_WARNING, INSTANCE_OBJECT_ERROR);
 						throw new StorageException(INSTANCE_OBJECT_ERROR);
 					}
 					objs.add(props);
@@ -1611,8 +1641,10 @@ public class StorageImpl implements Storage {
 				// Aaand we're done. Finish this up, then move on.
 				result = new ResultSetImpl(clazz, objs.toArray());
 			} catch (SQLException | IllegalAccessException e) {
+				log(LogService.LOG_WARNING, STORAGE_ERROR, e);
 				throw new StorageException(STORAGE_ERROR);
 			} catch (InstantiationException e) {
+				log(LogService.LOG_WARNING, INSTANCE_OBJECT_ERROR, e);
 				throw new StorageException(INSTANCE_OBJECT_ERROR);
 			} finally {
 				try {
@@ -1623,6 +1655,12 @@ public class StorageImpl implements Storage {
 		}
 				
 		return result;
+	}
+	
+	private void log(int level, String message, Throwable t) {
+		if (log != null) {
+			log.log(level, message, t);
+		}
 	}
 	
 	private void log(int level, String message) {

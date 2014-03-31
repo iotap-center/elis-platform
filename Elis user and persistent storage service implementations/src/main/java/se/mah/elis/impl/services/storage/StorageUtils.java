@@ -18,6 +18,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.data.Identifier;
 import se.mah.elis.data.OrderedProperties;
@@ -25,6 +26,8 @@ import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.UserIdentifier;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 
 /**
  * This class contains a bunch of helper methods to be used by StorageImpl.
@@ -34,11 +37,23 @@ import org.apache.commons.codec.binary.Hex;
  * @author "Johan Holmberg, Malmö University"
  * @since 2.0
  */
+@Component(name = "Elis StorageUtils")
 public class StorageUtils {
 	
 	// The MySQL connection. Ideally, this should be shared with the
 	// StorageImpl object.
 	private Connection connection;
+	
+	@Reference
+	private LogService log;
+	
+	/**
+	 * Creates an instance of StorageUtils.
+	 * 
+	 * @since 2.0
+	 */
+	public StorageUtils() {
+	}
 	
 	/**
 	 * Creates an instance of StorageUtils.
@@ -47,6 +62,16 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public StorageUtils(Connection connection) {
+		this.connection = connection;
+	}
+	
+	/**
+	 * Sets the connection.
+	 * 
+	 * @param connection The MySQL connection to use.
+	 * @since 2.0
+	 */
+	public void setConnection(Connection connection) {
 		this.connection = connection;
 	}
 
@@ -63,6 +88,7 @@ public class StorageUtils {
 		try {
 			stmt = connection.createStatement();
 			stmt.execute(TableBuilder.buildModel(tableName, p));
+			log(LogService.LOG_INFO, "Created new table " + tableName);
 		} catch (SQLException | StorageException e) {
 			// Skip this like we just don't care.
 		} finally {
@@ -323,6 +349,8 @@ public class StorageUtils {
 			}
 		} catch (SQLException e) {
 			// Well, this didn't fare very well. Let's just return a null reference.
+			log(LogService.LOG_WARNING, "Failed to convert result set to properties. " +
+					"Current properties object is " + props, e);
 			props = null;
 		}
 		
@@ -359,6 +387,7 @@ public class StorageUtils {
 			}
 		} catch (SQLException e) {
 			// Well, this didn't fare very well. Let's just skip this row.
+			log(LogService.LOG_WARNING, "Failed to convert result set to properties.", e);
 		}
 		
 		return propArray;
@@ -431,6 +460,7 @@ public class StorageUtils {
 			// Run the statement and end the transaction
 			stmt.executeUpdate();
 		} catch (SQLException e) {
+			log(LogService.LOG_ERROR, "Couldn't write to database", e);
 			throw new StorageException("Couldn't write to database.");
 		} finally {
 			try {
@@ -493,7 +523,8 @@ public class StorageUtils {
 			stmt.executeUpdate();
 		} catch (SQLException e) {
 			if (e.getErrorCode() != 1062) {
-				throw new StorageException("Couldn't write to database.");
+				log(LogService.LOG_INFO, "Users already coupled: " + platformUser + " and " + user);
+				throw new StorageException("Users already coupled.");
 			}
 		} finally {
 			try {
@@ -520,6 +551,7 @@ public class StorageUtils {
 			stmt.executeUpdate(query);
 		} catch (SQLException e) {
 			// Skip this like we just don't care.
+			log(LogService.LOG_INFO, "Users already decoupled: " + platformUser + " and " + user);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -828,5 +860,25 @@ public class StorageUtils {
 		} else {
 			props.put(colName, value);
 		}
+	}
+	
+	private void log(int level, String message, Throwable t) {
+		if (log != null) {
+			log.log(level, message, t);
+		}
+	}
+	
+	private void log(int level, String message) {
+		if (log != null) {
+			log.log(level, message);
+		}
+	}
+	
+	protected void bindLog(LogService log) {
+		this.log = log;
+	}
+	
+	protected void unbindLog(LogService log) {
+		this.log = null;
 	}
 }
