@@ -56,11 +56,13 @@ public class WaterBeanFactory {
 			List<WaterSample> waterSamples) {
 		List<WaterDataPointBean> points = new ArrayList<>();
 		for (WaterSample sample : waterSamples) {
-			WaterDataPointBean point = new WaterDataPointBean();
-			point.timestamp = unixtime(sample.getSampleTimestamp());
-			point.humanReadableTimestamp = sample.getSampleTimestamp().toString();
-			point.volume = sample.getVolume();
-			points.add(point);			
+			if (sample.getSampleTimestamp() != null) {
+				WaterDataPointBean point = new WaterDataPointBean();
+				point.timestamp = unixtime(sample.getSampleTimestamp());
+				point.humanReadableTimestamp = sample.getSampleTimestamp().toString();
+				point.volume = sample.getVolume();
+				points.add(point);			
+			}
 		}
 		return points;
 	}

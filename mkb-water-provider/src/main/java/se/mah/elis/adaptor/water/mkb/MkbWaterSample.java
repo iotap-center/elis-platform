@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 import org.joda.time.DateTime;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.water.mkb.data.WaterDataPoint;
 import se.mah.elis.data.OrderedProperties;
@@ -19,14 +22,20 @@ import se.mah.elis.data.WaterSample;
  * @version 1.0
  *
  */
+@Component
 public class MkbWaterSample implements WaterSample {
 
+	@Reference
+	private LogService log;
+	
 	private static final long serialVersionUID = 7438609549499091999L;
 	private float volume;
 	private UUID uuid;
 	private DateTime sampleTimestamp;
 	private int sampleLength;
 	private UUID userOwner;
+	
+	public MkbWaterSample() { }
 
 	public MkbWaterSample(WaterDataPoint point) {
 		this.volume = point.getValue();
@@ -35,12 +44,16 @@ public class MkbWaterSample implements WaterSample {
 	}
 
 	public MkbWaterSample(List<WaterDataPoint> points) {
-		WaterDataPoint firstPoint = points.get(0);
-		WaterDataPoint lastPoint = points.get(points.size() - 1);
-		
-		this.sampleLength = (int) calculateLength(firstPoint, lastPoint);
-		this.volume = calculateTotalVolume(firstPoint, lastPoint);
-		this.sampleTimestamp = lastPoint.getRecordedDateTime();
+		if (points.size() > 0) {
+			WaterDataPoint firstPoint = points.get(0);
+			WaterDataPoint lastPoint = points.get(points.size() - 1);
+			
+			this.sampleLength = (int) calculateLength(firstPoint, lastPoint);
+			this.volume = calculateTotalVolume(firstPoint, lastPoint);
+			this.sampleTimestamp = lastPoint.getRecordedDateTime();
+		} else {
+			log(LogService.LOG_INFO, "Sample does not contain any data points");
+		}
 	}
 
 	private float calculateTotalVolume(WaterDataPoint firstPoint,
@@ -118,6 +131,19 @@ public class MkbWaterSample implements WaterSample {
 	@Override
 	public DateTime created() {
 		return sampleTimestamp;
+	}
+	
+	protected void bindLog(LogService ls) {
+		log = ls;
+	}
+	
+	protected void unbindLog(LogService ls) {
+		log = null;
+	}
+	
+	private void log(int level, String message) {
+		if (log != null)
+			log.log(level, message);
 	}
 
 }

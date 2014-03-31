@@ -141,6 +141,52 @@ public class WaterServiceTest extends JerseyTest {
 		when(userService.getPlatformUser(any(UUID.class))).thenReturn(platformUser);
 	}
 	
+	@Test
+	public void testFromDateIsInTheFutureDaily() {
+		final Response response = target("/water/" + TEST_UUID + "/daily")
+				.queryParam("from", futureDate())
+				.request()
+				.get();
+		assertEquals(400, response.getStatus());
+	}
+
+	@Test
+	public void testFromDateIsInTheFutureWeekly() {
+		final Response response = target("/water/" + TEST_UUID + "/weekly")
+				.queryParam("from", futureDate())
+				.request()
+				.get();
+		assertEquals(400, response.getStatus());
+	}
+	
+	@Test
+	public void testFromDateIsInTheFutureMonthly() {
+		final Response response = target("/water/" + TEST_UUID + "/monthly")
+				.queryParam("from", futureDate())
+				.request()
+				.get();
+		assertEquals(400, response.getStatus());
+	}
+	
+	@Test
+	public void testFromDateIsBadlyFormatted() {
+		final Response response = target("/water/" + TEST_UUID + "/monthly")
+				.queryParam("from", "mumbojumbo")
+				.request()
+				.get();
+		assertEquals(400, response.getStatus());
+	}
+	
+	@Test
+	public void testToDateIsBadlyFormatted() {
+		final Response response = target("/water/" + TEST_UUID + "/monthly")
+				.queryParam("from", 1392681600000l)
+				.queryParam("to", "lajbans")
+				.request()
+				.get();
+		assertEquals(400, response.getStatus());
+	}
+	
 	@Test 
 	@Ignore
 	public void testNoUserServiceAvailable() {
@@ -148,5 +194,9 @@ public class WaterServiceTest extends JerseyTest {
 		userService = null;
 		final Response response = target("/water/" + TEST_UUID + "/now").request().get();
 		assertEquals(500, response.getStatus());
+	}
+
+	private long futureDate() {
+		return DateTime.now().plusDays(1).getMillis();
 	}
 }

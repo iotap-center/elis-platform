@@ -9,16 +9,19 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
+import org.apache.felix.scr.annotations.ReferenceStrategy;
 import org.joda.time.DateTime;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.entities.devices.WaterMeterSampler;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
+import se.mah.elis.adaptor.water.mkb.data.WaterData;
 import se.mah.elis.adaptor.water.mkb.data.WaterDataPoint;
 import se.mah.elis.adaptor.water.mkb.data.WaterDataService;
 import se.mah.elis.data.OrderedProperties;
@@ -49,6 +52,11 @@ public class MkbWaterMeter implements WaterMeterSampler {
 	@Reference(policy = ReferencePolicy.DYNAMIC, 
 			cardinality = ReferenceCardinality.OPTIONAL_UNARY)
 	private WaterDataService waterDataSource;
+	
+	@Reference(policy = ReferencePolicy.DYNAMIC, 
+			cardinality = ReferenceCardinality.OPTIONAL_UNARY)
+	private LogService log; 
+	
 	private UUID userOwner;
 	private static ComponentContext ctx;
 
@@ -66,6 +74,7 @@ public class MkbWaterMeter implements WaterMeterSampler {
 	@Activate
 	public void activate(ComponentContext context) {
 		ctx = context;
+		setLog();
 	}
 
 	@Override
@@ -144,10 +153,18 @@ public class MkbWaterMeter implements WaterMeterSampler {
 		return getLatestSample();
 	}
 
-	private WaterSample getLatestSample() {
-		WaterDataPoint latestPoint = waterDataSource.getInstance()
-				.getLatestSample(getName());
-		WaterSample sample = new MkbWaterSample(latestPoint);
+	private WaterSample getLatestSample() throws SensorFailedException {
+		WaterSample sample = null;
+		WaterData service = waterDataSource.getInstance();
+		
+		if (service != null) {
+			WaterDataPoint latestPoint = service.getLatestSample(getName());
+			sample = new MkbWaterSample(latestPoint);
+		} else {
+			log(LogService.LOG_ERROR, "No WaterDataService available despite setting source.");
+			throw new SensorFailedException();
+		}
+		
 		return sample;
 	}
 
@@ -160,21 +177,40 @@ public class MkbWaterMeter implements WaterMeterSampler {
 		return getRangeSample(from, to);
 	}
 
-	private void setWaterSource() {
+	private void setWaterSource() throws SensorFailedException {
 		if (waterDataSource == null) {
-			BundleContext bundleContext = ctx.getBundleContext();
-			ServiceReference ref = bundleContext.getServiceReference(WaterDataService.class.getName());
-			if (ref != null) {
-				waterDataSource = (WaterDataService) bundleContext.getService(ref);
-				isOnline = true;
+			if (ctx != null) {
+				BundleContext bundleContext = ctx.getBundleContext();
+				ServiceReference ref = bundleContext.getServiceReference(WaterDataService.class.getName());
+				if (ref != null) {
+					waterDataSource = (WaterDataService) bundleContext.getService(ref);
+					isOnline = true;
+					log(LogService.LOG_DEBUG, "Installed WaterDataService with meter");
+				}
+			} else {
+				log(LogService.LOG_ERROR, "No BundleContext available. Cannot find WaterDataService");
+				throw new SensorFailedException();
 			}
 		}
 	}
 
-	private WaterSample getRangeSample(DateTime from, DateTime to) {
-		List<WaterDataPoint> points = waterDataSource.getInstance().getRange(
-				getName(), from, to);
-		WaterSample sample = new MkbWaterSample(points);
+	private WaterSample getRangeSample(DateTime from, DateTime to) throws SensorFailedException {
+		WaterData service = waterDataSource.getInstance();
+		WaterSample sample = null;
+		
+		if (service != null) {
+			List<WaterDataPoint> points = service.getRange(getName(), from, to);
+			if (points != null)
+				sample = new MkbWaterSample(points);
+			else {
+				log(LogService.LOG_WARNING, "No data for the meter: " + getName());
+				throw new SensorFailedException();
+			}
+		} else {
+			log(LogService.LOG_ERROR, "No WaterDataService available despite setting source");
+			throw new SensorFailedException();
+		}
+		
 		return sample;
 	}
 
@@ -203,4 +239,26 @@ public class MkbWaterMeter implements WaterMeterSampler {
 		return null;
 	}
 
+	protected void bindLog(LogService ls) {
+		log = ls;
+	}
+	
+	protected void unbindLog(LogService ls) {
+		log = null;
+	}
+	
+	private void setLog() {
+		if (ctx != null) {
+			BundleContext bundleContext = ctx.getBundleContext();
+			ServiceReference ref = bundleContext.getServiceReference(LogService.class.getName());
+			if (ref != null) {
+				log = (LogService) bundleContext.getService(ref);
+			}
+		}
+	}
+	
+	private void log(int level, String message) {
+		if (log != null)
+			log.log(level, message);
+	}
 }

@@ -14,5 +14,8 @@ public class EnergyDataBean {
 
 	@XmlElement
 	public double watts;
+
+	@XmlElement
+	public String humanReadableTimestamp;
 	
 }

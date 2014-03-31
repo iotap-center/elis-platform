@@ -3,8 +3,12 @@ package se.mah.elis.adaptor.water.mkb.data;
 import java.io.FileNotFoundException;
 
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.felix.service.command.CommandProcessor;
+import org.apache.felix.service.command.Descriptor;
 import org.joda.time.DateTime;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.log.LogService;
@@ -23,16 +27,24 @@ import org.osgi.service.log.LogService;
  */
 @Component(name = "MkbWaterData", immediate = true)
 @Service(value = WaterDataService.class)
+@Properties({
+	@Property(name = CommandProcessor.COMMAND_SCOPE, value = "elis"),
+	@Property(name = CommandProcessor.COMMAND_FUNCTION,
+	value = {"reloadwater"})
+})
 public class WaterDataService {
 	
 	@Reference
 	private LogService log;
 	
+	private WaterUpdater waterUpdater;
 	private Thread updaterThread;
 	private WaterData waterData;
+
 	
 	public WaterDataService() {
-		updaterThread = new Thread(new UpdaterThread());
+		waterUpdater = new WaterUpdater();
+		updaterThread = new Thread(waterUpdater);
 		updaterThread.start();
 	}
 	
@@ -52,16 +64,19 @@ public class WaterDataService {
 		waterData = data;
 	}
 	
-	private class UpdaterThread implements Runnable {
+	@Descriptor("Trigger reload of water data from source")
+	public void reloadwater() {
+		waterUpdater.loadData(WaterUpdater.DEFAULT_WATERDATA);
+	}
+	
+	private class WaterUpdater implements Runnable {
 
-		private static final String DEFAULT_WATERDATA = "/tmp/mkb-water-data/all.txt";
+		public static final String DEFAULT_WATERDATA = "/tmp/mkb-water-data/all.txt";
 		private static final long ONE_HOUR = 1000 * 60 * 60;
 		
 		@Override
 		public void run() {
-			while (true) {
-				log("Reloading water data at " + DateTime.now());
-				
+			while (true) {				
 				loadData(DEFAULT_WATERDATA);
 				
 				try {
@@ -72,8 +87,9 @@ public class WaterDataService {
 			}
 		}
 		
-		private void loadData(String filename) {
+		public synchronized void loadData(String filename) {
 			try {
+				log("Reloading water data at " + DateTime.now());
 				setInstance(WaterDataLoader.loadFromFile(filename));
 			} catch (FileNotFoundException e) {		
 				logWarning("Could load water data from file (FileNotFound): " + filename);
