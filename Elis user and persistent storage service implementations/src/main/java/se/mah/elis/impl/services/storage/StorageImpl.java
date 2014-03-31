@@ -41,7 +41,7 @@ import se.mah.elis.services.users.factory.UserFactory;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-@Component(name = "ElisPersistentStorage")
+@Component(name = "Elis Persistent Storage")
 @Service(value=Storage.class)
 public class StorageImpl implements Storage {
 	
@@ -157,6 +157,8 @@ public class StorageImpl implements Storage {
 		//		 minimizing execution time and DB load.
 		
 		if (data != null && StorageUtils.validateEDOProperties(data.getProperties(), false)) {
+			PreparedStatement stmt = null;
+			
 			// Basically, this is a new object. Let's insert it.
 			Properties props = null;
 			UUID uuid = null;
@@ -190,7 +192,7 @@ public class StorageImpl implements Storage {
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
 				connection.setAutoCommit(false);
-				PreparedStatement stmt = connection.prepareStatement(query);
+				stmt = connection.prepareStatement(query);
 				
 				// Add the parameters to the query. We don't know what we'll
 				// run into. Better let someone else, i.e. addParameter() take
@@ -201,7 +203,6 @@ public class StorageImpl implements Storage {
 				
 				// Run the statement and end the transaction
 				stmt.executeUpdate();
-				stmt.close();
 				connection.commit();
 				
 				utils.pairUUIDWithTable(uuid, tableName);
@@ -216,12 +217,19 @@ public class StorageImpl implements Storage {
 						insert(data, true);
 					} else {
 						// Bad properties. Bail out.
+						log(LogService.LOG_WARNING, STORAGE_ERROR + ": Bad template " +
+								data.getPropertiesTemplate());
 						throw new StorageException(STORAGE_ERROR);
 					}
 				} else {
 					// Well, that didn't work too well. Give up and die.
+					log(LogService.LOG_ERROR, STORAGE_ERROR + ": General error", e);
 					throw new StorageException(STORAGE_ERROR);
 				}
+			} finally {
+				try {
+					stmt.close();
+				} catch (SQLException e) {}
 			}
 		} else {
 			throw new StorageException();
@@ -302,6 +310,7 @@ public class StorageImpl implements Storage {
 		if (user != null) {
 			if (user.getServiceName() == null ||
 					user.getServiceName().isEmpty()) {
+				log(LogService.LOG_WARNING, USER_NOT_VALID + ": No service name");
 				throw new StorageException(USER_NOT_VALID);
 			}
 			
@@ -313,7 +322,8 @@ public class StorageImpl implements Storage {
 				
 				// First of all, let's make a sanity check of the user.
 				if (pid == null || pid.isEmpty()) {
-					throw new StorageException(OBJECT_NOT_VALID);
+					log(LogService.LOG_WARNING, USER_NOT_VALID + ": Empty identifier");
+					throw new StorageException(USER_NOT_VALID);
 				}
 				
 				// Then let's convert potential nulls to at least empty strings
@@ -359,13 +369,17 @@ public class StorageImpl implements Storage {
 					stmt.setString(6, pu.getEmail());
 					stmt.setTimestamp(7, new Timestamp(pu.created().getMillis()));
 					stmt.executeUpdate();
-					stmt.close();
 					connection.commit();
 					
 					utils.pairUUIDWithTable(pu.getUserId(), tableName);
 				} catch (SQLException e) {
 					// This shouldn't happen. The table should be in place
+					log(LogService.LOG_WARNING, STORAGE_ERROR + ": Table " + tableName + " not found", e);
 					throw new StorageException(STORAGE_ERROR);
+				} finally {
+					try {
+						stmt.close();
+					} catch (SQLException e) {}
 				}
 			} else {
 				// Just a generic User object.
@@ -431,7 +445,7 @@ public class StorageImpl implements Storage {
 					propTemplate = StorageUtils.flattenPropertiesWithIdentifier(propTemplate, true);
 					
 					if (e.getErrorCode() == 1146 && !finalRun) {
-							if (StorageUtils.validateAbstractUserProperties(propTemplate, true)) {
+						if (StorageUtils.validateAbstractUserProperties(propTemplate, true)) {
 							utils.createTableIfNotExisting(tableName,
 									propTemplate);
 							insert(user, true);
@@ -439,14 +453,13 @@ public class StorageImpl implements Storage {
 					} else {
 						// Well, that didn't work too well. Give up
 						// and die.
+						log(LogService.LOG_WARNING, STORAGE_ERROR + ": Table " + tableName + " not found");
 						throw new StorageException(STORAGE_ERROR);
 					}
 				} finally {
 					try {
 						stmt.close();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					} catch (Exception e) {}
 				}
 			}
 		}
@@ -519,10 +532,12 @@ public class StorageImpl implements Storage {
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
 		
+		PreparedStatement stmt = null;
 		boolean updated = false;
 		
 		if (data != null) {
 			if (!StorageUtils.validateEDOProperties(data.getProperties(), true)) {
+				log(LogService.LOG_WARNING, OBJECT_NOT_FOUND + ": " + data.toString());
 				throw new StorageException(OBJECT_NOT_FOUND);
 			}
 			
@@ -544,7 +559,7 @@ public class StorageImpl implements Storage {
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
 				connection.setAutoCommit(false);
-				PreparedStatement stmt = connection.prepareStatement(query);
+				stmt = connection.prepareStatement(query);
 				
 				// Add the parameters to the query. We don't know what we'll
 				// run into. Better let someone else, i.e. addParameter() take
@@ -555,7 +570,6 @@ public class StorageImpl implements Storage {
 				
 				// Run the statement and end the transaction
 				updated = stmt.executeUpdate() > 0;
-				stmt.close();
 				connection.commit();
 			} catch (SQLException e) {
 				// Try to create a non-existing table, but only once.
@@ -569,8 +583,13 @@ public class StorageImpl implements Storage {
 					}
 				} else {
 					// Well, that didn't work too well. Give up and die.
+					log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't find table " + tableName);
 					throw new StorageException(STORAGE_ERROR);
 				}
+			} finally {
+				try {
+					stmt.close();
+				} catch (SQLException e) {}
 			}
 			
 			if (!updated) {
@@ -645,6 +664,7 @@ public class StorageImpl implements Storage {
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
 		
+		PreparedStatement stmt = null;
 		String query = null;
 		String tableName = null;
 		
@@ -652,6 +672,7 @@ public class StorageImpl implements Storage {
 			if (user.getIdentifier() == null ||
 				StorageUtils.isEmpty(user.getIdentifier().getProperties()) ||
 				user.getUserId() == null) {
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": No identifier");
 				throw new StorageException(USER_NOT_FOUND);
 			}
 			
@@ -663,6 +684,7 @@ public class StorageImpl implements Storage {
 				
 				if (pu.getUserId() == null ||
 					pid.getUsername() == null || pid.getUsername().isEmpty()) {
+					log(LogService.LOG_WARNING, USER_NOT_VALID + ": Missing identifier or username");
 					throw new StorageException(USER_NOT_VALID);
 				}
 				
@@ -695,7 +717,7 @@ public class StorageImpl implements Storage {
 					// Let's take command of the commit ship ourselves.
 					// Forward, mateys!
 					connection.setAutoCommit(false);
-					PreparedStatement stmt = connection.prepareStatement(query);
+					stmt = connection.prepareStatement(query);
 					
 					stmt.setString(1, pid.getUsername());
 					stmt.setString(2, pu.getFirstName());
@@ -720,9 +742,14 @@ public class StorageImpl implements Storage {
 						insert(user, true);
 					} else {
 						// Well, that didn't work too well. Give up and die.
+						log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't find table " + tableName, e);
 						throw new StorageException(STORAGE_ERROR);
 					}
-				}	
+				} finally {
+					try {
+						stmt.close();
+					} catch (SQLException e) {}
+				}
 			} else {
 				// Just a generic AbstractUser object.
 				// First, let's see if we will be able to find and store it
@@ -751,7 +778,7 @@ public class StorageImpl implements Storage {
 					// Let's take command of the commit ship ourselves.
 					// Forward, mateys!
 					connection.setAutoCommit(false);
-					PreparedStatement stmt = connection.prepareStatement(query);
+					stmt = connection.prepareStatement(query);
 				
 					// Add the parameters to the query. We don't know what
 					// we'll run into. Better let someone else, i.e.
@@ -762,7 +789,6 @@ public class StorageImpl implements Storage {
 					
 					// Run the statement and end the transaction
 					stmt.executeUpdate();
-					stmt.close();
 				} catch (SQLException e) {
 					// Try to create a non-existing table, but only once.
 					if (e.getErrorCode() == 1146 && !finalRun) {
@@ -776,8 +802,13 @@ public class StorageImpl implements Storage {
 						}
 					} else {
 						// Well, that didn't work too well. Give up and die.
+						log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't find table " + tableName, e);
 						throw new StorageException(STORAGE_ERROR);
 					}
+				} finally {
+					try {
+						stmt.close();
+					} catch (SQLException e) {}
 				}
 			}
 		}
@@ -851,6 +882,8 @@ public class StorageImpl implements Storage {
 			//		 also takes a PreparedStatement as a parameter, thereby
 			//		 minimizing execution time and DB load.
 			
+			PreparedStatement stmt = null;
+			
 			// Generate the table name
 			String tableName = data.getClass().getCanonicalName();
 			
@@ -865,16 +898,20 @@ public class StorageImpl implements Storage {
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
 				connection.setAutoCommit(false);
-				PreparedStatement stmt = connection.prepareStatement(query);
+				stmt = connection.prepareStatement(query);
 				
 				// Run the statement and end the transaction
 				if (stmt.executeUpdate() > 0) {
 					utils.freeUUID(uuid);
 				}
-				stmt.close();
 				connection.commit();
 			} catch (SQLException e) {
+				log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't delete object " + data, e);
 				throw new StorageException(STORAGE_ERROR);
+			} finally {
+				try {
+					stmt.close();
+				} catch (SQLException e) {}
 			}
 		}
 	}
@@ -946,6 +983,7 @@ public class StorageImpl implements Storage {
 		//		 minimizing execution time and DB load.
 		
 		if (user != null && user.getUserId() != null) {
+			PreparedStatement stmt = null;
 			String query = null;
 			UUID uuid = user.getUserId();
 			String tableName = null;
@@ -966,13 +1004,17 @@ public class StorageImpl implements Storage {
 			
 			try {
 				// Run the statement and end the transaction
-				PreparedStatement stmt = connection.prepareStatement(query);
+				stmt = connection.prepareStatement(query);
 				if (stmt.executeUpdate() > 0) {
 					utils.freeUUID(uuid);
 				}
-				stmt.close();
 			} catch (SQLException e) {
+				log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't delete user " + user, e);
 				throw new StorageException(STORAGE_ERROR);
+			} finally {
+				try {
+					stmt.close();
+				} catch (SQLException e) {}
 			}
 		}
 	}
@@ -1040,20 +1082,27 @@ public class StorageImpl implements Storage {
 	 */
 	private void delete(Query query, boolean finalRun) throws StorageException {
 		if (query != null) {
+			Statement stmt = null;
+			
 			try {
 				DeleteQuery dq = new DeleteQuery(query);
 				
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
 				connection.setAutoCommit(false);
-				Statement stmt = connection.createStatement();
+				stmt = connection.createStatement();
 				stmt.execute(dq.compile());
-				stmt.close();
 				connection.commit();
 			} catch (SQLException e) {
+				log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't run delete query", e);
 				throw new StorageException(STORAGE_ERROR);
-			} catch (ClassCastException ce) {
+			} catch (ClassCastException e) {
+				log(LogService.LOG_WARNING, DELETE_QUERY + ": Couldn't run delete query", e);
 				throw new StorageException(DELETE_QUERY);
+			} finally {
+				try {
+					stmt.close();
+				} catch (SQLException e) {}
 			}
 		}
 	}
@@ -1085,6 +1134,8 @@ public class StorageImpl implements Storage {
 	 */
 	private ElisDataObject readData(UUID id, boolean finalRun)
 			throws StorageException {
+		Statement stmt = null;
+		java.sql.ResultSet rs = null;
 		ElisDataObject edo = null;
 		String tableName = utils.lookupUUIDTable(id);
 		String className = null;
@@ -1100,19 +1151,24 @@ public class StorageImpl implements Storage {
 						"` WHERE dataid = x'" +
 						StorageUtils.stripDashesFromUUID(id) + "';";
 				
-				Statement stmt = connection.createStatement();
-				java.sql.ResultSet rs = stmt.executeQuery(query);
+				stmt = connection.createStatement();
+				rs = stmt.executeQuery(query);
 				props = utils.resultSetRowToProperties(rs);
-				rs.close();
-				stmt.close();
 				
 				// Populate the object, then we're pretty much done.
 				edo.populate(props);
 			} catch (InstantiationException | IllegalAccessException
 					| ClassNotFoundException e) {
+				log(LogService.LOG_WARNING, INSTANCE_OBJECT_ERROR + ": " + id, e);
 				throw new StorageException(INSTANCE_OBJECT_ERROR);
 			} catch (SQLException e) {
+				log(LogService.LOG_WARNING, OBJECT_NOT_FOUND + ": " + id, e);
 				throw new StorageException(OBJECT_NOT_FOUND);
+			} finally {
+				try {
+					rs.close();
+					stmt.close();
+				} catch (SQLException e) {}
 			}
 		}
 		
@@ -1131,6 +1187,7 @@ public class StorageImpl implements Storage {
 	@Override
 	public ElisDataObject readData(ElisDataObject edo) throws StorageException {
 		if (edo.getDataId() == null) {
+			log(LogService.LOG_WARNING, OBJECT_NOT_VALID + ": " + edo);
 			throw new StorageException(OBJECT_NOT_VALID);
 		}
 		
@@ -1166,6 +1223,8 @@ public class StorageImpl implements Storage {
 		AbstractUser user = null;
 		String tableName = utils.lookupUUIDTable(id);
 		String className = null;
+		Statement stmt = null;
+		java.sql.ResultSet rs = null;
 		
 		if (tableName != null) {
 			className = StorageUtils.demysqlifyName(tableName);
@@ -1179,11 +1238,9 @@ public class StorageImpl implements Storage {
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
 				connection.setAutoCommit(false);
-				Statement stmt = connection.createStatement();
-				java.sql.ResultSet rs = stmt.executeQuery(query);
+				stmt = connection.createStatement();
+				rs = stmt.executeQuery(query);
 				props = utils.resultSetRowToProperties(rs);
-				rs.close();
-				stmt.close();
 				connection.commit();
 				
 				if (props.containsKey("service_name")) {
@@ -1198,12 +1255,22 @@ public class StorageImpl implements Storage {
 					throw new StorageException(INSTANCE_USER_ERROR);
 				}
 			} catch (SQLException e) {
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id, e);
 				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
+				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": " + id, e);
 				throw new StorageException(INSTANCE_USER_ERROR);
 			} catch (NullPointerException e) {
 				// This is not a User object.
+				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": Not a user " + id, e);
 				throw new StorageException(INSTANCE_USER_ERROR);
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+					stmt.close();
+				} catch (SQLException e) {}
 			}
 		}
 		
@@ -1238,6 +1305,8 @@ public class StorageImpl implements Storage {
 	private AbstractUser readUser(UserIdentifier id, boolean finalRun)
 			throws StorageException {
 		AbstractUser user = null;
+		java.sql.ResultSet rs = null;
+		PreparedStatement stmt = null;
 		Class<?> clazz = id.identifies();
 		String className = clazz.getName();
 		String tableName = StorageUtils.mysqlifyName(className);
@@ -1258,26 +1327,34 @@ public class StorageImpl implements Storage {
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
 				connection.setAutoCommit(false);
-				PreparedStatement stmt = connection.prepareStatement(query);
+				stmt = connection.prepareStatement(query);
 				
 				stmt.setString(1, username);
 				stmt.setString(2, password);
 				
-				java.sql.ResultSet rs = stmt.executeQuery();
+				rs = stmt.executeQuery();
 				props = utils.resultSetRowToProperties(rs);
-				rs.close();
-				stmt.close();
 				connection.commit();
 				
 				// Create a PlatformUser object
 				user = userFactory.build(props);
 				((PlatformUserIdentifier) user.getIdentifier()).setPassword(null);
 			} catch (SQLException | NullPointerException e) {
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id, e);
 				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
+				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": " + id, e);
 				throw new StorageException(INSTANCE_USER_ERROR);
+			} finally {
+				try {
+					rs.close();
+					stmt.close();
+				} catch (SQLException e) {}
 			}
 		} else {
+			stmt = null;
+			rs = null;
+			
 			// This is a generic user.
 			String userType = id.identifies().getSimpleName();
 			Properties props = null;
@@ -1289,24 +1366,29 @@ public class StorageImpl implements Storage {
 					" ORDER BY uuid ASC;";
 			
 			try {
-				PreparedStatement stmt = connection.prepareStatement(query);
+				stmt = connection.prepareStatement(query);
 				
 				int i = 1;
 				for (Entry<Object, Object> entry : id.getProperties().entrySet()) {
 					utils.addParameter(stmt, entry.getValue(), i++, false);
 				}
 				
-				java.sql.ResultSet rs = stmt.executeQuery();
+				rs = stmt.executeQuery();
 				
 				props = utils.resultSetRowToProperties(rs);
-				rs.close();
-				stmt.close();
 				user = userFactory.build(userType,
 						(String) props.get("service_name"), props);
 			} catch (SQLException | NullPointerException e) {
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id, e);
 				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
+				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": " + id, e);
 				throw new StorageException(INSTANCE_USER_ERROR);
+			} finally {
+				try {
+					rs.close();
+					stmt.close();
+				} catch (SQLException e) {}
 			}
 		}
 		
@@ -1342,6 +1424,7 @@ public class StorageImpl implements Storage {
 			// Generate the table name
 			String tableName = user.getClass().getCanonicalName();
 			
+			Statement stmt = null;
 			String query = null;
 			String id = null;
 			
@@ -1356,15 +1439,19 @@ public class StorageImpl implements Storage {
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
 				connection.setAutoCommit(false);
-				Statement stmt = connection.createStatement();
+				stmt = connection.createStatement();
 				Properties props =
 						utils.resultSetRowToProperties(stmt.executeQuery(query));
 				user.populate(props);
-				stmt.close();
 				connection.commit();
 			} catch (SQLException | NullPointerException e) {
 				// No user type
+				log(LogService.LOG_WARNING, STORAGE_ERROR + ": " + user, e);
 				throw new StorageException(STORAGE_ERROR);
+			} finally {
+				try {
+					stmt.close();
+				} catch (SQLException e) {}
 			}
 		}
 		
@@ -1412,17 +1499,15 @@ public class StorageImpl implements Storage {
 				user.populate((Properties) props.get(i));
 				users.add(user);
 			}
-			
+
+			connection.commit();
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
 			// Well, that didn't work too well. Just return an empty array,
 			// i.e. do nothing here.
 		} finally {
 			try {
 				stmt.close();
-				connection.commit();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			} catch (Exception e) {}
 		}
 		
 		
@@ -1467,17 +1552,15 @@ public class StorageImpl implements Storage {
 			for (i = 0; i < props.size(); i++) {
 				users.add((PlatformUser) userFactory.build((Properties) props.get(i)));
 			}
-			
+
+			connection.commit();
 		} catch (SQLException | UserInitalizationException e) {
 			// Well, that didn't work too well. Just return an empty array,
 			// i.e. do nothing here.
 		} finally {
 			try {
 				stmt.close();
-				connection.commit();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			} catch (Exception e) {}
 		}
 		
 		return (PlatformUser[]) users.toArray(new PlatformUser[0]);
@@ -1515,16 +1598,18 @@ public class StorageImpl implements Storage {
 		Class<?> clazz = query.getDataType();
 		
 		if (query != null) {
+			Statement stmt = null;
+			java.sql.ResultSet rs = null;
 			query.setTranslator(new MySQLQueryTranslator());
 			
 			try {
 				// Let's take command of the commit ship ourselves.
 				// Forward, mateys!
 				connection.setAutoCommit(false);
-				Statement stmt = connection.createStatement();
+				stmt = connection.createStatement();
 				
 				// Fetch the results and convert them to readable objects.
-				java.sql.ResultSet rs = stmt.executeQuery(query.compile());
+				rs = stmt.executeQuery(query.compile());
 				ArrayList<Properties> propList = utils.resultSetToProperties(rs);
 				ArrayList<Object> objs = new ArrayList<Object>();
 				Object instance = null;
@@ -1543,26 +1628,39 @@ public class StorageImpl implements Storage {
 						// Well, this was awkward. We don't know what this is.
 						// Rather than trying to guess and potentially destroy
 						// things, just give up and die.
+						stmt.close();
+						log(LogService.LOG_WARNING, INSTANCE_OBJECT_ERROR);
 						throw new StorageException(INSTANCE_OBJECT_ERROR);
 					}
 					objs.add(props);
 				}
 				
 				// Close the database stuff gracefully
-				rs.close();
-				stmt.close();
 				connection.commit();
 				
 				// Aaand we're done. Finish this up, then move on.
 				result = new ResultSetImpl(clazz, objs.toArray());
 			} catch (SQLException | IllegalAccessException e) {
+				log(LogService.LOG_WARNING, STORAGE_ERROR, e);
 				throw new StorageException(STORAGE_ERROR);
 			} catch (InstantiationException e) {
+				log(LogService.LOG_WARNING, INSTANCE_OBJECT_ERROR, e);
 				throw new StorageException(INSTANCE_OBJECT_ERROR);
+			} finally {
+				try {
+					rs.close();
+					stmt.close();
+				} catch (SQLException e) {}
 			}
 		}
 				
 		return result;
+	}
+	
+	private void log(int level, String message, Throwable t) {
+		if (log != null) {
+			log.log(level, message, t);
+		}
 	}
 	
 	private void log(int level, String message) {
