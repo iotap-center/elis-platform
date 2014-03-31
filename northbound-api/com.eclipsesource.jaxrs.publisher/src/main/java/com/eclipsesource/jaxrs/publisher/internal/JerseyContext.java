@@ -37,6 +37,10 @@ public class JerseyContext {
     this.application = new RootApplication();
     this.servletContainer = new ServletContainer( ResourceConfig.forApplication( application ) );
   }
+  
+  public JerseyContext( HttpService httpService, String rootPath, int version ) {
+	this(httpService, "/api/v" + version);
+  }
 
   public void addResource( Object resource ) {
     getRootApplication().addResource( resource );

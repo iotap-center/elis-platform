@@ -26,6 +26,7 @@ public class JAXRSConnector {
   
   private static final String HTTP_SERVICE_PORT_PROPERTY = "org.osgi.service.http.port";
   private static final String RESOURCE_HTTP_PORT_PROPERTY = "http.port";
+  private static final int DEFAULT_VERSION = 1; // Move this to a better place?
   private static final String DEFAULT_HTTP_PORT = "80";
   
   private final Object lock = new Object();
@@ -184,7 +185,7 @@ public class JAXRSConnector {
 
   // For testing purpose
   JerseyContext createJerseyContext( HttpService service, String rootPath ) {
-    return new JerseyContext( service, rootPath );
+    return new JerseyContext( service, rootPath, DEFAULT_VERSION );
   }
   
 }
