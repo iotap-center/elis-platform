@@ -1,6 +1,8 @@
 The Elis Platform
 =============
 
+Version 0.2.2
+
 This project focuses on exploring the potential of mobile services on mobile devices (e.g. smart phones and tablets) to promote energy efficiency in existing buildings. Read more about the background [here](http://elis.mah.se).
 
 This document describes aspects useful while working on the implementation of Elis.
