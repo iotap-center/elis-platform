@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.eclipsesource.jaxrs.publisher</groupId>
-  <artifactId>osgi-connector</artifactId>
+  <artifactId>elis-api-publisher</artifactId>
   <packaging>bundle</packaging>
-  <name>The Elis OSGI HTTP Connector Service Bundle</name>
+  <name>The Elis HTTP API publisher service</name>
   
   <build>
     <plugins>
