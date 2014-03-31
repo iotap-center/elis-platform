@@ -24,6 +24,20 @@ There is a special project called `super` which contains a Maven specification t
 
 `mvn clean compile test bundle:bundle install:install wagon:upload javadoc:javadoc site`
 
+## Version management
+
+**Releases**
+
+Follows the pattern `major.minor.patch`. _major_ is used when significant new releases are made, e.g., several new APIs are added to the platform. _minor_ is used for smaller updates, e.g., improved performance or small features. _patch_ is used for hotfixes. 
+
+**Bundles**
+
+Follows the pattern `major.minor.patch`. _major_ is used when a change in the public API isn't backwards compatible. _minor_ is used when the public API is extended in a backwards compatible way. _patch_ is used when the public API is left unchanged (e.g. a bug fix).
+
+**HTTP API**
+
+Follows the pattern `/api/v#` where `#` is an ever increasing integer. Update version number for any additions or breaking changes to the API. Breaking changes includes both requests and responses. 
+
 ## Demo users
 
 The `elis-demo-users` bundle provides a set of demo users that can be used for system and integration testing. It installs a demo platform user and connects two providers to it: E.On and MKB Water data. For the water data to work it is necessary to download a copy of the data from Elvaco ([instructions here](https://github.com/medeamalmo/elis-platform/tree/master/felix-configuration#deploying-elis)). 
