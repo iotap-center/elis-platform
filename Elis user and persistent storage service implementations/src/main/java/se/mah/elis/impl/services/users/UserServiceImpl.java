@@ -267,13 +267,13 @@ public class UserServiceImpl implements UserService {
 	
 	private void log(int level, String message, Throwable t) {
 		if (log != null) {
-			log.log(level, message, t);
+			log.log(level, "UserServiceImpl: " + message, t);
 		}
 	}
 	
 	private void log(int level, String message) {
 		if (log != null) {
-			log.log(level, message);
+			log.log(level, "UserServiceImpl: " + message);
 		}
 	}
 

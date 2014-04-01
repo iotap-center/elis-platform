@@ -157,6 +157,8 @@ public class StorageImpl implements Storage {
 		//		 minimizing execution time and DB load.
 		
 		if (data != null && StorageUtils.validateEDOProperties(data.getProperties(), false)) {
+			log(LogService.LOG_INFO, "Inserting data: " + data);
+			
 			PreparedStatement stmt = null;
 			
 			// Basically, this is a new object. Let's insert it.
@@ -232,6 +234,7 @@ public class StorageImpl implements Storage {
 				} catch (SQLException e) {}
 			}
 		} else {
+			log(LogService.LOG_WARNING, "Failed to insert data");
 			throw new StorageException();
 		}
 	}
@@ -308,6 +311,8 @@ public class StorageImpl implements Storage {
 		PreparedStatement stmt = null;
 		
 		if (user != null) {
+			log(LogService.LOG_INFO, "Inserting user: " + user);
+			
 			if (user.getServiceName() == null ||
 					user.getServiceName().isEmpty()) {
 				log(LogService.LOG_WARNING, USER_NOT_VALID + ": No service name");
@@ -462,6 +467,8 @@ public class StorageImpl implements Storage {
 					} catch (Exception e) {}
 				}
 			}
+		} else {
+			log(LogService.LOG_WARNING, "Failed to insert user");
 		}
 	}
 
@@ -536,6 +543,8 @@ public class StorageImpl implements Storage {
 		boolean updated = false;
 		
 		if (data != null) {
+			log(LogService.LOG_INFO, "Updating data object: " + data);
+			
 			if (!StorageUtils.validateEDOProperties(data.getProperties(), true)) {
 				log(LogService.LOG_WARNING, OBJECT_NOT_FOUND + ": " + data.toString());
 				throw new StorageException(OBJECT_NOT_FOUND);
@@ -595,6 +604,8 @@ public class StorageImpl implements Storage {
 			if (!updated) {
 				throw new StorageException(OBJECT_NOT_FOUND);
 			}
+		} else {
+			log(LogService.LOG_WARNING, "Failed to update data object");
 		}
 	}
 
@@ -669,6 +680,8 @@ public class StorageImpl implements Storage {
 		String tableName = null;
 		
 		if (user != null) {
+			log(LogService.LOG_INFO, "Updating user: " + user);
+			
 			if (user.getIdentifier() == null ||
 				StorageUtils.isEmpty(user.getIdentifier().getProperties()) ||
 				user.getUserId() == null) {
@@ -811,6 +824,8 @@ public class StorageImpl implements Storage {
 					} catch (SQLException e) {}
 				}
 			}
+		} else {
+			log(LogService.LOG_WARNING, "Failed to update user");
 		}
 	}
 
@@ -878,6 +893,8 @@ public class StorageImpl implements Storage {
 	 */
 	private void delete(ElisDataObject data, boolean finalRun) throws StorageException {
 		if (data != null) {
+			log(LogService.LOG_INFO, "Deleting data: " + data);
+			
 			// TODO: It might be possible to create a version of this method that
 			//		 also takes a PreparedStatement as a parameter, thereby
 			//		 minimizing execution time and DB load.
@@ -913,6 +930,8 @@ public class StorageImpl implements Storage {
 					stmt.close();
 				} catch (SQLException e) {}
 			}
+		} else {
+			log(LogService.LOG_WARNING, "Failed to delete data object");
 		}
 	}
 
@@ -981,6 +1000,8 @@ public class StorageImpl implements Storage {
 		// TODO: It might be possible to create a version of this method that
 		//		 also takes a PreparedStatement as a parameter, thereby
 		//		 minimizing execution time and DB load.
+		
+		log(LogService.LOG_INFO, "Deleting user: " + user);
 		
 		if (user != null && user.getUserId() != null) {
 			PreparedStatement stmt = null;
@@ -1142,6 +1163,8 @@ public class StorageImpl implements Storage {
 		String query = null;
 		Properties props = null;
 		
+		log(LogService.LOG_INFO, "Reading data: " + id);
+		
 		if (tableName != null) {
 			className = StorageUtils.demysqlifyName(tableName);
 			try {
@@ -1225,6 +1248,8 @@ public class StorageImpl implements Storage {
 		String className = null;
 		Statement stmt = null;
 		java.sql.ResultSet rs = null;
+		
+		log(LogService.LOG_INFO, "Reading user: " + id);
 		
 		if (tableName != null) {
 			className = StorageUtils.demysqlifyName(tableName);
@@ -1311,6 +1336,8 @@ public class StorageImpl implements Storage {
 		String className = clazz.getName();
 		String tableName = StorageUtils.mysqlifyName(className);
 		String query = null;
+		
+		log(LogService.LOG_INFO, "Reading user: " + id);
 
 		if (clazz == se.mah.elis.services.users.PlatformUser.class) {
 			// This is a platform user.
@@ -1421,6 +1448,8 @@ public class StorageImpl implements Storage {
 	private AbstractUser readUser(AbstractUser user, boolean finalRun)
 			throws StorageException {
 		if (user != null) {
+			log(LogService.LOG_INFO, "Reading user: " + user);
+			
 			// Generate the table name
 			String tableName = user.getClass().getCanonicalName();
 			
@@ -1453,6 +1482,8 @@ public class StorageImpl implements Storage {
 					stmt.close();
 				} catch (SQLException e) {}
 			}
+		} else {
+			log(LogService.LOG_WARNING, "Failed to read user");
 		}
 		
 		return user;
@@ -1465,6 +1496,8 @@ public class StorageImpl implements Storage {
 		PreparedStatement stmt = null;
 		String query = null;
 		int i = 1;
+		
+		log(LogService.LOG_INFO, "Reading users: " + userType + ", " + criteria);
 		
 		// First of all, remove any attempts to filter on "password"
 		criteria.remove("password");
@@ -1520,6 +1553,8 @@ public class StorageImpl implements Storage {
 		PreparedStatement stmt = null;
 		String query = null;
 		int i = 1;
+		
+		log(LogService.LOG_INFO, "Reading platform users: " + criteria);
 		
 		// First of all, remove any attempts to filter on "password"
 		criteria.remove("password");
@@ -1659,13 +1694,13 @@ public class StorageImpl implements Storage {
 	
 	private void log(int level, String message, Throwable t) {
 		if (log != null) {
-			log.log(level, message, t);
+			log.log(level, "StorageImpl: " + message, t);
 		}
 	}
 	
 	private void log(int level, String message) {
 		if (log != null) {
-			log.log(level, message);
+			log.log(level, "StorageImpl: " + message);
 		}
 	}
 
