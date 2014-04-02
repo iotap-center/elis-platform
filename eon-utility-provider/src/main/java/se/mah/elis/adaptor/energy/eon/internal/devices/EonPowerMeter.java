@@ -23,8 +23,8 @@ import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.exceptions.StaticEntityException;
 
 /**
- * A virtual representation of the E.On power meter. Powerswitches which is 
- * capable of metering also inherits from this class. 
+ * A virtual representation of the E.On power meter. Powerswitches which is
+ * capable of metering also inherits from this class.
  * 
  * @author Joakim Lithell
  * @author Marcus Ljungblad
@@ -35,8 +35,9 @@ import se.mah.elis.exceptions.StaticEntityException;
 public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 
 	private static final int VALUETYPE_POWER = 0;
-	private static DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
-	
+	private static DateTimeFormatter fmt = DateTimeFormat
+			.forPattern("yyyy-MM-dd");
+
 	protected boolean isOnline;
 	protected EonGateway gateway;
 	protected DeviceIdentifier deviceId;
@@ -123,20 +124,22 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		List<ElectricitySample> samples = new ArrayList<ElectricitySample>();
 
 		DateTime start = from;
-		
+
 		while (start.isBefore(to)) {
 			try {
 				List<Map<String, Object>> data = httpBridge.getStatData(
-						this.gateway.getAuthenticationToken(), getGatewayAddress(),
-						this.getId().toString(), formatDate(start), VALUETYPE_POWER);
+						this.gateway.getAuthenticationToken(),
+						getGatewayAddress(), this.getId().toString(),
+						formatDate(start), formatDate(start.plusDays(1)),
+						VALUETYPE_POWER);
 				samples.addAll(convertToSamples(data, start));
 			} catch (ParseException e) {
 				throw new SensorFailedException();
 			}
-			
+
 			start = start.plusDays(1);
-			
-			if (start.equals(to)) 
+
+			if (start.equals(to))
 				break;
 		}
 
@@ -146,21 +149,24 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 	private Collection<? extends ElectricitySample> convertToSamples(
 			List<Map<String, Object>> data, DateTime from) {
 		List<ElectricitySample> samples = new ArrayList<>();
-		
+
 		for (Map<String, Object> rawsample : data) {
 			double value = number(rawsample.get("Value"));
-			DateTime sampleTime = calculateSampleTime(from, (String) rawsample.get("Key"));
-			ElectricitySample sample = new ElectricitySampleImpl(value, sampleTime);
+			DateTime sampleTime = calculateSampleTime(from,
+					(String) rawsample.get("Key"));
+			ElectricitySample sample = new ElectricitySampleImpl(value,
+					sampleTime);
 			samples.add(sample);
 		}
-		
+
 		return samples;
 	}
 
 	private DateTime calculateSampleTime(DateTime from, String offset) {
 		int HOUR_START = 11;
 		int HOUR_STOP = 13;
-		int offsetInHours = Integer.parseInt(offset.substring(HOUR_START, HOUR_STOP));
+		int offsetInHours = Integer.parseInt(offset.substring(HOUR_START,
+				HOUR_STOP));
 		DateTime sampleTime = from.plusHours(offsetInHours);
 		return sampleTime;
 	}
