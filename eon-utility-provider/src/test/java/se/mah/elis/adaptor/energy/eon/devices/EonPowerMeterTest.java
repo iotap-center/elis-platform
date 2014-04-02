@@ -33,7 +33,7 @@ import se.mah.elis.exceptions.StaticEntityException;
 
 public class EonPowerMeterTest {
 
-	private static DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
+	private static DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
 	private EonPowerMeter eonPowerMeter;
 	private EonHttpBridge bridge;
 	private EonGateway gateway;
@@ -46,7 +46,7 @@ public class EonPowerMeterTest {
 		bridge = mock(EonHttpBridge.class);
 		when(bridge.getPowerMeterKWh(anyString(), anyString(), anyString())).thenReturn(DUMMY_KWH);
 		when(bridge.getStatData(anyString(), anyString(), anyString(), 
-				anyString(), anyInt())).thenReturn(history);
+				anyString(), anyString(), anyInt())).thenReturn(history);
 		
 		GatewayAddress gwaddr = mock(GatewayAddress.class);
 		when(gwaddr.toString()).thenReturn("gateway");
@@ -98,8 +98,8 @@ public class EonPowerMeterTest {
 	
 	@Test
 	public void testGetSamples() throws SensorFailedException {
-		DateTime from = fmt.parseDateTime("2014-01-01 00:00");
-		DateTime to = fmt.parseDateTime("2014-01-02 00:00");
+		DateTime from = fmt.parseDateTime("2014-01-01");
+		DateTime to = fmt.parseDateTime("2014-01-02");
 		
 		List<ElectricitySample> samples = eonPowerMeter.getSamples(from, to);
 		assertEquals(24, samples.size());
@@ -109,8 +109,8 @@ public class EonPowerMeterTest {
 	
 	@Test
 	public void testGetSamplesOverMultipleDays() throws ParseException, SensorFailedException {
-		DateTime from = fmt.parseDateTime("2014-02-01 00:00");
-		DateTime to = fmt.parseDateTime("2014-02-03 00:00");
+		DateTime from = fmt.parseDateTime("2014-02-01");
+		DateTime to = fmt.parseDateTime("2014-02-03");
 
 		// execute
 		List<ElectricitySample> samples = eonPowerMeter.getSamples(from, to);
@@ -123,8 +123,8 @@ public class EonPowerMeterTest {
 	
 	@Test 
 	public void testFormatDate() {
-		DateTime date = fmt.parseDateTime("2014-01-01 05:00");
-		assertEquals("2014-01-01 05:00", eonPowerMeter.formatDate(date));
+		DateTime date = fmt.parseDateTime("2014-01-01");
+		assertEquals("2014-01-01", eonPowerMeter.formatDate(date));
 	}
 	
 }

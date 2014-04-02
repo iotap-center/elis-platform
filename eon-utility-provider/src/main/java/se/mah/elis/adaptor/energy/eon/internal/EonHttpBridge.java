@@ -320,10 +320,11 @@ public class EonHttpBridge {
 	 * @throws ParseException
 	 */
 	public List<Map<String, Object>> getStatData(String token, String gatewayId, 
-			String deviceId, String from, int level) throws ParseException {
+			String deviceId, String from, String to, int level) throws ParseException {
 		JSONObject options = new JSONObject();
 		options.put("DeviceId", deviceId);
 		options.put("From", from);
+		options.put("To", to);
 
 		WebTarget target = createTarget(STATDATA_ENDPOINT);
 		target = target.queryParam(EWP_PANEL_ID, gatewayId)
