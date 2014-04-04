@@ -191,6 +191,7 @@ public class EnergyBeanFactory {
 			sampleBean.watts = sample.getCurrentPower() / 1000.0;
 		
 		sampleBean.timestamp = unixtime(sample.getSampleTimestamp());
+		sampleBean.humanReadableTimestamp = sample.getSampleTimestamp().toString();
 		
 		return sampleBean;
 	}

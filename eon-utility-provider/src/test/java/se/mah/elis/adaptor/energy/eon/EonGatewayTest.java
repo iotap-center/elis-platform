@@ -17,6 +17,7 @@ import javax.ws.rs.client.ResponseProcessingException;
 
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import se.mah.elis.adaptor.device.api.data.GatewayAddress;
@@ -96,6 +97,7 @@ public class EonGatewayTest {
 	}
 	
 	@Test
+	@Ignore
 	public void testConnectWithRealUser() {
 		try {
 			EonHttpBridge bridge = new EonHttpBridge(TEST_HOST, TEST_PORT, TEST_BASEPATH);
@@ -110,6 +112,7 @@ public class EonGatewayTest {
 	}
 	
 	@Test 
+	@Ignore
 	public void testValidToken() {
 		EonHttpBridge bridge = new EonHttpBridge(TEST_HOST, TEST_PORT, TEST_BASEPATH);
 		try {

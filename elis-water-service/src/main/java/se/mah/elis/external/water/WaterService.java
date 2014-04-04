@@ -97,7 +97,7 @@ public class WaterService {
 			logWarning("Bad UUID");
 		}
 
-		if (userService != null && uuid != null) {
+		if (isAvailable(userService) && uuid != null) {
 			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null) {
 				response = buildCurrentWaterConsumptionResponseFrom(pu);
@@ -111,6 +111,10 @@ public class WaterService {
 		}
 
 		return response.build();
+	}
+
+	private boolean isAvailable(Object o) {
+		return o != null;
 	}
 
 	private ResponseBuilder buildCurrentWaterConsumptionResponseFrom(
@@ -151,23 +155,36 @@ public class WaterService {
 			@DefaultValue("") @QueryParam("to") String to) {
 		ResponseBuilder response = null;
 		UUID uuid = null;
+		DateTime fromDt = null;
+		DateTime toDt = null;
 		
 		logRequest("daily", puid, from, to);
 		
 		try {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
-			response = Response.status(Response.Status.BAD_REQUEST);
-			logWarning("Bad UUID");
+			logWarning("UUID is malformed");
+		}
+		
+		try {
+			fromDt = parseFromDate(from);
+			toDt = parseToDate(to);
+		} catch (NumberFormatException nfe) {
+			logWarning("Date is in the future or malformed");
 		}
 
-		if (userService != null && uuid != null) {
-			PlatformUser pu = userService.getPlatformUser(uuid);
-			if (pu != null)
-				response = buildDailyWaterConsumptionResponseFrom(pu, from, to);
-			else {
-				response = Response.status(Response.Status.NOT_FOUND);
-				logWarning("Could not find user: " + uuid.toString());
+		
+		if (isAvailable(userService)) { 
+			if (isValidRequest(uuid, fromDt, toDt)) {
+				PlatformUser pu = userService.getPlatformUser(uuid);
+				if (pu != null)
+					response = buildDailyWaterConsumptionResponseFrom(pu, fromDt, toDt);
+				else {
+					response = Response.status(Response.Status.NOT_FOUND);
+					logWarning("Could not find user: " + uuid.toString());
+				}
+			} else {
+				response = Response.status(Response.Status.BAD_REQUEST);
 			}
 		} else if (response == null) {
 			response = Response.serverError();
@@ -178,23 +195,21 @@ public class WaterService {
 	}
 
 	private ResponseBuilder buildDailyWaterConsumptionResponseFrom(
-			PlatformUser pu, String from, String to) {
+			PlatformUser pu, DateTime fromDt, DateTime toDt) {
+		
 		ResponseBuilder response;
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getDailySamplesForMeters(
-				waterMeters, from, to);
+				waterMeters, fromDt, toDt);
 		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_DAILY, pu);
 		response = Response.ok(gson.toJson(waterConsumptionBean));
 		return response;
 	}
 	
 	private Map<String, List<WaterSample>> getDailySamplesForMeters(
-			List<WaterMeterSampler> waterMeters, String from, String to) {
+			List<WaterMeterSampler> waterMeters, DateTime fromDt, DateTime toDt) {
 		Map<String, List<WaterSample>> samples = new HashMap<String, List<WaterSample>>();
 
-		DateTime fromDt = parseFromDate(from);
-		DateTime toDt = parseToDate(to);
-		
 		while (!fromDt.isAfter(toDt)) {
 			for (WaterMeterSampler sampler : waterMeters) {
 				tryAddRange(samples, sampler, fromDt, fromDt.plusDays(1));
@@ -224,23 +239,36 @@ public class WaterService {
 			@DefaultValue("") @QueryParam("to") String to) {
 		ResponseBuilder response = null;
 		UUID uuid = null;
+		DateTime fromDt = null;
+		DateTime toDt = null;
+		
+		logRequest("weekly", puid, from, to);
 		
 		try {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
-			response = Response.status(Response.Status.BAD_GATEWAY);
-			logWarning("Bad UUID");
+			logWarning("UUID is malformed");
+		}
+		
+		try {
+			fromDt = parseFromDate(from);
+			toDt = parseToDate(to);
+		} catch (NumberFormatException nfe) {
+			logWarning("Date is in the future or malformed");
 		}
 
-		logRequest("weekly", puid, from, to);
 		
-		if (userService != null && uuid != null) {
-			PlatformUser pu = userService.getPlatformUser(uuid);
-			if (pu != null)
-				response = buildWeeklyWaterConsumptionResponseFrom(pu, from, to);
-			else {
-				response = Response.status(Response.Status.NOT_FOUND);
-				logWarning("Could not find user: " + uuid.toString());
+		if (isAvailable(userService)) { 
+			if (isValidRequest(uuid, fromDt, toDt)) {
+				PlatformUser pu = userService.getPlatformUser(uuid);
+				if (pu != null)
+					response = buildWeeklyWaterConsumptionResponseFrom(pu, fromDt, toDt);
+				else {
+					logWarning("Could not find user: " + uuid.toString());
+					response = Response.status(Response.Status.NOT_FOUND);
+				}
+			} else {
+				response = Response.status(Response.Status.BAD_REQUEST);
 			}
 		} else if (response == null) {
 			response = Response.serverError();
@@ -251,7 +279,7 @@ public class WaterService {
 	}
 
 	private ResponseBuilder buildWeeklyWaterConsumptionResponseFrom(
-			PlatformUser pu, String from, String to) {
+			PlatformUser pu, DateTime from, DateTime to) {
 		ResponseBuilder response;
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getWeeklySamplesForMeters(
@@ -262,11 +290,8 @@ public class WaterService {
 	}
 	
 	private Map<String, List<WaterSample>> getWeeklySamplesForMeters(
-			List<WaterMeterSampler> waterMeters, String from, String to) {
+			List<WaterMeterSampler> waterMeters, DateTime fromDt, DateTime toDt) {
 		Map<String, List<WaterSample>> samples = new HashMap<String, List<WaterSample>>();
-
-		DateTime fromDt = parseFromDate(from);
-		DateTime toDt = parseToDate(to);
 		
 		while (!fromDt.isAfter(toDt)) {
 			for (WaterMeterSampler sampler : waterMeters) {
@@ -297,22 +322,36 @@ public class WaterService {
 			@DefaultValue("") @QueryParam("to") String to) {
 		ResponseBuilder response = null;
 		UUID uuid = null;
+		DateTime fromDt = null;
+		DateTime toDt = null;
+		
+		logRequest("monthly", puid, from, to);
 		
 		try {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
-			response = Response.status(Response.Status.BAD_GATEWAY);
+			logWarning("UUID is malformed");
+		}
+		
+		try {
+			fromDt = parseFromDate(from);
+			toDt = parseToDate(to);
+		} catch (NumberFormatException nfe) {
+			logWarning("Date is in the future or malformed");
 		}
 
-		logRequest("monthly", puid, from, to);
 		
-		if (userService != null && uuid != null) {
-			PlatformUser pu = userService.getPlatformUser(uuid);
-			if (pu != null)
-				response = buildMonthlyWaterConsumptionResponseFrom(pu, from, to);
-			else {
-				logWarning("No such user: " + puid);
-				response = Response.status(Response.Status.NOT_FOUND);
+		if (isAvailable(userService)) { 
+			if (isValidRequest(uuid, fromDt, toDt)) {
+				PlatformUser pu = userService.getPlatformUser(uuid);
+				if (pu != null)
+					response = buildMonthlyWaterConsumptionResponseFrom(pu, fromDt, toDt);
+				else {
+					logWarning("No such user: " + puid);
+					response = Response.status(Response.Status.NOT_FOUND);
+				}
+			} else {
+				response = Response.status(Response.Status.BAD_REQUEST);
 			}
 		} else if (response == null) {
 			response = Response.serverError();
@@ -322,8 +361,12 @@ public class WaterService {
 		return response.build();
 	}
 
+	private boolean isValidRequest(UUID uuid, DateTime fromDt, DateTime toDt) {
+		return (uuid != null && fromDt != null && toDt != null);
+	}
+
 	private ResponseBuilder buildMonthlyWaterConsumptionResponseFrom(
-			PlatformUser pu, String from, String to) {
+			PlatformUser pu, DateTime from, DateTime to) {
 		ResponseBuilder response;
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getMonthlySamplesForMeters(
@@ -334,18 +377,16 @@ public class WaterService {
 	}
 
 	private Map<String, List<WaterSample>> getMonthlySamplesForMeters(
-			List<WaterMeterSampler> waterMeters, String from, String to) {
+			List<WaterMeterSampler> waterMeters, DateTime from, DateTime to) {
 		Map<String, List<WaterSample>> samples = new HashMap<String, List<WaterSample>>();
-		DateTime fromDt = parseFromDate(from);
-		DateTime toDt = parseToDate(to);
 		
-		while (!fromDt.isAfter(toDt)) {
+		while (!from.isAfter(to)) {
 			for (WaterMeterSampler sampler : waterMeters) {
-				tryAddRange(samples, sampler, fromDt, fromDt.plusMonths(1));
+				tryAddRange(samples, sampler, from, from.plusMonths(1));
 			}
-			fromDt = fromDt.plusMonths(1);
+			from = from.plusMonths(1);
 			
-			if (fromDt.equals(toDt))
+			if (from.equals(to))
 				break;
 		}
 
@@ -360,7 +401,8 @@ public class WaterService {
 				samples.put(sampler.getName(), new ArrayList<WaterSample>());
 			samples.get(sampler.getName()).add(sample);
 		} catch (SensorFailedException e) {
-			// ignore sample
+			logWarning("Could not retrieve sample from meter (" + sampler.getName() + ")"
+					+ " between " + fromDt + " and " + fromDtPlusRange);
 		}
 	}
 
@@ -372,7 +414,6 @@ public class WaterService {
 		for (User user : users) {
 			if (user instanceof GatewayUser) {
 				Gateway gateway = ((GatewayUser) user).getGateway();
-				logInfo("Found " + gateway.size() + " devices");
 				for (Device device : gateway) {
 					if (device instanceof WaterMeterSampler) {
 						logInfo("Found water metering device: " + device.getName());
@@ -396,19 +437,27 @@ public class WaterService {
 		}
 	}
 	
-	private DateTime parseFromDate(String from) {
-		return new Instant(Long.parseLong(from)).toDateTime();
+	private DateTime parseFromDate(String from) throws NumberFormatException {
+		long value = Long.parseLong(from);
+		DateTime dt = new Instant(value).toDateTime();
+		if (dt.isAfterNow())
+			throw new NumberFormatException();
+		return dt;
 	}
 
-	private DateTime parseToDate(String to) {
+	private DateTime parseToDate(String to) throws NumberFormatException {
 		DateTime toDt;
-		if (!to.isEmpty())
-			toDt = new Instant(Long.parseLong(to)).toDateTime();
-		else 
+		
+		if (!to.isEmpty()) {
+			long value = Long.parseLong(to);
+			toDt = new Instant(value).toDateTime();
+		} else { 
 			toDt = DateTime.now();
+		}
 		
 		if (toDt.isAfter(DateTime.now()))
 			toDt = DateTime.now();	
+		
 		return toDt;
 	}
 

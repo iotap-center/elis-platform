@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.eclipsesource.jaxrs.publisher</groupId>
+  <artifactId>elis-api-publisher</artifactId>
+  <packaging>bundle</packaging>
+  <name>The Elis HTTP API publisher service</name>
+  
+  <build>
+    <plugins>
+      <plugin>    <!-- (2) START -->
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.4.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>${project.groupId}</Export-Package>
+            <Private-Package>${project.groupId}.*</Private-Package>
+            <Bundle-Activator>${project.groupId}.internal.Activator</Bundle-Activator>
+          </instructions>
+        </configuration>
+      </plugin>    <!-- (2) END -->
+    </plugins>
+  </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.osgi</groupId>
+  		<artifactId>org.osgi.core</artifactId>
+  		<version>4.3.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.osgi</groupId>
+  		<artifactId>org.osgi.compendium</artifactId>
+  		<version>4.3.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>javax.ws.rs</groupId>
+  		<artifactId>javax.ws.rs-api</artifactId>
+  		<version>2.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.glassfish.jersey.core</groupId>
+  		<artifactId>jersey-server</artifactId>
+  		<version>2.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.glassfish.jersey.core</groupId>
+  		<artifactId>jersey-common</artifactId>
+  		<version>2.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.glassfish.jersey.containers</groupId>
+  		<artifactId>jersey-container-servlet-core</artifactId>
+  		<version>2.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>javax.servlet</groupId>
+  		<artifactId>javax.servlet-api</artifactId>
+  		<version>3.0.1</version>
+  	</dependency>
+  </dependencies>
+  <parent>
+  	<groupId>se.mah.elis</groupId>
+  	<artifactId>super-pom</artifactId>
+  	<version>1.0.0</version>
+  	<relativePath>../../super</relativePath>
+  </parent>
+</project>

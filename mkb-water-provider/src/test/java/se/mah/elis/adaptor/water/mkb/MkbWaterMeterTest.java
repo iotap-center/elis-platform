@@ -39,7 +39,16 @@ public class MkbWaterMeterTest {
 		} catch (SensorFailedException e) {
 			fail("sensor failed");
 		}
-		
+	}
+	
+	@Test
+	public void testGetLatestSampleWhenNoDataSourceIsInstalled() {
+		meter = new MkbWaterMeter(null);
+		changeMeter(meterId);
+		try {
+			meter.getSample();
+			fail("meter should have thrown SensorFailedException");
+		} catch (SensorFailedException sfe) {}
 	}
 	
 	@Test

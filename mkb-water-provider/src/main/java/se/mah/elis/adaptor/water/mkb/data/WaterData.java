@@ -4,82 +4,90 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.felix.scr.annotations.Reference;
 import org.joda.time.DateTime;
+import org.osgi.service.log.LogService;
 
 /**
  * 
- * Implementation to query water data as provided by the {@link WaterDataLoader} 
- * and reached via the {@link WaterDataService}. 
+ * Implementation to query water data as provided by the {@link WaterDataLoader}
+ * and reached via the {@link WaterDataService}.
  * 
  * @author Marcus Ljungblad
  * @since 1.0
  * @version 1.0
- *
+ * 
  */
 public class WaterData {
-	
+
+	@Reference
+	private LogService log;
+
 	private Map<String, List<WaterDataPoint>> userDataMap;
-	
+
 	public WaterData() {
 		userDataMap = new HashMap<>();
 	}
-	
+
 	/**
-	 * Sets the water data measurement points. 
-	 *  
+	 * Sets the water data measurement points.
+	 * 
 	 * @param map
 	 */
 	public void setWaterData(Map<String, List<WaterDataPoint>> map) {
 		userDataMap = map;
 	}
-	
+
 	/**
-	 * Retrieve a range of data points for a specific meter. 
+	 * Retrieve a range of data points for a specific meter.
 	 * 
 	 * @param meterId
 	 * @param start
 	 * @param end
 	 * @return
 	 */
-	public List<WaterDataPoint> getRange(String meterId, DateTime start, DateTime end) {
-		if (userDataMap.containsKey(meterId))
+	public List<WaterDataPoint> getRange(String meterId, DateTime start,
+			DateTime end) {
+		if (userDataMap.containsKey(meterId)) {
 			return getRangeInSamples(meterId, userDataMap.get(meterId), start, end);
+		}
 		return null;
 	}
-	
-	private List<WaterDataPoint> getRangeInSamples(String meterId, List<WaterDataPoint> list, 
-			DateTime start, DateTime end) {
+
+	private List<WaterDataPoint> getRangeInSamples(String meterId,
+			List<WaterDataPoint> list, DateTime start, DateTime end) {
 		int listsize = list.size();
 		int startIndex = 0;
 		int stopIndex = listsize;
-		
+
 		startIndex = findStartIndex(meterId, list, start, listsize);
 		stopIndex = findStopIndex(list, end, listsize, startIndex);
-		
+
 		if (getLastDate(meterId).equals(end))
 			stopIndex += 1; // include last element
+
+		List<WaterDataPoint> points = list.subList(startIndex, stopIndex);
 		
-		return list.subList(startIndex, stopIndex);
-		
+		return points;
 	}
 
-	private int findStopIndex(List<WaterDataPoint> list, DateTime end, int listsize,
-			int startIndex) {
-		int stopIndex = 0;
-		
+	private int findStopIndex(List<WaterDataPoint> list, DateTime end,
+			int listsize, int startIndex) {
+		int stopIndex = startIndex;
+
 		for (int i = startIndex + 1; i < listsize; i++) {
 			DateTime sample = list.get(i).getRecordedDateTime();
 			if (sample.isBefore(end) || sample.equals(end))
 				stopIndex = i;
 		}
-		
+
 		return stopIndex;
 	}
 
 	private int findStartIndex(String meterId, List<WaterDataPoint> list,
 			DateTime start, int listsize) {
 		int startIndex = 0;
-		
+
 		if (start.isBefore(getEarliestDate(meterId))) {
 			startIndex = 0;
 		} else {
@@ -97,8 +105,8 @@ public class WaterData {
 	}
 
 	/**
-	 * Retrieve a range of water meter data points from a specific date up 
-	 * until the last recorded data point. 
+	 * Retrieve a range of water meter data points from a specific date up until
+	 * the last recorded data point.
 	 * 
 	 * @param meterId
 	 * @param fromDate
@@ -107,9 +115,9 @@ public class WaterData {
 	public List<WaterDataPoint> getRange(String meterId, DateTime fromDate) {
 		return getRange(meterId, fromDate, getLastDate(meterId));
 	}
-	
+
 	/**
-	 * Retrieve all values attached to a specific meter. 
+	 * Retrieve all values attached to a specific meter.
 	 * 
 	 * @param meterId
 	 * @return
@@ -119,9 +127,9 @@ public class WaterData {
 			return userDataMap.get(meterId);
 		return null;
 	}
-	
+
 	/**
-	 * Get the {@link DateTime} for the first registered water meter data point. 
+	 * Get the {@link DateTime} for the first registered water meter data point.
 	 * 
 	 * @param meterId
 	 * @return
@@ -131,18 +139,19 @@ public class WaterData {
 			return userDataMap.get(meterId).get(0).getRecordedDateTime();
 		return null;
 	}
-	
+
 	/**
-	 * Get the {@link DateTime} for the last registered water meter data point.  
+	 * Get the {@link DateTime} for the last registered water meter data point.
+	 * 
 	 * @param meterId
 	 * @return
 	 */
 	public DateTime getLastDate(String meterId) {
 		return getLatestSample(meterId).getRecordedDateTime();
 	}
-	
+
 	/**
-	 * Get the last available water meter data point for a specific meter. 
+	 * Get the last available water meter data point for a specific meter.
 	 * 
 	 * @param meterId
 	 * @return
@@ -151,17 +160,30 @@ public class WaterData {
 		if (userDataMap.containsKey(meterId)) {
 			List<WaterDataPoint> samples = userDataMap.get(meterId);
 			return samples.get(samples.size() - 1);
-		}	
+		}
 		return null;
 	}
-	
+
 	/**
-	 * Get the total number of samples 
+	 * Get the total number of samples
 	 * 
 	 * @return number of samples
 	 */
 	protected int size() {
 		return userDataMap.size();
 	}
-	
+
+	protected void bindLog(LogService ls) {
+		log = ls;
+	}
+
+	protected void unbindLog(LogService ls) {
+		log = null;
+	}
+
+	private void log(int level, String message) {
+		if (log != null)
+			log.log(level, message);
+	}
+
 }

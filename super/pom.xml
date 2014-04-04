@@ -162,27 +162,19 @@
 		<module>../device api</module>
 		<module>../structure api</module>
 		
-		<!-- External API modules -->
-		<!-- <module>../northbound-api/com.eclipsesource.jaxrs.publisher</module> -->
-		
 		<!-- Reference implementation modules -->
 		<module>../Elis user and persistent storage service implementations</module>
-		
 		
 		<!-- Misc modules -->
 		<module>../eon-utility-provider</module>
 		<!-- <module>../elis-branding</module> -->
-        <!-- <module>../qs-driver</module> -->
-        <!-- <module>../ninjablock</module> -->
 
         <module>../elis-device-service</module>
         <module>../elis-energy-service</module>
         <module>../elis-water-service</module>
         <module>../mkb-water-provider</module>
-        <module>
-        	../northbound-api/com.eclipsesource.jaxrs.publisher
-        </module>
         <module>../Elis user web service</module>
+        <module>../api-publisher/com.eclipsesource.jaxrs.publisher</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>

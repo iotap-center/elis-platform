@@ -22,6 +22,7 @@ import se.mah.elis.adaptor.energy.eon.internal.EonActionObject;
 import se.mah.elis.adaptor.energy.eon.internal.EonActionStatus;
 import se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge;
 
+@Ignore
 public class EonHttpBridgeTest {
 	
 	private static final int LEVEL_HOUR = 0;
@@ -173,10 +174,11 @@ public class EonHttpBridgeTest {
 	@Test
 	public void testGetStatData() throws AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
-		String from = "2013-10-01 00:00";
+		String from = "2013-10-01";
+		String to = "2013-10-02";
 		int level = LEVEL_HOUR; 
 		try {
-			List<Map<String, Object>> stats = bridge.getStatData(token, TEST_GATEWAY, TEST_DEVICEID, from, level);
+			List<Map<String, Object>> stats = bridge.getStatData(token, TEST_GATEWAY, TEST_DEVICEID, from, to, level);
 			assertTrue(stats.size() == 24);
 		} catch (Exception ignore) { fail(); }
 	}

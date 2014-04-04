@@ -1,6 +1,8 @@
 The Elis Platform
 =============
 
+Version 0.2.2
+
 This project focuses on exploring the potential of mobile services on mobile devices (e.g. smart phones and tablets) to promote energy efficiency in existing buildings. Read more about the background [here](http://elis.mah.se).
 
 This document describes aspects useful while working on the implementation of Elis.
@@ -23,6 +25,20 @@ Each bundle can be compiled using `mvn compile` or to test `mvn test`. To create
 There is a special project called `super` which contains a Maven specification to compile the entire Elis project. To make things simple, this project contains a Makefile. Run `make build` to deploy to your local Elis installation. To build everything, including documentation, use the following command: 
 
 `mvn clean compile test bundle:bundle install:install wagon:upload javadoc:javadoc site`
+
+## Version management
+
+**Releases**
+
+Follows the pattern `major.minor.patch`. _major_ is used when significant new releases are made, e.g., several new APIs are added to the platform. _minor_ is used for smaller updates, e.g., improved performance or small features. _patch_ is used for hotfixes. 
+
+**Bundles**
+
+Follows the pattern `major.minor.patch`. _major_ is used when a change in the public API isn't backwards compatible. _minor_ is used when the public API is extended in a backwards compatible way. _patch_ is used when the public API is left unchanged (e.g. a bug fix).
+
+**HTTP API**
+
+Follows the pattern `/api/v#` where `#` is an ever increasing integer. Update version number for any additions or breaking changes to the API. Breaking changes includes both requests and responses. 
 
 ## Demo users
 

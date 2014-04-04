@@ -1,5 +1,6 @@
 package se.mah.elis.impl.services.storage;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,12 +9,16 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map.Entry;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.log.LogService;
 
 import se.mah.elis.data.ElisDataObject;
@@ -45,12 +50,26 @@ import se.mah.elis.services.users.factory.UserFactory;
 @Service(value=Storage.class)
 public class StorageImpl implements Storage {
 	
+	private static final String SERVICE_PID = "se.mah.elis.services.storage.impl";
+	private static final String DB_USER = SERVICE_PID + ".db.user";
+	private static final String DB_PASS = SERVICE_PID + ".db.password";
+	private static final String DB_NAME = SERVICE_PID + ".db.name";
+	private static final String DB_HOST = SERVICE_PID + ".db.host";
+	private static final String DB_PORT = SERVICE_PID + ".db.port";
+	public static Dictionary<String, ?> properties;
+	
+	private boolean isInitialised = false;
+
+	
 	// The MySQL query translator
 	private QueryTranslator translator;
 
 	// The user factory
 	@Reference
 	private UserFactory userFactory;
+
+	@Reference
+	private ConfigurationAdmin configAdmin;
 	
 	// The database connection
 	private Connection connection;
@@ -78,19 +97,9 @@ public class StorageImpl implements Storage {
 	 * @since 1.0
 	 */
 	public StorageImpl() {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			// TODO Replace with non-static stuff later on
-			connection = DriverManager
-					.getConnection("jdbc:mysql://localhost/elis?"
-						+	"user=elis&password=notallthatsecret");
-		} catch (SQLException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		// TODO Replace the MySQL query translator with more generic stuff.
 		translator = new MySQLQueryTranslator();
-		utils = new StorageUtils(connection);
-		log(LogService.LOG_INFO, "Connecting as user 'elis'");
+		connection = null;
+		utils = null;
 	}
 	
 	/**
@@ -105,7 +114,7 @@ public class StorageImpl implements Storage {
 		// TODO Replace the MySQL query translator with more generic stuff.
 		translator = new MySQLQueryTranslator();
 		utils = new StorageUtils(connection);
-		log(LogService.LOG_INFO, "Connecting as other user");
+		isInitialised = true;
 	}
 	
 	/**
@@ -121,7 +130,24 @@ public class StorageImpl implements Storage {
 		// TODO Replace the MySQL query translator with more generic stuff.
 		translator = new MySQLQueryTranslator();
 		utils = new StorageUtils(connection);
-		log(LogService.LOG_INFO, "Connecting as other user");
+		isInitialised = true;
+	}
+	
+	private void init() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			connection = DriverManager
+					.getConnection("jdbc:mysql://localhost/elis?"
+						+	"user=elis&password=notallthatsecret");
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			log(LogService.LOG_ERROR, "Missing configuration");
+		}
+		// TODO Replace the MySQL query translator with more generic stuff.
+		utils = new StorageUtils(connection);
+		log(LogService.LOG_INFO, "Connecting as user ");
+		isInitialised = true;
 	}
 
 	/**
@@ -1718,5 +1744,47 @@ public class StorageImpl implements Storage {
 	
 	protected void unbindLog(LogService log) {
 		this.log = null;
+	}
+
+	protected void bindConfigAdmin(ConfigurationAdmin ca) {
+		configAdmin = ca;
+		setConfig();
+		if (!isInitialised)
+			init();
+	}
+
+	protected void unbindConfigAdmin(ConfigurationAdmin ca) {
+		configAdmin = null;
+	}
+
+	private void setConfig() {
+		try {
+			Configuration config = configAdmin.getConfiguration(SERVICE_PID);
+			properties = config.getProperties();
+			setDefaultConfiguration();
+			config.update(properties);
+		} catch (IOException e) {
+			log(LogService.LOG_ERROR, "Failed to get configuration from Configuration Admin service.");
+			setDefaultConfiguration();
+		} finally {
+			log(LogService.LOG_INFO, "Installed configuration");
+		}
+	}
+
+	private void setDefaultConfiguration() {
+		if (properties == null) {
+			properties = getDefaultConfiguration();
+			log(LogService.LOG_INFO, "Using default configuration.");
+		}
+	}
+
+	private static Dictionary<String, ?> getDefaultConfiguration() {
+		Dictionary<String, Object> props = new Hashtable<>();
+		props.put(DB_USER, "elis_test");
+		props.put(DB_PASS, "elis_test");
+		props.put(DB_NAME, "elis_test");
+		props.put(DB_HOST, "localhost");
+		props.put(DB_PORT, "3306");
+		return props;
 	}
 }
