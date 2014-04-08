@@ -6,11 +6,12 @@ import org.apache.felix.scr.annotations.Service;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.log.LogService;
 
+import se.mah.elis.adaptor.fooprovider.internal.user.FooUserProvider;
 import se.mah.elis.services.users.factory.UserFactory;
 import se.mah.elis.services.users.factory.UserProvider;
 
 @Component(name = "Mock Energy Adaptor", immediate = true)
-@Service
+@Service(value=MockAdaptor.class)
 public class MockAdaptor {
 
 	@Reference
@@ -25,7 +26,7 @@ public class MockAdaptor {
 	private UserProvider userProvider;
 	
 	public MockAdaptor() {
-//		eonProvider = new EonUserProvider();
+		userProvider = new FooUserProvider();
 	}
 	
 	protected void bindUserFactoryService(UserFactory uf) {
