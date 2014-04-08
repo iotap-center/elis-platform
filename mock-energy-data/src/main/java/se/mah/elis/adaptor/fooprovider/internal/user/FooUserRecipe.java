@@ -1,4 +1,4 @@
-package se.mah.elis.adaptor.mockenergyprovider.internal.user;
+package se.mah.elis.adaptor.fooprovider.internal.user;
 
 import java.util.Properties;
 

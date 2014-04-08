@@ -1,4 +1,4 @@
-package se.mah.elis.adaptor.mockenergyprovider.internal;
+package se.mah.elis.adaptor.fooprovider.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +16,7 @@ import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
-import se.mah.elis.adaptor.mockenergyprovider.internal.user.FooGatewayUser;
+import se.mah.elis.adaptor.fooprovider.internal.user.FooGatewayUser;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.exceptions.StaticEntityException;
 

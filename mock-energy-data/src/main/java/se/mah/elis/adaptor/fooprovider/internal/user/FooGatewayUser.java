@@ -1,4 +1,4 @@
-package se.mah.elis.adaptor.mockenergyprovider.internal.user;
+package se.mah.elis.adaptor.fooprovider.internal.user;
 
 import java.util.Properties;
 import java.util.UUID;
@@ -10,7 +10,7 @@ import org.joda.time.DateTime;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
-import se.mah.elis.adaptor.mockenergyprovider.internal.FooGateway;
+import se.mah.elis.adaptor.fooprovider.internal.FooGateway;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;

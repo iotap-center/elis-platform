@@ -1,4 +1,4 @@
-package se.mah.elis.adaptor.mockenergyprovider;
+package se.mah.elis.adaptor.fooprovider;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
