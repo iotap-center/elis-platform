@@ -79,6 +79,7 @@ public class UserServiceImpl implements UserService {
 		
 		if (pu.getUserId() != null) {
 			userIds = utils.getUsersAssociatedWithPlatformUser(pu.getUserId());
+			log(LogService.LOG_DEBUG, "Found " + userIds.length + " users");
 			
 			users = new User[userIds.length];
 			

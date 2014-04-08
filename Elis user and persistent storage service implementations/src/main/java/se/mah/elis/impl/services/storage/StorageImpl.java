@@ -1306,7 +1306,7 @@ public class StorageImpl implements Storage {
 					throw new StorageException(INSTANCE_USER_ERROR);
 				}
 			} catch (SQLException e) {
-				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id, e);
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id.toString(), e);
 				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
 				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": " + id, e);
@@ -1393,7 +1393,7 @@ public class StorageImpl implements Storage {
 				user = userFactory.build(props);
 				((PlatformUserIdentifier) user.getIdentifier()).setPassword(null);
 			} catch (SQLException | NullPointerException e) {
-				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id, e);
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id.toString(), e);
 				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
 				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": " + id, e);
@@ -1432,7 +1432,7 @@ public class StorageImpl implements Storage {
 				user = userFactory.build(userType,
 						(String) props.get("service_name"), props);
 			} catch (SQLException | NullPointerException e) {
-				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id, e);
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id.toString(), e);
 				throw new StorageException(USER_NOT_FOUND);
 			} catch (UserInitalizationException e) {
 				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": " + id, e);
