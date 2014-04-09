@@ -17,4 +17,9 @@ public class EnergyDeviceBean {
 	@XmlElement
 	public List<EnergyDataBean> data;
 	
+	public String toString() {
+		String out = deviceId + ", " + deviceName;
+		
+		return out;
+	}
 }
