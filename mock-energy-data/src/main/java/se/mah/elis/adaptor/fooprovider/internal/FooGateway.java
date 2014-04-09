@@ -16,39 +16,22 @@ import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
-import se.mah.elis.adaptor.fooprovider.internal.user.FooGatewayUser;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.exceptions.StaticEntityException;
 
-/**
- * Implementation of an E.On panel (in Elis terms: gateway)
- * 
- * An instance of gateway must have a
- * {@link se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge} to function
- * properly. Most likely you also want to populate the gateway with data from
- * the E.On service. This is done using {@link FooGateway#connect()}.
- * 
- * The recommended way to retrieve a new gateway instance is to use
- * {@link FooGatewayUserFactory#getUser(String, String)} and retrieve the
- * gateway instance via the {@link FooGatewayUser} object.
- * 
- * @author Marcus Ljungblad
- * @version 1.0.0
- * @since 1.0
- */
 public class FooGateway implements Gateway {
 	private static final long serialVersionUID = -8937996755742476107L;
-	private List<Device> devices;
 	private String name;
 	private GatewayAddress gatewayAddress;
 	private GatewayUser gatewayUser;
 	private int gatewayId;
 	private UUID dataid;
-	private UUID uniqueUserId;
+	private UUID userId;
 	private DateTime created = DateTime.now();
+	private FooPowerMeter meter;
 
 	public FooGateway() {
-		this.devices = new ArrayList<Device>();
+		meter = null;
 	}
 
 	@Reference
@@ -76,67 +59,69 @@ public class FooGateway implements Gateway {
 
 	@Override
 	public int size() {
-		return devices.size();
+		return 1;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return devices.isEmpty();
+		return false;
 	}
 
 	@Override
 	public boolean contains(Object o) {
-		return devices.contains(o);
+		return o instanceof FooPowerMeter;
 	}
 
 	@Override
 	public Iterator<Device> iterator() {
-		return devices.iterator();
+		return new FooIterator(this);
 	}
 
 	@Override
 	public Object[] toArray() {
-		return devices.toArray();
+		Object[] array = new Object[1];
+		array[0] = meter;
+		
+		return array;
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a) {
-		return devices.toArray(a);
+		return null;
 	}
 
 	@Override
 	public boolean add(Device e) {
-		return devices.add(e);
+		return false;
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		return devices.remove(o);
+		return false;
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		return devices.containsAll(c);
+		return false;
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends Device> c) {
-		return devices.addAll(c);
+		return false;
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		return devices.removeAll(c);
+		return false;
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		return devices.retainAll(c);
+		return false;
 	}
 
 	@Override
 	public void clear() {
-		devices.clear();
 	}
 
 	@Override
@@ -165,7 +150,6 @@ public class FooGateway implements Gateway {
 	 */
 	@Override
 	public void connect() throws GatewayCommunicationException {
-		add(new FooPowerMeter());
 		log("Mock gateway connected: " + getName());
 	}
 
@@ -186,21 +170,22 @@ public class FooGateway implements Gateway {
 
 	@Override
 	public void setOwnerId(UUID userId) {
-		this.uniqueUserId = userId;
+		this.userId = userId;
+		meter = new FooPowerMeter(this, userId);
 	}
 
 	@Override
 	public UUID getOwnerId() {
-		return this.uniqueUserId;
+		return this.userId;
 	}
 
 	@Override
 	public Properties getProperties() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("uuid", this.dataid);
+		props.put("dataid", this.dataid);
+		props.put("ownerid", this.userId);
 		props.put("gatewayId", this.gatewayId);
 		props.put("gatewayName", this.name);
-		props.put("uniqueUserId", this.uniqueUserId);
 		props.put("created", created);
 		return props;
 	}
@@ -208,18 +193,18 @@ public class FooGateway implements Gateway {
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
-		props.put("uuid", this.dataid);
+		props.put("dataid", this.dataid);
+		props.put("ownerid", this.userId);
 		props.put("gatewayId", this.gatewayId);
 		props.put("gatewayName", "64");
-		props.put("uniqueUserId", this.uniqueUserId);
 		props.put("created", created);
 		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		setDataId(UUID.fromString((String) props.get("uuid")));
-		setOwnerId((UUID) props.get("uniqueUserId"));
+		setDataId((UUID) props.get("dataid"));
+		setOwnerId((UUID) props.get("ownerid"));
 		gatewayId = (int) props.get("gatewayId");
 		name = (String) props.get("gatewayName");
 		created = (DateTime) props.get("created");
@@ -234,13 +219,13 @@ public class FooGateway implements Gateway {
 	public DateTime created() {
 		return created;
 	}
+	
+	public FooPowerMeter getMeter() {
+		return meter;
+	}
 
 	private void log(String message) {
 		log(LogService.LOG_INFO, message);
-	}
-
-	private void logWarning(String message) {
-		log(LogService.LOG_WARNING, message);
 	}
 
 	private void log(int level, String message) {

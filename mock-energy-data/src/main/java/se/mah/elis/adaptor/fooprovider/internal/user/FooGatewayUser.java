@@ -5,17 +5,24 @@ import java.util.UUID;
 
 import javax.naming.AuthenticationException;
 
+import org.apache.felix.scr.annotations.Reference;
 import org.joda.time.DateTime;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.adaptor.fooprovider.internal.FooGateway;
+import se.mah.elis.adaptor.fooprovider.internal.FooPowerMeter;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 public class FooGatewayUser implements GatewayUser {
+
+	@Reference
+	private LogService log;
 
 	private UUID uuid;
 	private Gateway gateway;
@@ -65,6 +72,7 @@ public class FooGatewayUser implements GatewayUser {
 	@Override
 	public void setUserId(UUID id) {
 		this.uuid = id;
+		this.gateway.setOwnerId(id);
 	}
 
 	@Override
@@ -109,11 +117,25 @@ public class FooGatewayUser implements GatewayUser {
 
 		setIdentifier(gwId);
 		setUserId((UUID) props.get("uuid"));
+		gateway = new FooGateway();
+		gateway.setOwnerId(uuid);
 	}
 
 	@Override
 	public DateTime created() {
 		return created;
+	}
+	
+	protected void bindLog(LogService ls) {
+		log = ls;
+	}
+	
+	protected void unbindLog(LogService ls) {
+		log = null;
+	}
+	
+	private void logInfo(String msg) {
+		log.log(LogService.LOG_INFO, msg);
 	}
 
 }

@@ -1,15 +1,14 @@
 package se.mah.elis.adaptor.fooprovider.internal;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
@@ -20,29 +19,30 @@ import se.mah.elis.data.ElectricitySample;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.exceptions.StaticEntityException;
 
+@Service
 public class FooPowerMeter implements ElectricitySampler {
 
-	private static final int VALUETYPE_POWER = 0;
-	private static DateTimeFormatter fmt = DateTimeFormat
-			.forPattern("yyyy-MM-dd");
-
-	protected boolean isOnline;
+	@Reference
+	private LogService log;
+	
 	protected FooGateway gateway;
-	protected DeviceIdentifier deviceId;
-	protected String deviceName = "";
-	protected String description = "";
+	protected String deviceName = "Foo Meter";
+	protected String description = "A mock power meter";
 	protected UUID dataid;
 	protected UUID ownerid;
 	protected DateTime created = DateTime.now();
+	
+	public FooPowerMeter(FooGateway gateway, UUID ownerid) {
+		this.gateway = gateway;
+	}
 
 	@Override
 	public DeviceIdentifier getId() {
-		return deviceId;
+		return new FooDeviceIdentifier("foo");
 	}
 
 	@Override
 	public void setId(DeviceIdentifier id) throws StaticEntityException {
-		deviceId = id;
 	}
 
 	@Override
@@ -85,13 +85,14 @@ public class FooPowerMeter implements ElectricitySampler {
 
 	@Override
 	public boolean isOnline() {
-		return isOnline;
+		return true;
 	}
 
 	@Override
 	public ElectricitySample getSample() throws SensorFailedException {
 		long seed = calculateSeed(DateTime.now());
 
+		log(LogService.LOG_INFO, "Fetching sample");
 		ElectricitySample electricitySample = new ElectricitySampleImpl(seed);
 
 		return electricitySample;
@@ -100,14 +101,17 @@ public class FooPowerMeter implements ElectricitySampler {
 	@Override
 	public List<ElectricitySample> getSamples(DateTime from, DateTime to)
 			throws SensorFailedException {
+		log(LogService.LOG_INFO, "Fetching samples");
 		List<ElectricitySample> samples = new ArrayList<ElectricitySample>();
 
 		long seed = 0;
 		DateTime start = from;
+		int i = 0;
 
 		while (start.isBefore(to)) {
+			++i;
 			seed = calculateSeed(start);
-			samples.add(new ElectricitySampleImpl(seed));
+			samples.add(new ElectricitySampleImpl(seed, start));
 
 			start = start.plusHours(1);
 
@@ -115,6 +119,7 @@ public class FooPowerMeter implements ElectricitySampler {
 				break;
 			}
 		}
+		log(LogService.LOG_INFO, "Fetched " + i + " samples");
 
 		return samples;
 	}
@@ -135,7 +140,7 @@ public class FooPowerMeter implements ElectricitySampler {
 		props.put("dataid", dataid);
 		props.put("ownerid", ownerid);
 		props.put("created", created);
-		props.put("identifier", deviceId);
+		props.put("identifier", new FooDeviceIdentifier("foo"));
 		props.put("device_name", deviceName);
 		props.put("description", description);
 		return props;
@@ -147,7 +152,7 @@ public class FooPowerMeter implements ElectricitySampler {
 		props.put("dataid", UUID.randomUUID());
 		props.put("ownerid", UUID.randomUUID());
 		props.put("created", created);
-		props.put("identifier", new FooDeviceIdentifier("a"));
+		props.put("identifier", new FooDeviceIdentifier("foo"));
 		props.put("device_name", "64");
 		props.put("description", "256");
 		return props;
@@ -158,10 +163,8 @@ public class FooPowerMeter implements ElectricitySampler {
 		this.dataid = (UUID) props.get("dataid");
 		this.ownerid = (UUID) props.get("ownerid");
 		this.created = (DateTime) props.get("created");
-		this.deviceId = new FooDeviceIdentifier("");
 		this.deviceName = (String) props.get("deviceName");
 		this.description = (String) props.getProperty("description");
-		this.deviceId.populate(props);
 
 		this.gateway = new FooGateway();
 	}
@@ -192,10 +195,27 @@ public class FooPowerMeter implements ElectricitySampler {
 	}
 
 	private long calculateSeed(DateTime dt) {
-		long userPart = ownerid.getLeastSignificantBits();
+		long userPart = 4; //ownerid.getLeastSignificantBits();
 		long date = dt.getMillis();
 		long seed = userPart/2 + date/2;
 		
 		return seed;
+	}
+
+	private void log(String message) {
+		log(LogService.LOG_INFO, message);
+	}
+
+	private void log(int level, String message) {
+		if (log != null)
+			log.log(level, message);
+	}
+
+	protected void bindLog(LogService ls) {
+		log = ls;
+	}
+
+	protected void unbindLog(LogService ls) {
+		log = null;
 	}
 }

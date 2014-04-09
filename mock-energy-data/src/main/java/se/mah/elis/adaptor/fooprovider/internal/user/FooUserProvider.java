@@ -30,6 +30,7 @@ public class FooUserProvider implements UserProvider {
 		GatewayUser user = new FooGatewayUser();
 		
 		user.populate(properties);
+		user.initialize();
 		
 		return user;
 	}

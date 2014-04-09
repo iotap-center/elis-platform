@@ -126,13 +126,13 @@ public class ElectricitySampleImpl implements ElectricitySample {
 
 	@Override
 	public double getTotalEnergyUsageInJoules() {
-		double joules = calcMockValue()*3600000;
+		double joules = calcMockValue()*3600;
 		return joules;
 	}
 
 	@Override
 	public double getTotalEnergyUsageInWh() {
-		double wh = calcMockValue()*1000;
+		double wh = calcMockValue();
 		return wh;
 	}
 
@@ -205,7 +205,7 @@ public class ElectricitySampleImpl implements ElectricitySample {
 	
 	private double calcMockValue() {
 		Random random = new Random(seed);
-		int sample = random.nextInt();
+		double sample = random.nextInt();
 		
 		if (sample < 0) {
 			sample = -sample;
@@ -216,8 +216,18 @@ public class ElectricitySampleImpl implements ElectricitySample {
 		if (sample > 1000000) {
 			sample = sample / 1000;
 		}
+		if (sample > 100000) {
+			sample = sample / 100;
+		}
+		if (sample > 20) {
+			sample = sample / 10;
+		}
+		if (sample < 1) {
+			sample = sample * 10;
+		}
 		
 		
-		return sample / 1000;
+		
+		return sample;
 	}
 }
