@@ -48,12 +48,7 @@ public interface ElisDataObject extends Serializable {
 	 * Sets the owner of this data object.
 	 * 
 	 * @param userId
-<<<<<<< HEAD
 	 * @since 2.0
-=======
-	 * @deprecated 
-	 * @since 1.0
->>>>>>> branch 'master' of https://github.com/medeamalmo/elis-platform.git
 	 */
 	void setOwnerId(UUID userId);
 	
@@ -63,12 +58,7 @@ public interface ElisDataObject extends Serializable {
 	 * associated with the system that provided it.
 	 * 
 	 * @return the unique user id.
-<<<<<<< HEAD
 	 * @since 2.0
-=======
-	 * @deprecated
-	 * @since 1.0
->>>>>>> branch 'master' of https://github.com/medeamalmo/elis-platform.git
 	 */
 	UUID getOwnerId();
 
