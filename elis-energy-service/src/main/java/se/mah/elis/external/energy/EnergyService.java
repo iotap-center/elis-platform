@@ -1,6 +1,7 @@
 package se.mah.elis.external.energy;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -129,7 +130,9 @@ public class EnergyService {
 	private ResponseBuilder buildPeriodicEnergyConsumptionResponse(
 			String period, String from, String to, PlatformUser pu) {
 		List<Device> meters = getMeters(pu);
+		logInfo("Building periodic response with " + meters.size() + " meters");
 		EnergyBean bean = EnergyBeanFactory.create(meters, period, from, to, pu);
+		logInfo("Bean: " + bean.toString());
 		return Response.ok(gson.toJson(bean));
 	}
 
@@ -141,7 +144,9 @@ public class EnergyService {
 
 	private List<Device> getMeters(GatewayUser user) {
 		List<Device> meters = new ArrayList<>();
+		logInfo(user.getClass().getSimpleName() + " is looking for meters at " + user.getGateway().iterator().next());
 		for (Device device : user.getGateway()) {
+			logInfo("Trying to look at a device: " + device);
 			if (device instanceof ElectricitySampler && !(device instanceof PowerSwitch))
 				meters.add(device);
 		}
@@ -151,8 +156,10 @@ public class EnergyService {
 	private List<Device> getDevices(User[] users) {
 		List<Device> meters = new ArrayList<>();
 		for (User user : users) {
-			if (user instanceof GatewayUser) 
+			if (user instanceof GatewayUser && user.getClass().getSimpleName().equals("FooGatewayUser")) { // TODO Remove the FooGatewayUser filter when done
+				logInfo("Found a FooGatewayUser");
 				meters.addAll(getMeters((GatewayUser) user));
+			}
 		}
 		logInfo("Found " + meters.size() + " devices");
 		return meters;

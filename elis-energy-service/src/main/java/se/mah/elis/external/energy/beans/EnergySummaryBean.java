@@ -8,4 +8,8 @@ public class EnergySummaryBean {
 	
 	@XmlElement
 	public double kwh;
+	
+	public String toString() {
+		return kwh + "";
+	}
 }
