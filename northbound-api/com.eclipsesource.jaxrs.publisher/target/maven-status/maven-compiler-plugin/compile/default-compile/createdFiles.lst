@@ -1,0 +1,12 @@
+com/eclipsesource/jaxrs/publisher/internal/ServiceContainer$Finder.class
+com/eclipsesource/jaxrs/publisher/internal/Activator.class
+com/eclipsesource/jaxrs/publisher/internal/JerseyContext.class
+com/eclipsesource/jaxrs/publisher/internal/ServiceContainer.class
+com/eclipsesource/jaxrs/publisher/internal/HttpTracker.class
+com/eclipsesource/jaxrs/publisher/internal/Configuration.class
+com/eclipsesource/jaxrs/publisher/ServiceProperties.class
+com/eclipsesource/jaxrs/publisher/internal/ServiceContainer$ServiceHolder.class
+com/eclipsesource/jaxrs/publisher/internal/ElisHttpContext.class
+com/eclipsesource/jaxrs/publisher/internal/JAXRSConnector.class
+com/eclipsesource/jaxrs/publisher/internal/RootApplication.class
+com/eclipsesource/jaxrs/publisher/internal/ResourceTracker.class

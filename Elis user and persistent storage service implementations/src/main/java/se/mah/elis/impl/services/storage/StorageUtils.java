@@ -864,13 +864,13 @@ public class StorageUtils {
 	
 	private void log(int level, String message, Throwable t) {
 		if (log != null) {
-			log.log(level, message, t);
+			log.log(level, "StorageUtils: " + message, t);
 		}
 	}
 	
 	private void log(int level, String message) {
 		if (log != null) {
-			log.log(level, message);
+			log.log(level, "StorageUtils: " + message);
 		}
 	}
 	

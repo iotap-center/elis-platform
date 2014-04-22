@@ -1,0 +1,10 @@
+/home/johan/git/elis-platform/northbound-api/com.eclipsesource.jaxrs.publisher/src/main/java/com/eclipsesource/jaxrs/publisher/internal/Configuration.java
+/home/johan/git/elis-platform/northbound-api/com.eclipsesource.jaxrs.publisher/src/main/java/com/eclipsesource/jaxrs/publisher/internal/HttpTracker.java
+/home/johan/git/elis-platform/northbound-api/com.eclipsesource.jaxrs.publisher/src/main/java/com/eclipsesource/jaxrs/publisher/internal/ResourceTracker.java
+/home/johan/git/elis-platform/northbound-api/com.eclipsesource.jaxrs.publisher/src/main/java/com/eclipsesource/jaxrs/publisher/internal/Activator.java
+/home/johan/git/elis-platform/northbound-api/com.eclipsesource.jaxrs.publisher/src/main/java/com/eclipsesource/jaxrs/publisher/internal/RootApplication.java
+/home/johan/git/elis-platform/northbound-api/com.eclipsesource.jaxrs.publisher/src/main/java/com/eclipsesource/jaxrs/publisher/internal/ServiceContainer.java
+/home/johan/git/elis-platform/northbound-api/com.eclipsesource.jaxrs.publisher/src/main/java/com/eclipsesource/jaxrs/publisher/internal/JerseyContext.java
+/home/johan/git/elis-platform/northbound-api/com.eclipsesource.jaxrs.publisher/src/main/java/com/eclipsesource/jaxrs/publisher/ServiceProperties.java
+/home/johan/git/elis-platform/northbound-api/com.eclipsesource.jaxrs.publisher/src/main/java/com/eclipsesource/jaxrs/publisher/internal/ElisHttpContext.java
+/home/johan/git/elis-platform/northbound-api/com.eclipsesource.jaxrs.publisher/src/main/java/com/eclipsesource/jaxrs/publisher/internal/JAXRSConnector.java

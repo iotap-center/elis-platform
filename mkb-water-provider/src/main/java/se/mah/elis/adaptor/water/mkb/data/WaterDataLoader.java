@@ -51,12 +51,16 @@ public class WaterDataLoader {
 			for (String line; (line = bufferedReader.readLine()) != null;) {
 				parseLine(samples, line);
 			}
-			
-			bufferedReader.close();
 		} catch (FileNotFoundException e) {
 			throw e;
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+				try {
+					bufferedReader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 		
 		return samples;

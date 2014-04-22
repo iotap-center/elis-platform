@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.impl.services.users.PlatformUserImpl;
 import se.mah.elis.services.users.PlatformUser;
@@ -19,6 +21,9 @@ import se.mah.elis.services.users.factory.UserRecipe;
 @Component(name = "Elis User factory")
 @Service(value = UserFactory.class)
 public class UserFactoryImpl implements UserFactory {
+	
+	@Reference
+	private LogService log;
 
 	private Map<String, Map<String, UserProvider>> providers;
 	
@@ -28,6 +33,7 @@ public class UserFactoryImpl implements UserFactory {
 
 	@Override
 	public void registerProvider(UserProvider provider) {
+		log(LogService.LOG_INFO, "Registering " + provider.getClass().getSimpleName());
 		Map<String, UserProvider> map =
 				providers.get(provider.getRecipe().getUserType());
 		
@@ -46,6 +52,7 @@ public class UserFactoryImpl implements UserFactory {
 
 	@Override
 	public void unregisterProvider(UserProvider provider) {
+		log(LogService.LOG_INFO, "Unregistering " + provider.getClass().getSimpleName());
 		Map<String, UserProvider> map =
 				providers.get(provider.getRecipe().getUserType());
 		
@@ -61,6 +68,8 @@ public class UserFactoryImpl implements UserFactory {
 	@Override
 	public User build(String userType, String serviceName, Properties properties)
 			throws UserInitalizationException {
+		log(LogService.LOG_INFO, "Attempting to build a " + userType + " using " + serviceName);
+		
 		UserProvider provider = null;
 		User user = null;
 		Map<String, UserProvider> map =
@@ -73,6 +82,7 @@ public class UserFactoryImpl implements UserFactory {
 		provider = map.get(serviceName);
 		
 		if (provider == null) {
+			log(LogService.LOG_ERROR, "Didn't find the " + serviceName + " service");
 			throw new UserInitalizationException("No such user provider");
 		}
 		
@@ -122,6 +132,26 @@ public class UserFactoryImpl implements UserFactory {
 		}
 
 		return recipe;
+	}
+	
+	protected void bindLog(LogService log) {
+		this.log = log;
+	}
+	
+	protected void unbindLog(LogService log) {
+		this.log = null;
+	}
+	
+	private void log(int level, String message, Throwable t) {
+		if (log != null) {
+			log.log(level, "StorageImpl: " + message, t);
+		}
+	}
+	
+	private void log(int level, String message) {
+		if (log != null) {
+			log.log(level, "StorageImpl: " + message);
+		}
 	}
 
 }

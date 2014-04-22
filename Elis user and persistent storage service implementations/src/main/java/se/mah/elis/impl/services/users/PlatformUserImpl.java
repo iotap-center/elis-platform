@@ -93,8 +93,13 @@ public class PlatformUserImpl
 
 	@Override
 	public String toString() {
-		return "PlatformUser " + ((PlatformUserIdentifierImpl) id).getUsername() +
-				" (" + getUserId() + ")";
+		String username = null;
+		
+		if (id != null) {
+			username = ((PlatformUserIdentifier) id).getUsername();
+		}
+		
+		return "PlatformUser " + username + " (" + getUserId() + ")";
 	}
 
 	@Override

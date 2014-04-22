@@ -19,6 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.JAXBElement;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Property;
@@ -215,7 +216,17 @@ public class UserWebService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addUser(@BeanParam final PlatformUserBean input) {
+	public Response addUser(JAXBElement<PlatformUserBean> input) {
+		return addUser(input.getValue());
+	}
+	
+	/**
+	 * Adds a new platform user.
+	 * 
+	 * @return A response object.
+	 * @since 1.0
+	 */
+	public Response addUser(PlatformUserBean input) {
 		Response response = null;
 		EnvelopeBean envelope = new EnvelopeBean();
 		UserContainerBean container = new UserContainerBean();
@@ -231,6 +242,7 @@ public class UserWebService {
 		response = buildBadRequestResponse(response);
 		
 		if (userService != null && userFactory != null) {
+			logThis(input.username);
 			pu = null;
 			try {
 				pu = userService.createPlatformUser(input.username,
@@ -348,7 +360,11 @@ public class UserWebService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateUser(@PathParam("userId") String userId,
-						@BeanParam final PlatformUserBean input) {
+			JAXBElement<PlatformUserBean> input) {
+		return updateUser(userId, input.getValue());
+	}
+
+	public Response updateUser(String userId, PlatformUserBean input) {
 		Response response = null;
 		EnvelopeBean envelope = new EnvelopeBean();
 		UserContainerBean container = new UserContainerBean();
@@ -426,7 +442,12 @@ public class UserWebService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response coupleGatewayWithUser(@PathParam("usertype") String type,
 			@PathParam("userid") String userId,
-			final GatewayUserBean input) {		
+			JAXBElement<GatewayUserBean> input) {
+		return coupleGatewayWithUser(type, userId, input.getValue());
+	}
+	
+	public Response coupleGatewayWithUser(String type, String userId,
+			GatewayUserBean input) {		
 		Response response = null;
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		PlatformUser pu = null;

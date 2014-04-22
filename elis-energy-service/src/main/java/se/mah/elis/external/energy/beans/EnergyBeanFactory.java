@@ -68,11 +68,13 @@ public class EnergyBeanFactory {
 
 		DateTime fromDate = parseDate(from);
 		DateTime toDate = parseToDate(to);
-
-		for (Device device : meters)
-			if (device instanceof ElectricitySampler)
+		
+		for (Device device : meters) {
+			if (device instanceof ElectricitySampler) {
 				deviceSampleMap.put(device,
-						collectSampleFor(device, fromDate, toDate));
+						collectSampleFor((ElectricitySampler) device, fromDate, toDate));
+			}
+		}
 
 		return deviceSampleMap;
 	}
@@ -101,10 +103,9 @@ public class EnergyBeanFactory {
 		return samples;
 	}
 
-	private static List<ElectricitySample> collectSampleFor(Device device,
+	private static List<ElectricitySample> collectSampleFor(ElectricitySampler sampler,
 			DateTime from, DateTime to) {
 		List<ElectricitySample> samples = new ArrayList<ElectricitySample>();
-		ElectricitySampler sampler = (ElectricitySampler) device;
 
 		try {
 			samples.addAll(sampler.getSamples(from, to));
