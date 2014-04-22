@@ -442,7 +442,12 @@ public class UserWebService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response coupleGatewayWithUser(@PathParam("usertype") String type,
 			@PathParam("userid") String userId,
-			final GatewayUserBean input) {		
+			JAXBElement<GatewayUserBean> input) {
+		return coupleGatewayWithUser(type, userId, input.getValue());
+	}
+	
+	public Response coupleGatewayWithUser(String type, String userId,
+			GatewayUserBean input) {		
 		Response response = null;
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		PlatformUser pu = null;
