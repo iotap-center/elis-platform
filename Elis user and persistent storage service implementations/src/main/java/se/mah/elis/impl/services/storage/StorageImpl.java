@@ -138,7 +138,7 @@ public class StorageImpl implements Storage {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager
 					.getConnection("jdbc:mysql://localhost/elis?"
-						+	"user=elis&password=notallthatsecret");
+						+	"user=elis&password=notallthatsecret&autoreconnect=true");
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {
