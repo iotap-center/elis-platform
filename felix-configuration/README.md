@@ -4,7 +4,7 @@ This document aims to describe how to deploy and configure the Elis platform.
 
 ## Prerequisites 
 
-Elis is based on Apache Felix OSGi runtime. Go ahead and download a copy. 
+Elis is based on the Apache Felix OSGi runtime. Go ahead and download a copy. 
 
 * [Oracle JRE 1.7](http://www.oracle.com/technetwork/java/javase/downloads/index.html) 
 * A copy of [Apache Felix 4.2.1](http://felix.apache.org/downloads.cgi)
@@ -31,7 +31,7 @@ You are done setting up the runtime environment. Continue with building the Elis
 
 ### Elis dependencies
 
-The Elis platform depends on a number of dependencies and these are sparsely documented here. 
+The Elis platform depends on a number of dependencies and these are sparsely documented here. A full list of all dependencies [can be found found here](bundles.md). 
 
 **Felix** 
 
