@@ -19,6 +19,8 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogService;
 
 import se.mah.elis.data.ElisDataObject;
@@ -46,18 +48,18 @@ import se.mah.elis.services.users.factory.UserFactory;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-@Component(name = "Elis Persistent Storage")
-@Service(value=Storage.class)
-public class StorageImpl implements Storage {
+@Component(name = "se.mah.elis.services.storage.impl", description = "Elis Persistent Storage")
+@Service(value={Storage.class, ManagedService.class})
+public class StorageImpl implements Storage, ManagedService {
 	
 	private static final String SERVICE_PID = "se.mah.elis.services.storage.impl";
-	private static final String DB_USER = SERVICE_PID + ".db.user";
-	private static final String DB_PASS = SERVICE_PID + ".db.password";
-	private static final String DB_NAME = SERVICE_PID + ".db.name";
-	private static final String DB_HOST = SERVICE_PID + ".db.host";
-	private static final String DB_PORT = SERVICE_PID + ".db.port";
-	public static Dictionary<String, ?> properties;
+	private static final String DB_USER = "db.user";
+	private static final String DB_PASS = "db.password";
+	private static final String DB_NAME = "db.name";
+	private static final String DB_HOST = "db.host";
+	private static final String DB_PORT = "db.port";
 	
+	private Dictionary<String, ?> properties;
 	private boolean isInitialised = false;
 
 	
@@ -134,11 +136,24 @@ public class StorageImpl implements Storage {
 	}
 	
 	private void init() {
+		if (connection != null) {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				log(LogService.LOG_ERROR, "Couldn't close existing connection");
+			}
+			connection = null;
+		}
+		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager
-					.getConnection("jdbc:mysql://localhost/elis?"
-						+	"user=elis&password=notallthatsecret&autoreconnect=true");
+					.getConnection("jdbc:mysql://" + (String) properties.get(DB_HOST) +
+							":" + (String) properties.get(DB_PORT) +
+							"/" + (String) properties.get(DB_NAME) +
+							"?" + "user=" + (String) properties.get(DB_USER) +
+							"&password="  + (String) properties.get(DB_PASS) +
+							"&autoreconnect=true");
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {
@@ -1762,13 +1777,13 @@ public class StorageImpl implements Storage {
 			Configuration config = configAdmin.getConfiguration(SERVICE_PID);
 			properties = config.getProperties();
 			setDefaultConfiguration();
-			config.update(properties);
 		} catch (IOException e) {
 			log(LogService.LOG_ERROR, "Failed to get configuration from Configuration Admin service.");
 			setDefaultConfiguration();
 		} finally {
 			log(LogService.LOG_INFO, "Installed configuration");
 		}
+		
 	}
 
 	private void setDefaultConfiguration() {
@@ -1786,5 +1801,12 @@ public class StorageImpl implements Storage {
 		props.put(DB_HOST, "localhost");
 		props.put(DB_PORT, "3306");
 		return props;
+	}
+
+	@Override
+	public void updated(Dictionary<String, ?> properties)
+			throws ConfigurationException {
+		this.properties = properties;
+		init();
 	}
 }
