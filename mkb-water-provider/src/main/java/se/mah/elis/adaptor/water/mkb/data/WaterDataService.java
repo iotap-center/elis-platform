@@ -32,15 +32,15 @@ import org.osgi.service.log.LogService;
  * @version 1.1
  * 
  */
-@Component(name = "MkbWaterData", immediate = true)
-@Service(value = WaterDataService.class)
+@Component(name = "se.mah.elis.adaptor.water.mkb", description = "MKB Water Data", immediate = true)
+@Service(value = {WaterDataService.class, ManagedService.class})
 @Properties({
 		@Property(name = CommandProcessor.COMMAND_SCOPE, value = "elis"),
 		@Property(name = CommandProcessor.COMMAND_FUNCTION, value = { "reloadwater" }) })
 public class WaterDataService implements ManagedService {
 
 	private static final String SERVICE_PID = "se.mah.elis.adaptor.water.mkb";
-	private static final String DATA_SOURCE = "se.mah.elis.adaptor.water.mkb.source";
+	private static final String DATA_SOURCE = "source";
 	public static Dictionary<String, ?> properties;
 
 	@Reference
@@ -117,8 +117,9 @@ public class WaterDataService implements ManagedService {
 					log("Trying default location for water data: "
 							+ DEFAULT_WATERDATA);
 					setInstance(WaterDataLoader.loadFromFile(DEFAULT_WATERDATA));
+					setDefaultConfiguration();
 				} catch (FileNotFoundException e2) {
-					logError("Could not find any water data. MkbWaterProvider not available.");
+					logError("Could not find any water data. MKB Water Provider not available.");
 				}
 			}
 		}
@@ -165,6 +166,7 @@ public class WaterDataService implements ManagedService {
 			throws ConfigurationException {
 		if (props != null) {
 			properties = props;
+			updaterThread.interrupt();
 			log("Updated configuration: " + properties.toString());
 		}
 	}
@@ -173,8 +175,10 @@ public class WaterDataService implements ManagedService {
 		try {
 			Configuration config = configAdmin.getConfiguration(SERVICE_PID);
 			properties = config.getProperties();
-			setDefaultConfiguration();
-			config.update(properties);
+			if (properties == null) {
+				setDefaultConfiguration();
+				config.update(properties);
+			}
 		} catch (IOException e) {
 			logError("Failed to get configuration from Configuration Admin service.");
 			setDefaultConfiguration();

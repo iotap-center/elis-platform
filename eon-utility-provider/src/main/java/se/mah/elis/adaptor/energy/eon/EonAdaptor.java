@@ -17,15 +17,15 @@ import se.mah.elis.adaptor.energy.eon.internal.user.EonUserProvider;
 import se.mah.elis.services.users.factory.UserFactory;
 import se.mah.elis.services.users.factory.UserProvider;
 
-@Component(name = "Eon Adaptor", immediate = true)
-@Service
+@Component(name = "se.mah.elis.adaptor.energy.eon", description = "Eon Adaptor", immediate = true)
+@Service(value = {EonAdaptor.class, ManagedService.class})
 public class EonAdaptor implements ManagedService {
 
 	// properties
 	public static String SERVICE_PID = "se.mah.elis.adaptor.energy.eon";
-	public static String TARGET_HOST = "se.mah.elis.adaptor.energy.eon.host";
-	public static String TARGET_PORT = "se.mah.elis.adaptor.energy.eon.port";
-	public static String TARGET_APIPREFIX = "se.mah.elis.adaptor.energy.eon.prefix";
+	public static String TARGET_HOST = "host";
+	public static String TARGET_PORT = "port";
+	public static String TARGET_APIPREFIX = "prefix";
 	
 	public static Dictionary<String, ?> properties = getDefaultConfiguration();
 
@@ -72,9 +72,10 @@ public class EonAdaptor implements ManagedService {
 			Configuration config = configAdmin.getConfiguration(SERVICE_PID);
 			properties = config.getProperties();
 			
-			if (properties == null) 
+			if (properties == null)  {
 				properties = getDefaultConfiguration();
-			
+				config.update(properties);
+			}
 			config.update(properties);
 			logThis("Installed new configuration: " + properties.toString());
 		} catch (IOException e) {
@@ -94,11 +95,11 @@ public class EonAdaptor implements ManagedService {
 			properties = props;
 			// TODO: restart existing instances of HTTP bridges
 			logThis("Updated configuration: " + properties.toString());
-		}		
+		}
 	}
 
 	private static Dictionary<String, ?> getDefaultConfiguration() {
-		Dictionary props = new Hashtable<>();
+		Dictionary<String, Object> props = new Hashtable<>();
 		props.put(TARGET_HOST, "https://smarthome.eon.se");
 		props.put(TARGET_PORT, 443);
 		props.put(TARGET_APIPREFIX, "/v0_2/api/");

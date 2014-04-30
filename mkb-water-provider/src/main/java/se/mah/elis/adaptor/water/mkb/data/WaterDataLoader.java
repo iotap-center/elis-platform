@@ -53,12 +53,17 @@ public class WaterDataLoader {
 			}
 		} catch (FileNotFoundException e) {
 			throw e;
+		} catch (NullPointerException e) {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
 				try {
-					bufferedReader.close();
+					if (bufferedReader != null) {
+						bufferedReader.close();
+					}
 				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (NullPointerException e) {
 					e.printStackTrace();
 				}
 		}
