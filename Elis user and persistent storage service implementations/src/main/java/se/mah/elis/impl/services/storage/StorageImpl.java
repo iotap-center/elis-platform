@@ -1744,6 +1744,8 @@ public class StorageImpl implements Storage, ManagedService {
 			log.log(level, "StorageImpl: " + message);
 		}
 	}
+	
+	// OSGi-related stuff below
 
 	protected void bindUserFactory(UserFactory uf) {
 		this.userFactory = uf;
@@ -1776,7 +1778,10 @@ public class StorageImpl implements Storage, ManagedService {
 		try {
 			Configuration config = configAdmin.getConfiguration(SERVICE_PID);
 			properties = config.getProperties();
-			setDefaultConfiguration();
+			if (properties == null) {
+				setDefaultConfiguration();
+				config.update(properties);
+			}
 		} catch (IOException e) {
 			log(LogService.LOG_ERROR, "Failed to get configuration from Configuration Admin service.");
 			setDefaultConfiguration();
@@ -1804,7 +1809,7 @@ public class StorageImpl implements Storage, ManagedService {
 	}
 
 	@Override
-	public void updated(Dictionary<String, ?> properties)
+	public synchronized void updated(Dictionary<String, ?> properties)
 			throws ConfigurationException {
 		this.properties = properties;
 		init();
