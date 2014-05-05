@@ -144,7 +144,7 @@ public class EnergyService {
 
 	private List<Device> getMeters(GatewayUser user) {
 		List<Device> meters = new ArrayList<>();
-		logInfo(user.getClass().getSimpleName() + " is looking for meters at " + user.getGateway().iterator().next());
+		logInfo(user.getClass().getSimpleName() + " is looking for meters at " + user.getGateway().getId());
 		for (Device device : user.getGateway()) {
 			logInfo("Trying to look at a device: " + device);
 			if (device instanceof ElectricitySampler && !(device instanceof PowerSwitch))
@@ -156,8 +156,8 @@ public class EnergyService {
 	private List<Device> getDevices(User[] users) {
 		List<Device> meters = new ArrayList<>();
 		for (User user : users) {
-			if (user instanceof GatewayUser && user.getClass().getSimpleName().equals("FooGatewayUser")) { // TODO Remove the FooGatewayUser filter when done
-				logInfo("Found a FooGatewayUser");
+			if (user instanceof GatewayUser) {
+				logInfo("Found a GatewayUser");
 				meters.addAll(getMeters((GatewayUser) user));
 			}
 		}

@@ -46,6 +46,7 @@ public class EnergyServiceTest extends JerseyTest {
 	private static UserService userService;
 	private static PlatformUser platformUser;
 	private static GatewayUser gatewayUser;
+	private static Gateway gateway;
 	private static LogService log;
 	
 	private Gson gson = new Gson();
@@ -63,21 +64,22 @@ public class EnergyServiceTest extends JerseyTest {
 		
 		platformUser = mock(PlatformUser.class);
 		when(platformUser.getUserId()).thenReturn(UUID.fromString("00001111-2222-3333-4444-555566667777"));
-
-		gatewayUser = mock(GatewayUser.class);	
+		
+		gateway = mock(Gateway.class);
+		gatewayUser = mock(GatewayUser.class);
+		when(gatewayUser.getGateway()).thenReturn(gateway);
+		
 		userService = mock(UserService.class);
 		when(userService.getPlatformUser(any(UUID.class))).thenReturn(platformUser);
 		when(userService.getUsers(any(PlatformUser.class))).thenReturn(new User[] { gatewayUser });
-		
+		when(userService.getUser(any(PlatformUser.class), any(UUID.class))).thenReturn(gatewayUser);
 	}
 	
 	@Before
 	public void setup() throws SensorFailedException {
 		List<Device> devices = createMeters(4);
-		Gateway gateway = mock(Gateway.class);
 		gateway.addAll(devices);
 		when(gateway.iterator()).thenReturn(devices.iterator());
-		when(gatewayUser.getGateway()).thenReturn(gateway);
 	}
 
 	private List<Device> createMeters(int numberOfMeters) throws SensorFailedException {
@@ -111,8 +113,9 @@ public class EnergyServiceTest extends JerseyTest {
 	
 	private List<ElectricitySample> createSamples(int size) {
 		List<ElectricitySample> samples = new ArrayList<>();
-		for (int i = 0; i < size; i++) 
+		for (int i = 0; i < size; i++) {
 			samples.add(createSample(i));
+		}
 		return samples;
 	}
 
