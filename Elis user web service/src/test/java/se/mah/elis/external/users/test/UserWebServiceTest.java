@@ -133,7 +133,7 @@ public class UserWebServiceTest extends JerseyTest {
 	}
 
 	@Test
-	@Ignore
+	@Ignore // Hard to predict the order of the elements in the response
 	public void testGetUsers() {
 		PlatformUser pu1 = null, pu2 = null, pu3 = null;
 		
