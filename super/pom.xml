@@ -162,19 +162,20 @@
 		<module>../device api</module>
 		<module>../structure api</module>
 		
+		<!-- REST API modules -->
+		<module>../elis-service-beans</module>
+		<module>../elis-device-service</module>
+        <module>../elis-energy-service</module>
+        <module>../elis-water-service</module>
+        <module>../Elis user web service</module>
+		
 		<!-- Reference implementation modules -->
 		<module>../Elis user and persistent storage service implementations</module>
 		
 		<!-- Misc modules -->
 		<module>../eon-utility-provider</module>
-		<!-- <module>../elis-branding</module> -->
-
-        <module>../elis-device-service</module>
-        <module>../elis-energy-service</module>
-        <module>../elis-water-service</module>
         <module>../mkb-water-provider</module>
-        <module>../Elis user web service</module>
-        <module>../api-publisher/com.eclipsesource.jaxrs.publisher</module>
+		<!-- <module>../elis-branding</module> -->
 	</modules>
 	<dependencyManagement>
 		<dependencies>

@@ -33,8 +33,8 @@ import com.google.gson.GsonBuilder;
 import org.osgi.service.command.CommandProcessor;
 import org.osgi.service.log.LogService;
 
-import se.mah.elis.external.users.jaxbeans.EnvelopeBean;
-import se.mah.elis.external.users.jaxbeans.ErrorBean;
+import se.mah.elis.external.beans.EnvelopeBean;
+import se.mah.elis.external.beans.ErrorBean;
 import se.mah.elis.external.users.jaxbeans.PlatformUserBean;
 import se.mah.elis.external.users.jaxbeans.GatewayUserBean;
 import se.mah.elis.external.users.jaxbeans.UserContainerBean;
