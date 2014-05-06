@@ -22,18 +22,17 @@ import se.mah.elis.adaptor.energy.eon.internal.EonActionObject;
 import se.mah.elis.adaptor.energy.eon.internal.EonActionStatus;
 import se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge;
 
-@Ignore
 public class EonHttpBridgeTest {
 	
 	private static final int LEVEL_HOUR = 0;
 	// test config
-	private static final String TEST_HOST = "http://ewpapi2.dev.appex.no";
+	private static final String TEST_HOST = "http://smarthome.eon.se"; //"http://ewpapi2.dev.appex.no";
 	private static final int TEST_PORT = 80;
 	private static final String TEST_BASEPATH = "/v0_2/api/";
-	private static final String TEST_USER = "marcus.ljungblad@mah.se";
-	private static final String TEST_PASS = "medeamah2012";
-	private static final String TEST_GATEWAY = "134";
-	private static final String TEST_DEVICEID = "ab62ec3d-f86d-46bc-905b-144ee0511a25";
+	private static final String TEST_USER = "hems7@eon.se"; //"marcus.ljungblad@mah.se";
+	private static final String TEST_PASS = "02DCD0"; // "medeamah2012";
+	private static final String TEST_GATEWAY = "59"; // "134";
+	private static final String TEST_DEVICEID = "5502864f-5258-4b39-86db-abf69a046a36"; // "ab62ec3d-f86d-46bc-905b-144ee0511a25";
 			
 	private EonHttpBridge bridge; 
 	
@@ -54,7 +53,7 @@ public class EonHttpBridgeTest {
 	 * new requestb.in container (http://requestb.in) if test is needed.
 	 */
 	@Test
-	@Ignore
+	@Ignore // Due to unnecessary test case.
 	public void testRegularPost() {
 		final String HOST = "http://requestb.in";
 		final String PATH = "/ql0zycql";
@@ -103,32 +102,32 @@ public class EonHttpBridgeTest {
 		assertEquals(TEST_DEVICEID, status.get("DeviceId"));
 	}
 	
-//	@Test
-//	public void testTurnOn() throws AuthenticationException {
-//		String token = bridge.authenticate(TEST_USER, TEST_PASS);
-//		System.out.println(token);
-//		try {
-//			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5";
-//			EonActionObject reply = bridge.turnOn(token, TEST_GATEWAY, tulpanLampa);
-//			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			fail("Failed to toggle device");
-//		}
-//	}
-//	
-//	@Test
-//	public void testTurnOff() throws AuthenticationException {
-//		String token = bridge.authenticate(TEST_USER, TEST_PASS);
-//		try {
-//			String tulpanLampa = "d114d9c7-8374-4386-a0b6-1bbdc25c28f5"; 
-//			EonActionObject reply = bridge.turnOff(token, TEST_GATEWAY, tulpanLampa);
-//			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			fail("Failed to toggle device");
-//		}
-//	}
+	@Test
+	public void testTurnOn() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		System.out.println(token);
+		try {
+			String tulpanLampa = "ae32e759-9205-4f68-ba35-0932be43a2d2"; // "d114d9c7-8374-4386-a0b6-1bbdc25c28f5";
+			EonActionObject reply = bridge.turnOn(token, TEST_GATEWAY, tulpanLampa);
+			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Failed to toggle device");
+		}
+	}
+	
+	@Test
+	public void testTurnOff() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		try {
+			String tulpanLampa = "ae32e759-9205-4f68-ba35-0932be43a2d2"; // "d114d9c7-8374-4386-a0b6-1bbdc25c28f5"; 
+			EonActionObject reply = bridge.turnOff(token, TEST_GATEWAY, tulpanLampa);
+			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Failed to toggle device");
+		}
+	}
 
 	
 	/**
@@ -154,7 +153,7 @@ public class EonHttpBridgeTest {
 	public void testGetTemperature() throws AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
 		try {
-			String thermometerDeviceId = "b6530784-14da-469b-8a46-36e8e2c0d684";
+			String thermometerDeviceId = "5b38113b-1a92-483d-8a7c-0a92101823bb"; // "b6530784-14da-469b-8a46-36e8e2c0d684";
 			float temperature = bridge.getTemperature(token, TEST_GATEWAY, thermometerDeviceId);
 			assertTrue(temperature == -1f);
 		} catch (Exception ignore) {

@@ -30,12 +30,12 @@ import se.mah.elis.adaptor.energy.eon.internal.user.EonGatewayUser;
 
 public class EonGatewayTest {
 
-	private static final String PASSWORD = "medeamah2012";
-	private static final String USERNAME = "marcus.ljungblad@mah.se";
+	private static final String PASSWORD = "02DCD0"; // "medeamah2012";
+	private static final String USERNAME = "hems7@eon.se"; //"marcus.ljungblad@mah.se";
 	private static final String TEST_GATEWAY_NAME = "testGateway";
 	private static final String TEST_TOKEN = "sometoken";
-	private static final String TEST_GATEWAY_ADDRESS = "134";
-	private static final String TEST_HOST = "http://ewpapi2.dev.appex.no";
+	private static final String TEST_GATEWAY_ADDRESS = "59"; // "134";
+	private static final String TEST_HOST = "http://smarthome.eon.se"; //"http://ewpapi2.dev.appex.no";
 	private static final String TEST_BASEPATH = "/v0_2/api/";
 	private static final int TEST_PORT = 80;
 	private EonHttpBridge bridge;
@@ -97,7 +97,6 @@ public class EonGatewayTest {
 	}
 	
 	@Test
-	@Ignore
 	public void testConnectWithRealUser() {
 		try {
 			EonHttpBridge bridge = new EonHttpBridge(TEST_HOST, TEST_PORT, TEST_BASEPATH);
@@ -112,13 +111,12 @@ public class EonGatewayTest {
 	}
 	
 	@Test 
-	@Ignore
 	public void testValidToken() {
 		EonHttpBridge bridge = new EonHttpBridge(TEST_HOST, TEST_PORT, TEST_BASEPATH);
 		try {
 			String token = bridge.authenticate(USERNAME, PASSWORD);
 			// example: 635282347637201905,marcus.ljungblad@mah.se,medeamah2012
-			assertTrue(token.endsWith(",marcus.ljungblad@mah.se,medeamah2012"));
+			assertTrue(token.endsWith("," + USERNAME + "," + PASSWORD));
 		} catch (AuthenticationException | ResponseProcessingException e) {
 			fail("exception thrown");
 		}
