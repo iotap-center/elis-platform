@@ -14,8 +14,8 @@ import com.google.gson.GsonBuilder;
  * response messages. Currently, the following status codes are available:</p>
  * 
  * <ul>
- *   <li>200 No Content</li>
- *   <li>201 No Content</li>
+ *   <li>200 OK</li>
+ *   <li>201 Created</li>
  *   <li>204 No Content</li>
  *   <li>400 Bad Request</li>
  *   <li>403 Forbidden</li>
