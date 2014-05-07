@@ -44,6 +44,7 @@ public class ElisResponseBuilder {
 		EnvelopeBean envelope = new EnvelopeBean();
 		envelope.status = Status.OK.getReasonPhrase();
 		envelope.code = Status.OK.getStatusCode();
+		envelope.response = payload;
 		response = Response.status(Status.OK)
 				.entity(gson.toJson(envelope)).build();
 		
