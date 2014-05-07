@@ -34,10 +34,11 @@ public class ResponseBuilder {
 	/**
 	 * Builds a 200 OK response.
 	 * 
+	 * @param payload An object to send with the response.
 	 * @return A 200 response object.
 	 * @since 1.0
 	 */
-	public static Response buildOKResponse() {
+	public static Response buildOKResponse(Object payload) {
 		Response response = null;
 		Gson gson = new GsonBuilder().setPrettyPrinting().create(); 
 		EnvelopeBean envelope = new EnvelopeBean();
