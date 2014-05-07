@@ -29,6 +29,7 @@ import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.ElectricitySample;
+import se.mah.elis.external.beans.EnvelopeBean;
 import se.mah.elis.external.energy.beans.EnergyBean;
 import se.mah.elis.external.energy.beans.EnergyDeviceBean;
 import se.mah.elis.services.users.PlatformUser;
@@ -129,7 +130,8 @@ public class EnergyServiceTest extends JerseyTest {
 
 	@Test
 	public void testGetNowRequest() {
-		EnergyBean bean = getNowRequest();
+		EnvelopeBean envelope = getNowRequest();
+		EnergyBean bean = (EnergyBean) envelope.response;
 		assertEquals("00001111-2222-3333-4444-555566667777", bean.puid);
 		assertEquals("now", bean.period);
 		assertEquals(DEVICE + 0, getFirstDevice(bean.devices));
@@ -151,15 +153,17 @@ public class EnergyServiceTest extends JerseyTest {
 
 	@Test
 	public void testGetNowRequestMultipleDevices() {
-		EnergyBean bean = getNowRequest();
-		assertEquals(4, bean.devices.size());
+		EnvelopeBean bean = getNowRequest();
+		assertEquals(4, ((EnergyBean) bean.response).devices.size());
 	}
 
-	private EnergyBean getNowRequest() {
+	private EnvelopeBean getNowRequest() {
 		final String energyNowData = target("/energy/00001111-2222-3333-4444-555566667777/now")
 				.request().get(String.class);
-		EnergyBean bean = gson.fromJson(energyNowData, EnergyBean.class);
-		return bean;
+		EnvelopeBean envelope = gson.fromJson(energyNowData, EnvelopeBean.class);
+		envelope.response = gson.fromJson(gson.toJson(envelope.response), EnergyBean.class);
+		
+		return envelope;
 	}
 	
 	@Test
