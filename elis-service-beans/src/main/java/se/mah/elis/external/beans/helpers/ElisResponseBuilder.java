@@ -29,7 +29,7 @@ import com.google.gson.GsonBuilder;
  * @author "Johan Holmberg, Malmö University"
  * @since 1.0
  */
-public class ResponseBuilder {
+public class ElisResponseBuilder {
 	
 	/**
 	 * Builds a 200 OK response.
