@@ -34,7 +34,7 @@ import org.osgi.service.log.LogService;
 
 import se.mah.elis.external.beans.EnvelopeBean;
 import se.mah.elis.external.beans.ErrorBean;
-import se.mah.elis.external.beans.helpers.ResponseBuilder;
+import se.mah.elis.external.beans.helpers.ElisResponseBuilder;
 import se.mah.elis.external.users.jaxbeans.PlatformUserBean;
 import se.mah.elis.external.users.jaxbeans.GatewayUserBean;
 import se.mah.elis.external.users.jaxbeans.UserContainerBean;
@@ -239,7 +239,7 @@ public class UserWebService {
 		logThis("POST /users");
 		
 		// First of all, count on things being bad.
-		response = ResponseBuilder.buildBadRequestResponse();
+		response = ElisResponseBuilder.buildBadRequestResponse();
 		
 		if (userService != null && userFactory != null) {
 			logThis(input.username);
@@ -264,10 +264,10 @@ public class UserWebService {
 							u = userFactory.build(recipe.getUserType(),
 									recipe.getServiceName(), properties);
 						} catch (UserInitalizationException e) {
-							return ResponseBuilder.buildBadRequestResponse();
+							return ElisResponseBuilder.buildBadRequestResponse();
 						} catch (Exception e) {
 							logError("UserFactory Could not build user - server error");
-							return ResponseBuilder.buildInternalServerErrorResponse();
+							return ElisResponseBuilder.buildInternalServerErrorResponse();
 						}
 					} else {
 						
@@ -291,12 +291,12 @@ public class UserWebService {
 						.entity(gson.toJson(envelope)).build();
 			} catch (UserExistsException e) {
 				logWarning("User already exists: " + input.email);
-				response = ResponseBuilder.buildConflictResponse();
+				response = ElisResponseBuilder.buildConflictResponse();
 			} catch (IllegalArgumentException e) {
 				logWarning("Bad request: " + input.email);
-				response = ResponseBuilder.buildBadRequestResponse();
+				response = ElisResponseBuilder.buildBadRequestResponse();
 			} catch (NoSuchUserException e) {
-				response = ResponseBuilder.buildInternalServerErrorResponse();
+				response = ElisResponseBuilder.buildInternalServerErrorResponse();
 			}
 		} else {
 			logError("No UserFactory or UserService available");
@@ -343,7 +343,7 @@ public class UserWebService {
 			
 			response = Response.ok().entity(gson.toJson(envelope)).build();
 		} else {
-			response = ResponseBuilder.buildNotFoundResponse();
+			response = ElisResponseBuilder.buildNotFoundResponse();
 		}
 		
 		return response;
@@ -383,7 +383,7 @@ public class UserWebService {
 			try {
 				userService.updatePlatformUser(pu);
 			} catch (NoSuchUserException e) {
-				response = ResponseBuilder.buildInternalServerErrorResponse();
+				response = ElisResponseBuilder.buildInternalServerErrorResponse();
 			}
 			
 			input.password = null;
@@ -395,7 +395,7 @@ public class UserWebService {
 			
 			response = Response.ok().entity(gson.toJson(envelope)).build();
 		} else {
-			response = ResponseBuilder.buildNotFoundResponse();
+			response = ElisResponseBuilder.buildNotFoundResponse();
 		}
 		
 		return response;
@@ -411,7 +411,7 @@ public class UserWebService {
 	@Path("/{userId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteUser(@PathParam("userId") String userId) {
-		Response response = null;
+		Response response = ElisResponseBuilder.buildNotFoundResponse();
 		
 		logThis("DELETE /users/" + userId);
 		
@@ -419,9 +419,9 @@ public class UserWebService {
 		if (pu != null) {
 			try {
 				userService.deletePlatformUser(pu);
+				response = ElisResponseBuilder.buildNoContentResponse();
 			} catch (NoSuchUserException e) {}
 		}
-		response = ResponseBuilder.buildNotFoundResponse();
 		
 		return response;
 	}
@@ -455,7 +455,7 @@ public class UserWebService {
 		logThis("POST /users/" + type + "/" + userId);
 		
 		// First of all, count on things being bad.
-		response = ResponseBuilder.buildBadRequestResponse();
+		response = ElisResponseBuilder.buildBadRequestResponse();
 		
 		// TODO: Fix this shit. Also, add bean stuff.
 		String userType = Character.toUpperCase(type.charAt(0)) +
@@ -516,7 +516,7 @@ public class UserWebService {
 	public Response decoupleGatewayFromUser(
 			@PathParam("platformUserId") String platformUserId,
 			@PathParam("userId") String userId) {
-		Response response = ResponseBuilder.buildNotFoundResponse();
+		Response response = ElisResponseBuilder.buildNotFoundResponse();
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		UserContainerBean container = new UserContainerBean();
 		EnvelopeBean envelope = new EnvelopeBean();
