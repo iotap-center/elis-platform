@@ -9,7 +9,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
@@ -19,6 +18,7 @@ import org.osgi.service.log.LogService;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
+import se.mah.elis.external.beans.helpers.ElisResponseBuilder;
 import se.mah.elis.external.devices.beans.DeviceBean;
 import se.mah.elis.external.devices.beans.DeviceSetBean;
 import se.mah.elis.services.users.PlatformUser;
@@ -34,6 +34,7 @@ import com.google.gson.GsonBuilder;
  * devices that a platform user is connected with.
  * 
  * @author Marcus Ljungblad
+ * @author Johan Holmberg
  * @since 1.0
  * @version 1.0
  * 
@@ -71,15 +72,17 @@ public class DeviceService {
 	 */
 	@GET
 	public Response getDeviceList(@PathParam("id") String id) {
-		ResponseBuilder response = null;
+		Response response = null;
 		UUID uuid = null;
 
 		logThis("Request: /devices/" + id + "/");
+		
+		// First of all, count on things being bad.
+		response = ElisResponseBuilder.buildBadRequestResponse();
 
 		try {
 			uuid = UUID.fromString(id);
 		} catch (Exception e) {
-			response = Response.status(Response.Status.BAD_REQUEST);
 			logWarning("Bad UUID");
 		}
 
@@ -88,24 +91,25 @@ public class DeviceService {
 			if (pu != null) {
 				response = buildDeviceListResponseFrom(pu);
 			} else {
-				response = Response.status(Response.Status.NOT_FOUND);
+				response = ElisResponseBuilder.buildNotFoundResponse();
 				logWarning("Could not find user: " + id);
 			}
 		} else if (response == null) {
-			response = Response.serverError();
+			response = ElisResponseBuilder.buildInternalServerErrorResponse();
 			logError("User service not available");
 		}
 
-		return response.build();
+		return response;
 	}
 
-	private ResponseBuilder buildDeviceListResponseFrom(PlatformUser pu) {
-		ResponseBuilder response;
+	private Response buildDeviceListResponseFrom(PlatformUser pu) {
+		Response response;
 		User[] users = userService.getUsers(pu);
 		DeviceSetBean deviceset = new DeviceSetBean();
 		deviceset.puid = pu.getUserId().toString();
 		deviceset.devices = getAllDevicesFor(users);
-		response = Response.ok(gson.toJson(deviceset));
+		response = ElisResponseBuilder.buildOKResponse(deviceset);
+//		response.ok(gson.toJson(deviceset));
 		return response;
 	}
 

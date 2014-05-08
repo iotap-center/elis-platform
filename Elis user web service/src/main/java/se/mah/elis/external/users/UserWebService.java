@@ -7,7 +7,6 @@ import java.lang.reflect.Field;
 import java.util.Properties;
 import java.util.UUID;
 
-import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -33,8 +32,9 @@ import com.google.gson.GsonBuilder;
 import org.osgi.service.command.CommandProcessor;
 import org.osgi.service.log.LogService;
 
-import se.mah.elis.external.users.jaxbeans.EnvelopeBean;
-import se.mah.elis.external.users.jaxbeans.ErrorBean;
+import se.mah.elis.external.beans.EnvelopeBean;
+import se.mah.elis.external.beans.ErrorBean;
+import se.mah.elis.external.beans.helpers.ElisResponseBuilder;
 import se.mah.elis.external.users.jaxbeans.PlatformUserBean;
 import se.mah.elis.external.users.jaxbeans.GatewayUserBean;
 import se.mah.elis.external.users.jaxbeans.UserContainerBean;
@@ -239,7 +239,7 @@ public class UserWebService {
 		logThis("POST /users");
 		
 		// First of all, count on things being bad.
-		response = buildBadRequestResponse(response);
+		response = ElisResponseBuilder.buildBadRequestResponse();
 		
 		if (userService != null && userFactory != null) {
 			logThis(input.username);
@@ -264,10 +264,10 @@ public class UserWebService {
 							u = userFactory.build(recipe.getUserType(),
 									recipe.getServiceName(), properties);
 						} catch (UserInitalizationException e) {
-							return buildBadRequestResponse(response);
+							return ElisResponseBuilder.buildBadRequestResponse();
 						} catch (Exception e) {
 							logError("UserFactory Could not build user - server error");
-							return buildInternalServerErrorResponse(response);
+							return ElisResponseBuilder.buildInternalServerErrorResponse();
 						}
 					} else {
 						
@@ -291,12 +291,12 @@ public class UserWebService {
 						.entity(gson.toJson(envelope)).build();
 			} catch (UserExistsException e) {
 				logWarning("User already exists: " + input.email);
-				response = buildConflictResponse(response);
+				response = ElisResponseBuilder.buildConflictResponse();
 			} catch (IllegalArgumentException e) {
 				logWarning("Bad request: " + input.email);
-				response = buildBadRequestResponse(response);
+				response = ElisResponseBuilder.buildBadRequestResponse();
 			} catch (NoSuchUserException e) {
-				response = buildInternalServerErrorResponse(response);
+				response = ElisResponseBuilder.buildInternalServerErrorResponse();
 			}
 		} else {
 			logError("No UserFactory or UserService available");
@@ -343,7 +343,7 @@ public class UserWebService {
 			
 			response = Response.ok().entity(gson.toJson(envelope)).build();
 		} else {
-			response = buildNotFoundResponse(response);
+			response = ElisResponseBuilder.buildNotFoundResponse();
 		}
 		
 		return response;
@@ -383,7 +383,7 @@ public class UserWebService {
 			try {
 				userService.updatePlatformUser(pu);
 			} catch (NoSuchUserException e) {
-				response = buildInternalServerErrorResponse(response);
+				response = ElisResponseBuilder.buildInternalServerErrorResponse();
 			}
 			
 			input.password = null;
@@ -395,7 +395,7 @@ public class UserWebService {
 			
 			response = Response.ok().entity(gson.toJson(envelope)).build();
 		} else {
-			response = buildNotFoundResponse(response);
+			response = ElisResponseBuilder.buildNotFoundResponse();
 		}
 		
 		return response;
@@ -411,7 +411,7 @@ public class UserWebService {
 	@Path("/{userId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteUser(@PathParam("userId") String userId) {
-		Response response = null;
+		Response response = ElisResponseBuilder.buildNotFoundResponse();
 		
 		logThis("DELETE /users/" + userId);
 		
@@ -419,12 +419,8 @@ public class UserWebService {
 		if (pu != null) {
 			try {
 				userService.deletePlatformUser(pu);
-				response = buildNoContentResponse(response);
-			} catch (NoSuchUserException e) {
-				response = buildNotFoundResponse(response);
-			}	
-		} else {
-			response = buildNotFoundResponse(response);
+				response = ElisResponseBuilder.buildNoContentResponse();
+			} catch (NoSuchUserException e) {}
 		}
 		
 		return response;
@@ -459,7 +455,7 @@ public class UserWebService {
 		logThis("POST /users/" + type + "/" + userId);
 		
 		// First of all, count on things being bad.
-		response = buildBadRequestResponse(response);
+		response = ElisResponseBuilder.buildBadRequestResponse();
 		
 		// TODO: Fix this shit. Also, add bean stuff.
 		String userType = Character.toUpperCase(type.charAt(0)) +
@@ -520,7 +516,7 @@ public class UserWebService {
 	public Response decoupleGatewayFromUser(
 			@PathParam("platformUserId") String platformUserId,
 			@PathParam("userId") String userId) {
-		Response response = buildNotFoundResponse(null);
+		Response response = ElisResponseBuilder.buildNotFoundResponse();
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		UserContainerBean container = new UserContainerBean();
 		EnvelopeBean envelope = new EnvelopeBean();
@@ -592,71 +588,6 @@ public class UserWebService {
 		}
 		
 		return properties;
-	}
-	
-	private Response buildBadRequestResponse(Response response) {
-		Gson gson = new GsonBuilder().setPrettyPrinting().create(); 
-		EnvelopeBean envelope = new ErrorBean();
-		envelope.status = "Error";
-		envelope.code = Status.BAD_REQUEST.getStatusCode();
-		((ErrorBean) envelope).errorType = Status.BAD_REQUEST
-				.getReasonPhrase();
-		((ErrorBean) envelope).errorDetail =
-				"The request cannot be fulfilled due to bad syntax.";
-		response = Response.status(Status.BAD_REQUEST)
-				.entity(gson.toJson(envelope)).build();
-		
-		return response;
-	}
-	
-	private Response buildNotFoundResponse(Response response) {
-		Gson gson = new GsonBuilder().setPrettyPrinting().create(); 
-		EnvelopeBean envelope = new ErrorBean();
-		envelope.status = "Error";
-		envelope.code = Status.NOT_FOUND.getStatusCode();
-		((ErrorBean) envelope).errorType = Status.NOT_FOUND.getReasonPhrase();
-		((ErrorBean) envelope).errorDetail = "The requested URL was not found on this server.";
-		response = Response.status(Status.NOT_FOUND)
-				.entity(gson.toJson(envelope)).build();
-		
-		return response;
-	}
-	
-	private Response buildInternalServerErrorResponse(Response response) {
-		Gson gson = new GsonBuilder().setPrettyPrinting().create(); 
-		EnvelopeBean envelope = new ErrorBean();
-		envelope.status = "Error";
-		envelope.code = Status.INTERNAL_SERVER_ERROR.getStatusCode();
-		((ErrorBean) envelope).errorType = Status.INTERNAL_SERVER_ERROR.getReasonPhrase();
-		((ErrorBean) envelope).errorDetail = "Someone set up us the bomb.";
-		response = Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(gson.toJson(envelope)).build();
-		
-		return response;
-	}
-	
-	private Response buildNoContentResponse(Response response) {
-		Gson gson = new GsonBuilder().setPrettyPrinting().create(); 
-		EnvelopeBean envelope = new ErrorBean();
-		envelope.status = Status.NO_CONTENT.getReasonPhrase();
-		envelope.code = Status.NO_CONTENT.getStatusCode();
-		response = Response.status(Status.NO_CONTENT)
-				.entity(gson.toJson(envelope)).build();
-		
-		return response;
-	}
-	
-	private Response buildConflictResponse(Response response) {
-		Gson gson = new GsonBuilder().setPrettyPrinting().create(); 
-		EnvelopeBean envelope = new ErrorBean();
-		envelope.status = "Error";
-		envelope.code = Status.CONFLICT.getStatusCode();
-		((ErrorBean) envelope).errorType = Status.CONFLICT.getReasonPhrase();
-		((ErrorBean) envelope).errorDetail = "The proposed URL already exists on this server.";
-		response = Response.status(Status.CONFLICT)
-				.entity(gson.toJson(envelope)).build();
-		
-		return response;
 	}
 	
 	private void logThis(String msg) {

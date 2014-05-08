@@ -1,4 +1,4 @@
-package se.mah.elis.external.users.jaxbeans;
+package se.mah.elis.external.beans;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

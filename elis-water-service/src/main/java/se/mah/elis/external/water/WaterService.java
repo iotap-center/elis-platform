@@ -28,6 +28,7 @@ import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.entities.devices.WaterMeterSampler;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.WaterSample;
+import se.mah.elis.external.beans.helpers.ElisResponseBuilder;
 import se.mah.elis.external.water.beans.WaterBean;
 import se.mah.elis.external.water.beans.WaterBeanFactory;
 import se.mah.elis.services.users.PlatformUser;
@@ -41,6 +42,7 @@ import com.google.gson.GsonBuilder;
  * This is a HTTP service to retrieve water data statistics.
  * 
  * @author Marcus Ljungblad
+ * @author Johan Holmberg
  * @version 1.0
  * @since 1.0 
  *
@@ -85,15 +87,17 @@ public class WaterService {
 	@GET
 	@Path("/{puid}/now")
 	public Response getCurrentWaterConsumption(@PathParam("puid") String puid) {
-		ResponseBuilder response = null;
+		Response response = null;
 		UUID uuid = null;
 		
 		logRequest("now", puid);
 
 		try {
+			System.out.println(puid);
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
-			response = Response.status(Response.Status.BAD_REQUEST);
+			response = ElisResponseBuilder.buildBadRequestResponse();
+			System.out.println("Bad uuid");
 			logWarning("Bad UUID");
 		}
 
@@ -101,30 +105,35 @@ public class WaterService {
 			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null) {
 				response = buildCurrentWaterConsumptionResponseFrom(pu);
+				System.out.println("We get signal");
 			} else {
-				response = Response.status(Response.Status.NOT_FOUND);
+				response = ElisResponseBuilder.buildNotFoundResponse();
+				System.out.println("The bomb.");
 				logWarning("Could not find user: " + uuid.toString());
 			}
 		} else if (response == null) {
-			response = Response.serverError();
+			response = ElisResponseBuilder.buildInternalServerErrorResponse();
+			System.out.println("Also bomb.");
 			logError("User service not available");
+		} else {
+			System.out.println("Some kind of bomb.");
 		}
 
-		return response.build();
+		return response;
 	}
 
 	private boolean isAvailable(Object o) {
 		return o != null;
 	}
 
-	private ResponseBuilder buildCurrentWaterConsumptionResponseFrom(
+	private Response buildCurrentWaterConsumptionResponseFrom(
 			PlatformUser pu) {
-		ResponseBuilder response;
+		Response response;
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getCurrentSamplesForMeters(waterMeters);
 		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_NOW, pu);
-		String json = gson.toJson(waterConsumptionBean);
-		response = Response.ok(json);
+		response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+		
 		return response;
 	}
 	

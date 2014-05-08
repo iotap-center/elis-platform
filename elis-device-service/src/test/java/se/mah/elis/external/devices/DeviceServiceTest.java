@@ -25,6 +25,7 @@ import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
+import se.mah.elis.external.beans.EnvelopeBean;
 import se.mah.elis.external.devices.beans.DeviceBean;
 import se.mah.elis.external.devices.beans.DeviceSetBean;
 import se.mah.elis.services.users.PlatformUser;
@@ -86,7 +87,8 @@ public class DeviceServiceTest extends JerseyTest {
 	@Test
 	public void testGetDevices() {
 		final String deviceResponse = target("/devices/" + PUID + "/").request().get(String.class);
-		DeviceSetBean bean = gson.fromJson(deviceResponse, DeviceSetBean.class);
+		EnvelopeBean envelope = gson.fromJson(deviceResponse, EnvelopeBean.class);
+		DeviceSetBean bean = gson.fromJson(gson.toJson(envelope.response), DeviceSetBean.class);
 		assertEquals(PUID, bean.puid);
 		assertEquals(1, bean.devices.size());
 		assertEquals(DEVICENAME, bean.devices.get(0).name);

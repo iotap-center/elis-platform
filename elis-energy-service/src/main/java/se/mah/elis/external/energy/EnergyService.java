@@ -23,6 +23,7 @@ import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.device.api.entities.devices.PowerSwitch;
+import se.mah.elis.external.beans.helpers.ElisResponseBuilder;
 import se.mah.elis.external.energy.beans.EnergyBean;
 import se.mah.elis.external.energy.beans.EnergyBeanFactory;
 import se.mah.elis.services.users.PlatformUser;
@@ -59,7 +60,7 @@ public class EnergyService {
 	@GET
 	@Path("/{puid}/now")
 	public Response getCurrentEnergyConsumption(@PathParam("puid") String puid) {
-		ResponseBuilder response = null;
+		Response response = null;
 		UUID uuid = null;
 		
 		logRequest("now", puid);
@@ -67,7 +68,7 @@ public class EnergyService {
 		try {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
-			response = Response.status(Response.Status.BAD_REQUEST);
+			response = ElisResponseBuilder.buildBadRequestResponse();
 			logWarning("Bad UUID");
 		}
 		
@@ -76,22 +77,22 @@ public class EnergyService {
 			if (pu != null)
 				response = buildCurrentEnergyConsumptionResponse("now", pu);
 			else {
-				response = Response.status(Response.Status.NOT_FOUND);
+				response = ElisResponseBuilder.buildNotFoundResponse();
 				logWarning("Could not find user: " + uuid.toString());
 			}
 		} else if (response == null) {
-			response = Response.serverError();
+			response = ElisResponseBuilder.buildInternalServerErrorResponse();
 			logError("User service not available");
 		}
 
-		return response.build();
+		return response;
 	}
 
-	private ResponseBuilder buildCurrentEnergyConsumptionResponse(
+	private Response buildCurrentEnergyConsumptionResponse(
 			String period, PlatformUser pu) {
 		List<Device> availableEnergyMeters = getMeters(pu);
 		EnergyBean bean = EnergyBeanFactory.create(availableEnergyMeters, period, pu);
-		return Response.ok(gson.toJson(bean));
+		return ElisResponseBuilder.buildOKResponse(bean);
 	}
 	
 	@GET

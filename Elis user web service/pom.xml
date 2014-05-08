@@ -68,6 +68,12 @@
   		<version>2.0.0</version>
   		<type>bundle</type>
   	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.external.beans</groupId>
+  		<artifactId>elis-service-beans</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<type>bundle</type>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>
