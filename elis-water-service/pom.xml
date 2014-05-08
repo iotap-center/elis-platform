@@ -77,6 +77,12 @@
   		<type>bundle</type>
   		<scope>test</scope>
   	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.external.beans</groupId>
+  		<artifactId>elis-service-beans</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<type>bundle</type>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>

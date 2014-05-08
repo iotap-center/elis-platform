@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.osgi.service.log.LogService;
 
 import com.google.gson.Gson;
@@ -30,6 +31,7 @@ import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.entities.devices.WaterMeterSampler;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.WaterSample;
+import se.mah.elis.external.beans.EnvelopeBean;
 import se.mah.elis.external.water.beans.WaterBean;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.PlatformUserIdentifier;
@@ -58,7 +60,7 @@ public class WaterServiceTest extends JerseyTest {
 	}
 	
 	@BeforeClass
-	public static void setupClass() throws SensorFailedException {
+	public static void setupClass() {
 		log = mock(LogService.class);
 		
 		platformUser = mock(PlatformUser.class);
@@ -72,7 +74,7 @@ public class WaterServiceTest extends JerseyTest {
 	}
 	
 	@Before
-	public void setup() throws SensorFailedException {
+	public void setup() {
 		WaterMeterSampler sampler = mock(WaterMeterSampler.class);
 		Gateway gateway = mock(Gateway.class);
 
@@ -87,7 +89,9 @@ public class WaterServiceTest extends JerseyTest {
 		when(sample.getSampleTimestamp()).thenReturn(now);
 		when(sample.getVolume()).thenReturn(SAMPLE_VOLUME);
 		when(sampler.getName()).thenReturn(SAMPLER_NAME);
-		when(sampler.getSample()).thenReturn(sample);
+		try {
+			when(sampler.getSample()).thenReturn(sample);
+		} catch (SensorFailedException e) {}
 		
 		DateTime from = new DateTime(1392681600000l);
 		DateTime to = new DateTime(1392685200000l);
@@ -95,7 +99,9 @@ public class WaterServiceTest extends JerseyTest {
 		WaterSample historicSample = mock(WaterSample.class);
 		when(historicSample.getSampleTimestamp()).thenReturn(sampleTime);
 		when(historicSample.getVolume()).thenReturn(HISTORIC_SAMPLE_VOLUME);
-		when(sampler.getSample(any(DateTime.class), any(DateTime.class))).thenReturn(historicSample);
+		try {
+			when(sampler.getSample(any(DateTime.class), any(DateTime.class))).thenReturn(historicSample);
+		} catch (SensorFailedException e) {}
 	}	
 	
 	@Test
@@ -122,7 +128,8 @@ public class WaterServiceTest extends JerseyTest {
 
 	private WaterBean makeRequest(String uri) {
 		final String waterData = target(uri).request().get(String.class);
-		WaterBean bean = gson.fromJson(waterData, WaterBean.class);
+		EnvelopeBean envelope = gson.fromJson(waterData, EnvelopeBean.class);
+		WaterBean bean = gson.fromJson(gson.toJson(envelope.response), WaterBean.class);
 		return bean;
 	}
 	
@@ -185,15 +192,6 @@ public class WaterServiceTest extends JerseyTest {
 				.request()
 				.get();
 		assertEquals(400, response.getStatus());
-	}
-	
-	@Test 
-	@Ignore
-	public void testNoUserServiceAvailable() {
-		// TODO: Find a way to reset userService
-		userService = null;
-		final Response response = target("/water/" + TEST_UUID + "/now").request().get();
-		assertEquals(500, response.getStatus());
 	}
 
 	private long futureDate() {
