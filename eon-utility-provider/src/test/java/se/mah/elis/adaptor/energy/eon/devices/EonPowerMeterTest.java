@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.ws.rs.client.ResponseProcessingException;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.simple.parser.ParseException;
@@ -34,6 +35,7 @@ import se.mah.elis.exceptions.StaticEntityException;
 public class EonPowerMeterTest {
 
 	private static DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+	private static DateTimeFormatter fmt2 = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 	private EonPowerMeter eonPowerMeter;
 	private EonHttpBridge bridge;
 	private EonGateway gateway;
@@ -88,7 +90,7 @@ public class EonPowerMeterTest {
 	}
 
 	@Test
-	public void testGetSample() throws SensorFailedException{
+	public void testGetCurrentSample() throws SensorFailedException{
 		Object powerSample = eonPowerMeter.getSample();
 		assertTrue(powerSample instanceof ElectricitySample);
 		
@@ -97,14 +99,78 @@ public class EonPowerMeterTest {
 	}
 	
 	@Test
+	public void testGetTwoSamples() throws SensorFailedException {
+		DateTime from = fmt2.parseDateTime("2014-01-01 00:00:00");
+		DateTime to = fmt2.parseDateTime("2014-01-01 01:00:00");
+		
+		List<ElectricitySample> samples = eonPowerMeter.getSamples(from, to);
+		
+		assertEquals(2, samples.size());
+		assertTrue(from != samples.get(1).getSampleTimestamp());
+		assertEquals(from, samples.get(0).getSampleTimestamp());
+		assertTrue(from != samples.get(1).getSampleTimestamp());
+		assertEquals(to, samples.get(samples.size() - 1).getSampleTimestamp());
+		assertEquals(DateTimeConstants.MILLIS_PER_HOUR, samples.get(0).getSampleLength());
+	}
+	
+	@Test
+	public void testGetTwoSamplesMidDay() throws SensorFailedException {
+		DateTime from = fmt2.parseDateTime("2014-01-01 04:00:00");
+		DateTime to = fmt2.parseDateTime("2014-01-01 05:00:00");
+		
+		List<ElectricitySample> samples = eonPowerMeter.getSamples(from, to);
+		
+		assertEquals(2, samples.size());
+		assertTrue(from != samples.get(1).getSampleTimestamp());
+		assertEquals(from, samples.get(0).getSampleTimestamp());
+		assertTrue(from != samples.get(1).getSampleTimestamp());
+		assertEquals(to, samples.get(samples.size() - 1).getSampleTimestamp());
+		assertEquals(DateTimeConstants.MILLIS_PER_HOUR, samples.get(0).getSampleLength());
+	}
+	
+	@Test
 	public void testGetSamples() throws SensorFailedException {
 		DateTime from = fmt.parseDateTime("2014-01-01");
 		DateTime to = fmt.parseDateTime("2014-01-02");
 		
 		List<ElectricitySample> samples = eonPowerMeter.getSamples(from, to);
-		assertEquals(24, samples.size());
+		
+		assertEquals(25, samples.size());
+		assertTrue(from != samples.get(1).getSampleTimestamp());
 		assertEquals(from, samples.get(0).getSampleTimestamp());
-		assertEquals(to.minusHours(1), samples.get(samples.size() - 1).getSampleTimestamp());
+		assertTrue(from != samples.get(1).getSampleTimestamp());
+		assertEquals(to, samples.get(samples.size() - 1).getSampleTimestamp());
+		assertEquals(DateTimeConstants.MILLIS_PER_HOUR, samples.get(0).getSampleLength());
+	}
+	
+	@Test
+	public void testGet24Samples() throws SensorFailedException {
+		DateTime from = fmt2.parseDateTime("2014-01-01 00:00:00");
+		DateTime to = fmt2.parseDateTime("2014-01-01 23:50:00");
+		
+		List<ElectricitySample> samples = eonPowerMeter.getSamples(from, to);
+		
+		assertEquals(24, samples.size());
+		assertTrue(from != samples.get(1).getSampleTimestamp());
+		assertEquals(from, samples.get(0).getSampleTimestamp());
+		assertTrue(from != samples.get(1).getSampleTimestamp());
+		assertEquals(to.minusMinutes(50), samples.get(samples.size() - 1).getSampleTimestamp());
+		assertEquals(DateTimeConstants.MILLIS_PER_HOUR, samples.get(0).getSampleLength());
+	}
+	
+	@Test
+	public void testGet48Samples() throws SensorFailedException {
+		DateTime from = fmt2.parseDateTime("2014-01-01 00:00:00");
+		DateTime to = fmt2.parseDateTime("2014-01-02 23:50:00");
+		
+		List<ElectricitySample> samples = eonPowerMeter.getSamples(from, to);
+		
+		assertEquals(48, samples.size());
+		assertTrue(from != samples.get(1).getSampleTimestamp());
+		assertEquals(from, samples.get(0).getSampleTimestamp());
+		assertTrue(from != samples.get(1).getSampleTimestamp());
+		assertEquals(to.minusMinutes(50), samples.get(samples.size() - 1).getSampleTimestamp());
+		assertEquals(DateTimeConstants.MILLIS_PER_HOUR, samples.get(0).getSampleLength());
 	}
 	
 	@Test
@@ -116,9 +182,11 @@ public class EonPowerMeterTest {
 		List<ElectricitySample> samples = eonPowerMeter.getSamples(from, to);
 		
 		// test
-		assertEquals(48, samples.size());
-		assertEquals(from, samples.get(0).getSampleTimestamp());
-		assertEquals(to.minusHours(1), samples.get(samples.size()-1).getSampleTimestamp());
+		assertEquals(49, samples.size());
+//		assertEquals(from, samples.get(0).getSampleTimestamp());
+		assertTrue(from != samples.get(1).getSampleTimestamp());
+		assertEquals(to, samples.get(samples.size()-1).getSampleTimestamp());
+		assertEquals(DateTimeConstants.MILLIS_PER_HOUR, samples.get(0).getSampleLength());
 	}
 	
 	@Test 

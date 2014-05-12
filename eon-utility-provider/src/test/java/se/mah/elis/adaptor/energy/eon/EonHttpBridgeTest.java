@@ -60,7 +60,6 @@ public class EonHttpBridgeTest {
 		EonHttpBridge b = new EonHttpBridge(HOST, 80, "");
 		Response response = b.post("token", PATH, 
 				"{\"data\": 123}");
-		System.out.println(response.getStatus());
 		assertEquals(200, response.getStatus());
 	}
 	
@@ -105,7 +104,6 @@ public class EonHttpBridgeTest {
 	@Test
 	public void testTurnOn() throws AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
-		System.out.println(token);
 		try {
 			String tulpanLampa = "ae32e759-9205-4f68-ba35-0932be43a2d2"; // "d114d9c7-8374-4386-a0b6-1bbdc25c28f5";
 			EonActionObject reply = bridge.turnOn(token, TEST_GATEWAY, tulpanLampa);
@@ -171,14 +169,65 @@ public class EonHttpBridgeTest {
 	}
 	
 	@Test
-	public void testGetStatData() throws AuthenticationException {
+	public void testGetStatZeroTime() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		String from = "2013-10-01";
+		String to = "2013-10-01";
+		int level = LEVEL_HOUR; 
+		try {
+			List<Map<String, Object>> stats = bridge.getStatData(token, TEST_GATEWAY, TEST_DEVICEID, from, to, level);
+			assertEquals(0, stats.size());
+		} catch (Exception ignore) { fail(); }
+	}
+	
+	@Test
+	public void testGetStatDataOneHour() throws AuthenticationException {
+		// Since the underlying API is somewhat lacking, the call will yield 24 data points
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		String from = "2013-10-01 12:00";
+		String to = "2013-10-02 13:00";
+		int level = LEVEL_HOUR; 
+		try {
+			List<Map<String, Object>> stats = bridge.getStatData(token, TEST_GATEWAY, TEST_DEVICEID, from, to, level);
+			assertEquals(24, stats.size());
+		} catch (Exception ignore) { fail(); }
+	}
+	
+	@Test
+	public void testGetStatDataTwoHours() throws AuthenticationException {
+		// Since the underlying API is somewhat lacking, the call will yield 24 data points
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		String from = "2013-10-01 12:00";
+		String to = "2013-10-02 14:00";
+		int level = LEVEL_HOUR; 
+		try {
+			List<Map<String, Object>> stats = bridge.getStatData(token, TEST_GATEWAY, TEST_DEVICEID, from, to, level);
+			assertEquals(24, stats.size());
+		} catch (Exception ignore) { fail(); }
+	}
+	
+	@Test
+	public void testGetStatData24Hours() throws AuthenticationException {
+		String token = bridge.authenticate(TEST_USER, TEST_PASS);
+		String from = "2013-10-01";
+		String to = "2013-10-02";
+		int level = LEVEL_HOUR;
+		try {
+			List<Map<String, Object>> stats = bridge.getStatData(token, TEST_GATEWAY, TEST_DEVICEID, from, to, level);
+			assertEquals(24, stats.size());
+		} catch (Exception ignore) { fail(); }
+	}
+	
+	@Test
+	public void testGetStatData48Hours() throws AuthenticationException {
+		// Since the underlying API is somewhat lacking, the call will yield 24 data points
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
 		String from = "2013-10-01";
 		String to = "2013-10-02";
 		int level = LEVEL_HOUR; 
 		try {
 			List<Map<String, Object>> stats = bridge.getStatData(token, TEST_GATEWAY, TEST_DEVICEID, from, to, level);
-			assertTrue(stats.size() == 24);
+			assertEquals(24, stats.size());
 		} catch (Exception ignore) { fail(); }
 	}
 	

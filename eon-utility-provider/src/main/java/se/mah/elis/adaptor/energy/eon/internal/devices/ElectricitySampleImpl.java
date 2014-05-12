@@ -250,4 +250,14 @@ public class ElectricitySampleImpl implements ElectricitySample {
 	public DateTime created() {
 		return created;
 	}
+	
+	public void setSampleLength(long millis) {
+		if (millis >= 0) {
+			sampleLength = millis;
+		}
+	}
+	
+	public void setSamplingTime(DateTime instance) {
+		sampled = instance;
+	}
 }

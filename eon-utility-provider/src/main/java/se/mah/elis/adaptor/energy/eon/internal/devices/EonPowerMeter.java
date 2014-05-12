@@ -2,12 +2,16 @@ package se.mah.elis.adaptor.energy.eon.internal.devices;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.simple.parser.ParseException;
@@ -20,6 +24,7 @@ import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
 import se.mah.elis.data.ElectricitySample;
 import se.mah.elis.data.OrderedProperties;
+import se.mah.elis.data.test.mocks.ElectricitySampleMock;
 import se.mah.elis.exceptions.StaticEntityException;
 
 /**
@@ -34,7 +39,7 @@ import se.mah.elis.exceptions.StaticEntityException;
 
 public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 
-	private static final int VALUETYPE_POWER = 0;
+	private static final int HOURLY = 0;
 	private static DateTimeFormatter fmt = DateTimeFormat
 			.forPattern("yyyy-MM-dd");
 
@@ -122,40 +127,84 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 	public List<ElectricitySample> getSamples(DateTime from, DateTime to)
 			throws SensorFailedException {
 		List<ElectricitySample> samples = new ArrayList<ElectricitySample>();
+		List<ElectricitySampleImpl> someSamples = new ArrayList<ElectricitySampleImpl>();
+		List<Map<String, Object>> data = null;
+		boolean forcedInclusion = false;
+		
+		// First of all, we need to understand that any calls to E.On's
+		// end point getStats will retrieve 24 data points when using the hourly
+		// resolution. This needs to be taken into account while doing our
+		// magic.
 
-		DateTime start = from;
+		DateTime start = null;
+		
+		// The if condition checks if milliseconds after midnight is zero,
+		// i.e. if the instant is in fact midnight
+		if ((from.get(DateTimeFieldType.millisOfDay()) == 0)) {
+			// As per the definition, the from and to parameters are INCLUSIVE,
+			// meaning that we need to fetch the latest sample from the
+			// previous day.
+			start = from.minus(1);
+			forcedInclusion = true;
+		} else {
+			start = from;
+		}
 
+		// Fetch all samples
 		while (start.isBefore(to)) {
 			try {
-				List<Map<String, Object>> data = httpBridge.getStatData(
-						this.gateway.getAuthenticationToken(),
-						getGatewayAddress(), this.getId().toString(),
-						formatDate(start), formatDate(start.plusDays(1)),
-						VALUETYPE_POWER);
-				samples.addAll(convertToSamples(data, start));
+				data = httpBridge.getStatData(
+						gateway.getAuthenticationToken(), getGatewayAddress(),
+						getId().toString(), formatDate(start), formatDate(to),
+						HOURLY);
+				someSamples.addAll(convertToSamples(data, start));
 			} catch (ParseException e) {
 				throw new SensorFailedException();
 			}
 
 			start = start.plusDays(1);
 
-			if (start.equals(to))
+			if (start.equals(to)) {
 				break;
+			}
 		}
-
+		
+		// If we had to change the "from" timestamp, all samples will be offset
+		// by 1 ms, and all need to be corrected.
+		if (forcedInclusion) {
+			for (ElectricitySampleImpl sample : someSamples) {
+				sample.setSamplingTime(sample.getSampleTimestamp().plus(1));
+			}
+		}
+		
+		// Trim unwanted samples from the list
+		Iterator iter = someSamples.iterator();
+		ElectricitySampleImpl sample = null;
+		while(iter.hasNext()) {
+			sample = (ElectricitySampleImpl) iter.next();
+			if (sample.getSampleTimestamp().isBefore(from) ||
+					sample.getSampleTimestamp().isAfter(to)) {
+				iter.remove();
+			}
+		}
+		
+		// Convert to the right kind of collection
+		samples.addAll(someSamples);
+		
 		return samples;
 	}
 
-	private Collection<? extends ElectricitySample> convertToSamples(
+	private List<ElectricitySampleImpl> convertToSamples(
 			List<Map<String, Object>> data, DateTime from) {
-		List<ElectricitySample> samples = new ArrayList<>();
+		List<ElectricitySampleImpl> samples = new ArrayList<>();
 
 		for (Map<String, Object> rawsample : data) {
 			double value = number(rawsample.get("Value"));
 			DateTime sampleTime = calculateSampleTime(from,
 					(String) rawsample.get("Key"));
-			ElectricitySample sample = new ElectricitySampleImpl(value,
+			ElectricitySampleImpl sample = new ElectricitySampleImpl(value,
 					sampleTime);
+			sample.setSampleLength(DateTimeConstants.MILLIS_PER_HOUR);
 			samples.add(sample);
 		}
 
