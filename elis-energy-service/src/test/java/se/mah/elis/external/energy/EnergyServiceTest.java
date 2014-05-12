@@ -31,6 +31,7 @@ import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.ElectricitySample;
 import se.mah.elis.external.beans.EnvelopeBean;
 import se.mah.elis.external.energy.beans.EnergyBean;
+import se.mah.elis.external.energy.beans.EnergyDataBean;
 import se.mah.elis.external.energy.beans.EnergyDeviceBean;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
@@ -40,8 +41,10 @@ import com.google.gson.Gson;
 
 public class EnergyServiceTest extends JerseyTest {
 
-	private static final long TO_TIME = 1392685200000l;
-	private static final long FROM_TIME = 1392681600000l;
+	private static final long TWENTYFOUR_HOURS = 1392681600000l; // T + 24 h
+	private static final long ALMOST_TWENTYFOUR_HOURS = 1392767999000l; // T + 24 h - 1 s
+	private static final long ONE_HOUR = 1392685200000l; // T + 1 h
+	private static final long FROM_TIME = 1392681600000l; // T
 	private static final String DEVICE = "device-uuid-";
 	private static final Double DEVICE_1_KWH = 0.02d;
 	private static UserService userService;
@@ -167,16 +170,57 @@ public class EnergyServiceTest extends JerseyTest {
 	}
 	
 	@Test
-	public void testGetHourlyStatsOneDevice() {
+	public void testGetHourlyStatsOneDeviceOneHour() {
 		final String energyHourlydata = target("/energy/00001111-2222-3333-4444-555566667777/hourly")
 				.queryParam("from", Long.toString(FROM_TIME))
-				.queryParam("to", Long.toString(TO_TIME))
+				.queryParam("to", Long.toString(ONE_HOUR))
 				.request()
 				.get(String.class);
+//		System.out.println(energyHourlydata);
+		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
+		assertEquals("hourly", bean.period);
+		assertEquals(4, bean.devices.size());
+		assertEquals(1, bean.devices.get(0).data.size());
+		System.out.println(bean.devices.get(0).data.get(0));
+		assertEquals(ONE_HOUR, bean.devices.get(0).data.get(0));
+		assertNotNull(bean.summary);
+		assertEquals(4*DEVICE_1_KWH/1000, bean.summary.kwh, 0.01d);
+	}
+	
+	@Test
+	public void testGetHourlyStatsOneDeviceTwentyFourHours() {
+		final String energyHourlydata = target("/energy/00001111-2222-3333-4444-555566667777/hourly")
+				.queryParam("from", Long.toString(FROM_TIME))
+				.queryParam("to", Long.toString(TWENTYFOUR_HOURS))
+				.request()
+				.get(String.class);
+//		System.out.println(energyHourlydata);
+		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
+		assertEquals("hourly", bean.period);
+		assertEquals(4, bean.devices.size());
+		assertEquals(25, bean.devices.get(0).data.size());
+		assertEquals(FROM_TIME, Long.parseLong(((EnergyDataBean) bean.devices.get(0).data.get(0)).timestamp));
+		assertEquals(ONE_HOUR, Long.parseLong(((EnergyDataBean) bean.devices.get(0).data.get(1)).timestamp));
+		assertEquals(TWENTYFOUR_HOURS, Long.parseLong(((EnergyDataBean) bean.devices.get(0).data.get(25)).timestamp));
+		assertNotNull(bean.summary);
+		assertEquals(4*DEVICE_1_KWH/1000, bean.summary.kwh, 0.01d);
+	}
+	
+	@Test
+	public void testGetHourlyStatsOneDeviceAlmostTwentyFourHours() {
+		final String energyHourlydata = target("/energy/00001111-2222-3333-4444-555566667777/hourly")
+				.queryParam("from", Long.toString(FROM_TIME))
+				.queryParam("to", Long.toString(ALMOST_TWENTYFOUR_HOURS))
+				.request()
+				.get(String.class);
+//		System.out.println(energyHourlydata);
 		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
 		assertEquals("hourly", bean.period);
 		assertEquals(4, bean.devices.size());
 		assertEquals(24, bean.devices.get(0).data.size());
+		assertEquals(FROM_TIME, Long.parseLong(((EnergyDataBean) bean.devices.get(0).data.get(0)).timestamp));
+		assertEquals(ONE_HOUR, Long.parseLong(((EnergyDataBean) bean.devices.get(0).data.get(1)).timestamp));
+		assertEquals(ALMOST_TWENTYFOUR_HOURS, Long.parseLong(((EnergyDataBean) bean.devices.get(0).data.get(24)).timestamp));
 		assertNotNull(bean.summary);
 		assertEquals(4*DEVICE_1_KWH/1000, bean.summary.kwh, 0.01d);
 	}
