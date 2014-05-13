@@ -41,6 +41,7 @@ import com.google.gson.Gson;
 
 public class EnergyServiceTest extends JerseyTest {
 
+	private static final String PLATFORM_USER = "00001111-2222-3333-4444-555566667777";
 	private static final long TWENTYFOUR_HOURS = 1392681600000l; // T + 24 h
 	private static final long ALMOST_TWENTYFOUR_HOURS = 1392767999000l; // T + 24 h - 1 s
 	private static final long ONE_HOUR = 1392685200000l; // T + 1 h
@@ -58,7 +59,9 @@ public class EnergyServiceTest extends JerseyTest {
 	@Override
 	protected Application configure() {
 		ResourceConfig config = new ResourceConfig();
+		
 		config.register(new EnergyService(userService, log));
+		
 		return config;
 	}
 	
@@ -67,7 +70,7 @@ public class EnergyServiceTest extends JerseyTest {
 		log = mock(LogService.class);
 		
 		platformUser = mock(PlatformUser.class);
-		when(platformUser.getUserId()).thenReturn(UUID.fromString("00001111-2222-3333-4444-555566667777"));
+		when(platformUser.getUserId()).thenReturn(UUID.fromString(PLATFORM_USER));
 		
 		gateway = mock(Gateway.class);
 		gatewayUser = mock(GatewayUser.class);
@@ -88,16 +91,18 @@ public class EnergyServiceTest extends JerseyTest {
 
 	private List<Device> createMeters(int numberOfMeters) throws SensorFailedException {
 		List<Device> meters = new ArrayList<>();
+		
 		for (int i = 0; i < numberOfMeters; i++) {
 			ElectricitySampler meter = createSampleMeter(i);
 			meters.add(meter);
 		}
+		
 		return meters;
 	}
 
 	private ElectricitySampler createSampleMeter(int id) throws SensorFailedException {
 		DateTime from = new DateTime(FROM_TIME);
-//		DateTime to = new DateTime(1392685200000l);
+		
 		ElectricitySample deviceSample = mock(ElectricitySample.class);
 		when(deviceSample.getSampleTimestamp()).thenReturn(from);
 		when(deviceSample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_KWH*1000);
@@ -112,34 +117,28 @@ public class EnergyServiceTest extends JerseyTest {
 		when(meter.getSample()).thenReturn(deviceSample);
 		List<ElectricitySample> samples = createSamples(24);
 		when(meter.getSamples(any(DateTime.class), any(DateTime.class))).thenReturn(samples);
+		
 		return meter;
 	}
 	
 	private List<ElectricitySample> createSamples(int size) {
 		List<ElectricitySample> samples = new ArrayList<>();
+		
 		for (int i = 0; i < size; i++) {
 			samples.add(createSample(i));
 		}
+		
 		return samples;
 	}
 
 	private ElectricitySample createSample(int i) {
 		DateTime date = new DateTime(FROM_TIME).plusHours(i);
 		ElectricitySample sample = mock(ElectricitySample.class);
+		
 		when(sample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_1_KWH);
 		when(sample.getSampleTimestamp()).thenReturn(date);
+		
 		return sample;
-	}
-
-	@Test
-	public void testGetNowRequest() {
-		EnvelopeBean envelope = getNowRequest();
-		EnergyBean bean = (EnergyBean) envelope.response;
-		assertEquals("00001111-2222-3333-4444-555566667777", bean.puid);
-		assertEquals("now", bean.period);
-		assertEquals(DEVICE + 0, getFirstDevice(bean.devices));
-		assertEquals(DEVICE_1_KWH, bean.devices.get(0).data.get(0).watts, 0.01f);
-		assertEquals(0, bean.devices.get(0).data.get(0).kwh, 0.01f);
 	}
 
 	
@@ -154,29 +153,47 @@ public class EnergyServiceTest extends JerseyTest {
 		return names.get(0);
 	}
 
-	@Test
-	public void testGetNowRequestMultipleDevices() {
-		EnvelopeBean bean = getNowRequest();
-		assertEquals(4, ((EnergyBean) bean.response).devices.size());
-	}
-
 	private EnvelopeBean getNowRequest() {
-		final String energyNowData = target("/energy/00001111-2222-3333-4444-555566667777/now")
+		final String energyNowData = target("/energy/" + PLATFORM_USER + "/now")
 				.request().get(String.class);
 		EnvelopeBean envelope = gson.fromJson(energyNowData, EnvelopeBean.class);
+		
 		envelope.response = gson.fromJson(gson.toJson(envelope.response), EnergyBean.class);
 		
 		return envelope;
 	}
+
+	@Test
+	public void testGetNowRequest() {
+		EnvelopeBean envelope = getNowRequest();
+		EnergyBean bean = (EnergyBean) envelope.response;
+		
+		// Validate
+		assertEquals(PLATFORM_USER, bean.puid);
+		assertEquals("now", bean.period);
+		assertEquals(DEVICE + 0, getFirstDevice(bean.devices));
+		assertEquals(DEVICE_1_KWH, bean.devices.get(0).data.get(0).watts, 0.01f);
+		assertEquals(0, bean.devices.get(0).data.get(0).kwh, 0.01f);
+	}
+
+	@Test
+	public void testGetNowRequestMultipleDevices() {
+		EnvelopeBean bean = getNowRequest();
+		
+		// Validate
+		assertEquals(4, ((EnergyBean) bean.response).devices.size());
+	}
 	
 	@Test
 	public void testGetHourlyStatsOneDeviceOneHour() {
-		final String energyHourlydata = target("/energy/00001111-2222-3333-4444-555566667777/hourly")
+		final String energyHourlydata = target("/energy/" + PLATFORM_USER + "/hourly")
 				.queryParam("from", Long.toString(FROM_TIME))
 				.queryParam("to", Long.toString(ONE_HOUR))
 				.request()
 				.get(String.class);
 		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
+		
+		// Validate
 		assertEquals("hourly", bean.period);
 		assertEquals(4, bean.devices.size());
 		assertEquals(1, bean.devices.get(0).data.size());
@@ -188,12 +205,14 @@ public class EnergyServiceTest extends JerseyTest {
 	
 	@Test
 	public void testGetHourlyStatsOneDeviceTwentyFourHours() {
-		final String energyHourlydata = target("/energy/00001111-2222-3333-4444-555566667777/hourly")
+		final String energyHourlydata = target("/energy/" + PLATFORM_USER + "/hourly")
 				.queryParam("from", Long.toString(FROM_TIME))
 				.queryParam("to", Long.toString(TWENTYFOUR_HOURS))
 				.request()
 				.get(String.class);
 		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
+		
+		// Validate
 		assertEquals("hourly", bean.period);
 		assertEquals(4, bean.devices.size());
 		assertEquals(25, bean.devices.get(0).data.size());
@@ -206,12 +225,14 @@ public class EnergyServiceTest extends JerseyTest {
 	
 	@Test
 	public void testGetHourlyStatsOneDeviceAlmostTwentyFourHours() {
-		final String energyHourlydata = target("/energy/00001111-2222-3333-4444-555566667777/hourly")
+		final String energyHourlydata = target("/energy/" + PLATFORM_USER + "/hourly")
 				.queryParam("from", Long.toString(FROM_TIME))
 				.queryParam("to", Long.toString(ALMOST_TWENTYFOUR_HOURS))
 				.request()
 				.get(String.class);
 		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
+		
+		// Validate
 		assertEquals("hourly", bean.period);
 		assertEquals(4, bean.devices.size());
 		assertEquals(24, bean.devices.get(0).data.size());
