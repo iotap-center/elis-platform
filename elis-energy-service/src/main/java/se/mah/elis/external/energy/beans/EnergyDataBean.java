@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class EnergyDataBean {
 
 	@XmlElement
-	public String timestamp;
+	public long timestamp;
 	
 	@XmlElement
 	public double kwh;

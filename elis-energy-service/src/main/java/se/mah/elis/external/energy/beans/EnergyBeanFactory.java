@@ -191,7 +191,7 @@ public class EnergyBeanFactory {
 		else 
 			sampleBean.watts = sample.getCurrentPower() / 1000.0;
 		
-		sampleBean.timestamp = unixtime(sample.getSampleTimestamp());
+		sampleBean.timestamp = sample.getSampleTimestamp().getMillis();
 		sampleBean.humanReadableTimestamp = sample.getSampleTimestamp().toString();
 		
 		return sampleBean;
@@ -199,11 +199,6 @@ public class EnergyBeanFactory {
 
 	private static String getPuid(PlatformUser pu) {
 		return pu.getUserId().toString();
-	}
-
-	private static String unixtime(DateTime sampleTimestamp) {
-		Long unixtime = sampleTimestamp.getMillis();
-		return unixtime.toString();
 	}
 
 	private static DateTime parseDate(String from) {
