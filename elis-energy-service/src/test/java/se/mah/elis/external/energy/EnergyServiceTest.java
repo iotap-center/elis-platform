@@ -176,7 +176,6 @@ public class EnergyServiceTest extends JerseyTest {
 				.queryParam("to", Long.toString(ONE_HOUR))
 				.request()
 				.get(String.class);
-//		System.out.println(energyHourlydata);
 		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
 		assertEquals("hourly", bean.period);
 		assertEquals(4, bean.devices.size());
@@ -194,7 +193,6 @@ public class EnergyServiceTest extends JerseyTest {
 				.queryParam("to", Long.toString(TWENTYFOUR_HOURS))
 				.request()
 				.get(String.class);
-//		System.out.println(energyHourlydata);
 		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
 		assertEquals("hourly", bean.period);
 		assertEquals(4, bean.devices.size());
@@ -213,7 +211,6 @@ public class EnergyServiceTest extends JerseyTest {
 				.queryParam("to", Long.toString(ALMOST_TWENTYFOUR_HOURS))
 				.request()
 				.get(String.class);
-//		System.out.println(energyHourlydata);
 		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
 		assertEquals("hourly", bean.period);
 		assertEquals(4, bean.devices.size());
