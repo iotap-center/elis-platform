@@ -23,6 +23,7 @@ public interface DeviceSet extends Collection<Device>, ElisDataObject {
 	 * 
 	 * @return The id number of the set.
 	 * @since 1.0
+	 * @deprecated
 	 */
 	int getId();
 	
@@ -32,6 +33,7 @@ public interface DeviceSet extends Collection<Device>, ElisDataObject {
 	 * @param id The set's new id number.
 	 * @throws StaticEntityException if the set's id is locked.
 	 * @since 1.0
+	 * @deprecated
 	 */
 	void setId(int id) throws StaticEntityException;
 	
