@@ -86,6 +86,7 @@ public class MockUser4 implements User {
 		if (stuff != null) {
 			props.put("stuff", stuff);
 		}
+		props.put("edos", edos);
 		props.put("created", created);
 		
 		return props;
@@ -99,6 +100,7 @@ public class MockUser4 implements User {
 		props.put("service_name", "9");
 		props.putAll((new MockUserIdentifier()).getPropertiesTemplate());
 		props.put("stuff", "32");
+		props.put("edos", edos);
 		props.put("created", created);
 		
 		return props;
@@ -109,6 +111,7 @@ public class MockUser4 implements User {
 		uid = new MockUserIdentifier();
 		uuid = (UUID) props.get("uuid");
 		stuff = (String) props.get("stuff");
+		edos = (Collection) props.get("edos");
 		created = (DateTime) props.get("created");
 	}
 

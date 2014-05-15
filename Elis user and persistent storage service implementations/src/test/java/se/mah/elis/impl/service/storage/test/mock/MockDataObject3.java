@@ -77,6 +77,7 @@ public class MockDataObject3 implements ElisDataObject {
 			props.put("ownerid", ownerid);
 		}
 		props.put("baz", baz);
+		props.put("mdos", mdos);
 		props.put("created", created);
 		
 		return props;
@@ -89,6 +90,7 @@ public class MockDataObject3 implements ElisDataObject {
 		props.put("dataid", UUID.randomUUID());
 		props.put("ownerid", UUID.randomUUID());
 		props.put("baz", 0.0);
+		props.put("mdos", new ArrayList<MockDataObject2>());
 		props.put("created", created);
 		
 		return props;
@@ -99,6 +101,7 @@ public class MockDataObject3 implements ElisDataObject {
 		id = (UUID) props.get("dataid");
 		ownerid = (UUID) props.get("ownerid");
 		baz = (float) props.get("baz");
+		mdos = (Collection) props.get("mdos");
 		created = (DateTime) props.get("created");
 	}
 

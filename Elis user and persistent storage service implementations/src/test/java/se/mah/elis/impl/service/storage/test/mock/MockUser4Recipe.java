@@ -22,8 +22,9 @@ public class MockUser4Recipe implements UserRecipe {
 	@Override
 	public Properties getProperties() {
 		Properties p = new Properties();
-		
+
 		p.put("stuff", "string");
+		p.put("stuff", "collection");
 		
 		return p;
 	}
