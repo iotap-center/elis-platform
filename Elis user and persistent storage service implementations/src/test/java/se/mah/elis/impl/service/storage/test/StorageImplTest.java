@@ -20,6 +20,7 @@ import se.mah.elis.impl.service.storage.test.mock.EmptyMockUserIdentifier;
 import se.mah.elis.impl.service.storage.test.mock.MockConnection;
 import se.mah.elis.impl.service.storage.test.mock.MockDataObject1;
 import se.mah.elis.impl.service.storage.test.mock.MockDataObject2;
+import se.mah.elis.impl.service.storage.test.mock.MockDataObject3;
 import se.mah.elis.impl.service.storage.test.mock.MockPlatformUser;
 import se.mah.elis.impl.service.storage.test.mock.MockPlatformUserIdentifier;
 import se.mah.elis.impl.service.storage.test.mock.MockUser1;
@@ -161,6 +162,59 @@ public class StorageImplTest {
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject2')");
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId3 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject2')");
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * Please note that in order to test the collection mechanism used by MDO3
+	 * objects, the buildAndPopulateMDO2Table() should also be run, as MDO3
+	 * uses MDO2 objects in the collections.
+	 */
+	private void buildAndPopulateMDO3Table() {
+		String dataId1 = "10001111222233334444555566667771";
+		String dataId2 = "10001111222233334444555566667772";
+		String dataId3 = "10001111222233334444555566667773";
+		String mdo1 = "00001111222233334444555566667771";
+		String mdo2 = "00001111222233334444555566667772";
+		String mdo3 = "00001111222233334444555566667773";
+		String ownerId1 = "000011112222deadbeef555566667771";
+		String ownerId2 = "000011112222deadbeef555566667772";
+		
+		try {
+			Statement stmt = connection.createStatement();
+			stmt.execute("CREATE TABLE `se-mah-elis-impl-service-storage-test-mock-MockDataObject3` (" +
+						"`dataid` BINARY(16) PRIMARY KEY, " +
+						"`ownerid` BINARY(16), " +
+						"`baz` FLOAT, " +
+						"`created` TIMESTAMP)");
+			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject3` " +
+					"VALUES (x'" + dataId1 +"', x'" + ownerId1 + "', 1.1, '2000-01-01 00:00:00');");
+			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject3` " +
+					"VALUES (x'" + dataId2 +"', x'" + ownerId1 + "', 0.5, '2000-01-01 00:00:01');");
+			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject3` " +
+					"VALUES (x'" + dataId3 +"', x'" + ownerId2 + "', 7.1, '2000-01-01 00:00:02');");
+
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId1 +"', " +
+					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject3')");
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId2 +"', " +
+					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject3')");
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + dataId3 +"', " +
+					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject3')");
+			
+			stmt.execute("INSERT INTO `collections` VALUES (x'" + dataId1 + "', " +
+					"x'" + mdo1 + "', 'mdos')");
+			stmt.execute("INSERT INTO `collections` VALUES (x'" + dataId1 + "', " +
+					"x'" + mdo2 + "', 'mdos')");
+			stmt.execute("INSERT INTO `collections` VALUES (x'" + dataId1 + "', " +
+					"x'" + mdo3 + "', 'mdos')");
+			stmt.execute("INSERT INTO `collections` VALUES (x'" + dataId2 + "', " +
+					"x'" + mdo1 + "', 'mdos')");
+			stmt.execute("INSERT INTO `collections` VALUES (x'" + dataId2 + "', " +
+					"x'" + mdo3 + "', 'mdos')");
+			
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -317,9 +371,11 @@ public class StorageImplTest {
 		try {
 			Statement stmt = connection.createStatement();
 			stmt.execute("TRUNCATE TABLE object_lookup_table;");
+			stmt.execute("TRUNCATE TABLE collections;");
 			stmt.execute("TRUNCATE TABLE `se-mah-elis-services-users-PlatformUser`;");
 			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-impl-service-storage-test-mock-MockDataObject1`;");
 			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-impl-service-storage-test-mock-MockDataObject2`;");
+			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-impl-service-storage-test-mock-MockDataObject3`;");
 			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-impl-service-storage-test-mock-MockUser1`;");
 			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-impl-service-storage-test-mock-MockUser2`;");
 			stmt.execute("DROP TABLE IF EXISTS `se-mah-elis-impl-service-storage-test-mock-MockUser3`;");
@@ -342,6 +398,8 @@ public class StorageImplTest {
 			query = "SELECT count(*) FROM `se-mah-elis-impl-service-storage-test-mock-MockDataObject1`";
 		} else if (edo instanceof MockDataObject2) {
 			query = "SELECT count(*) FROM `se-mah-elis-impl-service-storage-test-mock-MockDataObject2`";
+		} else if (edo instanceof MockDataObject3) {
+			query = "SELECT count(*) FROM `se-mah-elis-impl-service-storage-test-mock-MockDataObject3`";
 		}
 		
 		try {
