@@ -1,14 +1,10 @@
 package se.mah.elis.adaptor.energy.eon.internal.devices;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
 
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeFieldType;
@@ -16,16 +12,9 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.simple.parser.ParseException;
 
-import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
-import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
-import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
-import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
 import se.mah.elis.data.ElectricitySample;
-import se.mah.elis.data.OrderedProperties;
-import se.mah.elis.data.test.mocks.ElectricitySampleMock;
-import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * A virtual representation of the E.On power meter. Powerswitches which is
@@ -33,6 +22,7 @@ import se.mah.elis.exceptions.StaticEntityException;
  * 
  * @author Joakim Lithell
  * @author Marcus Ljungblad
+ * @author "Johan Holmberg, Malmö University"
  * @version 1.2.0
  * @since 1.0
  */
@@ -42,68 +32,6 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 	private static final int HOURLY = 0;
 	private static DateTimeFormatter fmt = DateTimeFormat
 			.forPattern("yyyy-MM-dd");
-
-	protected boolean isOnline;
-	protected EonGateway gateway;
-	protected DeviceIdentifier deviceId;
-	protected String deviceName = "";
-	protected String description = "";
-	protected UUID dataid;
-	protected UUID ownerid;
-	protected DateTime created = DateTime.now();
-
-	@Override
-	public DeviceIdentifier getId() {
-		return deviceId;
-	}
-
-	@Override
-	public void setId(DeviceIdentifier id) throws StaticEntityException {
-		deviceId = id;
-	}
-
-	@Override
-	public String getName() {
-		return deviceName;
-	}
-
-	@Override
-	public void setName(String name) throws StaticEntityException {
-		deviceName = name;
-	}
-
-	@Override
-	public String getDescription() {
-		return description;
-	}
-
-	@Override
-	public void setDescription(String description) throws StaticEntityException {
-		this.description = description;
-	}
-
-	@Override
-	public Gateway getGateway() {
-		return gateway;
-	}
-
-	@Override
-	public void setGateway(Gateway gateway) throws StaticEntityException {
-		if (!(gateway instanceof EonGateway))
-			throw new StaticEntityException();
-		this.gateway = (EonGateway) gateway;
-	}
-
-	@Override
-	public DeviceSet[] getDeviceSets() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isOnline() {
-		return isOnline;
-	}
 
 	@Override
 	public ElectricitySample getSample() throws SensorFailedException {
@@ -237,70 +165,6 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 
 	protected String getGatewayAddress() {
 		return getGateway().getAddress().toString();
-	}
-
-	@Override
-	public Properties getProperties() {
-		OrderedProperties props = new OrderedProperties();
-		props.put("dataid", dataid);
-		props.put("ownerid", ownerid);
-		props.put("created", created);
-		props.put("identifier", deviceId);
-		props.put("device_name", deviceName);
-		props.put("description", description);
-		props.put("gateway", gateway.getDataId());
-		return props;
-	}
-
-	@Override
-	public OrderedProperties getPropertiesTemplate() {
-		OrderedProperties props = new OrderedProperties();
-		props.put("dataid", UUID.randomUUID());
-		props.put("ownerid", UUID.randomUUID());
-		props.put("created", created);
-		props.put("identifier", new EonDeviceIdentifier("a"));
-		props.put("device_name", "64");
-		props.put("description", "256");
-		props.put("gateway", UUID.randomUUID());
-		return props;
-	}
-
-	@Override
-	public void populate(Properties props) {
-		this.dataid = (UUID) props.get("dataid");
-		this.ownerid = (UUID) props.get("ownerid");
-		this.created = (DateTime) props.get("created");
-		this.deviceId = new EonDeviceIdentifier("");
-		this.deviceName = (String) props.get("deviceName");
-		this.description = (String) props.getProperty("description");
-		this.deviceId.populate(props);
-
-		// TODO Create gateway
-	}
-
-	@Override
-	public UUID getDataId() {
-		return dataid;
-	}
-
-	@Override
-	public void setDataId(UUID uuid) {
-		dataid = uuid;
-	}
-
-	@Override
-	public void setOwnerId(UUID userId) {
-		ownerid = userId;
-	}
-
-	@Override
-	public UUID getOwnerId() {
-		return ownerid;
-	}
-
-	@Override
-	public DateTime created() {
-		return created;
 	}
 
 }
