@@ -61,6 +61,11 @@ public class EnergyBeanFactory {
 		bean.summary = createSummary(samples);
 		return bean;
 	}
+	
+	public static Map<Device, List<ElectricitySample>> pCollectHistory(
+			List<Device> meters, String from, String to) {
+		return collectHistory(meters, from, to);
+	}
 
 	private static Map<Device, List<ElectricitySample>> collectHistory(
 			List<Device> meters, String from, String to) {
@@ -77,6 +82,11 @@ public class EnergyBeanFactory {
 		}
 
 		return deviceSampleMap;
+	}
+	
+	public static Map<Device, List<ElectricitySample>> pCollectSamples(
+			List<Device> meters) {
+		return collectSamples(meters);
 	}
 
 	private static Map<Device, List<ElectricitySample>> collectSamples(
@@ -129,9 +139,13 @@ public class EnergyBeanFactory {
 
 		double totalkWh = 0.0;
 
-		for (List<ElectricitySample> samples : meters.values())
-			for (ElectricitySample sample : samples)
-				totalkWh += sample.getTotalEnergyUsageInWh() / 1000.0;  
+		for (List<ElectricitySample> samples : meters.values()) {
+			if (samples != null) {
+				for (ElectricitySample sample : samples) {
+					totalkWh += sample.getTotalEnergyUsageInWh() / 1000.0;
+				}
+			}
+		}
 
 		return totalkWh;
 	}
@@ -146,9 +160,10 @@ public class EnergyBeanFactory {
 			Map<Device, List<ElectricitySample>> meters, boolean isHistory) {
 		List<EnergyDeviceBean> devices = new ArrayList<EnergyDeviceBean>();
 
-		for (Device meter : meters.keySet())
+		for (Device meter : meters.keySet()) {
 			devices.add(createEnergyDeviceBean((ElectricitySampler) meter,
 					meters.get(meter), isHistory));
+		}
 
 		return devices;
 	}
@@ -175,9 +190,21 @@ public class EnergyBeanFactory {
 	private static List<EnergyDataBean> createSampleData(
 			List<ElectricitySample> samples, boolean isHistory) {
 		List<EnergyDataBean> data = new ArrayList<EnergyDataBean>();
-
-		for (ElectricitySample sample : samples)
-			data.add(createEnergyDataBeanFrom(sample, isHistory));
+		
+		for (ElectricitySample sample : samples) {
+			if (sample != null) {
+				data.add(createEnergyDataBeanFrom(sample, isHistory));
+			}
+		}
+		
+		if (data.size() == 0) {
+			EnergyDataBean bean = new EnergyDataBean();
+			bean.kwh = -1;
+			bean.watts = -1;
+			bean.timestamp = DateTime.now().getMillis();
+			bean.humanReadableTimestamp = DateTime.now().toString();
+			data.add(bean);
+		}
 
 		return data;
 	}
@@ -186,10 +213,11 @@ public class EnergyBeanFactory {
 			ElectricitySample sample, boolean isHistory) {
 		EnergyDataBean sampleBean = new EnergyDataBean();
 		
-		if (isHistory)
+		if (isHistory) {
 			sampleBean.kwh = sample.getTotalEnergyUsageInWh() / 1000.0;
-		else 
+		} else { 
 			sampleBean.watts = sample.getCurrentPower() / 1000.0;
+		}
 		
 		sampleBean.timestamp = sample.getSampleTimestamp().getMillis();
 		sampleBean.humanReadableTimestamp = sample.getSampleTimestamp().toString();

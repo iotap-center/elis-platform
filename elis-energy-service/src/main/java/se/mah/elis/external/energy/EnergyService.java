@@ -1,7 +1,9 @@
 package se.mah.elis.external.energy;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.DefaultValue;
@@ -22,6 +24,7 @@ import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.device.api.entities.devices.PowerSwitch;
+import se.mah.elis.data.ElectricitySample;
 import se.mah.elis.external.beans.helpers.ElisResponseBuilder;
 import se.mah.elis.external.energy.beans.EnergyBean;
 import se.mah.elis.external.energy.beans.EnergyBeanFactory;
@@ -99,7 +102,7 @@ public class EnergyService {
 	public Response getHourlyEnergyConsumption(@PathParam("puid") String puid,
 			@QueryParam("from") String from,
 			@DefaultValue("") @QueryParam("to") String to) {
-		ResponseBuilder response = null;
+		Response response = null;
 		UUID uuid = null;
 		
 		logRequest("hourly", puid, from, to);
@@ -107,7 +110,7 @@ public class EnergyService {
 		try {
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
-			response = Response.status(Response.Status.BAD_REQUEST);
+			response = ElisResponseBuilder.buildBadRequestResponse();
 			logWarning("Bad UUID");
 		}
 		
@@ -116,29 +119,41 @@ public class EnergyService {
 			if (pu != null) {
 				response = buildPeriodicEnergyConsumptionResponse("hourly", from, to, pu);
 			} else {
-				response = Response.status(Response.Status.NOT_FOUND);
+				response = ElisResponseBuilder.buildNotFoundResponse();
 				logWarning("Could not find user: " + uuid.toString());
 			}
 		} else if (response == null) {
-			response = Response.serverError();
+			response = ElisResponseBuilder.buildInternalServerErrorResponse();
 			logError("User service not available");
 		}
 		
-		return response.build();
+		return response;
 	}
 
-	private ResponseBuilder buildPeriodicEnergyConsumptionResponse(
+	private Response buildPeriodicEnergyConsumptionResponse(
 			String period, String from, String to, PlatformUser pu) {
 		List<Device> meters = getMeters(pu);
 		logInfo("Building periodic response with " + meters.size() + " meters");
 		EnergyBean bean = EnergyBeanFactory.create(meters, period, from, to, pu);
 		logInfo("Bean: " + bean.toString());
-		return Response.ok(gson.toJson(bean));
+		
+//		logMap(EnergyBeanFactory.pCollectHistory(meters, from, to));
+		logMap(EnergyBeanFactory.pCollectSamples(meters));
+		
+		return ElisResponseBuilder.buildOKResponse(bean);
 	}
 
 	private List<Device> getMeters(PlatformUser pu) {
 		User[] users = userService.getUsers(pu);
 		List<Device> meters = getDevices(users);
+		String info = "Seems to have found " + meters.size() + " meters:\n";
+		
+		for (Device meter : meters) {
+			info += meter.getName() + "; " + meter.getDataId() + "\n";
+		}
+		
+		logInfo(info);
+		
 		return meters;
 	}
 
@@ -147,7 +162,7 @@ public class EnergyService {
 		logInfo(user.getClass().getSimpleName() + " is looking for meters at " + user.getGateway().getId());
 		for (Device device : user.getGateway()) {
 			logInfo("Trying to look at a device: " + device);
-			if (device instanceof ElectricitySampler && !(device instanceof PowerSwitch))
+			if (device instanceof ElectricitySampler) // && !(device instanceof PowerSwitch))
 				meters.add(device);
 		}
 		return meters;
@@ -200,6 +215,31 @@ public class EnergyService {
 
 	protected void bindLog(LogService log) {
 		this.log = log;
+	}
+	
+	private void logMap(Map mp) {
+	    Iterator it = mp.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        String string = null;
+	        Object payload = pairs.getValue();
+	        if (payload instanceof List) {
+	        	string = "";
+	        	for (Object obj : (List) payload) {
+	        		if (obj instanceof ElectricitySample) {
+	        			string += obj.toString() + ": " + ((ElectricitySample) obj).getSampleTimestamp() + 
+	        					", " + ((ElectricitySample) obj).getTotalEnergyUsageInWh() +
+	        					", " + ((ElectricitySample) obj).getCurrentPower();
+	        		} else {
+	        			string += obj.toString();
+	        		}
+	        	}
+	        } else {
+	        	string = pairs.getValue().toString();
+	        }
+	        logInfo(pairs.getKey() + " => " + string);
+	        it.remove(); // avoids a ConcurrentModificationException
+	    }
 	}
 	
 }
