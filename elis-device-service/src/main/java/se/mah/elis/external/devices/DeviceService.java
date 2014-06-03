@@ -39,7 +39,7 @@ import com.google.gson.GsonBuilder;
  * @version 1.0
  * 
  */
-@Path("/devices/{id}")
+@Path("/devices")
 @Produces("application/json")
 @Component(name = "ElisDeviceService", immediate = true)
 @Service(value = DeviceService.class)
@@ -71,6 +71,7 @@ public class DeviceService {
 	 * @return
 	 */
 	@GET
+	@Path("/{id}")
 	public Response getDeviceList(@PathParam("id") String id) {
 		Response response = null;
 		UUID uuid = null;
@@ -109,7 +110,6 @@ public class DeviceService {
 		deviceset.puid = pu.getUserId().toString();
 		deviceset.devices = getAllDevicesFor(users);
 		response = ElisResponseBuilder.buildOKResponse(deviceset);
-//		response.ok(gson.toJson(deviceset));
 		return response;
 	}
 
