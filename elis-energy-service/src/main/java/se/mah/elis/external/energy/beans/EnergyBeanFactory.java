@@ -22,18 +22,19 @@ public class EnergyBeanFactory {
 	private static final boolean HISTORY = true;
 
 	/**
-	 * Create an Energy Bean response using current energy data
+	 * Creates an Energy Bean response using current energy data.
 	 * 
-	 * @param meters
-	 * @param period
-	 * @param pu
-	 * @return
+	 * @param meters A list of electricity meters, from which we want to read
+	 * 		the energy data.
+	 * @param period Denotes the desired length of samples.
+	 * @param pu The user owning the meters.
+	 * @return An energy bean to be sent to the user consuming an endpoint.
 	 */
-	public static EnergyBean create(List<Device> meters, String period,
+	public static EnergyBean create(List<ElectricitySampler> meters, String period,
 			PlatformUser pu) {
-		Map<Device, List<ElectricitySample>> samples = collectSamples(meters);
+		Map<ElectricitySampler, List<ElectricitySample>> samples = collectSamples(meters);
 		EnergyBean bean = new EnergyBean();
-		bean.puid = getPuid(pu);
+		bean.puid = pu.getUserId().toString();
 		bean.period = period;
 		bean.devices = createDeviceList(samples);
 		//bean.summary = createSummary(samples);
@@ -41,71 +42,70 @@ public class EnergyBeanFactory {
 	}
 
 	/**
-	 * Create an Energy Bean response using historic energy data
+	 * Creates an Energy Bean response using historic energy data.
 	 * 
-	 * @param meters
-	 * @param period
-	 * @param from
-	 * @param to
-	 * @param pu
-	 * @return
+	 * @param meters A list of electricity meters, from which we want to read
+	 * 		the energy data.
+	 * @param period Denotes the desired length of samples.
+	 * @param from An instant in time, from when we want to start reading samples.
+	 * @param to  An instant in time, to when we want to read samples.
+	 * @param pu The user owning the meters.
+	 * @return An energy bean to be sent to the user consuming an endpoint.
 	 */
-	public static EnergyBean create(List<Device> meters, String period,
-			String from, String to, PlatformUser pu) {
-		Map<Device, List<ElectricitySample>> samples = collectHistory(meters,
+	public static EnergyBean create(List<ElectricitySampler> meters, String period,
+			DateTime from, DateTime to, PlatformUser pu) {
+		Map<ElectricitySampler, List<ElectricitySample>> samples = collectHistory(meters,
 				from, to);
 		EnergyBean bean = new EnergyBean();
-		bean.puid = getPuid(pu);
+		bean.puid = pu.getUserId().toString();
 		bean.period = period;
 		bean.devices = createDeviceList(samples, HISTORY);
 		bean.summary = createSummary(samples);
 		return bean;
 	}
 	
-	public static Map<Device, List<ElectricitySample>> pCollectHistory(
-			List<Device> meters, String from, String to) {
+	public static Map<ElectricitySampler, List<ElectricitySample>>
+			pCollectHistory(List<ElectricitySampler> meters, DateTime from, DateTime to) {
 		return collectHistory(meters, from, to);
 	}
 
-	private static Map<Device, List<ElectricitySample>> collectHistory(
-			List<Device> meters, String from, String to) {
-		Map<Device, List<ElectricitySample>> deviceSampleMap = new HashMap<Device, List<ElectricitySample>>();
+	private static Map<ElectricitySampler, List<ElectricitySample>> collectHistory(
+			List<ElectricitySampler> meters, DateTime from, DateTime to) {
+		Map<ElectricitySampler, List<ElectricitySample>> deviceSampleMap = new HashMap<ElectricitySampler, List<ElectricitySample>>();
 
-		DateTime fromDate = parseDate(from);
-		DateTime toDate = parseToDate(to);
-		
-		for (Device device : meters) {
-			if (device instanceof ElectricitySampler) {
-				deviceSampleMap.put(device,
-						collectSampleFor((ElectricitySampler) device, fromDate, toDate));
-			}
+		for (ElectricitySampler meter : meters) {
+			deviceSampleMap.put(meter,
+					collectSamplesFor((ElectricitySampler) meter, from, to));
 		}
 
 		return deviceSampleMap;
 	}
 	
-	public static Map<Device, List<ElectricitySample>> pCollectSamples(
-			List<Device> meters) {
+	public static Map<ElectricitySampler, List<ElectricitySample>>
+			pCollectSamples(List<ElectricitySampler> meters) {
 		return collectSamples(meters);
 	}
 
-	private static Map<Device, List<ElectricitySample>> collectSamples(
-			List<Device> meters) {
-		Map<Device, List<ElectricitySample>> deviceSampleMap = new HashMap<Device, List<ElectricitySample>>();
+	private static Map<ElectricitySampler, List<ElectricitySample>>
+			collectSamples(List<ElectricitySampler> meters) {
+		Map<ElectricitySampler, List<ElectricitySample>> deviceSampleMap =
+				new HashMap<ElectricitySampler, List<ElectricitySample>>();
 
-		for (Device device : meters)
-			if (device instanceof ElectricitySampler)
-				deviceSampleMap.put(device, collectSampleFor(device));
+		for (ElectricitySampler meter : meters)
+			deviceSampleMap.put(meter, collectSampleFor(meter));
 
 		return deviceSampleMap;
 	}
 
-	private static List<ElectricitySample> collectSampleFor(Device device) {
+	public static List<ElectricitySample> pCollectSampleFor(ElectricitySampler meter) {
+		return collectSampleFor(meter);
+	}
+	
+	private static List<ElectricitySample> collectSampleFor(ElectricitySampler meter) {
 		List<ElectricitySample> samples = new ArrayList<ElectricitySample>();
 
 		try {
-			ElectricitySample sample = ((ElectricitySampler) device)
-					.getSample();
+			ElectricitySample sample = meter.getSample();
 			samples.add(sample);
 		} catch (SensorFailedException e) {
 		}
@@ -113,7 +113,11 @@ public class EnergyBeanFactory {
 		return samples;
 	}
 
-	private static List<ElectricitySample> collectSampleFor(ElectricitySampler sampler,
+	public static List<ElectricitySample> pCollectSamplesFor(ElectricitySampler meter, DateTime from, DateTime to) {
+		return collectSamplesFor(meter, from, to);
+	}
+
+	private static List<ElectricitySample> collectSamplesFor(ElectricitySampler sampler,
 			DateTime from, DateTime to) {
 		List<ElectricitySample> samples = new ArrayList<ElectricitySample>();
 
@@ -126,7 +130,7 @@ public class EnergyBeanFactory {
 	}
 
 	private static EnergySummaryBean createSummary(
-			Map<Device, List<ElectricitySample>> meters) {
+			Map<ElectricitySampler, List<ElectricitySample>> meters) {
 		EnergySummaryBean summary = new EnergySummaryBean();
 
 		summary.kwh = calculateTotalConsumption(meters);
@@ -135,7 +139,7 @@ public class EnergyBeanFactory {
 	}
 
 	private static double calculateTotalConsumption(
-			Map<Device, List<ElectricitySample>> meters) {
+			Map<ElectricitySampler, List<ElectricitySample>> meters) {
 
 		double totalkWh = 0.0;
 
@@ -151,16 +155,16 @@ public class EnergyBeanFactory {
 	}
 
 	private static List<EnergyDeviceBean> createDeviceList(
-			Map<Device, List<ElectricitySample>> meters) {
+			Map<ElectricitySampler, List<ElectricitySample>> meters) {
 		boolean no_history = false;
 		return createDeviceList(meters, no_history);
 	}
 
 	private static List<EnergyDeviceBean> createDeviceList(
-			Map<Device, List<ElectricitySample>> meters, boolean isHistory) {
+			Map<ElectricitySampler, List<ElectricitySample>> meters, boolean isHistory) {
 		List<EnergyDeviceBean> devices = new ArrayList<EnergyDeviceBean>();
 
-		for (Device meter : meters.keySet()) {
+		for (ElectricitySampler meter : meters.keySet()) {
 			devices.add(createEnergyDeviceBean((ElectricitySampler) meter,
 					meters.get(meter), isHistory));
 		}
@@ -223,25 +227,5 @@ public class EnergyBeanFactory {
 		sampleBean.humanReadableTimestamp = sample.getSampleTimestamp().toString();
 		
 		return sampleBean;
-	}
-
-	private static String getPuid(PlatformUser pu) {
-		return pu.getUserId().toString();
-	}
-
-	private static DateTime parseDate(String from) {
-		return new Instant(Long.parseLong(from)).toDateTime();
-	}
-
-	private static DateTime parseToDate(String to) {
-		DateTime toDt;
-		if (!to.isEmpty())
-			toDt = new Instant(Long.parseLong(to)).toDateTime();
-		else
-			toDt = DateTime.now();
-
-		if (toDt.isAfter(DateTime.now()))
-			toDt = DateTime.now();
-		return toDt;
 	}
 }
