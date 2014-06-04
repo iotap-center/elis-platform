@@ -102,7 +102,7 @@
       </plugin>
     </plugins>
   </build>
-  <groupId>se.mah.elis.adaptor.utilityprovider.eon</groupId>
+  <groupId>se.mah.elis.adaptor.energy.eon</groupId>
   <parent>
   	<groupId>se.mah.elis</groupId>
   	<artifactId>super-pom</artifactId>

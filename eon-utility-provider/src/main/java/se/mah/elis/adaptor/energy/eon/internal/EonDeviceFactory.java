@@ -1,5 +1,7 @@
 package se.mah.elis.adaptor.energy.eon.internal;
 
+import java.util.UUID;
+
 import org.json.simple.JSONObject;
 
 import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
@@ -7,6 +9,7 @@ import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonDevice;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonDeviceIdentifier;
+import se.mah.elis.adaptor.energy.eon.internal.devices.EonDinPowerSwitchMeter;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonPowerMeter;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonPowerSwitchMeter;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonThermometer;
@@ -41,19 +44,30 @@ public class EonDeviceFactory {
 		Device device = null;
 		
 		int deviceType = getDeviceType(jsonDevice);
-		if (deviceType == EonDevice.TYPE_POWERSWITCH_METER)	{
-			device = createPowerSwitchMeter(jsonDevice);	
-		} else if (deviceType == EonDevice.TYPE_TERMOMETER)	{
-			device = createThermometer(jsonDevice);			
-		} else if (deviceType == EonDevice.TYPE_POWERMETER)	{
+		switch (deviceType) {
+		case EonDevice.TYPE_POWERSWITCH_METER:
+			if (jsonDevice.get("ControllerDeviceId") == null &&
+					(Long) jsonDevice.get("UsageAreaId") == 7) {
+				// This is a DIN device over at Rönnen
+				device = createDinPowerSwitchMeter(jsonDevice);
+			} else {
+				// This is a power meter of some kind
+				device = createPowerSwitchMeter(jsonDevice);
+			}
+			break;
+		case EonDevice.TYPE_POWERMETER:
 			device = createPowerMeter(jsonDevice);
-		} else if (deviceType == EonDevice.TYPE_THERMOSTAT)	{
+			break;
+		case EonDevice.TYPE_THERMOSTAT:
 			device = createThermostat(jsonDevice);
+			break;
+		case EonDevice.TYPE_THERMOMETER:
+			device = createThermometer(jsonDevice);
 		}
-
 		
-		if (device == null)
+		if (device == null) {
 			throw new MethodNotSupportedException();
+		}
 
 		return device;
 	}
@@ -68,6 +82,13 @@ public class EonDeviceFactory {
 	private static Device createPowerMeter(JSONObject any)
 		throws StaticEntityException{
 		Device device = new EonPowerMeter();
+		device = setGenericProperties(device, any);
+		return device;
+	}
+	
+	private static Device createDinPowerSwitchMeter(JSONObject any)
+		throws StaticEntityException{
+		Device device = new EonDinPowerSwitchMeter();
 		device = setGenericProperties(device, any);
 		return device;
 	}
@@ -95,6 +116,8 @@ public class EonDeviceFactory {
 			Device device, JSONObject any)
 			throws StaticEntityException {
 		String deviceId = (String) any.get("Id");
+		device.setDataId(UUID.fromString(deviceId));
+		// TODO device.setOwnerId(userId);
 		device.setId((DeviceIdentifier) new EonDeviceIdentifier(deviceId));
 		device.setName((String) any.get("Name")); 
 		device.setDescription((String) any.get("Description"));

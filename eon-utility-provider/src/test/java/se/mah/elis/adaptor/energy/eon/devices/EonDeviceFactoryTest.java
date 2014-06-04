@@ -22,12 +22,15 @@ import se.mah.elis.adaptor.device.api.entities.devices.Thermostat;
 import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.energy.eon.EonParserTest;
 import se.mah.elis.adaptor.energy.eon.internal.EonDeviceFactory;
+import se.mah.elis.adaptor.energy.eon.internal.devices.EonDinPowerSwitchMeter;
 import se.mah.elis.exceptions.StaticEntityException;
 
 public class EonDeviceFactoryTest {
 
 	private JSONParser parser = new JSONParser();
 	private static JSONObject POWERSWITCH_METER;
+	private static JSONObject POWERSWITCH_METER_AT_RONNEN;
+	private static JSONObject DIN_POWERSWITCH_METER;
 	private static JSONObject THERMOMETER;
 	private static JSONObject POWERMETER;
 	private static JSONObject THERMOSTAT;
@@ -35,6 +38,8 @@ public class EonDeviceFactoryTest {
 	@Before
 	public void setUp() throws ParseException {
 		createSamplePowerSwitchMeter();
+		createSampleDinPowerSwitchMeter();
+		createSamplePowerSwitchMeterAtRonnen();
 		createSampleThermometer();
 		createSamplePowerMeter();
 		createSampleThermostat();
@@ -94,6 +99,34 @@ public class EonDeviceFactoryTest {
 	}
 
 	@Test
+	public void testCreateDinPowerMeter() {
+		Device sample;
+		try {
+			sample = EonDeviceFactory.createFrom(DIN_POWERSWITCH_METER);
+			assertTrue(sample instanceof ElectricitySampler);
+			assertTrue(sample instanceof EonDinPowerSwitchMeter);
+			assertFalse(sample.getId().toString().isEmpty());
+			assertFalse(sample.getName().isEmpty());
+		} catch (MethodNotSupportedException | StaticEntityException e) {
+			fail();
+		}
+	}
+
+	@Test
+	public void testCreateRonnenPowerMeter() {
+		Device sample;
+		try {
+			sample = EonDeviceFactory.createFrom(POWERSWITCH_METER_AT_RONNEN);
+			assertTrue(sample instanceof ElectricitySampler);
+			assertFalse(sample instanceof EonDinPowerSwitchMeter);
+			assertFalse(sample.getId().toString().isEmpty());
+			assertFalse(sample.getName().isEmpty());
+		} catch (MethodNotSupportedException | StaticEntityException e) {
+			fail();
+		}
+	}
+
+	@Test
 	public void testCreateNotSupportedDeviceThrowsException() {
 		long notSupportedType = -1;
 		JSONObject dummy = mock(JSONObject.class);
@@ -115,9 +148,19 @@ public class EonDeviceFactoryTest {
 				.parse(EonParserTest.SAMPLE_TERMOMETER);
 	}
 
+	private void createSampleDinPowerSwitchMeter() throws ParseException {
+		DIN_POWERSWITCH_METER = (JSONObject) parser
+				.parse(EonParserTest.SAMPLE_DIN_POWERMETER);
+	}
+
 	private void createSamplePowerSwitchMeter() throws ParseException {
 		POWERSWITCH_METER = (JSONObject) parser
 				.parse(EonParserTest.SAMPLE_POWERSWITCH);
+	}
+
+	private void createSamplePowerSwitchMeterAtRonnen() throws ParseException {
+		POWERSWITCH_METER_AT_RONNEN = (JSONObject) parser
+				.parse(EonParserTest.SAMPLE_POWERMETER_AT_RONNEN);
 	}
 
 	private void createSamplePowerMeter() throws ParseException {

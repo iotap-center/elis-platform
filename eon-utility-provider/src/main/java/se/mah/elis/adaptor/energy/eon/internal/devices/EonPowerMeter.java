@@ -5,20 +5,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.felix.scr.annotations.Reference;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.simple.parser.ParseException;
+import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.ElectricitySample;
 
 /**
- * A virtual representation of the E.On power meter. Powerswitches which is
- * capable of metering also inherits from this class.
+ * A virtual representation of the E.On power meter. Power switches which are
+ * capable of metering also inherit from this class.
  * 
  * @author Joakim Lithell
  * @author Marcus Ljungblad
@@ -104,6 +106,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 				sample.setSamplingTime(sample.getSampleTimestamp().plus(1));
 			}
 		}
+		int count = data.size();
 		
 		// Trim unwanted samples from the list
 		Iterator iter = someSamples.iterator();
@@ -118,6 +121,11 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		
 		// Convert to the right kind of collection
 		samples.addAll(someSamples);
+		
+		if (samples.size() == 0) {
+			sample = new ElectricitySampleImpl(-count);
+			samples.add(sample);
+		}
 		
 		return samples;
 	}
@@ -166,5 +174,4 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 	protected String getGatewayAddress() {
 		return getGateway().getAddress().toString();
 	}
-
 }

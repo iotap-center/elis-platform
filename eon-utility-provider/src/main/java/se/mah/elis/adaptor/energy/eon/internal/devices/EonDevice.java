@@ -34,7 +34,7 @@ public abstract class EonDevice implements Device {
 	private static final long serialVersionUID = -9149366951066322178L;
 	// constants
 	public final static int TYPE_POWERSWITCH_METER = 49;
-	public final static int TYPE_TERMOMETER = 101;
+	public final static int TYPE_THERMOMETER = 101;
 	public final static int TYPE_POWERMETER = 51;
 	public final static int TYPE_THERMOSTAT = 96;
 

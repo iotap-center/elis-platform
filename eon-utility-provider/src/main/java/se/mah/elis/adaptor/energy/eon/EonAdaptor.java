@@ -45,6 +45,7 @@ public class EonAdaptor implements ManagedService {
 	}
 	
 	protected void bindUserFactoryService(UserFactory uf) {
+		logThis("Binding to user factory " + uf.toString());
 		this.userFactoryService = uf;
 		userFactoryService.registerProvider(eonProvider);
 	}
@@ -66,26 +67,33 @@ public class EonAdaptor implements ManagedService {
 		configAdmin = ca;
 		setConfig();
 	}
+	
+	protected void unbindConfigAdmin(ConfigurationAdmin ca) {
+		configAdmin = null;
+	}
 
 	private void setConfig() {
 		try {
 			Configuration config = configAdmin.getConfiguration(SERVICE_PID);
 			properties = config.getProperties();
-			
-			if (properties == null)  {
-				properties = getDefaultConfiguration();
+			if (properties == null) {
+				setDefaultConfiguration();
 				config.update(properties);
 			}
-			config.update(properties);
-			logThis("Installed new configuration: " + properties.toString());
 		} catch (IOException e) {
-			logThis(LogService.LOG_ERROR, "Failed to get configuration "
-					+ "from Configuration Admin service");
+			logThis(LogService.LOG_ERROR, "Failed to get configuration from Configuration Admin service.");
+			setDefaultConfiguration();
+		} finally {
+			logThis("Installed configuration");
 		}
+		
 	}
-	
-	protected void unbindConfigAdmin(ConfigurationAdmin ca) {
-		configAdmin = null;
+
+	private void setDefaultConfiguration() {
+		if (properties == null) {
+			properties = getDefaultConfiguration();
+			logThis("Using default configuration.");
+		}
 	}
 
 	@Override

@@ -5,6 +5,9 @@ import java.util.UUID;
 
 import javax.naming.AuthenticationException;
 
+import org.apache.felix.scr.annotations.Reference;
+import org.osgi.service.log.LogService;
+
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.device.api.providers.GatewayUserProvider;
@@ -25,6 +28,9 @@ import se.mah.elis.services.users.factory.UserRecipe;
  */
 public class EonUserProvider implements UserProvider {
 
+	@Reference
+	private LogService log;
+
 	/**
 	 * Create an E.On user using the properties "email" and "password" which 
 	 * must be contained in the properties param. 
@@ -35,6 +41,8 @@ public class EonUserProvider implements UserProvider {
 	 */
 	@Override
 	public User build(Properties properties) throws UserInitalizationException {
+		log("Building E.On user");
+		
 		String username = (String) properties.getProperty("username");
 		String password = (String) properties.getProperty("password");
 		
@@ -57,6 +65,24 @@ public class EonUserProvider implements UserProvider {
 	@Override
 	public UserRecipe getRecipe() {
 		return new EonUserRecipe();
+	}
+	
+	protected void bindLog(LogService service) {
+		log = service;
+	}
+	
+	protected void unbindLog(LogService service) {
+		log = null;
+	}
+	
+	private void log(String message) {
+		log(LogService.LOG_INFO, message);
+	}
+	
+	private void log(int logLevel, String message) {
+		if (log != null) {
+			log.log(logLevel, message);
+		}
 	}
 
 }

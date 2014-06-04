@@ -260,4 +260,17 @@ public class ElectricitySampleImpl implements ElectricitySample {
 	public void setSamplingTime(DateTime instance) {
 		sampled = instance;
 	}
+	
+	@Override
+	public String toString() {
+		String stringed = null;
+		
+		if (dataid != null) {
+			stringed = dataid.toString() + ": " + measuredValue;
+		} else {
+			stringed = "<no id>: " + measuredValue;
+		}
+		
+		return stringed;
+	}
 }

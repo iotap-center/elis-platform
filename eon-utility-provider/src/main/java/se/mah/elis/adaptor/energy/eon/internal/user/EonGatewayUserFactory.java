@@ -27,9 +27,6 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
  * @since 1.0
  */
 public class EonGatewayUserFactory implements GatewayUserProvider {
-
-	@Reference
-	private LogService log;
 	
 	/**
 	 * Creates an gateway user with an uninitialised gateway
@@ -66,8 +63,6 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 		try {
 			user.initialize();
 		} catch (UserInitalizationException e) {
-			if (log != null)
-				log.log(LogService.LOG_ERROR, "Failed to initialise: " + username);
 		}
 		
 		return user;
@@ -129,13 +124,5 @@ public class EonGatewayUserFactory implements GatewayUserProvider {
 		String prefix = (String) EonAdaptor.properties.get(EonAdaptor.TARGET_APIPREFIX);
 		
 		return new EonHttpBridge(host, port, prefix);
-	}
-	
-	protected void bindLog(LogService service) {
-		log = service;
-	}
-	
-	protected void unbindLog(LogService service) {
-		log = null;
 	}
 }
