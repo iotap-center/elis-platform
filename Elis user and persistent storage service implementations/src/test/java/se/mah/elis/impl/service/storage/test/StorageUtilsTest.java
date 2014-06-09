@@ -50,8 +50,13 @@ public class StorageUtilsTest {
 			          .getConnection("jdbc:mysql://localhost/elis_test?"
 			                  + "user=elis_test&password=elis_test");
 			Statement statement = connection.createStatement();
+			
+			// Truncate stuff
 			statement.execute("TRUNCATE TABLE object_lookup_table;");
 			statement.execute("TRUNCATE TABLE user_bindings;");
+			statement.execute("TRUNCATE TABLE collections;");
+			
+			// Object lookup table
 			// c3677d61-2378-4183-b478-ec915fd32e60
 			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e60', 'table1')");
 			// c3677d61-2378-4183-b478-ec915fd32e42
@@ -64,6 +69,19 @@ public class StorageUtilsTest {
 			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e17', 'table1')");
 			// c3677d61-2378-4183-b478-ec915fd32e05
 			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e05', 'table2')");
+			
+			// Collections
+			// c3677d61-2378-4183-b478-ec915fd32e60 <>- c3677d61-2378-4183-b478-ec915fd32e42
+			statement.execute("INSERT INTO collections VALUES (x'c3677d6123784183b478ec915fd32e60', x'c3677d6123784183b478ec915fd32e42', 'collection1')");
+			// c3677d61-2378-4183-b478-ec915fd32e60 <>- c3677d61-2378-4183-b478-ec915fd32e13
+			statement.execute("INSERT INTO collections VALUES (x'c3677d6123784183b478ec915fd32e60', x'c3677d6123784183b478ec915fd32e13', 'collection1')");
+			// c3677d61-2378-4183-b478-ec915fd32e17 <>- c3677d61-2378-4183-b478-ec915fd32e42
+			statement.execute("INSERT INTO collections VALUES (x'c3677d6123784183b478ec915fd32e17', x'c3677d6123784183b478ec915fd32e42', 'collection1')");
+			// c3677d61-2378-4183-b478-ec915fd32e17 <>- c3677d61-2378-4183-b478-ec915fd32e13
+			statement.execute("INSERT INTO collections VALUES (x'c3677d6123784183b478ec915fd32e17', x'c3677d6123784183b478ec915fd32e13', 'collection2')");
+			// c3677d61-2378-4183-b478-ec915fd32e17 <>- c3677d61-2378-4183-b478-ec915fd32e11
+			statement.execute("INSERT INTO collections VALUES (x'c3677d6123784183b478ec915fd32e17', x'c3677d6123784183b478ec915fd32e11', 'collection2')");
+			
 			statement.close();
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
@@ -105,6 +123,24 @@ public class StorageUtilsTest {
 		}
 		
 		return bindings;
+	}
+	
+	private int countObjectsInCollections() {
+		Statement statement;
+		int count = -1;
+		
+		try {
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT count(*) FROM collections");
+			rs.next();
+			count = rs.getInt(1);
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return count;
 	}
 
 	@Test
@@ -1326,6 +1362,129 @@ public class StorageUtilsTest {
 		props.put("foo", "bar");
 		
 		assertTrue(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testListCollectedObjects() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		UUID[] uuids = utils.listCollectedObjects(uuid, "collection1");
+		
+		assertEquals(2, uuids.length);
+		assertTrue(uuids[0] instanceof UUID);
+	}
+	
+	@Test
+	public void testListCollectedObjectsCollectorHasMoreThanOneCollection() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e17");
+		StorageUtils utils = new StorageUtils(connection);
+		UUID[] uuids1 = utils.listCollectedObjects(uuid, "collection1");
+		UUID[] uuids2 = utils.listCollectedObjects(uuid, "collection2");
+		
+		assertEquals(1, uuids1.length);
+		assertTrue(uuids1[0] instanceof UUID);
+		assertEquals(2, uuids2.length);
+		assertTrue(uuids2[0] instanceof UUID);
+	}
+	
+	@Test
+	public void testListCollectedObjectsNonExistingCollection() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		UUID[] uuids = utils.listCollectedObjects(uuid, "collection3");
+		
+		assertNotNull(uuids);
+		assertEquals(0, uuids.length);
+	}
+	
+	@Test
+	public void testListCollectedObjectsNoObjectsInCollection() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		UUID[] uuids = utils.listCollectedObjects(uuid, "collection1");
+		
+		assertNotNull(uuids);
+		assertEquals(0, uuids.length);
+	}
+	
+	@Test
+	public void testDeleteCollections() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteCollections(uuid);
+		
+		assertEquals(3, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testDeleteCollectionsNonExistingCollector() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteCollections(uuid);
+		
+		assertEquals(5, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testDeleteCollectionsNonExistingCollectee() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteCollections(uuid);
+		
+		assertEquals(5, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testDeleteFromCollections() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteFromCollections(uuid);
+		
+		assertEquals(3, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testDeleteFromCollectionsNonExistingCollector() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e13");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteFromCollections(uuid);
+		
+		assertEquals(5, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testDeleteFromCollectionsNonExistingCollectee() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e13");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteFromCollections(uuid);
+		
+		assertEquals(5, countObjectsInCollections());
 	}
 	
 	@Test

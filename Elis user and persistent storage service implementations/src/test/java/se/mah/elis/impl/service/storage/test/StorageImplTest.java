@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -50,12 +51,12 @@ import se.mah.elis.services.users.factory.UserFactory;
 public class StorageImplTest {
 
 	// Table counts
-	private static int EDO1_COUNT = 6;
-	private static int EDO2_COUNT = 3;
-	private static int EDO3_COUNT = 3;
-	private static int AU1_COUNT = 3;
-	private static int AU2_COUNT = 3;
-	private static int AU4_COUNT = 2;
+	private static int MDO1_COUNT = 6;
+	private static int MDO2_COUNT = 3;
+	private static int MDO3_COUNT = 3;
+	private static int MU1_COUNT = 3;
+	private static int MU2_COUNT = 3;
+	private static int MU4_COUNT = 2;
 	private static int PU_COUNT = 3;
 	
 	// Mock object IDs
@@ -89,6 +90,8 @@ public class StorageImplTest {
 	private static UUID MDO3_2u = UUID.fromString("10001111-2222-3333-4444-555566667772");
 	private static String MDO3_3s = "10001111222233334444555566667773";
 	private static UUID MDO3_3u = UUID.fromString("10001111-2222-3333-4444-555566667773");
+	private static String MDO3_4s = "10001111222233334444555566667774";
+	private static UUID MDO3_4u = UUID.fromString("10001111-2222-3333-4444-555566667774");
 	
 	// MU1
 	private static String MU1_1s = "000011112222deadbeef555566667771";
@@ -111,6 +114,8 @@ public class StorageImplTest {
 	private static UUID MU4_1u = UUID.fromString("1000dead-beef-3333-4444-555566667771");
 	private static String MU4_2s = "1000deadbeef33334444555566667772";
 	private static UUID MU4_2u = UUID.fromString("1000dead-beef-3333-4444-555566667772");
+	private static String MU4_3s = "1000deadbeef33334444555566667773";
+	private static UUID MU4_3u = UUID.fromString("1000dead-beef-3333-4444-555566667773");
 	
 	private Connection connection;
 	
@@ -240,12 +245,16 @@ public class StorageImplTest {
 					"VALUES (x'" + MDO3_2s +"', x'" + ownerId1 + "', 0.5, '2000-01-01 00:00:01');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject3` " +
 					"VALUES (x'" + MDO3_3s +"', x'" + ownerId2 + "', 7.1, '2000-01-01 00:00:02');");
+			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockDataObject3` " +
+					"VALUES (x'" + MDO3_4s +"', x'" + ownerId2 + "', 7.0, '2000-01-01 00:00:02');");
 
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + MDO3_1s +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject3')");
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + MDO3_2s +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject3')");
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + MDO3_3s +"', " +
+					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject3')");
+			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + MDO3_4s +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockDataObject3')");
 			
 			stmt.execute("INSERT INTO `collections` VALUES (x'" + MDO3_1s + "', " +
@@ -258,6 +267,8 @@ public class StorageImplTest {
 					"x'" + MDO2_1s + "', 'mdos')");
 			stmt.execute("INSERT INTO `collections` VALUES (x'" + MDO3_2s + "', " +
 					"x'" + MDO2_3s + "', 'mdos')");
+			stmt.execute("INSERT INTO `collections` VALUES (x'" + MDO3_4s + "', " +
+					"x'" + MDO2_2s + "', 'mdos')");
 			
 			stmt.close();
 		} catch (SQLException e) {
@@ -340,6 +351,7 @@ public class StorageImplTest {
 	private void buildAndPopulateMU4Table() {
 		String uuid1 = "1000deadbeef33334444555566667771";
 		String uuid2 = "1000deadbeef33334444555566667772";
+		String uuid3 = "1000deadbeef33334444555566667773";
 		try {
 			Statement stmt = connection.createStatement();
 			stmt.execute("CREATE TABLE `se-mah-elis-impl-service-storage-test-mock-MockUser4` (" +
@@ -354,6 +366,8 @@ public class StorageImplTest {
 					"VALUES (x'" + uuid1 +"', 'test', 1, 'Batman', 'Robin', 'Kvass', '2000-01-01 00:00:00');");
 			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser4` " +
 					"VALUES (x'" + uuid2 +"', 'test', 1, 'Superman', 'Lois Lane', 'Kompot', '2000-01-01 00:00:01');");
+			stmt.execute("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser4` " +
+					"VALUES (x'" + uuid3 +"', 'test', 1, 'Spiderman', 'Mary Jane', 'Slivovica', '2000-01-01 00:00:01');");
 
 			stmt.execute("INSERT INTO `object_lookup_table` VALUES (x'" + uuid1 +"', " +
 					"'se-mah-elis-impl-service-storage-test-mock-MockUser4')");
@@ -363,6 +377,8 @@ public class StorageImplTest {
 			stmt.execute("INSERT INTO `collections` VALUES (x'" + uuid1 + "', " +
 					"x'" + MDO2_1s + "', 'mdos')");
 			stmt.execute("INSERT INTO `collections` VALUES (x'" + uuid1 + "', " +
+					"x'" + MDO2_2s + "', 'mdos')");
+			stmt.execute("INSERT INTO `collections` VALUES (x'" + uuid3 + "', " +
 					"x'" + MDO2_2s + "', 'mdos')");
 			
 			stmt.close();
@@ -617,7 +633,7 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(EDO1_COUNT + 1, countBindingsInDB(mdo));
+		assertEquals(MDO1_COUNT + 1, countBindingsInDB(mdo));
 	}
 
 	@Test
@@ -661,7 +677,7 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(EDO1_COUNT + 1, countBindingsInDB(mdo));
+		assertEquals(MDO1_COUNT + 1, countBindingsInDB(mdo));
 	}
 
 	/*
@@ -690,7 +706,7 @@ public class StorageImplTest {
 		} catch (StorageException e) {
 		}
 		
-		assertEquals(EDO2_COUNT, countBindingsInDB(mdo));
+		assertEquals(MDO2_COUNT, countBindingsInDB(mdo));
 	}
 
 	@Test
@@ -706,7 +722,7 @@ public class StorageImplTest {
 		} catch (StorageException e) {
 		}
 		
-		assertEquals(EDO1_COUNT, countBindingsInDB(mdo));
+		assertEquals(MDO1_COUNT, countBindingsInDB(mdo));
 	}
 	
 	@Test
@@ -729,7 +745,7 @@ public class StorageImplTest {
 		} catch (StorageException e) {
 		}
 		
-		assertEquals(EDO1_COUNT, countBindingsInDB(mdo));
+		assertEquals(MDO1_COUNT, countBindingsInDB(mdo));
 	}
 
 	@Test
@@ -743,7 +759,7 @@ public class StorageImplTest {
 		MockDataObject2 mdo2 = null;
 		Collection collection = mdo.getCollection();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-5555deadbeef");
-		UUID user = UUID.fromString("000011112222deadbeef555566667771");
+		UUID user = UUID.fromString("00001111-2222-dead-beef-555566667771");
 		
 		mdo.setOwnerId(uuid);
 		mdo.setBaz(17);
@@ -760,8 +776,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 
-		assertEquals(EDO3_COUNT + 1, countBindingsInDB(mdo));
-		assertEquals(EDO2_COUNT, countBindingsInDB(new MockDataObject2()));
+		assertEquals(MDO3_COUNT + 1, countBindingsInDB(mdo));
+		assertEquals(MDO2_COUNT, countBindingsInDB(new MockDataObject2()));
 		assertEquals(2, countObjectsInCollection(uuid));
 		assertEquals(MDO2_1u, mdo1.getDataId());
 		assertEquals(user, mdo1.getOwnerId());
@@ -782,7 +798,7 @@ public class StorageImplTest {
 		MockDataObject2 mdo2 = null;
 		Collection collection = mdo.getCollection();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-5555deadbeef");
-		UUID user = UUID.fromString("000011112222deadbeef555566667771");
+		UUID user = UUID.fromString("00001111-2222-dead-beef-555566667771");
 		
 		mdo.setOwnerId(uuid);
 		mdo.setBaz(17);
@@ -799,8 +815,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 
-		assertEquals(EDO3_COUNT + 1, countBindingsInDB(mdo));
-		assertEquals(EDO2_COUNT, countBindingsInDB(new MockDataObject2()));
+		assertEquals(MDO3_COUNT + 1, countBindingsInDB(mdo));
+		assertEquals(MDO2_COUNT, countBindingsInDB(new MockDataObject2()));
 		assertEquals(2, countObjectsInCollection(uuid));
 		assertEquals(MDO2_1u, mdo1.getDataId());
 		assertEquals(user, mdo1.getOwnerId());
@@ -821,7 +837,7 @@ public class StorageImplTest {
 		MockDataObject2 mdo2 = null;
 		Collection collection = mdo.getCollection();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-5555deadbeef");
-		UUID user = UUID.fromString("000011112222deadbeef555566667771");
+		UUID user = UUID.fromString("00001111-2222-dead-beef-555566667771");
 		
 		mdo.setOwnerId(uuid);
 		mdo.setBaz(17);
@@ -838,8 +854,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 
-		assertEquals(EDO3_COUNT + 1, countBindingsInDB(mdo));
-		assertEquals(EDO2_COUNT + 1, countBindingsInDB(new MockDataObject2()));
+		assertEquals(MDO3_COUNT + 1, countBindingsInDB(mdo));
+		assertEquals(MDO2_COUNT + 1, countBindingsInDB(new MockDataObject2()));
 		assertEquals(2, countObjectsInCollection(uuid));
 		assertEquals(MDO2_1u, mdo1.getDataId());
 		assertEquals(user, mdo1.getOwnerId());
@@ -860,9 +876,9 @@ public class StorageImplTest {
 		MockDataObject2 mdo2 = null;
 		Collection collection = mdo.getCollection();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-5555deadbeef");
-		UUID user = UUID.fromString("000011112222deadbeef555566667771");
-		UUID uuid1 = UUID.fromString("f0001111222233334444555566667771");
-		UUID uuid2 = UUID.fromString("f0001111222233334444555566667772");
+		UUID user = UUID.fromString("00001111-2222-dead-beef-555566667771");
+		UUID uuid1 = UUID.fromString("f0001111-2222-3333-4444-555566667771");
+		UUID uuid2 = UUID.fromString("f0001111-2222-3333-4444-555566667772");
 		
 		mdo.setOwnerId(uuid);
 		mdo.setBaz(17);
@@ -879,8 +895,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 
-		assertEquals(EDO3_COUNT + 1, countBindingsInDB(mdo));
-		assertEquals(EDO2_COUNT + 2, countBindingsInDB(new MockDataObject2()));
+		assertEquals(MDO3_COUNT + 1, countBindingsInDB(mdo));
+		assertEquals(MDO2_COUNT + 2, countBindingsInDB(new MockDataObject2()));
 		assertEquals(2, countObjectsInCollection(uuid));
 		assertEquals(uuid1, mdo1.getDataId());
 		assertEquals(user, mdo1.getOwnerId());
@@ -910,8 +926,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 
-		assertEquals(EDO3_COUNT + 1, countBindingsInDB(mdo));
-		assertEquals(EDO2_COUNT, countBindingsInDB(new MockDataObject2()));
+		assertEquals(MDO3_COUNT + 1, countBindingsInDB(mdo));
+		assertEquals(MDO2_COUNT, countBindingsInDB(new MockDataObject2()));
 		assertEquals(0, countObjectsInCollection(uuid));
 	}
 
@@ -950,7 +966,7 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(EDO1_COUNT + 3, countBindingsInDB(mdo1));
+		assertEquals(MDO1_COUNT + 3, countBindingsInDB(mdo1));
 	}
 
 	@Test
@@ -1026,7 +1042,7 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(EDO1_COUNT + 3, countBindingsInDB(mdo1));
+		assertEquals(MDO1_COUNT + 3, countBindingsInDB(mdo1));
 	}
 
 	@Test
@@ -1043,7 +1059,7 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(EDO1_COUNT, countBindingsInDB(new MockDataObject1()));
+		assertEquals(MDO1_COUNT, countBindingsInDB(new MockDataObject1()));
 	}
 
 	@Test
@@ -1083,8 +1099,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 
-		assertEquals(EDO1_COUNT + 2, countBindingsInDB(mdo1));
-		assertEquals(EDO2_COUNT + 1, countBindingsInDB(mdo3));
+		assertEquals(MDO1_COUNT + 2, countBindingsInDB(mdo1));
+		assertEquals(MDO2_COUNT + 1, countBindingsInDB(mdo3));
 	}
 
 	@Test
@@ -1122,8 +1138,8 @@ public class StorageImplTest {
 		} catch (StorageException e) {
 		}
 
-		assertEquals(EDO1_COUNT + 2, countBindingsInDB(mdo1));
-		assertEquals(EDO1_COUNT, countBindingsInDB(mdo3));
+		assertEquals(MDO1_COUNT + 2, countBindingsInDB(mdo1));
+		assertEquals(MDO1_COUNT, countBindingsInDB(mdo3));
 	}
 
 	@Test
@@ -1161,8 +1177,8 @@ public class StorageImplTest {
 		} catch (StorageException e) {
 		}
 
-		assertEquals(EDO1_COUNT + 1, countBindingsInDB(mdo1));
-		assertEquals(EDO1_COUNT, countBindingsInDB(mdo3));
+		assertEquals(MDO1_COUNT + 1, countBindingsInDB(mdo1));
+		assertEquals(MDO1_COUNT, countBindingsInDB(mdo3));
 	}
 
 	@Test
@@ -1429,8 +1445,8 @@ public class StorageImplTest {
 		}
 		
 		assertNotNull(mu.getUserId());
-		assertEquals(AU1_COUNT + 1, countBindingsInDB(mu));
-		assertEquals(AU1_COUNT + 1, countBindingsInDB());
+		assertEquals(MU1_COUNT + 1, countBindingsInDB(mu));
+		assertEquals(MU1_COUNT + 1, countBindingsInDB());
 	}
 
 	@Test
@@ -1466,8 +1482,8 @@ public class StorageImplTest {
 		}
 
 		assertEquals(UUID.fromString("00001111-2222-3333-4444-deadbeef7777"), mu.getUserId());
-		assertEquals(AU1_COUNT + 1, countBindingsInDB(mu));
-		assertEquals(AU1_COUNT + 1, countBindingsInDB());
+		assertEquals(MU1_COUNT + 1, countBindingsInDB(mu));
+		assertEquals(MU1_COUNT + 1, countBindingsInDB());
 	}
 	
 	@Test
@@ -1485,8 +1501,8 @@ public class StorageImplTest {
 		}
 		
 		assertEquals(UUID.fromString("00001111-2222-dead-beef-555566667771"), mu.getUserId());
-		assertEquals(AU1_COUNT, countBindingsInDB(mu));
-		assertEquals(AU1_COUNT, countBindingsInDB());
+		assertEquals(MU1_COUNT, countBindingsInDB(mu));
+		assertEquals(MU1_COUNT, countBindingsInDB());
 	}
 
 	@Test
@@ -1503,8 +1519,8 @@ public class StorageImplTest {
 		} catch (StorageException e) {
 		}
 		
-		assertEquals(AU2_COUNT, countBindingsInDB(mu));
-		assertEquals(AU2_COUNT, countBindingsInDB());
+		assertEquals(MU2_COUNT, countBindingsInDB(mu));
+		assertEquals(MU2_COUNT, countBindingsInDB());
 	}
 
 	@Test
@@ -1521,8 +1537,8 @@ public class StorageImplTest {
 		} catch (StorageException e) {
 		}
 		
-		assertEquals(AU1_COUNT, countBindingsInDB(mu));
-		assertEquals(AU1_COUNT, countBindingsInDB());
+		assertEquals(MU1_COUNT, countBindingsInDB(mu));
+		assertEquals(MU1_COUNT, countBindingsInDB());
 	}
 
 	@Test
@@ -1552,8 +1568,8 @@ public class StorageImplTest {
 		}
 		
 		assertNotNull(mu.getUserId());
-		assertEquals(AU2_COUNT + 1, countBindingsInDB(mu));
-		assertEquals(AU2_COUNT + 1, countBindingsInDB());
+		assertEquals(MU2_COUNT + 1, countBindingsInDB(mu));
+		assertEquals(MU2_COUNT + 1, countBindingsInDB());
 	}
 
 	@Test
@@ -1583,8 +1599,8 @@ public class StorageImplTest {
 		}
 		
 		assertNotNull(mu.getUserId());
-		assertEquals(AU4_COUNT + 1, countBindingsInDB(mu));
-		assertEquals(EDO2_COUNT, countBindingsInDB());
+		assertEquals(MU4_COUNT + 1, countBindingsInDB(mu));
+		assertEquals(MDO2_COUNT, countBindingsInDB());
 		assertEquals(MDO2_1u, mdo1.getDataId());
 		assertEquals(uuid, mdo1.getOwnerId());
 		assertEquals(1.1, mdo1.getBaz());
@@ -1620,8 +1636,8 @@ public class StorageImplTest {
 		}
 		
 		assertNotNull(mu.getUserId());
-		assertEquals(AU4_COUNT + 1, countBindingsInDB(mu));
-		assertEquals(EDO2_COUNT, countBindingsInDB());
+		assertEquals(MU4_COUNT + 1, countBindingsInDB(mu));
+		assertEquals(MDO2_COUNT, countBindingsInDB());
 		assertEquals(MDO2_1u, mdo1.getDataId());
 		assertEquals(uuid, mdo1.getOwnerId());
 		assertEquals(1.1, mdo1.getBaz());
@@ -1657,8 +1673,8 @@ public class StorageImplTest {
 		}
 		
 		assertNotNull(mu.getUserId());
-		assertEquals(AU4_COUNT + 1, countBindingsInDB(mu));
-		assertEquals(EDO2_COUNT + 1, countBindingsInDB());
+		assertEquals(MU4_COUNT + 1, countBindingsInDB(mu));
+		assertEquals(MDO2_COUNT + 1, countBindingsInDB());
 		assertEquals(MDO2_1u, mdo1.getDataId());
 		assertEquals(uuid, mdo1.getOwnerId());
 		assertEquals(1.1, mdo1.getBaz());
@@ -1678,8 +1694,8 @@ public class StorageImplTest {
 		MockDataObject2 mdo2 = null;
 		Collection collection = mu.getCollection();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-5555deadbeef");
-		UUID uuid1 = UUID.fromString("f0001111222233334444555566667771");
-		UUID uuid2 = UUID.fromString("f0001111222233334444555566667772");
+		UUID uuid1 = UUID.fromString("f0001111-2222-3333-4444-555566667771");
+		UUID uuid2 = UUID.fromString("f0001111-2222-3333-4444-555566667772");
 		
 		mu.setUserId(uuid);
 
@@ -1696,8 +1712,8 @@ public class StorageImplTest {
 		}
 		
 		assertNotNull(mu.getUserId());
-		assertEquals(AU4_COUNT + 1, countBindingsInDB(mu));
-		assertEquals(EDO2_COUNT + 2, countBindingsInDB());
+		assertEquals(MU4_COUNT + 1, countBindingsInDB(mu));
+		assertEquals(MDO2_COUNT + 2, countBindingsInDB());
 		assertEquals(uuid1, mdo1.getDataId());
 		assertEquals(uuid, mdo1.getOwnerId());
 		assertEquals(1.1, mdo1.getBaz());
@@ -1726,8 +1742,8 @@ public class StorageImplTest {
 		}
 		
 		assertNotNull(mu.getUserId());
-		assertEquals(AU4_COUNT + 1, countBindingsInDB(mu));
-		assertEquals(EDO2_COUNT, countBindingsInDB());
+		assertEquals(MU4_COUNT + 1, countBindingsInDB(mu));
+		assertEquals(MDO2_COUNT, countBindingsInDB());
 	}
 
 	@Test
@@ -1754,8 +1770,8 @@ public class StorageImplTest {
 		assertNotNull(mu1.getUserId());
 		assertNotNull(mu2.getUserId());
 		assertNotNull(mu3.getUserId());
-		assertEquals(AU1_COUNT + 3, countBindingsInDB(mu1));
-		assertEquals(AU1_COUNT + 3, countBindingsInDB());
+		assertEquals(MU1_COUNT + 3, countBindingsInDB(mu1));
+		assertEquals(MU1_COUNT + 3, countBindingsInDB());
 	}
 
 	@Test
@@ -1832,9 +1848,9 @@ public class StorageImplTest {
 		} catch (StorageException e) {
 		}
 		
-		assertEquals(AU2_COUNT + 1, countBindingsInDB(mu1));
-		assertEquals(AU1_COUNT, countBindingsInDB(mu2));
-		assertEquals(2 * AU1_COUNT + 1, countBindingsInDB());
+		assertEquals(MU2_COUNT + 1, countBindingsInDB(mu1));
+		assertEquals(MU1_COUNT, countBindingsInDB(mu2));
+		assertEquals(2 * MU1_COUNT + 1, countBindingsInDB());
 	}
 
 	@Test
@@ -1869,8 +1885,8 @@ public class StorageImplTest {
 		assertNotNull(mu1.getUserId());
 		assertNotNull(mu2.getUserId());
 		assertNotNull(mu3.getUserId());
-		assertEquals(AU1_COUNT + 3, countBindingsInDB(mu1));
-		assertEquals(PU_COUNT + AU1_COUNT + 4, countBindingsInDB());
+		assertEquals(MU1_COUNT + 3, countBindingsInDB(mu1));
+		assertEquals(PU_COUNT + MU1_COUNT + 4, countBindingsInDB());
 		assertEquals(PU_COUNT + 1, countBindingsInDB(pu));
 	}
 
@@ -1888,8 +1904,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(AU1_COUNT, countBindingsInDB(new MockUser1()));
-		assertEquals(AU1_COUNT, countBindingsInDB());
+		assertEquals(MU1_COUNT, countBindingsInDB(new MockUser1()));
+		assertEquals(MU1_COUNT, countBindingsInDB());
 	}
 
 	@Test
@@ -1918,8 +1934,8 @@ public class StorageImplTest {
 		assertNotNull(mu1.getUserId());
 		assertNotNull(mu2.getUserId());
 		assertNotNull(mu3.getUserId());
-		assertEquals(AU1_COUNT + 3, countBindingsInDB(mu1));
-		assertEquals(AU1_COUNT + 3, countBindingsInDB());
+		assertEquals(MU1_COUNT + 3, countBindingsInDB(mu1));
+		assertEquals(MU1_COUNT + 3, countBindingsInDB());
 	}
 
 	@Test
@@ -1983,22 +1999,85 @@ public class StorageImplTest {
 
 	@Test
 	public void testReadDataUUIDEmptyCollection() {
-		fail("Ja nefungujem, lebo nie existujem");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo = null;
+		
+		try {
+			mdo = (MockDataObject3) storage.readData(MDO3_3u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mdo);
+		assertEquals(MDO3_COUNT, countBindingsInDB(mdo));
+		assertEquals(0, mdo.getCollection().size());
 	}
 
 	@Test
 	public void testReadDataUUIDCollectionOneObject() {
-		fail("Ja nefungujem, lebo nie existujem");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo1 = null;
+		MockDataObject2 mdo2 = null;
+		
+		try {
+			mdo1 = (MockDataObject3) storage.readData(MDO3_4u);
+			mdo2 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mdo1);
+		assertEquals(MDO3_COUNT, countBindingsInDB(mdo1));
+		assertEquals(1, mdo1.getCollection().size());
+		assertTrue(mdo1.getCollection().contains(mdo2));
 	}
 
 	@Test
 	public void testReadDataUUIDCollectionTwoObjects() {
-		fail("Ja nefungujem, lebo nie existujem");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo1 = null;
+		MockDataObject2 mdo2 = null;
+		MockDataObject2 mdo3 = null;
+		
+		try {
+			mdo1 = (MockDataObject3) storage.readData(MDO3_2u);
+			mdo2 = (MockDataObject2) storage.readData(MDO2_1u);
+			mdo3 = (MockDataObject2) storage.readData(MDO2_3u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mdo1);
+		assertEquals(MDO3_COUNT, countBindingsInDB(mdo1));
+		assertEquals(2, mdo1.getCollection().size());
+		assertTrue(mdo1.getCollection().contains(mdo2));
+		assertTrue(mdo1.getCollection().contains(mdo3));
 	}
 
 	@Test
 	public void testReadDataUUIDCollectionNonExistingObject() {
-		fail("Ja nefungujem, lebo nie existujem");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo = null;
+		
+		try {
+			mdo = (MockDataObject3) storage.readData(UUID.fromString("deadbeef-2222-3333-4444-5555deadbeef"));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNull(mdo);
 	}
 
 	@Test
@@ -2137,22 +2216,85 @@ public class StorageImplTest {
 
 	@Test
 	public void testReadUserUUIDEmptyCollection() {
-		fail("Ja nefungujem, lebo nie existujem");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mu);
+		assertEquals(MU4_COUNT, countBindingsInDB(mu));
+		assertEquals(0, mu.getCollection().size());
 	}
 
 	@Test
 	public void testReadUserUUIDCollectionOneObject() {
-		fail("Ja nefungujem, lebo nie existujem");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		MockDataObject2 mdo = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_3u);
+			mdo = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mu);
+		assertEquals(MU4_COUNT, countBindingsInDB(mu));
+		assertEquals(1, mu.getCollection().size());
+		assertTrue(mu.getCollection().contains(mdo));
 	}
 
 	@Test
 	public void testReadUserUUIDCollectionTwoObjects() {
-		fail("Ja nefungujem, lebo nie existujem");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		MockDataObject2 mdo1 = null;
+		MockDataObject2 mdo2 = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_1u);
+			mdo1 = (MockDataObject2) storage.readData(MDO2_1u);
+			mdo2 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mu);
+		assertEquals(MU4_COUNT, countBindingsInDB(mu));
+		assertEquals(2, mu.getCollection().size());
+		assertTrue(mu.getCollection().contains(mdo1));
+		assertTrue(mu.getCollection().contains(mdo2));
 	}
 
 	@Test
 	public void testReadUserUUIDCollectionNonExistingObject() {
-		fail("Ja nefungujem, lebo nie existujem");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(UUID.fromString("deadbeef-2222-3333-4444-5555deadbeef"));
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNull(mu);
 	}
 
 	@Test
@@ -2808,8 +2950,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(EDO1_COUNT - 1, countBindingsInDB(mdo));
-		assertEquals(EDO1_COUNT - 1, countBindingsInDB());
+		assertEquals(MDO1_COUNT - 1, countBindingsInDB(mdo));
+		assertEquals(MDO1_COUNT - 1, countBindingsInDB());
 	}
 
 	@Test
@@ -2828,8 +2970,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(EDO1_COUNT, countBindingsInDB(mdo));
-		assertEquals(EDO1_COUNT, countBindingsInDB());
+		assertEquals(MDO1_COUNT, countBindingsInDB(mdo));
+		assertEquals(MDO1_COUNT, countBindingsInDB());
 	}
 
 	@Test
@@ -2848,23 +2990,66 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(EDO1_COUNT, countBindingsInDB(mdo));
-		assertEquals(EDO1_COUNT, countBindingsInDB());
+		assertEquals(MDO1_COUNT, countBindingsInDB(mdo));
+		assertEquals(MDO1_COUNT, countBindingsInDB());
 	}
 
 	@Test
 	public void testDeleteElisDataObjectEmptyCollection() {
-		fail("The test is a lie");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo = null;
+		
+		try {
+			mdo = (MockDataObject3) storage.readData(MDO3_3u);
+			storage.delete(mdo);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		assertEquals(MDO3_COUNT - 1, countBindingsInDB(mdo));
+		assertEquals(0, countObjectsInCollection(MDO3_3u));
 	}
 
 	@Test
 	public void testDeleteElisDataObjectCollection() {
-		fail("The test is a lie");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo = null;
+		
+		try {
+			mdo = (MockDataObject3) storage.readData(MDO3_2u);
+			storage.delete(mdo);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		assertEquals(MDO3_COUNT - 1, countBindingsInDB(mdo));
+		assertEquals(0, countObjectsInCollection(MDO3_2u));
 	}
 
 	@Test
 	public void testDeleteElisDataObjectCollectionShouldntDeleteObjects() {
-		fail("The test is a lie");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo = null;
+		
+		try {
+			mdo = (MockDataObject3) storage.readData(MDO3_2u);
+			storage.delete(mdo);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertEquals(MDO3_COUNT - 1, countBindingsInDB(mdo));
+		assertEquals(MDO2_COUNT, countBindingsInDB(new MockDataObject2()));
+		assertEquals(0, countObjectsInCollection(MDO3_2u));
 	}
 
 	@Test
@@ -2889,8 +3074,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(EDO1_COUNT - 2, countBindingsInDB(mdo1));
-		assertEquals(EDO1_COUNT - 2, countBindingsInDB());
+		assertEquals(MDO1_COUNT - 2, countBindingsInDB(mdo1));
+		assertEquals(MDO1_COUNT - 2, countBindingsInDB());
 	}
 
 	@Test
@@ -2916,9 +3101,9 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(EDO1_COUNT - 1, countBindingsInDB(mdo1));
-		assertEquals(EDO2_COUNT - 1, countBindingsInDB(mdo2));
-		assertEquals(EDO1_COUNT + EDO2_COUNT - 2, countBindingsInDB());
+		assertEquals(MDO1_COUNT - 1, countBindingsInDB(mdo1));
+		assertEquals(MDO2_COUNT - 1, countBindingsInDB(mdo2));
+		assertEquals(MDO1_COUNT + MDO2_COUNT - 2, countBindingsInDB());
 	}
 
 	@Test
@@ -2944,9 +3129,9 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(EDO1_COUNT - 1, countBindingsInDB(mdo1));
-		assertEquals(EDO2_COUNT, countBindingsInDB(mdo2));
-		assertEquals(EDO1_COUNT + EDO2_COUNT - 1, countBindingsInDB());
+		assertEquals(MDO1_COUNT - 1, countBindingsInDB(mdo1));
+		assertEquals(MDO2_COUNT, countBindingsInDB(mdo2));
+		assertEquals(MDO1_COUNT + MDO2_COUNT - 1, countBindingsInDB());
 	}
 
 	@Test
@@ -3009,8 +3194,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(AU1_COUNT - 1, countBindingsInDB(mu));
-		assertEquals(AU1_COUNT - 1, countBindingsInDB());
+		assertEquals(MU1_COUNT - 1, countBindingsInDB(mu));
+		assertEquals(MU1_COUNT - 1, countBindingsInDB());
 	}
 
 	@Test
@@ -3029,23 +3214,66 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(AU1_COUNT, countBindingsInDB(mu));
-		assertEquals(AU1_COUNT, countBindingsInDB());
+		assertEquals(MU1_COUNT, countBindingsInDB(mu));
+		assertEquals(MU1_COUNT, countBindingsInDB());
 	}
 
 	@Test
 	public void testDeleteAbstractUserEmptyCollection() {
-		fail("The test is a lie");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_2u);
+			storage.delete(mu);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		assertEquals(MU4_COUNT - 1, countBindingsInDB(mu));
+		assertEquals(0, countObjectsInCollection(MU4_2u));
 	}
 
 	@Test
 	public void testDeleteAbstractUserCollectionWithObjects() {
-		fail("The test is a lie");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_1u);
+			storage.delete(mu);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		assertEquals(MU4_COUNT - 1, countBindingsInDB(mu));
+		assertEquals(0, countObjectsInCollection(MU4_1u));
 	}
 
 	@Test
 	public void testDeleteAbstractUserCollectionShouldntDeleteObjects() {
-		fail("The test is a lie");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_1u);
+			storage.delete(mu);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		assertEquals(MU4_COUNT - 1, countBindingsInDB(mu));
+		assertEquals(0, countObjectsInCollection(MU4_1u));
+		assertEquals(MDO2_COUNT, countBindingsInDB(new MockDataObject2()));
 	}
 
 	@Test
@@ -3130,8 +3358,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(AU1_COUNT - 2, countBindingsInDB(mu1));
-		assertEquals(AU1_COUNT - 2, countBindingsInDB());
+		assertEquals(MU1_COUNT - 2, countBindingsInDB(mu1));
+		assertEquals(MU1_COUNT - 2, countBindingsInDB());
 	}
 
 	@Test
@@ -3156,8 +3384,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(AU1_COUNT - 1, countBindingsInDB(mu1));
-		assertEquals(AU1_COUNT - 1, countBindingsInDB());
+		assertEquals(MU1_COUNT - 1, countBindingsInDB(mu1));
+		assertEquals(MU1_COUNT - 1, countBindingsInDB());
 	}
 
 	@Test
@@ -3182,8 +3410,8 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(AU1_COUNT - 1, countBindingsInDB(mu1));
-		assertEquals(AU1_COUNT - 1, countBindingsInDB());
+		assertEquals(MU1_COUNT - 1, countBindingsInDB(mu1));
+		assertEquals(MU1_COUNT - 1, countBindingsInDB());
 	}
 
 	@Test
@@ -3209,9 +3437,9 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(AU1_COUNT - 1, countBindingsInDB(mu1));
-		assertEquals(AU2_COUNT - 1, countBindingsInDB(mu2));
-		assertEquals(AU1_COUNT + AU2_COUNT - 2, countBindingsInDB());
+		assertEquals(MU1_COUNT - 1, countBindingsInDB(mu1));
+		assertEquals(MU2_COUNT - 1, countBindingsInDB(mu2));
+		assertEquals(MU1_COUNT + MU2_COUNT - 2, countBindingsInDB());
 	}
 
 	@Test
@@ -3229,9 +3457,9 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		assertEquals(AU1_COUNT, countBindingsInDB(new MockUser1()));
-		assertEquals(AU2_COUNT, countBindingsInDB(new MockUser2()));
-		assertEquals(AU1_COUNT + AU2_COUNT, countBindingsInDB());
+		assertEquals(MU1_COUNT, countBindingsInDB(new MockUser1()));
+		assertEquals(MU2_COUNT, countBindingsInDB(new MockUser2()));
+		assertEquals(MU1_COUNT + MU2_COUNT, countBindingsInDB());
 	}
 
 	@Test
@@ -3348,32 +3576,175 @@ public class StorageImplTest {
 
 	@Test
 	public void testUpdateElisDataObjectCollectionNoChanges() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo = null;
+		
+		try {
+			mdo = (MockDataObject3) storage.readData(MDO3_1u);
+			storage.update(mdo);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mdo);
+		assertEquals(MDO3_COUNT, countBindingsInDB(mdo));
+		assertEquals(3, countObjectsInCollection(mdo.getDataId()));
+		assertEquals(3, mdo.getCollection().size());
 	}
 
 	@Test
 	public void testUpdateElisDataObjectEmptiedCollection() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo = null;
+		
+		try {
+			mdo = (MockDataObject3) storage.readData(MDO3_1u);
+			mdo.getCollection().clear();
+			storage.update(mdo);
+			mdo = (MockDataObject3) storage.readData(MDO3_1u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mdo);
+		assertEquals(MDO3_COUNT, countBindingsInDB(mdo));
+		assertEquals(0, countObjectsInCollection(mdo.getDataId()));
+		assertEquals(0, mdo.getCollection().size());
 	}
 
 	@Test
 	public void testUpdateElisDataObjectCollectionObjectChanged() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo1 = null;
+		MockDataObject2 mdo2 = null;
+		MockDataObject2 mdo3 = null;
+		
+		try {
+			mdo1 = (MockDataObject3) storage.readData(MDO3_1u);
+			mdo2 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		mdo2.setBaz(-4);
+		
+		try {
+			storage.update(mdo1);
+			mdo3 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mdo1);
+		assertEquals(MDO3_COUNT, countBindingsInDB(mdo1));
+		assertEquals(3, countObjectsInCollection(mdo1.getDataId()));
+		assertEquals(3, mdo1.getCollection().size());
+		assertEquals(mdo2, mdo3);
 	}
 
 	@Test
 	public void testUpdateElisDataObjectCollectionObjectRemovedFromCollection() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo1 = null;
+		MockDataObject2 mdo2 = null;
+		
+		try {
+			mdo1 = (MockDataObject3) storage.readData(MDO3_1u);
+			mdo2 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		mdo1.getCollection().remove(mdo2);
+		
+		try {
+			storage.update(mdo1);
+			mdo1 = (MockDataObject3) storage.readData(MDO3_1u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mdo1);
+		assertEquals(MDO3_COUNT, countBindingsInDB(mdo1));
+		assertEquals(2, countObjectsInCollection(MDO3_1u));
+		assertEquals(2, mdo1.getCollection().size());
 	}
 
 	@Test
 	public void testUpdateElisDataObjectCollectionObjectAdded() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo1 = null;
+		MockDataObject2 mdo2 = null;
+		
+		try {
+			mdo1 = (MockDataObject3) storage.readData(MDO3_2u);
+			mdo2 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		mdo1.getCollection().add(mdo2);
+		
+		try {
+			storage.update(mdo1);
+			mdo1 = (MockDataObject3) storage.readData(MDO3_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mdo1);
+		assertEquals(MDO3_COUNT, countBindingsInDB(mdo1));
+		assertEquals(3, countObjectsInCollection(MDO3_2u));
+		assertEquals(3, mdo1.getCollection().size());
 	}
 
 	@Test
 	public void testUpdateElisDataObjectCollectionOneObjectDoesntExist() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMDO3Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockDataObject3 mdo1 = null;
+		MockDataObject2 mdo2 = new MockDataObject2(MU1_1u, 42);
+		MockDataObject2 mdo3 = null;
+		
+		try {
+			mdo1 = (MockDataObject3) storage.readData(MDO3_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		mdo1.getCollection().add(mdo2);
+		
+		try {
+			storage.update(mdo1);
+			mdo1 = (MockDataObject3) storage.readData(MDO3_2u);
+			mdo3 = (MockDataObject2) storage.readData(mdo2.getDataId());
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mdo1);
+		assertEquals(MDO2_COUNT + 1, countBindingsInDB(mdo2));
+		assertEquals(MDO3_COUNT, countBindingsInDB(mdo1));
+		assertEquals(3, countObjectsInCollection(MDO3_2u));
+		assertEquals(3, mdo1.getCollection().size());
+		assertEquals(mdo2, mdo3);
 	}
 
 	@Test
@@ -4089,32 +4460,206 @@ public class StorageImplTest {
 
 	@Test
 	public void testUpdateAbstractUserCollectionNoChanges() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		MockDataObject2 mdo1 = null;
+		MockDataObject2 mdo2 = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_3u);
+			mdo1 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		try {
+			storage.update(mu);
+			mdo2 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mu);
+		assertEquals(MU4_COUNT, countBindingsInDB(mu));
+		assertEquals(MDO2_COUNT, countBindingsInDB(mdo1));
+		assertEquals(1, mu.getCollection().size());
+		assertTrue(mu.getCollection().contains(mdo1));
+		assertEquals(mdo1, mdo2);
 	}
 
 	@Test
 	public void testUpdateAbstractUserEmptiedCollection() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		MockDataObject2 mdo1 = null;
+		MockDataObject2 mdo2 = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_3u);
+			mdo1 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		mu.getCollection().clear();
+		
+		try {
+			storage.update(mu);
+			mdo2 = (MockDataObject2) storage.readData(MDO2_2u);
+			mu = (MockUser4) storage.readData(MU4_3u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mu);
+		assertNull(mdo2);
+		assertEquals(MU4_COUNT, countBindingsInDB(mu));
+		assertEquals(MDO2_COUNT, countBindingsInDB(mdo1));
+		assertEquals(0, countObjectsInCollection(MU4_3u));
+		assertEquals(0, mu.getCollection().size());
 	}
 
 	@Test
 	public void testUpdateAbstractUserCollectionObjectChanged() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		MockDataObject2 mdo1 = null;
+		MockDataObject2 mdo2 = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_1u);
+			mdo1 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		mdo1.setBaz(-2);
+		
+		try {
+			storage.update(mu);
+			mdo2 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mu);
+		assertEquals(MU4_COUNT, countBindingsInDB(mu));
+		assertEquals(MDO2_COUNT, countBindingsInDB(mdo1));
+		assertEquals(2, countObjectsInCollection(MU4_1u));
+		assertEquals(2, mu.getCollection().size());
+		assertTrue(mu.getCollection().contains(mdo1));
+		assertEquals(mdo1, mdo2);
 	}
 
 	@Test
 	public void testUpdateAbstractUserCollectionObjectRemovedFromCollection() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		MockDataObject2 mdo1 = null;
+		MockDataObject2 mdo2 = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_1u);
+			mdo1 = (MockDataObject2) storage.readData(MDO2_2u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		mu.getCollection().remove(mdo1);
+		
+		try {
+			storage.update(mu);
+			mdo2 = (MockDataObject2) storage.readData(MDO2_2u);
+			mu = (MockUser4) storage.readData(MU4_1u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mu);
+		assertEquals(MU4_COUNT, countBindingsInDB(mu));
+		assertEquals(MDO2_COUNT, countBindingsInDB(mdo1));
+		assertEquals(1, countObjectsInCollection(MU4_1u));
+		assertEquals(1, mu.getCollection().size());
+		assertFalse(mu.getCollection().contains(mdo1));
+		assertEquals(mdo1, mdo2);
 	}
 
 	@Test
 	public void testUpdateAbstractUserCollectionObjectAdded() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		MockDataObject2 mdo1 = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_1u);
+			mdo1 = (MockDataObject2) storage.readData(MDO2_3u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		try {
+			storage.update(mu);
+			mu = (MockUser4) storage.readData(MU4_1u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mu);
+		assertEquals(MU4_COUNT, countBindingsInDB(mu));
+		assertEquals(MDO2_COUNT, countBindingsInDB(mdo1));
+		assertEquals(3, countObjectsInCollection(MU4_1u));
+		assertEquals(3, mu.getCollection().size());
+		assertTrue(mu.getCollection().contains(mdo1));
 	}
 
 	@Test
 	public void testUpdateAbstractUserCollectionOneObjectDoesntExist() {
-		fail("Nope.");
+		buildAndPopulateMDO2Table();
+		buildAndPopulateMU4Table();
+		
+		Storage storage = new StorageImpl(connection);
+		MockUser4 mu = null;
+		MockDataObject2 mdo1 = new MockDataObject2();
+		MockDataObject2 mdo2 = null;
+		
+		try {
+			mu = (MockUser4) storage.readData(MU4_1u);
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+		
+		mdo1.setBaz(-2);
+		mdo1.setOwnerId(mu.getUserId());
+		
+		try {
+			storage.update(mu);
+			mdo2 = (MockDataObject2) storage.readData(mdo1.getDataId());
+		} catch (StorageException e) {
+			fail("This shouldn't happen");
+		}
+
+		assertNotNull(mu);
+		assertEquals(MU4_COUNT, countBindingsInDB(mu));
+		assertEquals(MDO2_COUNT + 1, countBindingsInDB(mdo1));
+		assertEquals(3, countObjectsInCollection(MU4_1u));
+		assertEquals(3, mu.getCollection().size());
+		assertTrue(mu.getCollection().contains(mdo1));
+		assertEquals(mdo1, mdo2);
 	}
 
 	@Test
