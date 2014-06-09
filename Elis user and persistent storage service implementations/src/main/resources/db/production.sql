@@ -25,6 +25,20 @@ USE `elis`;
 -- --------------------------------------------------------
 
 --
+-- Tabellstruktur `collections`
+--
+
+CREATE TABLE IF NOT EXISTS `collections` (
+  `collecting_object` binary(16) NOT NULL,
+  `collected_object` binary(16) NOT NULL,
+  `collection_name` varchar(256) NOT NULL,
+  PRIMARY KEY (`collecting_object`),
+  KEY `collected_object` (`collected_object`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellstruktur `object_lookup_table`
 --
 
