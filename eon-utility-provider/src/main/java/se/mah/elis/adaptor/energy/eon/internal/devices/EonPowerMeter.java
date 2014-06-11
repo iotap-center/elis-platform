@@ -67,10 +67,11 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		// magic.
 
 		DateTime start = null;
+		DateTime stop = to;
 		
-		// The if condition checks if milliseconds after midnight is zero,
+		// The if condition checks if milliseconds after hour H is zero,
 		// i.e. if the instant is in fact midnight
-		if ((from.get(DateTimeFieldType.millisOfDay()) == 0)) {
+		if ((from.get(DateTimeFieldType.millisOfSecond()) == 0)) {
 			// As per the definition, the from and to parameters are INCLUSIVE,
 			// meaning that we need to fetch the latest sample from the
 			// previous day.
@@ -79,13 +80,22 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		} else {
 			start = from;
 		}
+		
+		// E.On's API is strange at best. It won't allow us to check for
+		// samples between two moments at the same day. Therefore, let's
+		// see if the start and end dates are both the same day, and then
+		// apply some magic.
+		if (start.getYear() == stop.getYear() &&
+				start.getDayOfYear() == stop.getDayOfYear()) {
+			stop = to.plusDays(1);
+		}
 
 		// Fetch all samples
-		while (start.isBefore(to)) {
+		while (start.isBefore(stop)) {
 			try {
 				data = httpBridge.getStatData(
 						gateway.getAuthenticationToken(), getGatewayAddress(),
-						getId().toString(), formatDate(start), formatDate(to),
+						getId().toString(), formatDate(start), formatDate(stop),
 						HOURLY);
 				someSamples.addAll(convertToSamples(data, start));
 			} catch (ParseException e) {
@@ -133,7 +143,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 	private List<ElectricitySampleImpl> convertToSamples(
 			List<Map<String, Object>> data, DateTime from) {
 		List<ElectricitySampleImpl> samples = new ArrayList<>();
-
+		
 		for (Map<String, Object> rawsample : data) {
 			double value = number(rawsample.get("Value"));
 			DateTime sampleTime = calculateSampleTime(from,

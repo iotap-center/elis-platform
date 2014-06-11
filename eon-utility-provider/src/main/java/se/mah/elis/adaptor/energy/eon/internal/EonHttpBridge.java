@@ -2,6 +2,7 @@ package se.mah.elis.adaptor.energy.eon.internal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.naming.AuthenticationException;
 import javax.net.ssl.SSLContext;

@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.naming.AuthenticationException;
 import javax.ws.rs.client.ResponseProcessingException;

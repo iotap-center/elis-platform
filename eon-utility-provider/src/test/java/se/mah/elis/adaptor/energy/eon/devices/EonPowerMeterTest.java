@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import javax.naming.AuthenticationException;
 import javax.ws.rs.client.ResponseProcessingException;
 
 import org.joda.time.DateTime;
@@ -25,10 +27,13 @@ import org.junit.Test;
 
 import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.data.GatewayAddress;
+import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge;
+import se.mah.elis.adaptor.energy.eon.internal.devices.EonDeviceIdentifier;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonPowerMeter;
 import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
+import se.mah.elis.adaptor.energy.eon.internal.user.EonGatewayUserFactory;
 import se.mah.elis.data.ElectricitySample;
 import se.mah.elis.exceptions.StaticEntityException;
 
