@@ -21,8 +21,11 @@ import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.impl.service.storage.test.mock.EmptyMockUserIdentifier;
 import se.mah.elis.impl.service.storage.test.mock.MockConnection;
 import se.mah.elis.impl.service.storage.test.mock.MockDataObject1;
+import se.mah.elis.impl.service.storage.test.mock.MockDataObject1Provider;
 import se.mah.elis.impl.service.storage.test.mock.MockDataObject2;
+import se.mah.elis.impl.service.storage.test.mock.MockDataObject2Provider;
 import se.mah.elis.impl.service.storage.test.mock.MockDataObject3;
+import se.mah.elis.impl.service.storage.test.mock.MockDataObject3Provider;
 import se.mah.elis.impl.service.storage.test.mock.MockPlatformUser;
 import se.mah.elis.impl.service.storage.test.mock.MockPlatformUserIdentifier;
 import se.mah.elis.impl.service.storage.test.mock.MockUser1;
@@ -34,9 +37,11 @@ import se.mah.elis.impl.service.storage.test.mock.MockUser4;
 import se.mah.elis.impl.service.storage.test.mock.MockUserIdentifier;
 import se.mah.elis.impl.services.storage.StorageImpl;
 import se.mah.elis.impl.services.storage.StorageUtils;
+import se.mah.elis.impl.services.storage.factory.DataObjectFactoryImpl;
 import se.mah.elis.impl.services.users.factory.UserFactoryImpl;
 import se.mah.elis.services.storage.Storage;
 import se.mah.elis.services.storage.exceptions.StorageException;
+import se.mah.elis.services.storage.factory.DataObjectFactory;
 import se.mah.elis.services.storage.query.ChainingPredicate;
 import se.mah.elis.services.storage.query.Query;
 import se.mah.elis.services.storage.query.SimplePredicate;
@@ -1942,9 +1947,12 @@ public class StorageImplTest {
 	public void testReadDataUUID() {
 		buildAndPopulateMDO1Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		ElisDataObject edo = null;
 		UUID ownerid = UUID.fromString("00001111-2222-dead-beef-555566667771");
+		
+		factory.registerProvider(new MockDataObject1Provider());
 		
 		try {
 			edo = storage.readData(MDO1_3u);
@@ -1965,9 +1973,12 @@ public class StorageImplTest {
 	public void testReadDataUUIDDataNotFound() {
 		buildAndPopulateMDO1Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		ElisDataObject edo = null;
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-123466667779");
+		
+		factory.registerProvider(new MockDataObject1Provider());
 		
 		try {
 			edo = storage.readData(uuid);
@@ -1983,9 +1994,12 @@ public class StorageImplTest {
 	public void testReadDataUUIDIsUser() {
 		buildAndPopulateMDO1Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		ElisDataObject edo = null;
 		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667772");
+		
+		factory.registerProvider(new MockDataObject1Provider());
 		
 		try {
 			edo = storage.readData(uuid);
@@ -2002,8 +2016,12 @@ public class StorageImplTest {
 		buildAndPopulateMDO2Table();
 		buildAndPopulateMDO3Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject3 mdo = null;
+
+		factory.registerProvider(new MockDataObject2Provider());
+		factory.registerProvider(new MockDataObject3Provider());
 		
 		try {
 			mdo = (MockDataObject3) storage.readData(MDO3_3u);
@@ -2021,9 +2039,13 @@ public class StorageImplTest {
 		buildAndPopulateMDO2Table();
 		buildAndPopulateMDO3Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject3 mdo1 = null;
 		MockDataObject2 mdo2 = null;
+
+		factory.registerProvider(new MockDataObject2Provider());
+		factory.registerProvider(new MockDataObject3Provider());
 		
 		try {
 			mdo1 = (MockDataObject3) storage.readData(MDO3_4u);
@@ -2043,10 +2065,14 @@ public class StorageImplTest {
 		buildAndPopulateMDO2Table();
 		buildAndPopulateMDO3Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject3 mdo1 = null;
 		MockDataObject2 mdo2 = null;
 		MockDataObject2 mdo3 = null;
+
+		factory.registerProvider(new MockDataObject2Provider());
+		factory.registerProvider(new MockDataObject3Provider());
 		
 		try {
 			mdo1 = (MockDataObject3) storage.readData(MDO3_2u);
@@ -2068,8 +2094,12 @@ public class StorageImplTest {
 		buildAndPopulateMDO2Table();
 		buildAndPopulateMDO3Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject3 mdo = null;
+
+		factory.registerProvider(new MockDataObject2Provider());
+		factory.registerProvider(new MockDataObject3Provider());
 		
 		try {
 			mdo = (MockDataObject3) storage.readData(UUID.fromString("deadbeef-2222-3333-4444-5555deadbeef"));
@@ -2084,10 +2114,13 @@ public class StorageImplTest {
 	public void testReadDataEDO() {
 		buildAndPopulateMDO1Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		ElisDataObject expected = new MockDataObject1();
 		ElisDataObject actual = null;
 		UUID ownerid = UUID.fromString("00001111-2222-dead-beef-555566667771");
+
+		factory.registerProvider(new MockDataObject1Provider());
 		
 		expected.setDataId(MDO1_3u);
 		
@@ -2110,10 +2143,13 @@ public class StorageImplTest {
 	public void testReadDataEDODataNotFound() {
 		buildAndPopulateMDO1Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		ElisDataObject expected = new MockDataObject1();
 		ElisDataObject actual = null;
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-123466667779");
+
+		factory.registerProvider(new MockDataObject1Provider());
 		
 		expected.setDataId(uuid);
 		
@@ -2131,10 +2167,14 @@ public class StorageImplTest {
 	public void testReadDataEDOIsUser() {
 		buildAndPopulateMDO1Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		UserFactory userFactory = new UserFactoryImpl();
+		Storage storage = new StorageImpl(connection, userFactory, factory);
 		ElisDataObject expected = new MockDataObject1();
 		ElisDataObject actual = null;
 		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667772");
+
+		factory.registerProvider(new MockDataObject1Provider());
 		
 		expected.setDataId(uuid);
 		
@@ -3507,9 +3547,12 @@ public class StorageImplTest {
 	public void testUpdateElisDataObject() {
 		buildAndPopulateMDO1Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject1 mdo = null;
 		UUID ownerid = UUID.fromString("00001111-2222-dead-beef-555566667771");
+
+		factory.registerProvider(new MockDataObject1Provider());
 		
 		try {
 			mdo = (MockDataObject1) storage.readData(MDO1_3u);
@@ -3541,9 +3584,12 @@ public class StorageImplTest {
 	public void testUpdateElisDataObjectNoId() {
 		buildAndPopulateMDO1Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject1 mdo = null;
 		UUID ownerid = UUID.fromString("00001111-2222-dead-beef-555566667771");
+
+		factory.registerProvider(new MockDataObject1Provider());
 		
 		try {
 			mdo = (MockDataObject1) storage.readData(MDO1_3u);
@@ -3580,9 +3626,12 @@ public class StorageImplTest {
 	public void testUpdateElisDataObjectNonExistingId() {
 		buildAndPopulateMDO1Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject1 mdo = null;
 		UUID ownerid = UUID.fromString("00001111-2222-dead-beef-555566667771");
+
+		factory.registerProvider(new MockDataObject1Provider());
 		
 		try {
 			mdo = (MockDataObject1) storage.readData(MDO1_3u);
@@ -3620,8 +3669,12 @@ public class StorageImplTest {
 		buildAndPopulateMDO2Table();
 		buildAndPopulateMDO3Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject3 mdo = null;
+
+		factory.registerProvider(new MockDataObject2Provider());
+		factory.registerProvider(new MockDataObject3Provider());
 		
 		try {
 			mdo = (MockDataObject3) storage.readData(MDO3_1u);
@@ -3641,8 +3694,12 @@ public class StorageImplTest {
 		buildAndPopulateMDO2Table();
 		buildAndPopulateMDO3Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject3 mdo = null;
+
+		factory.registerProvider(new MockDataObject2Provider());
+		factory.registerProvider(new MockDataObject3Provider());
 		
 		try {
 			mdo = (MockDataObject3) storage.readData(MDO3_1u);
@@ -3664,10 +3721,14 @@ public class StorageImplTest {
 		buildAndPopulateMDO2Table();
 		buildAndPopulateMDO3Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject3 mdo1 = null;
 		MockDataObject2 mdo2 = null;
 		MockDataObject2 mdo3 = null;
+
+		factory.registerProvider(new MockDataObject2Provider());
+		factory.registerProvider(new MockDataObject3Provider());
 		
 		try {
 			mdo1 = (MockDataObject3) storage.readData(MDO3_1u);
@@ -3697,9 +3758,13 @@ public class StorageImplTest {
 		buildAndPopulateMDO2Table();
 		buildAndPopulateMDO3Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject3 mdo1 = null;
 		MockDataObject2 mdo2 = null;
+
+		factory.registerProvider(new MockDataObject2Provider());
+		factory.registerProvider(new MockDataObject3Provider());
 		
 		try {
 			mdo1 = (MockDataObject3) storage.readData(MDO3_1u);
@@ -3728,9 +3793,13 @@ public class StorageImplTest {
 		buildAndPopulateMDO2Table();
 		buildAndPopulateMDO3Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject3 mdo1 = null;
 		MockDataObject2 mdo2 = null;
+
+		factory.registerProvider(new MockDataObject2Provider());
+		factory.registerProvider(new MockDataObject3Provider());
 		
 		try {
 			mdo1 = (MockDataObject3) storage.readData(MDO3_2u);
@@ -3759,10 +3828,14 @@ public class StorageImplTest {
 		buildAndPopulateMDO2Table();
 		buildAndPopulateMDO3Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		MockDataObject3 mdo1 = null;
 		MockDataObject2 mdo2 = new MockDataObject2(MU1_1u, 42);
 		MockDataObject2 mdo3 = null;
+
+		factory.registerProvider(new MockDataObject2Provider());
+		factory.registerProvider(new MockDataObject3Provider());
 		
 		try {
 			mdo1 = (MockDataObject3) storage.readData(MDO3_2u);
@@ -3792,12 +3865,15 @@ public class StorageImplTest {
 	public void testUpdateElisDataObjectArray() {
 		buildAndPopulateMDO1Table();
 	
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		ElisDataObject[] edos = new ElisDataObject[2];
 		MockDataObject1 mdo1 = null;
 		MockDataObject1 mdo2 = null;
 		UUID ownerid1 = UUID.fromString("00001111-2222-dead-beef-555566667771");
 		UUID ownerid2 = UUID.fromString("00001111-2222-dead-beef-555566667772");
+
+		factory.registerProvider(new MockDataObject1Provider());
 	
 		try {
 			mdo1 = (MockDataObject1) storage.readData(MDO1_3u);
@@ -3845,11 +3921,15 @@ public class StorageImplTest {
 		buildAndPopulateMDO1Table();
 		buildAndPopulateMDO2Table();
 		
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		ElisDataObject[] edos = new ElisDataObject[2];
 		MockDataObject1 mdo1 = null;
 		MockDataObject2 mdo2 = null;
 		UUID ownerid = UUID.fromString("00001111-2222-dead-beef-555566667771");
+
+		factory.registerProvider(new MockDataObject1Provider());
+		factory.registerProvider(new MockDataObject2Provider());
 		
 		try {
 			mdo1 = (MockDataObject1) storage.readData(MDO1_3u);
@@ -3893,12 +3973,15 @@ public class StorageImplTest {
 	public void testUpdateElisDataObjectArrayOneOfTheObjectsLacksId() {
 		buildAndPopulateMDO1Table();
 	
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		ElisDataObject[] edos = new ElisDataObject[2];
 		MockDataObject1 mdo1 = null;
 		MockDataObject1 mdo2 = null;
 		UUID ownerid1 = UUID.fromString("00001111-2222-dead-beef-555566667771");
 		UUID ownerid2 = UUID.fromString("00001111-2222-dead-beef-555566667772");
+
+		factory.registerProvider(new MockDataObject1Provider());
 	
 		try {
 			mdo1 = (MockDataObject1) storage.readData(MDO1_3u);
@@ -3949,8 +4032,11 @@ public class StorageImplTest {
 	public void testUpdateElisDataObjectArrayEmptyArray() {
 		buildAndPopulateMDO1Table();
 	
-		Storage storage = new StorageImpl(connection);
+		DataObjectFactory factory = new DataObjectFactoryImpl();
+		Storage storage = new StorageImpl(connection, factory);
 		ElisDataObject[] edos = new ElisDataObject[2];
+
+		factory.registerProvider(new MockDataObject1Provider());
 	
 		try {
 			storage.update(edos);
