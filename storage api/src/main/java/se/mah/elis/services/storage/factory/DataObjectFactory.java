@@ -42,16 +42,15 @@ public interface DataObjectFactory {
 	 * different supporting services, we must also provide the name of
 	 * the service that the data object should target.
 	 * 
-	 * @param dataType The data type that we want to build. This should ideally
-	 * 		  match the name of the implemented ElisDataObject interface.
-	 * @param serviceName The name of the service that we want to target.
+	 * @param dataType The data type that we want to build. This should match
+	 * 		  the name of the class that we want to build.
 	 * @param properties The properties of the new data object.
 	 * @return The newly built ElisDataObject instance.
 	 * @throws DataInitalizationException if the data object couldn't be built for
 	 * 		   whatever reason.
 	 * @since 2.0
 	 */
-	public ElisDataObject build(String dataType, String serviceName, Properties properties)
+	public ElisDataObject build(String dataType, Properties properties)
 			throws DataInitalizationException;
 	
 	/**
@@ -67,9 +66,8 @@ public interface DataObjectFactory {
 	 * Returns a data object recipe.
 	 * 
 	 * @param dataType The data type that we want a recipe for.
-	 * @param systemName The name of the system providing the data object.
 	 * @return A data object recipe.
 	 * @since 2.0
 	 */
-	public DataObjectRecipe getRecipe(String dataType, String systemName);
+	public DataObjectRecipe getRecipe(String dataType);
 }
