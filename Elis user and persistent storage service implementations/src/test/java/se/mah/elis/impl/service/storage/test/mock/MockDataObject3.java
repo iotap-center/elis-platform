@@ -15,35 +15,31 @@ public class MockDataObject3 implements ElisDataObject {
 	private UUID id;
 	private UUID ownerid;
 	private float baz;
-	private Collection<MockDataObject2> mdos;
+	private Collection<MockDataObject2> mdos = new ArrayList<MockDataObject2>();
 	private DateTime created = DateTime.now();
 	
 	public MockDataObject3() {
 		id = null;
 		ownerid = null;
 		baz = 0;
-		mdos = new ArrayList<MockDataObject2>();
 	}
 	
 	public MockDataObject3(UUID id, UUID ownerid, float baz) {
 		this.id = id;
 		this.ownerid = ownerid;
 		this.baz = baz;
-		mdos = new ArrayList<MockDataObject2>();
 	}
 	
 	public MockDataObject3(UUID ownerid, float baz) {
 		this.id = null;
 		this.ownerid = ownerid;
 		this.baz = baz;
-		mdos = new ArrayList<MockDataObject2>();
 	}
 	
 	public MockDataObject3(float baz) {
 		this.id = null;
 		this.ownerid = null;
 		this.baz = baz;
-		mdos = new ArrayList<MockDataObject2>();
 	}
 
 	@Override
@@ -101,7 +97,9 @@ public class MockDataObject3 implements ElisDataObject {
 		id = (UUID) props.get("dataid");
 		ownerid = (UUID) props.get("ownerid");
 		baz = (float) props.get("baz");
-		mdos = (Collection) props.get("mdos");
+		if (props.get("mdos") != null) {
+			mdos = (Collection) props.get("mdos");
+		}
 		created = (DateTime) props.get("created");
 	}
 
@@ -124,5 +122,17 @@ public class MockDataObject3 implements ElisDataObject {
 	@Override
 	public DateTime created() {
 		return created;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof MockDataObject3) {
+			MockDataObject3 mdo = (MockDataObject3) o;
+			if (id != null && mdo.getDataId() != null) {
+				return id.equals(mdo.getDataId());
+			}
+		}
+		
+		return false;
 	}
 }

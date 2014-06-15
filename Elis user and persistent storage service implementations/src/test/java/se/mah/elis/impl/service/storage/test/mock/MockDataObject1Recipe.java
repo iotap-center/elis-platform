@@ -11,12 +11,7 @@ public class MockDataObject1Recipe implements DataObjectRecipe {
 
 	@Override
 	public String getDataType() {
-		return "MockDataObject1";
-	}
-
-	@Override
-	public String getServiceName() {
-		return "test";
+		return "se.mah.elis.impl.service.storage.test.mock.MockDataObject1";
 	}
 
 	@Override

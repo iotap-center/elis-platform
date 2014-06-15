@@ -120,7 +120,8 @@ public class MockDataObject2 implements ElisDataObject {
 		
 		MockDataObject2 mdo = (MockDataObject2) obj;
 		
-		return this.id == mdo.getDataId() && this.ownerid == mdo.getOwnerId() &&
-				this.baz == mdo.getBaz() && this.created == mdo.created();
+		return this.id.equals(mdo.getDataId()) &&
+				this.ownerid.equals(mdo.getOwnerId()) &&
+				this.baz == mdo.getBaz() && this.created.equals(mdo.created());
 	}
 }

@@ -43,12 +43,12 @@ public class DataObjectFactoryImpl implements DataObjectFactory {
 		if (map == null) {
 			map = new HashMap<String, DataObjectProvider>();
 			
-			map.put(provider.getRecipe().getServiceName(), provider);
+			map.put(provider.getRecipe().getDataType(), provider);
 			providers.put(provider.getRecipe().getDataType(), map);
 		} else {
-			DataObjectProvider p = map.get(provider.getRecipe().getServiceName());
+			DataObjectProvider p = map.get(provider.getRecipe().getDataType());
 			if (p == null) {
-				map.put(provider.getRecipe().getServiceName(), provider);
+				map.put(provider.getRecipe().getDataType(), provider);
 			}
 		}
 	}
@@ -63,15 +63,14 @@ public class DataObjectFactoryImpl implements DataObjectFactory {
 			if (map.size() == 1) {
 				providers.remove(provider.getRecipe().getDataType());
 			} else {
-				map.remove(provider.getRecipe().getServiceName());
+				map.remove(provider.getRecipe().getDataType());
 			}
 		}
 	}
 
 	@Override
-	public ElisDataObject build(String dataType, String serviceName,
-			Properties properties) throws DataInitalizationException {
-		log(LogService.LOG_INFO, "Attempting to build a " + dataType + " using " + serviceName);
+	public ElisDataObject build(String dataType, Properties properties) throws DataInitalizationException {
+		log(LogService.LOG_INFO, "Attempting to build a " + dataType);
 		
 		DataObjectProvider provider = null;
 		ElisDataObject edo = null;
@@ -82,18 +81,18 @@ public class DataObjectFactoryImpl implements DataObjectFactory {
 			throw new DataInitalizationException("No such data object provider");
 		}
 		
-		provider = map.get(serviceName);
+		provider = map.get(dataType);
 		
 		if (provider == null) {
-			log(LogService.LOG_ERROR, "Didn't find the " + serviceName + " service");
+			log(LogService.LOG_ERROR, "Didn't find the provider");
 			throw new DataInitalizationException("No such data object provider");
 		}
 		
 		try {
 			edo = provider.build(properties);
 		} catch (Exception e) {
-			log(LogService.LOG_ERROR, "Couldn't build a data object using the " + serviceName + " service.");
-			throw new DataInitalizationException(serviceName, "Probably malformed properties");
+			log(LogService.LOG_ERROR, "Couldn't build a data object of the " + dataType + " type.");
+			throw new DataInitalizationException(dataType, "Probably malformed properties");
 		}
 		
 		return edo;
@@ -115,13 +114,13 @@ public class DataObjectFactoryImpl implements DataObjectFactory {
 	}
 
 	@Override
-	public DataObjectRecipe getRecipe(String dataType, String systemName) {
+	public DataObjectRecipe getRecipe(String dataType) {
 		DataObjectRecipe recipe = null;
 		Map<String, DataObjectProvider> types = providers.get(dataType);
 		
 		if (types != null) {
 			try {
-				recipe = ((DataObjectProvider) types.get(systemName)).getRecipe();
+				recipe = ((DataObjectProvider) types.get(dataType)).getRecipe();
 			} catch (NullPointerException e) {}
 		}
 

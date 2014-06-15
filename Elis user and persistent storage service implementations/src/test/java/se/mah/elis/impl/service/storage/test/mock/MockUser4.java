@@ -19,13 +19,12 @@ public class MockUser4 implements User {
 	private UUID uuid;
 	private String stuff;
 	private DateTime created = DateTime.now();
-	private Collection<ElisDataObject> edos;
+	private Collection<ElisDataObject> edos = new LinkedList<ElisDataObject>();
 	
 	public MockUser4() {
 		uid = new MockUserIdentifier();
 		uuid = UUID.fromString("0000dead-beef-3333-4444-555566667777");
 		stuff = "";
-		edos = new LinkedList<ElisDataObject>();
 		
 		uid.identifies(this.getClass());
 	}
@@ -34,7 +33,6 @@ public class MockUser4 implements User {
 		uid = new MockUserIdentifier();
 		uuid = UUID.fromString("0000dead-beef-3333-4444-555566660000");
 		this.stuff = stuff;
-		edos = new LinkedList<ElisDataObject>();
 		
 		uid.identifies(this.getClass());
 	}
@@ -43,7 +41,6 @@ public class MockUser4 implements User {
 		uid = new MockUserIdentifier();
 		this.uuid = uuid;
 		this.stuff = stuff;
-		edos = new LinkedList<ElisDataObject>();
 		
 		uid.identifies(this.getClass());
 	}
@@ -81,7 +78,7 @@ public class MockUser4 implements User {
 		if (uuid != null) {
 			props.put("uuid", uuid);
 		}
-		props.put("service_name", "MockUser1");
+		props.put("service_name", "MockUser4");
 		props.putAll((new MockUserIdentifier()).getProperties());
 		if (stuff != null) {
 			props.put("stuff", stuff);
@@ -111,7 +108,9 @@ public class MockUser4 implements User {
 		uid = new MockUserIdentifier();
 		uuid = (UUID) props.get("uuid");
 		stuff = (String) props.get("stuff");
-		edos = (Collection) props.get("edos");
+		if (props.get("edos") != null) {
+			edos = (Collection) props.get("edos");
+		}
 		created = (DateTime) props.get("created");
 	}
 

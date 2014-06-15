@@ -67,7 +67,7 @@ public class DataObjectFactoryTest {
 		props.put("created", DateTime.now());
 
 		try {
-			edo = dof.build("MockDataObject1", "test", props);
+			edo = dof.build("se.mah.elis.impl.service.storage.test.mock.MockDataObject1", props);
 		} catch (DataInitalizationException e) {
 			fail("Data object should be initialized");
 		}
@@ -97,7 +97,7 @@ public class DataObjectFactoryTest {
 		props.put("created", DateTime.now());
 
 		try {
-			edo = dof.build("MockDataObject1", "test", props);
+			edo = dof.build("se.mah.elis.impl.service.storage.test.mock.MockDataObject1", props);
 		} catch (DataInitalizationException e) {
 			fail("Data object should be initialized");
 		}
@@ -115,13 +115,13 @@ public class DataObjectFactoryTest {
 		props.put("Whatever", (new Integer(42)).toString());
 
 		try {
-			dof.build("MockDataObject1", "test", props);
+			dof.build("se.mah.elis.impl.service.storage.test.mock.MockDataObject1", props);
 			fail("Data object should not be initialized");
 		} catch (DataInitalizationException e) {}
 	}
 
 	@Test
-	public void testBuildBadUserType() {
+	public void testBuildBadDataType() {
 		DataObjectProvider provider = new MockDataObject1Provider();
 		Properties props = new Properties();
 		
@@ -131,23 +131,7 @@ public class DataObjectFactoryTest {
 		props.put("bar", "batman");
 
 		try {
-			dof.build("BatmanObject", "test", props);
-			fail("Data object should not be initialized");
-		} catch (DataInitalizationException e) {}
-	}
-
-	@Test
-	public void testBuildBadServiceName() {
-		DataObjectProvider provider = new MockDataObject1Provider();
-		Properties props = new Properties();
-		
-		dof.registerProvider(provider);
-		
-		props.put("foo", 42);
-		props.put("bar", "batman");
-
-		try {
-			dof.build("MockDataObject1", "foobar", props);
+			dof.build("se.mah.elis.impl.service.storage.test.mock.BatmanObject", props);
 			fail("Data object should not be initialized");
 		} catch (DataInitalizationException e) {}
 	}
@@ -163,7 +147,7 @@ public class DataObjectFactoryTest {
 		props.put("bar", "horses");
 
 		try {
-			dof.build("MockDataObject1", "test", props);
+			dof.build("se.mah.elis.impl.service.storage.test.mock.MockDataObject1", props);
 			fail("Data object should not be initialized");
 		} catch (DataInitalizationException e) {}
 	}
@@ -213,11 +197,10 @@ public class DataObjectFactoryTest {
 		dof.registerProvider(new MockDataObject1Provider());
 		dof.registerProvider(new MockDataObject2Provider());
 		
-		recipe = dof.getRecipe("MockDataObject1", "test");
+		recipe = dof.getRecipe("se.mah.elis.impl.service.storage.test.mock.MockDataObject1");
 		
 		assertNotNull(recipe);
-		assertThat(recipe.getDataType()).matches("MockDataObject1");
-		assertThat(recipe.getServiceName()).matches("test");
+		assertThat(recipe.getDataType()).matches("se.mah.elis.impl.service.storage.test.mock.MockDataObject1");
 	}
 	
 	@Test
@@ -227,33 +210,20 @@ public class DataObjectFactoryTest {
 		dof.registerProvider(new MockDataObject1Provider());
 		dof.registerProvider(new MockDataObject2Provider());
 		
-		recipe = dof.getRecipe("MockDataObject2", "test");
+		recipe = dof.getRecipe("se.mah.elis.impl.service.storage.test.mock.MockDataObject2");
 		
 		assertNotNull(recipe);
-		assertThat(recipe.getDataType()).matches("MockDataObject2");
-		assertThat(recipe.getServiceName()).matches("test");
+		assertThat(recipe.getDataType()).matches("se.mah.elis.impl.service.storage.test.mock.MockDataObject2");
 	}
 	
 	@Test
-	public void testGetDataRecipeNoSuchUserType() {
+	public void testGetDataRecipeNoSuchDataType() {
 		DataObjectRecipe recipe = null;
 		
 		dof.registerProvider(new MockDataObject1Provider());
 		dof.registerProvider(new MockDataObject2Provider());
 		
-		recipe = dof.getRecipe("MoccaUser", "test");
-		
-		assertThat(recipe).isNull();
-	}
-	
-	@Test
-	public void testGetUserRecipeNoSuchSystemName() {
-		DataObjectRecipe recipe = null;
-		
-		dof.registerProvider(new MockDataObject1Provider());
-		dof.registerProvider(new MockDataObject2Provider());
-		
-		recipe = dof.getRecipe("MockDataObject1", "horse");
+		recipe = dof.getRecipe("se.mah.elis.impl.service.storage.test.mock.MoccaUser");
 		
 		assertThat(recipe).isNull();
 	}
