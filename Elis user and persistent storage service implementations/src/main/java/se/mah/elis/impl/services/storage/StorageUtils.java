@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -213,6 +214,8 @@ public class StorageUtils {
 			stmt.setByte(index, (Byte) value);
 		} else if (value instanceof DateTime) {
 			stmt.setTimestamp(index, new Timestamp(((DateTime) value).getMillis()));
+		} else if (value instanceof Collection) {
+			// Don't do anything, this is handled elsewhere
 		} else {
 			// TODO: Implement this, mofo!
 			Blob blob = connection.createBlob();
@@ -266,6 +269,8 @@ public class StorageUtils {
 				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` LIKE ?");
 			} else if (e.getValue() instanceof UUID) {
 				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = x?");
+			} else if (e.getValue() instanceof Collection) {
+				// Don't do anything, this is handled elsewhere
 			} else {
 				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = ?");
 			}
@@ -341,6 +346,8 @@ public class StorageUtils {
 					case Types.TIMESTAMP:
 						payload = new DateTime(rs.getTimestamp(i).getTime());
 						break;
+					default:
+						// Don't do anything at all here.
 				}
 				if (payload != null) {
 					addValueToProps(props, payload.getClass().getName(),
@@ -632,6 +639,172 @@ public class StorageUtils {
 	}
 	
 	/**
+	 * Returns a list of objects collected by a collecting object.
+	 * 
+	 * @param owner The collecting object.
+	 * @param collection The name of the collection.
+	 * @return A list of UUIDs, each representing a collected object.
+	 * @since 2.0
+	 */
+	public UUID[] listCollectedObjects(UUID owner, String collection) {
+		ArrayList<UUID> uuids = new ArrayList<UUID>();
+		
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		String query = "SELECT `collected_object` FROM collections " +
+				"WHERE `collecting_object` = x? AND collection_name = ?;";
+		
+		try {
+			stmt = connection.prepareStatement(query);
+			stmt.setString(1, StorageUtils.stripDashesFromUUID(owner));
+			stmt.setString(2, collection);
+			System.out.println(stmt);
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				uuids.add(bytesToUUID(rs.getBytes(1)));
+			}
+		} catch (SQLException e) {
+			log(LogService.LOG_WARNING, StorageImpl.STORAGE_ERROR + ": Couldn't fetch from collections", e);
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
+		}
+		
+		return uuids.toArray(new UUID[0]);
+	}
+	
+	/**
+	 * Deletes collections belonging to a User or ElisDataObject.
+	 * 
+	 * @param owner The UUID belonging to the collecting object.
+	 * @since 2.0
+	 */
+	public void deleteCollections(UUID owner) {
+		PreparedStatement stmt = null;
+		String query = "DELETE FROM collections WHERE `collecting_object` = x? OR `collected_object` = x?;";
+		
+		try {
+			connection.setAutoCommit(false);
+			stmt = connection.prepareStatement(query);
+			stmt.setString(1, StorageUtils.stripDashesFromUUID(owner));
+			stmt.setString(2, StorageUtils.stripDashesFromUUID(owner));
+			stmt.executeUpdate();
+			connection.commit();
+		} catch (SQLException e) {
+			log(LogService.LOG_WARNING, StorageImpl.STORAGE_ERROR + ": Couldn't remove stuff from collections", e);
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
+		}
+	}
+	
+	/**
+	 * Deletes collections belonging to a User or ElisDataObject.
+	 * 
+	 * @param owner The UUID belonging to the collecting object.
+	 * @since 2.0
+	 */
+	public void deleteFromCollections(UUID owner) {
+		PreparedStatement stmt = null;
+		String query = "DELETE FROM collections WHERE `collected_object` = x? OR `collected_object` = x?;";
+		
+		try {
+			connection.setAutoCommit(false);
+			stmt = connection.prepareStatement(query);
+			stmt.setString(1, StorageUtils.stripDashesFromUUID(owner));
+			stmt.setString(2, StorageUtils.stripDashesFromUUID(owner));
+			stmt.executeUpdate();
+			connection.commit();
+		} catch (SQLException e) {
+			log(LogService.LOG_WARNING, StorageImpl.STORAGE_ERROR + ": Couldn't remove stuff from collections", e);
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {}
+		}
+	}
+	
+	/**
+	 * Updates a collection, i.e. removes and adds references to objects in
+	 * said collection.
+	 * 
+	 * @param owner The owning object's id number.
+	 * @param set The collection that we want to update.
+	 * @param name The name of the owning object's field referencing the
+	 * 		collection.
+	 * @since 2.0
+	 */
+	public void updateCollection(UUID owner, Collection<UUID> set, String name) {
+		Statement stmt = null;
+		String ownerId = owner.toString().replace("-", "");
+		
+		// First of all: If the set is empty, then we can simply throw the
+		// whole collection away
+		if (set.size() == 0) {
+			// No objects in collection. Let the mayhem begin!
+			String delete = "DELETE FROM collections WHERE " +
+					"collecting_object = x'" + ownerId + "' " +
+					"AND collection_name = '" + name +  "';";
+			
+			try {
+				stmt = connection.createStatement();
+				stmt.execute(delete);
+			} catch (SQLException e) {
+			} finally {
+				try {
+					stmt.close();
+				} catch (SQLException e) {}
+			}
+		} else {
+			// Not empty. Let the pruning and blossom begin!
+			
+			// First, remove all objects not present in the set
+			String trim = "DELETE FROM collections WHERE " +
+					"collecting_object = x'" + ownerId + "' " +
+					"AND collection_name = '" + name +  "' " +
+					"AND collected_object NOT IN (";
+			for (UUID uuid : set) {
+				trim += "x'" + uuid.toString().replace("-", "") + "', ";
+			}
+			trim = trim.substring(0, trim.length() - 2);
+			trim +=	");";
+			
+			try {
+				stmt = connection.createStatement();
+				stmt.execute(trim);
+			} catch (SQLException e) {
+			} finally {
+				try {
+					stmt.close();
+				} catch (SQLException e) {}
+			}
+			
+			// Then, add all new objects if they don't exist
+			String insert = "INSERT IGNORE INTO collections " +
+					"(collecting_object, collected_object, collection_name) " +
+					"VALUES ";
+			for (UUID uuid : set) {
+				insert += "(x'" + ownerId + "', x'" + uuid.toString().replace("-", "") +
+						"', '" + name + "'), ";
+			}
+			insert = insert.substring(0, insert.length() - 2);
+			insert += ";";
+			
+			try {
+				stmt = connection.createStatement();
+				stmt.execute(insert);
+			} catch (SQLException e) {
+			} finally {
+				try {
+					stmt.close();
+				} catch (SQLException e) {}
+			}
+		}
+	}
+	
+	/**
 	 * Removes dashes from a UUID string for inclusion in MySQL queries.
 	 * 
 	 * @param uuid The UUID to prepare for MySQL usage.
@@ -857,6 +1030,8 @@ public class StorageUtils {
 		} else if (clazz.equals(byte[].class.getName()) &&
 				((byte[]) value).length == 16) {
 			props.put(colName, bytesToUUID((byte[]) value));
+		} else if (clazz.equals(Collection.class.getName())) {
+			// Don't do anything, this is done elsewhere
 		} else {
 			props.put(colName, value);
 		}

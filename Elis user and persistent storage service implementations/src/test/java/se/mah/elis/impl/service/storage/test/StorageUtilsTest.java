@@ -142,6 +142,27 @@ public class StorageUtilsTest {
 		
 		return count;
 	}
+	
+	private int countObjectsInCollection(UUID collector, String collection) {
+		Statement statement;
+		int count = -1;
+		
+		try {
+			statement = connection.createStatement();
+			String query = "SELECT count(*) FROM collections WHERE " +
+					"collecting_object = x'" + collector.toString().replace("-", "") + "' AND " +
+					"collection_name = '" + collection + "';";
+			ResultSet rs = statement.executeQuery(query);
+			rs.next();
+			count = rs.getInt(1);
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return count;
+	}
 
 	@Test
 	public void testStorageUtils() {
@@ -1485,6 +1506,112 @@ public class StorageUtilsTest {
 		utils.deleteFromCollections(uuid);
 		
 		assertEquals(5, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testUpdateCollectionNoChanges() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42"));
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13"));
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(5, countObjectsInCollections());
+		assertEquals(2, countObjectsInCollection(uuid, "collection1"));
+	}
+	
+	@Test
+	public void testUpdateCollectionAddOne() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42"));
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13"));
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e05")); // <- new
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(6, countObjectsInCollections());
+		assertEquals(3, countObjectsInCollection(uuid, "collection1"));
+	}
+	
+	@Test
+	public void testUpdateCollectionAddTwo() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42"));
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13"));
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e05")); // <- new
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e17")); // <- new
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(7, countObjectsInCollections());
+		assertEquals(4, countObjectsInCollection(uuid, "collection1"));
+	}
+	
+	@Test
+	public void testUpdateCollectionRemoveOne() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42"));
+		// collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13")); <- not added, i.e. removed
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(4, countObjectsInCollections());
+		assertEquals(1, countObjectsInCollection(uuid, "collection1"));
+	}
+	
+	@Test
+	public void testUpdateCollectionRemoveTwo() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		// collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42")); <- not added, i.e. removed
+		// collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13")); <- not added, i.e. removed
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(3, countObjectsInCollections());
+		assertEquals(0, countObjectsInCollection(uuid, "collection1"));
+	}
+	
+	@Test
+	public void testUpdateCollectionRemoveOneAddOne() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42"));
+		// collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13")); <- not added, i.e. removed
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e05")); // <- new
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(5, countObjectsInCollections());
+		assertEquals(2, countObjectsInCollection(uuid, "collection1"));
 	}
 	
 	@Test
