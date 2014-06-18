@@ -78,7 +78,7 @@ public class MockUser4 implements User {
 		if (uuid != null) {
 			props.put("uuid", uuid);
 		}
-		props.put("service_name", "MockUser4");
+		props.put("service_name", "test");
 		props.putAll((new MockUserIdentifier()).getProperties());
 		if (stuff != null) {
 			props.put("stuff", stuff);
@@ -116,7 +116,7 @@ public class MockUser4 implements User {
 
 	@Override
 	public String getServiceName() {
-		return "";
+		return "test";
 	}
 
 	@Override
