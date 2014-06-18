@@ -185,10 +185,12 @@ public class StorageUtils {
 	 * @param value The value to be analyzed and added to the statement.
 	 * @param index The position of the parameter in the statement.
 	 * @param useLike Set to true to search for string likeness.
+	 * @return Returns the value of the next index. If the parameter wasn't
+	 * 		set, then the current index is returned.
 	 * @throws SQLException When the parameter couldn't be set.
 	 * @since 2.0
 	 */
-	public void addParameter(PreparedStatement stmt, Object value, int index,
+	public int addParameter(PreparedStatement stmt, Object value, int index,
 			boolean useLike) throws SQLException {
 		if (value == null) {
 			stmt.setNull(index, Types.NULL);
@@ -216,10 +218,14 @@ public class StorageUtils {
 			stmt.setTimestamp(index, new Timestamp(((DateTime) value).getMillis()));
 		} else if (value instanceof Collection) {
 			// Don't do anything, this is handled elsewhere
+			return index;
 		} else {
 			// TODO: Implement this, mofo!
 			Blob blob = connection.createBlob();
+			return index;
 		}
+		
+		return index + 1;
 	}
 
 	/**

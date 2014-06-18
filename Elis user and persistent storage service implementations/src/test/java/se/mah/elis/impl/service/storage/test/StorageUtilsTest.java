@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -468,18 +469,20 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, 1, 0, false);
-			utils.addParameter(stmt, "horses", 1, false);
+			index = utils.addParameter(stmt, 1, index, false);
+			index = utils.addParameter(stmt, "horses", index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Int: 1", (String) objectStore.get(0));
 		assertEquals("String: horses", (String) objectStore.get(1));
+		assertEquals(2, index);
 	}
 
 	@Test
@@ -507,16 +510,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, null, 0, false);
+			index = utils.addParameter(stmt, null, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Null: 0", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -526,16 +531,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, true, 0, false);
+			index = utils.addParameter(stmt, true, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Boolean: true", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -545,16 +552,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (byte) 12, 0, false);
+			index = utils.addParameter(stmt, (byte) 12, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Byte: 12", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -564,16 +573,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, 42, 0, false);
+			index = utils.addParameter(stmt, 42, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Int: 42", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -583,16 +594,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (long) 42, 0, false);
+			index = utils.addParameter(stmt, (long) 42, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Long: 42", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -602,16 +615,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (float) 4.2, 0, false);
+			index = utils.addParameter(stmt, (float) 4.2, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Float: 4.2", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -621,16 +636,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (double) 4.2, 0, false);
+			index = utils.addParameter(stmt, (double) 4.2, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Double: 4.2", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -640,16 +657,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, "horses", 0, false);
+			index = utils.addParameter(stmt, "horses", index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("String: horses", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -659,16 +678,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, "horses", 0, true);
+			index = utils.addParameter(stmt, "horses", index, true);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("String: %horses%", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -680,16 +701,18 @@ public class StorageUtilsTest {
 		java.sql.Timestamp ts = new java.sql.Timestamp(dt.getMillis());
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, dt, 0, false);
+			index = utils.addParameter(stmt, dt, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Timestamp: " + ts, (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -703,6 +726,7 @@ public class StorageUtilsTest {
 		String expected = StorageUtils.stripDashesFromUUID(uuid);
 		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
 		byte[] bytes = null;
+		int index = 0;
 
 		bb.putLong(uuid.getMostSignificantBits());
 		bb.putLong(uuid.getLeastSignificantBits());
@@ -711,12 +735,35 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, uuid, 0, false);
+			index = utils.addParameter(stmt, uuid, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("String: " + expected, (String) objectStore.get(0));
+		assertEquals(1, index);
+	}
+
+	@Test
+	public void testAddParameterCollection() {
+		MockConnection connection = new MockConnection();
+		StorageUtils utils = new StorageUtils(connection);
+		ArrayList<Object> objectStore = connection.getObjectStore();
+		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
+		PreparedStatement stmt = null;
+		Collection collection = new ArrayList();
+		int index = 0;
+		
+		try {
+			stmt = connection.prepareStatement(query);
+
+			index = utils.addParameter(stmt, collection, index, false);
+		} catch (SQLException e) {
+			// This should NEVER happen with a mock object.
+			fail("This shouldn't happen");
+		}
+		
+		assertEquals(0, index);
 	}
 
 //	@Test
