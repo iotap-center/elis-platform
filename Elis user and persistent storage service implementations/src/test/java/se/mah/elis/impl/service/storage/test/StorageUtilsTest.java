@@ -349,6 +349,24 @@ public class StorageUtilsTest {
 	}
 
 	@Test
+	public void testGenerateQMarksWithCollection() {
+		Properties props = new OrderedProperties();
+		String expected, actual;
+		
+		props.put("col 1", 42);
+		props.put("no col", new ArrayList());
+		props.put("col 2", "Batman!");
+		props.put("col 3", false);
+		props.put("col 4", 1.3);
+		props.put("col 5", UUID.randomUUID());
+		
+		expected = "?, ?, ?, ?, x?";
+		actual = StorageUtils.generateQMarks(props);
+		
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void testGenerateQMarksOnlyOne() {
 		Properties props = new OrderedProperties();
 		String expected, actual;

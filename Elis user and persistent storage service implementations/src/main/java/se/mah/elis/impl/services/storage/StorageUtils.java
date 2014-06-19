@@ -21,9 +21,11 @@ import java.util.UUID;
 import org.joda.time.DateTime;
 import org.osgi.service.log.LogService;
 
+import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.data.Identifier;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.storage.exceptions.StorageException;
+import se.mah.elis.services.users.AbstractUser;
 import se.mah.elis.services.users.UserIdentifier;
 
 import org.apache.commons.codec.binary.Hex;
@@ -141,13 +143,15 @@ public class StorageUtils {
 		
 		while (entries.hasNext()) {
 			entry = entries.next();
-			if (keys.length() > 0) {
-				keys.append(", ");
-			}
-			if (entry.getValue() instanceof UUID) {
-				keys.append("x?");
-			} else {
-				keys.append("?");
+			if (!(entry.getValue() instanceof Collection)) {
+				if (keys.length() > 0) {
+					keys.append(", ");
+				}
+				if (entry.getValue() instanceof UUID) {
+					keys.append("x?");
+				} else {
+					keys.append("?");
+				}
 			}
 		}
 		
@@ -266,19 +270,24 @@ public class StorageUtils {
 	private static String pairUp(Properties properties, String connector,
 			boolean useLike) {
 		StringBuffer pairs = new StringBuffer();
+		boolean added = false;
 		
 		for (Entry<?, ?> e : properties.entrySet()) {
-			if (pairs.length() > 0) {
+			if (added) {
 				pairs.append(connector);
 			}
 			if (e.getValue() instanceof String && useLike) {
 				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` LIKE ?");
+				added = true;
 			} else if (e.getValue() instanceof UUID) {
 				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = x?");
+				added = true;
 			} else if (e.getValue() instanceof Collection) {
 				// Don't do anything, this is handled elsewhere
+				added = false;
 			} else {
 				pairs.append("`" + mysqlifyName((String) e.getKey()) + "` = ?");
+				added = true;
 			}
 		}
 		
@@ -664,7 +673,6 @@ public class StorageUtils {
 			stmt = connection.prepareStatement(query);
 			stmt.setString(1, StorageUtils.stripDashesFromUUID(owner));
 			stmt.setString(2, collection);
-			System.out.println(stmt);
 			rs = stmt.executeQuery();
 			while (rs.next()) {
 				uuids.add(bytesToUUID(rs.getBytes(1)));
@@ -771,8 +779,20 @@ public class StorageUtils {
 					"collecting_object = x'" + ownerId + "' " +
 					"AND collection_name = '" + name +  "' " +
 					"AND collected_object NOT IN (";
-			for (UUID uuid : set) {
-				trim += "x'" + uuid.toString().replace("-", "") + "', ";
+			UUID uuid = null;
+			for (Object o : set) {
+				if (o instanceof AbstractUser) {
+					uuid = ((AbstractUser) o).getUserId();
+				} else if (o instanceof ElisDataObject) {
+					uuid = ((ElisDataObject) o).getDataId();
+				} else if (o instanceof UUID) {
+					uuid = (UUID) o;
+				} else {
+					uuid = null;
+				}
+				if (uuid != null) {
+					trim += "x'" + uuid.toString().replace("-", "") + "', ";
+				}
 			}
 			trim = trim.substring(0, trim.length() - 2);
 			trim +=	");";
@@ -791,9 +811,21 @@ public class StorageUtils {
 			String insert = "INSERT IGNORE INTO collections " +
 					"(collecting_object, collected_object, collection_name) " +
 					"VALUES ";
-			for (UUID uuid : set) {
-				insert += "(x'" + ownerId + "', x'" + uuid.toString().replace("-", "") +
-						"', '" + name + "'), ";
+			for (Object o : set) {
+				if (o instanceof AbstractUser) {
+					uuid = ((AbstractUser) o).getUserId();
+				} else if (o instanceof ElisDataObject) {
+					uuid = ((ElisDataObject) o).getDataId();
+				} else if (o instanceof UUID) {
+					uuid = (UUID) o;
+				} else {
+					uuid = null;
+				}
+				if (uuid != null) {
+					insert += "(x'" + ownerId + "', x'" +
+							uuid.toString().replace("-", "") +
+							"', '" + name + "'), ";
+				}
 			}
 			insert = insert.substring(0, insert.length() - 2);
 			insert += ";";
