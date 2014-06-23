@@ -1574,7 +1574,7 @@ public class StorageImplTest {
 
 	@Test
 	public void testInsertAbstractUserHasNoServiceName() {
-		Storage storage = new StorageImpl();
+		Storage storage = new StorageImpl(connection);
 		MockUser3 mu = new MockUser3(null, "Foo");
 		
 		try {
