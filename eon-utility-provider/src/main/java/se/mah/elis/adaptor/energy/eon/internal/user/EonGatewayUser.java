@@ -81,7 +81,8 @@ public class EonGatewayUser implements GatewayUser {
 		
 		if (uuid != null)
 			props.put("uuid", uuid);
-		props.put("identifier", gatewayUserIdentifier);
+//		props.put("identifier", gatewayUserIdentifier);
+		props.putAll(gatewayUserIdentifier.getPropertiesTemplate());
 		props.put("gateway", gateway.getId());
 		props.put("created", created);
 		props.put("service_name", getServiceName());
@@ -93,7 +94,8 @@ public class EonGatewayUser implements GatewayUser {
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
 		props.put("uuid", uuid);
-		props.put("identifier", gatewayUserIdentifier);
+//		props.put("identifier", gatewayUserIdentifier);
+		props.putAll(gatewayUserIdentifier.getPropertiesTemplate());
 		props.put("gateway", new Integer(0));
 		props.put("created", created);
 		props.put("service_name", "32");
