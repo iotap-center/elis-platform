@@ -38,7 +38,7 @@ public class AnotherMockUser implements User {
 	}
 	
 	public AnotherMockUser(UUID uuid, String stuff, int whatever) {
-		this.uid = new MockUserIdentifier();
+		this.uid = new AnotherMockUserIdentifier();
 		this.uuid = uuid;
 		this.stuff = stuff;
 		this.whatever = whatever;
@@ -104,7 +104,7 @@ public class AnotherMockUser implements User {
 
 		props.put("uuid", uuid);
 		props.put("service_name", "9");
-		props.putAll((new MockUserIdentifier()).getPropertiesTemplate());
+		props.putAll((new AnotherMockUserIdentifier()).getPropertiesTemplate());
 		props.put("stuff", "32");
 		props.put("whatever", 1);
 		props.put("created", created);
@@ -114,7 +114,7 @@ public class AnotherMockUser implements User {
 
 	@Override
 	public void populate(Properties props) {
-		uid = new MockUserIdentifier((Integer) props.get("id_number"),
+		uid = new AnotherMockUserIdentifier((Integer) props.get("id_number"),
 									 (String) props.getProperty("username"),
 									 (String) props.getProperty("password"));
 		uuid = (UUID) props.get("uuid");
