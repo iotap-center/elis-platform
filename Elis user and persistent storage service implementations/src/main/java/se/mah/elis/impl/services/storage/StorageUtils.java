@@ -699,12 +699,10 @@ public class StorageUtils {
 		String query = "DELETE FROM collections WHERE `collecting_object` = x? OR `collected_object` = x?;";
 		
 		try {
-			connection.setAutoCommit(false);
 			stmt = connection.prepareStatement(query);
 			stmt.setString(1, StorageUtils.stripDashesFromUUID(owner));
 			stmt.setString(2, StorageUtils.stripDashesFromUUID(owner));
 			stmt.executeUpdate();
-			connection.commit();
 		} catch (SQLException e) {
 			log(LogService.LOG_WARNING, StorageImpl.STORAGE_ERROR + ": Couldn't remove stuff from collections", e);
 		} finally {
@@ -725,12 +723,10 @@ public class StorageUtils {
 		String query = "DELETE FROM collections WHERE `collected_object` = x? OR `collected_object` = x?;";
 		
 		try {
-			connection.setAutoCommit(false);
 			stmt = connection.prepareStatement(query);
 			stmt.setString(1, StorageUtils.stripDashesFromUUID(owner));
 			stmt.setString(2, StorageUtils.stripDashesFromUUID(owner));
 			stmt.executeUpdate();
-			connection.commit();
 		} catch (SQLException e) {
 			log(LogService.LOG_WARNING, StorageImpl.STORAGE_ERROR + ": Couldn't remove stuff from collections", e);
 		} finally {

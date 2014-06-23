@@ -280,9 +280,6 @@ public class StorageImpl implements Storage, ManagedService {
 			int i = 1;
 			
 			try {
-//				// Let's take command of the commit ship ourselves.
-//				// Forward, mateys!
-//				connection.setAutoCommit(false);
 				stmt = connection.prepareStatement(query);
 				
 				// Add the parameters to the query. We don't know what we'll
@@ -294,7 +291,6 @@ public class StorageImpl implements Storage, ManagedService {
 				
 				// Run the statement and end the transaction
 				stmt.executeUpdate();
-//				connection.commit();
 				
 				// The bunch of code above didn't take care of collections.
 				// This is where we do that.
@@ -325,7 +321,6 @@ public class StorageImpl implements Storage, ManagedService {
 			} finally {
 				try {
 					stmt.close();
-//					connection.commit();
 				} catch (SQLException e) {}
 			}
 		} else {
@@ -344,7 +339,13 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void insert(ElisDataObject[] data) throws StorageException {
-		insert(data, false);
+		try {
+			connection.setAutoCommit(false);
+			insert(data, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 	
 	/**
@@ -379,7 +380,13 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void insert(AbstractUser user) throws StorageException {
-		insert(user, false);
+		try {
+			connection.setAutoCommit(false);
+			insert(user, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 
 	/**
@@ -452,9 +459,6 @@ public class StorageImpl implements Storage, ManagedService {
 					+	"(x?, ?, PASSWORD(?), ?, ?, ?, ?)";
 				
 				try {
-					// Let's take command of the commit ship ourselves.
-					// Forward, mateys!
-					connection.setAutoCommit(false);
 					stmt = connection.prepareStatement(query);
 					
 					// Has this user been stored before?
@@ -469,7 +473,6 @@ public class StorageImpl implements Storage, ManagedService {
 					stmt.setString(6, pu.getEmail());
 					stmt.setTimestamp(7, new Timestamp(pu.created().getMillis()));
 					stmt.executeUpdate();
-					connection.commit();
 					
 					utils.pairUUIDWithTable(pu.getUserId(), tableName);
 				} catch (SQLException e) {
@@ -522,9 +525,6 @@ public class StorageImpl implements Storage, ManagedService {
 						"` VALUES (" + StorageUtils.generateQMarks(userProps) + ");";
 
 				try {
-					// Let's take command of the commit ship ourselves.
-					// Forward, mateys!
-					connection.setAutoCommit(false);
 					stmt = connection.prepareStatement(query);
 				
 					// Add the parameters to the query. We don't know what
@@ -536,7 +536,6 @@ public class StorageImpl implements Storage, ManagedService {
 					
 					// Run the statement and end the transaction
 					stmt.executeUpdate();
-					connection.commit();
 					
 					// The bunch of code above didn't take care of collections.
 					// This is where we do that.
@@ -581,7 +580,13 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void insert(AbstractUser[] users) throws StorageException {
-		insert(users, false);
+		try {
+			connection.setAutoCommit(false);
+			insert(users, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 	
 	/**
@@ -617,7 +622,13 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void update(ElisDataObject data) throws StorageException {
-		update(data, false);
+		try {
+			connection.setAutoCommit(false);
+			update(data, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 
 	/**
@@ -664,9 +675,6 @@ public class StorageImpl implements Storage, ManagedService {
 			int i = 1;
 			
 			try {
-				// Let's take command of the commit ship ourselves.
-				// Forward, mateys!
-				connection.setAutoCommit(false);
 				stmt = connection.prepareStatement(query);
 				
 				// Add the parameters to the query. We don't know what we'll
@@ -680,7 +688,6 @@ public class StorageImpl implements Storage, ManagedService {
 				
 				// Run the statement and end the transaction
 				updated = stmt.executeUpdate() > 0;
-				connection.commit();
 				
 				// The bunch of code above didn't take care of collections.
 				// This is where we do that.
@@ -724,7 +731,13 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void update(ElisDataObject[] data) throws StorageException {
-		update(data, false);
+		try {
+			connection.setAutoCommit(false);
+			update(data, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 
 	/**
@@ -759,7 +772,13 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void update(AbstractUser user) throws StorageException {
-		update(user, false);
+		try {
+			connection.setAutoCommit(false);
+			update(user, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 
 	/**
@@ -832,9 +851,6 @@ public class StorageImpl implements Storage, ManagedService {
 				}
 				
 				try {
-					// Let's take command of the commit ship ourselves.
-					// Forward, mateys!
-					connection.setAutoCommit(false);
 					stmt = connection.prepareStatement(query);
 					
 					stmt.setString(1, pid.getUsername());
@@ -846,7 +862,6 @@ public class StorageImpl implements Storage, ManagedService {
 						stmt.setString(5, pid.getPassword());
 					}
 					stmt.executeUpdate();
-					connection.commit();
 				} catch (SQLException e) {
 					// Try to create a non-existing table, but only once.
 					if (e.getErrorCode() == 1146 && !finalRun) {
@@ -893,9 +908,6 @@ public class StorageImpl implements Storage, ManagedService {
 						StorageUtils.stripDashesFromUUID(((User) user).getUserId()) + "';";
 
 				try {
-					// Let's take command of the commit ship ourselves.
-					// Forward, mateys!
-					connection.setAutoCommit(false);
 					stmt = connection.prepareStatement(query);
 				
 					// Add the parameters to the query. We don't know what
@@ -948,7 +960,13 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void update(AbstractUser[] users) throws StorageException {
-		update(users, false);
+		try {
+			connection.setAutoCommit(false);
+			update(users, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 
 	/**
@@ -984,7 +1002,13 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void delete(ElisDataObject data) throws StorageException {
-		delete(data, false);
+		try {
+			connection.setAutoCommit(false);
+			delete(data, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 	
 	/**
@@ -1021,16 +1045,12 @@ public class StorageImpl implements Storage, ManagedService {
 					StorageUtils.stripDashesFromUUID(uuid) + "';";
 			
 			try {
-				// Let's take command of the commit ship ourselves.
-				// Forward, mateys!
-				connection.setAutoCommit(false);
 				stmt = connection.prepareStatement(query);
 				
 				// Run the statement and end the transaction
 				if (stmt.executeUpdate() > 0) {
 					utils.freeUUID(uuid);
 				}
-				connection.commit();
 				
 				// The bunch of code above didn't take care of collections.
 				// This is where we do that.
@@ -1058,7 +1078,13 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void delete(ElisDataObject[] data) throws StorageException {
-		delete(data, false);
+		try {
+			connection.setAutoCommit(false);
+			delete(data, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 
 	/**
@@ -1093,7 +1119,13 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void delete(AbstractUser user) throws StorageException {
-		delete(user, false);
+		try {
+			connection.setAutoCommit(false);
+			delete(user, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 
 	/**
@@ -1167,7 +1199,13 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void delete(AbstractUser[] users) throws StorageException {
-		delete(users, false);
+		try {
+			connection.setAutoCommit(false);
+			delete(users, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 
 	/**
@@ -1225,12 +1263,8 @@ public class StorageImpl implements Storage, ManagedService {
 			try {
 				DeleteQuery dq = new DeleteQuery(query);
 				
-				// Let's take command of the commit ship ourselves.
-				// Forward, mateys!
-				connection.setAutoCommit(false);
 				stmt = connection.createStatement();
 				stmt.execute(dq.compile());
-				connection.commit();
 			} catch (SQLException e) {
 				log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't run delete query", e);
 				throw new StorageException(STORAGE_ERROR);
@@ -1381,13 +1415,9 @@ public class StorageImpl implements Storage, ManagedService {
 					StorageUtils.stripDashesFromUUID(id) + "';";
 			
 			try {
-				// Let's take command of the commit ship ourselves.
-				// Forward, mateys!
-				connection.setAutoCommit(false);
 				stmt = connection.createStatement();
 				rs = stmt.executeQuery(query);
 				props = utils.resultSetRowToProperties(rs);
-				connection.commit();
 				
 				if (props.containsKey("service_name")) {
 					// Not a platform user
@@ -1476,9 +1506,6 @@ public class StorageImpl implements Storage, ManagedService {
 			}
 			
 			try {
-				// Let's take command of the commit ship ourselves.
-				// Forward, mateys!
-				connection.setAutoCommit(false);
 				stmt = connection.prepareStatement(query);
 				
 				stmt.setString(1, username);
@@ -1486,7 +1513,6 @@ public class StorageImpl implements Storage, ManagedService {
 				
 				rs = stmt.executeQuery();
 				props = utils.resultSetRowToProperties(rs);
-				connection.commit();
 				
 				// Create a PlatformUser object
 				user = userFactory.build(props);
@@ -1590,14 +1616,10 @@ public class StorageImpl implements Storage, ManagedService {
 
 			// Build query from identifier
 			try {
-				// Let's take command of the commit ship ourselves.
-				// Forward, mateys!
-				connection.setAutoCommit(false);
 				stmt = connection.createStatement();
 				Properties props =
 						utils.resultSetRowToProperties(stmt.executeQuery(query));
 				user.populate(props);
-				connection.commit();
 			} catch (SQLException | NullPointerException e) {
 				// No user type
 				log(LogService.LOG_WARNING, STORAGE_ERROR + ": " + user, e);
@@ -1635,9 +1657,6 @@ public class StorageImpl implements Storage, ManagedService {
 		query += " ORDER BY `created` ASC;";
 		
 		try {
-			// Let's take command of the commit ship ourselves.
-			// Forward, mateys!
-			connection.setAutoCommit(false);
 			stmt = connection.prepareStatement(query);
 		
 			// Add the parameters to the query. We don't know what
@@ -1657,8 +1676,6 @@ public class StorageImpl implements Storage, ManagedService {
 				user.populate((Properties) props.get(i));
 				users.add(user);
 			}
-
-			connection.commit();
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
 			// Well, that didn't work too well. Just return an empty array,
 			// i.e. do nothing here.
@@ -1692,9 +1709,6 @@ public class StorageImpl implements Storage, ManagedService {
 		query += " ORDER BY `created` ASC;";
 		
 		try {
-			// Let's take command of the commit ship ourselves.
-			// Forward, mateys!
-			connection.setAutoCommit(false);
 			stmt = connection.prepareStatement(query);
 		
 			// Add the parameters to the query. We don't know what
@@ -1712,8 +1726,6 @@ public class StorageImpl implements Storage, ManagedService {
 			for (i = 0; i < props.size(); i++) {
 				users.add((PlatformUser) userFactory.build((Properties) props.get(i)));
 			}
-
-			connection.commit();
 		} catch (SQLException | UserInitalizationException e) {
 			// Well, that didn't work too well. Just return an empty array,
 			// i.e. do nothing here.
@@ -1763,9 +1775,6 @@ public class StorageImpl implements Storage, ManagedService {
 			query.setTranslator(new MySQLQueryTranslator());
 			
 			try {
-				// Let's take command of the commit ship ourselves.
-				// Forward, mateys!
-				connection.setAutoCommit(false);
 				stmt = connection.createStatement();
 				
 				// Fetch the results and convert them to readable objects.
@@ -1794,9 +1803,6 @@ public class StorageImpl implements Storage, ManagedService {
 					}
 					objs.add(props);
 				}
-				
-				// Close the database stuff gracefully
-				connection.commit();
 				
 				// Aaand we're done. Finish this up, then move on.
 				result = new ResultSetImpl(clazz, objs.toArray());
