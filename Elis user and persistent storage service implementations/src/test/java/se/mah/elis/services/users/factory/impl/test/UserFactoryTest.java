@@ -311,8 +311,8 @@ public class UserFactoryTest {
 		
 		try {
 			pu = uf.build(props);
-			fail("User shouldn't have been initialized");
 		} catch (UserInitalizationException e) {
+			fail("User should have been initialized");
 		}
 	}
 	

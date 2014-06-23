@@ -28,13 +28,13 @@ public class MockDataObject2 implements ElisDataObject {
 	}
 	
 	public MockDataObject2(UUID ownerid, float baz) {
-		this.id = null;
+		this.id = UUID.randomUUID();
 		this.ownerid = ownerid;
 		this.baz = baz;
 	}
 	
 	public MockDataObject2(float baz) {
-		this.id = null;
+		this.id = UUID.randomUUID();
 		this.ownerid = null;
 		this.baz = baz;
 	}
@@ -122,6 +122,7 @@ public class MockDataObject2 implements ElisDataObject {
 		
 		return this.id.equals(mdo.getDataId()) &&
 				this.ownerid.equals(mdo.getOwnerId()) &&
-				this.baz == mdo.getBaz() && this.created.equals(mdo.created());
+				this.baz == mdo.getBaz() &&
+				this.created.getMillis() / 1000 == mdo.created().getMillis() / 1000;
 	}
 }

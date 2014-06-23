@@ -751,7 +751,8 @@ public class StorageUtils {
 	 * @since 2.0
 	 */
 	public void updateCollection(UUID owner, Collection<UUID> set, String name) {
-		Statement stmt = null;
+		PreparedStatement stmt = null;
+		PreparedStatement stmt2 = null;
 		String ownerId = owner.toString().replace("-", "");
 		
 		// First of all: If the set is empty, then we can simply throw the
@@ -759,12 +760,14 @@ public class StorageUtils {
 		if (set.size() == 0) {
 			// No objects in collection. Let the mayhem begin!
 			String delete = "DELETE FROM collections WHERE " +
-					"collecting_object = x'" + ownerId + "' " +
-					"AND collection_name = '" + name +  "';";
+					"collecting_object = x? " +
+					"AND collection_name = ?;";
 			
 			try {
-				stmt = connection.createStatement();
-				stmt.execute(delete);
+				stmt = connection.prepareStatement(delete);
+				stmt.setString(1, ownerId);
+				stmt.setString(2, name);
+				stmt.executeUpdate();
 			} catch (SQLException e) {
 			} finally {
 				try {
@@ -773,13 +776,13 @@ public class StorageUtils {
 			}
 		} else {
 			// Not empty. Let the pruning and blossom begin!
+			UUID uuid = null;
 			
 			// First, remove all objects not present in the set
 			String trim = "DELETE FROM collections WHERE " +
 					"collecting_object = x'" + ownerId + "' " +
 					"AND collection_name = '" + name +  "' " +
 					"AND collected_object NOT IN (";
-			UUID uuid = null;
 			for (Object o : set) {
 				if (o instanceof AbstractUser) {
 					uuid = ((AbstractUser) o).getUserId();
@@ -798,13 +801,12 @@ public class StorageUtils {
 			trim +=	");";
 			
 			try {
-				stmt = connection.createStatement();
-				stmt.execute(trim);
+				stmt = connection.prepareStatement(trim);
+				stmt.executeUpdate();
 			} catch (SQLException e) {
-			} finally {
 				try {
 					stmt.close();
-				} catch (SQLException e) {}
+				} catch (SQLException e1) {}
 			}
 			
 			// Then, add all new objects if they don't exist
@@ -831,13 +833,14 @@ public class StorageUtils {
 			insert += ";";
 			
 			try {
-				stmt = connection.createStatement();
-				stmt.execute(insert);
+				stmt2 = connection.prepareStatement(insert);
+				int r = stmt2.executeUpdate();
 			} catch (SQLException e) {
+				e.printStackTrace();
 			} finally {
 				try {
-					stmt.close();
-				} catch (SQLException e) {}
+					stmt2.close();
+				} catch (SQLException e2) {}
 			}
 		}
 	}
