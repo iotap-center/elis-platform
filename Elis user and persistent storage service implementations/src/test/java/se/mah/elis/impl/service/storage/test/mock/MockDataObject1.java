@@ -129,5 +129,17 @@ public class MockDataObject1 implements ElisDataObject {
 	public DateTime created() {
 		return created;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof MockDataObject1) {
+			MockDataObject1 mdo = (MockDataObject1) o;
+			if (id != null && mdo.getDataId() != null) {
+				return id.equals(mdo.getDataId());
+			}
+		}
+		
+		return false;
+	}
 
 }

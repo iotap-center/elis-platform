@@ -1,23 +1,27 @@
 package se.mah.elis.impl.service.storage.test.mock;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Properties;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
 
+import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
-public class MockUser3 implements User {
+public class MockUser4 implements User {
 
 	private UserIdentifier uid;
 	private UUID uuid;
 	private String stuff;
 	private DateTime created = DateTime.now();
+	private Collection<ElisDataObject> edos = new LinkedList<ElisDataObject>();
 	
-	public MockUser3() {
+	public MockUser4() {
 		uid = new MockUserIdentifier();
 		uuid = UUID.fromString("0000dead-beef-3333-4444-555566667777");
 		stuff = "";
@@ -25,7 +29,7 @@ public class MockUser3 implements User {
 		uid.identifies(this.getClass());
 	}
 	
-	public MockUser3(String stuff) {
+	public MockUser4(String stuff) {
 		uid = new MockUserIdentifier();
 		uuid = UUID.fromString("0000dead-beef-3333-4444-555566660000");
 		this.stuff = stuff;
@@ -33,7 +37,7 @@ public class MockUser3 implements User {
 		uid.identifies(this.getClass());
 	}
 	
-	public MockUser3(UUID uuid, String stuff) {
+	public MockUser4(UUID uuid, String stuff) {
 		uid = new MockUserIdentifier();
 		this.uuid = uuid;
 		this.stuff = stuff;
@@ -74,11 +78,12 @@ public class MockUser3 implements User {
 		if (uuid != null) {
 			props.put("uuid", uuid);
 		}
-		props.put("service_name", "MockUser1");
+		props.put("service_name", "test");
 		props.putAll((new MockUserIdentifier()).getProperties());
 		if (stuff != null) {
 			props.put("stuff", stuff);
 		}
+		props.put("edos", edos);
 		props.put("created", created);
 		
 		return props;
@@ -92,6 +97,7 @@ public class MockUser3 implements User {
 		props.put("service_name", "9");
 		props.putAll((new MockUserIdentifier()).getPropertiesTemplate());
 		props.put("stuff", "32");
+		props.put("edos", edos);
 		props.put("created", created);
 		
 		return props;
@@ -102,12 +108,15 @@ public class MockUser3 implements User {
 		uid = new MockUserIdentifier();
 		uuid = (UUID) props.get("uuid");
 		stuff = (String) props.get("stuff");
+		if (props.get("edos") != null) {
+			edos = (Collection) props.get("edos");
+		}
 		created = (DateTime) props.get("created");
 	}
 
 	@Override
 	public String getServiceName() {
-		return "";
+		return "test";
 	}
 
 	@Override
@@ -122,7 +131,7 @@ public class MockUser3 implements User {
 	
 	@Override
 	public String toString() {
-		return "MockUser3, uid: " + uid + ", UUID: " + uuid +
+		return "MockUser4, uid: " + uid + ", UUID: " + uuid +
 				", stuff: " + stuff;
 	}
 	
@@ -133,5 +142,9 @@ public class MockUser3 implements User {
 	@Override
 	public DateTime created() {
 		return created;
+	}
+	
+	public Collection<ElisDataObject> getCollection() {
+		return edos;
 	}
 }

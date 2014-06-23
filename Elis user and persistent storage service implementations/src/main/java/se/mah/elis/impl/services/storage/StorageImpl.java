@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -24,11 +25,13 @@ import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogService;
 
 import se.mah.elis.data.ElisDataObject;
+import se.mah.elis.data.exceptions.DataInitalizationException;
 import se.mah.elis.impl.services.storage.query.DeleteQuery;
 import se.mah.elis.impl.services.storage.query.MySQLQueryTranslator;
 import se.mah.elis.impl.services.storage.result.ResultSetImpl;
 import se.mah.elis.services.storage.Storage;
 import se.mah.elis.services.storage.exceptions.StorageException;
+import se.mah.elis.services.storage.factory.DataObjectFactory;
 import se.mah.elis.services.storage.query.Query;
 import se.mah.elis.services.storage.query.QueryTranslator;
 import se.mah.elis.services.storage.result.ResultSet;
@@ -69,6 +72,10 @@ public class StorageImpl implements Storage, ManagedService {
 	// The user factory
 	@Reference
 	private UserFactory userFactory;
+	
+	// The data object factory
+	@Reference
+	private DataObjectFactory dataFactory;
 
 	@Reference
 	private ConfigurationAdmin configAdmin;
@@ -83,14 +90,14 @@ public class StorageImpl implements Storage, ManagedService {
 	private LogService log;
 	
 	// Some error messages
-	private static String OBJECT_NOT_FOUND = "Couldn't find object in data store";
-	private static String OBJECT_NOT_VALID = "Couldn't save this object";
-	private static String USER_NOT_FOUND = "Couldn't find user in data store";
-	private static String USER_NOT_VALID = "Couldn't save this user";
-	private static String INSTANCE_OBJECT_ERROR = "Couldn't instantiate object";
-	private static String INSTANCE_USER_ERROR = "Couldn't instantiate user";
-	private static String STORAGE_ERROR = "Couldn't access storage";
-	private static String DELETE_QUERY = "This storage engine requires a DeleteQuery.";
+	public static String OBJECT_NOT_FOUND = "Couldn't find object in data store";
+	public static String OBJECT_NOT_VALID = "Couldn't save this object";
+	public static String USER_NOT_FOUND = "Couldn't find user in data store";
+	public static String USER_NOT_VALID = "Couldn't save this user";
+	public static String INSTANCE_OBJECT_ERROR = "Couldn't instantiate object";
+	public static String INSTANCE_USER_ERROR = "Couldn't instantiate user";
+	public static String STORAGE_ERROR = "Couldn't access storage";
+	public static String DELETE_QUERY = "This storage engine requires a DeleteQuery.";
 
 	/**
 	 * Creates an instance of this class. It sets up a connection to a
@@ -129,6 +136,39 @@ public class StorageImpl implements Storage, ManagedService {
 	public StorageImpl(Connection connection, UserFactory factory) {
 		this.connection = connection;
 		this.userFactory = factory;
+		// TODO Replace the MySQL query translator with more generic stuff.
+		translator = new MySQLQueryTranslator();
+		utils = new StorageUtils(connection);
+		isInitialised = true;
+	}
+	
+	/**
+	 * Creates an instance of this class with an already created database
+	 * connection. This is mainly meant to be used for testing purposes.
+	 * 
+	 * @param connection A JDBC connection.
+	 * @since 2.0
+	 */
+	public StorageImpl(Connection connection, DataObjectFactory factory) {
+		this.connection = connection;
+		this.dataFactory = factory;
+		// TODO Replace the MySQL query translator with more generic stuff.
+		translator = new MySQLQueryTranslator();
+		utils = new StorageUtils(connection);
+		isInitialised = true;
+	}
+	
+	/**
+	 * Creates an instance of this class with an already created database
+	 * connection. This is mainly meant to be used for testing purposes.
+	 * 
+	 * @param connection A JDBC connection.
+	 * @since 2.0
+	 */
+	public StorageImpl(Connection connection, UserFactory uf, DataObjectFactory df) {
+		this.connection = connection;
+		this.userFactory = uf;
+		this.dataFactory = df;
 		// TODO Replace the MySQL query translator with more generic stuff.
 		translator = new MySQLQueryTranslator();
 		utils = new StorageUtils(connection);
@@ -175,7 +215,15 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	@Override
 	public void insert(ElisDataObject data) throws StorageException {
-		insert(data, false);
+		// Let's take command of the commit ship ourselves.
+		// Forward, mateys!
+		try {
+			connection.setAutoCommit(false);
+			insert(data, false);
+			connection.commit();
+		} catch (SQLException e) {
+			throw new StorageException(STORAGE_ERROR);
+		}
 	}
 	
 	/**
@@ -232,22 +280,27 @@ public class StorageImpl implements Storage, ManagedService {
 			int i = 1;
 			
 			try {
-				// Let's take command of the commit ship ourselves.
-				// Forward, mateys!
-				connection.setAutoCommit(false);
+//				// Let's take command of the commit ship ourselves.
+//				// Forward, mateys!
+//				connection.setAutoCommit(false);
 				stmt = connection.prepareStatement(query);
 				
 				// Add the parameters to the query. We don't know what we'll
 				// run into. Better let someone else, i.e. addParameter() take
 				// care of that for us.
 				for (Entry<Object, Object> prop : props.entrySet()) {
-					utils.addParameter(stmt, prop.getValue(), i++, false);
+					i = utils.addParameter(stmt, prop.getValue(), i, false);
 				}
 				
 				// Run the statement and end the transaction
 				stmt.executeUpdate();
-				connection.commit();
+//				connection.commit();
 				
+				// The bunch of code above didn't take care of collections.
+				// This is where we do that.
+				updateCollections(data);
+				
+				// Now, let's pair the UUID with the right table
 				utils.pairUUIDWithTable(uuid, tableName);
 			} catch (SQLException e) {
 				// Try to create a non-existing table, but only once.
@@ -272,6 +325,7 @@ public class StorageImpl implements Storage, ManagedService {
 			} finally {
 				try {
 					stmt.close();
+//					connection.commit();
 				} catch (SQLException e) {}
 			}
 		} else {
@@ -477,12 +531,16 @@ public class StorageImpl implements Storage, ManagedService {
 					// we'll run into. Better let someone else, i.e.
 					// addParameter() take care of that for us.
 					for (Entry<Object, Object> prop : userProps.entrySet()) {
-						utils.addParameter(stmt, prop.getValue(), i++, false);
+						i = utils.addParameter(stmt, prop.getValue(), i, false);
 					}
 					
 					// Run the statement and end the transaction
 					stmt.executeUpdate();
 					connection.commit();
+					
+					// The bunch of code above didn't take care of collections.
+					// This is where we do that.
+					updateCollections(user);
 					
 					utils.pairUUIDWithTable(uuid, tableName);
 				} catch (SQLException e) {
@@ -615,12 +673,18 @@ public class StorageImpl implements Storage, ManagedService {
 				// run into. Better let someone else, i.e. addParameter() take
 				// care of that for us.
 				for (Entry<Object, Object> prop : props.entrySet()) {
-					utils.addParameter(stmt, prop.getValue(), i++, false);
+					try {
+						i = utils.addParameter(stmt, prop.getValue(), i, false);
+					} catch (SQLException e0) {}
 				}
 				
 				// Run the statement and end the transaction
 				updated = stmt.executeUpdate() > 0;
 				connection.commit();
+				
+				// The bunch of code above didn't take care of collections.
+				// This is where we do that.
+				updateCollections(data);
 			} catch (SQLException e) {
 				// Try to create a non-existing table, but only once.
 				if (e.getErrorCode() == 1146 && !finalRun) {
@@ -838,11 +902,15 @@ public class StorageImpl implements Storage, ManagedService {
 					// we'll run into. Better let someone else, i.e.
 					// addParameter() take care of that for us.
 					for (Entry<Object, Object> prop : userProps.entrySet()) {
-						utils.addParameter(stmt, prop.getValue(), i++, false);
+						i = utils.addParameter(stmt, prop.getValue(), i, false);
 					}
 					
 					// Run the statement and end the transaction
 					stmt.executeUpdate();
+					
+					// The bunch of code above didn't take care of collections.
+					// This is where we do that.
+					updateCollections(user);
 				} catch (SQLException e) {
 					// Try to create a non-existing table, but only once.
 					if (e.getErrorCode() == 1146 && !finalRun) {
@@ -963,6 +1031,10 @@ public class StorageImpl implements Storage, ManagedService {
 					utils.freeUUID(uuid);
 				}
 				connection.commit();
+				
+				// The bunch of code above didn't take care of collections.
+				// This is where we do that.
+				utils.deleteCollections(data.getDataId());
 			} catch (SQLException e) {
 				log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't delete object " + data, e);
 				throw new StorageException(STORAGE_ERROR);
@@ -1070,6 +1142,10 @@ public class StorageImpl implements Storage, ManagedService {
 				if (stmt.executeUpdate() > 0) {
 					utils.freeUUID(uuid);
 				}
+				
+				// The bunch of code above didn't take care of collections.
+				// This is where we do that.
+				utils.deleteCollections(user.getUserId());
 			} catch (SQLException e) {
 				log(LogService.LOG_WARNING, STORAGE_ERROR + ": Couldn't delete user " + user, e);
 				throw new StorageException(STORAGE_ERROR);
@@ -1196,6 +1272,9 @@ public class StorageImpl implements Storage, ManagedService {
 	 */
 	private ElisDataObject readData(UUID id, boolean finalRun)
 			throws StorageException {
+		if (id == null) {
+			throw new StorageException(OBJECT_NOT_FOUND);
+		}
 		Statement stmt = null;
 		java.sql.ResultSet rs = null;
 		ElisDataObject edo = null;
@@ -1209,8 +1288,6 @@ public class StorageImpl implements Storage, ManagedService {
 		if (tableName != null) {
 			className = StorageUtils.demysqlifyName(tableName);
 			try {
-				edo = (ElisDataObject) Class.forName(className).newInstance();
-				
 				query = "SELECT * FROM `" + tableName +
 						"` WHERE dataid = x'" +
 						StorageUtils.stripDashesFromUUID(id) + "';";
@@ -1219,15 +1296,18 @@ public class StorageImpl implements Storage, ManagedService {
 				rs = stmt.executeQuery(query);
 				props = utils.resultSetRowToProperties(rs);
 				
-				// Populate the object, then we're pretty much done.
-				edo.populate(props);
-			} catch (InstantiationException | IllegalAccessException
-					| ClassNotFoundException e) {
-				log(LogService.LOG_WARNING, INSTANCE_OBJECT_ERROR + ": " + id, e);
-				throw new StorageException(INSTANCE_OBJECT_ERROR);
+				// Build the object, then we're pretty much done.
+				edo = dataFactory.build(className, props);
+				
+				// The bunch of code above didn't take care of collections.
+				// This is where we do that.
+				fetchCollections(edo);
 			} catch (SQLException e) {
 				log(LogService.LOG_WARNING, OBJECT_NOT_FOUND + ": " + id, e);
 				throw new StorageException(OBJECT_NOT_FOUND);
+			} catch (DataInitalizationException e) {
+				log(LogService.LOG_WARNING, INSTANCE_OBJECT_ERROR + ": " + id, e);
+				throw new StorageException(INSTANCE_OBJECT_ERROR);
 			} finally {
 				try {
 					rs.close();
@@ -1320,6 +1400,10 @@ public class StorageImpl implements Storage, ManagedService {
 				} else {
 					throw new StorageException(INSTANCE_USER_ERROR);
 				}
+				
+				// The bunch of code above didn't take care of collections.
+				// This is where we do that.
+				fetchCollections(user);
 			} catch (SQLException e) {
 				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id.toString(), e);
 				throw new StorageException(USER_NOT_FOUND);
@@ -1733,6 +1817,152 @@ public class StorageImpl implements Storage, ManagedService {
 		return result;
 	}
 	
+	/**
+	 * Updates collections belonging to a data object.
+	 * 
+	 * @param data The data object to inspect.
+	 */
+	private void updateCollections(ElisDataObject data) {
+		Properties props = data.getProperties();
+		for (Entry e : props.entrySet()) {
+			if (e.getValue() instanceof Collection) {
+				// Update elements
+				for (Object o : (Collection) e.getValue()) {
+					if (o instanceof ElisDataObject) {
+						try {
+							// Try to update the element
+							update((ElisDataObject) o);
+						} catch (StorageException e1) {
+							try {
+								// That didn't work. Maybe it doesn't exist?
+								insert((ElisDataObject) o);
+							} catch (StorageException e2) {
+								// Nope, that didn't work either. Report.
+								log(LogService.LOG_ERROR, "Couldn't update object " + o);
+							}
+						}
+					} else if (o instanceof AbstractUser) {
+						try {
+							// Try to update the element
+							update((AbstractUser) o);
+						} catch (StorageException e1) {
+							try {
+								// That didn't work. Maybe it doesn't exist?
+								insert((AbstractUser) o);
+							} catch (StorageException e2) {
+								// Nope, that didn't work either. Report.
+								log(LogService.LOG_ERROR, "Couldn't update user " + o);
+							}
+						}
+					}
+				}
+				
+				// Remove and add new elements
+				utils.updateCollection(data.getDataId(),
+						(Collection) e.getValue(),
+						(String) e.getKey());
+			}
+		}
+	}
+	
+	/**
+	 * Updates collections belonging to a user.
+	 * 
+	 * @param user The user to inspect.
+	 */
+	private void updateCollections(AbstractUser user) {
+		Properties props = user.getProperties();
+		for (Entry e : props.entrySet()) {
+			if (e.getValue() instanceof Collection) {
+				// Update elements
+				for (Object o : (Collection) e.getValue()) {
+					if (o instanceof ElisDataObject) {
+						try {
+							// Try to update the element
+							update((ElisDataObject) o);
+						} catch (StorageException e1) {
+							try {
+								// That didn't work. Maybe it doesn't exist?
+								insert((ElisDataObject) o);
+							} catch (StorageException e2) {
+								// Nope, that didn't work either. Report.
+								log(LogService.LOG_ERROR, "Couldn't update object " + o);
+							}
+						}
+					} else if (o instanceof AbstractUser) {
+						try {
+							// Try to update the element
+							update((AbstractUser) o);
+						} catch (StorageException e1) {
+							try {
+								// That didn't work. Maybe it doesn't exist?
+								insert((AbstractUser) o);
+							} catch (StorageException e2) {
+								// Nope, that didn't work either. Report.
+								log(LogService.LOG_ERROR, "Couldn't update user " + o);
+							}
+						}
+					}
+				}
+				
+				// Remove and add new elements
+				utils.updateCollection(user.getUserId(),
+						(Collection) e.getValue(),
+						(String) e.getKey());
+			}
+		}
+	}
+	
+	/**
+	 * Fetches collections belonging to a data object.
+	 * 
+	 * @param data The object to inspect.
+	 */
+	private void fetchCollections(ElisDataObject data) {
+		Properties props = data.getProperties();
+		UUID[] uuids = null;
+		Collection collection = null;
+		
+		for (Entry<?, ?> entry : props.entrySet()) {
+			if (entry.getValue() instanceof Collection) {
+				collection = (Collection) entry.getValue();
+				uuids = utils.listCollectedObjects(data.getDataId(), (String) entry.getKey());
+				try {
+					for (UUID uuid : uuids) {
+						collection.add(readData(uuid));
+					}
+				} catch (Exception e) {}
+			}
+		}
+		
+		data.populate(props);
+	}
+	
+	/**
+	 * Fetches collections belonging to a user.
+	 * 
+	 * @param user The user to inspect.
+	 */
+	private void fetchCollections(AbstractUser user) {
+		Properties props = user.getProperties();
+		UUID[] uuids = null;
+		Collection collection = null;
+		
+		for (Entry<?, ?> entry : props.entrySet()) {
+			if (entry.getValue() instanceof Collection) {
+				collection = (Collection) entry.getValue();
+				uuids = utils.listCollectedObjects(user.getUserId(), (String) entry.getKey());
+				try {
+					for (UUID uuid : uuids) {
+						collection.add(readData(uuid));
+					}
+				} catch (Exception e) {}
+			}
+		}
+		
+		user.populate(props);
+	}
+	
 	private void log(int level, String message, Throwable t) {
 		if (log != null) {
 			log.log(level, "StorageImpl: " + message, t);
@@ -1753,6 +1983,14 @@ public class StorageImpl implements Storage, ManagedService {
 
 	protected void unbindUserFactory(UserFactory uf) {
 		this.userFactory = null;
+	}
+
+	protected void bindDataFactory(DataObjectFactory df) {
+		this.dataFactory = df;
+	}
+
+	protected void unbindDataFactory(DataObjectFactory df) {
+		this.dataFactory = null;
 	}
 	
 	protected void bindLog(LogService log) {

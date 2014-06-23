@@ -122,7 +122,7 @@ public class MockUser2 implements User {
 	
 	@Override
 	public String toString() {
-		return "MockUser1, uid: " + uid + ", UUID: " + uuid +
+		return "MockUser2, uid: " + uid + ", UUID: " + uuid +
 				", stuff: " + stuff;
 	}
 	

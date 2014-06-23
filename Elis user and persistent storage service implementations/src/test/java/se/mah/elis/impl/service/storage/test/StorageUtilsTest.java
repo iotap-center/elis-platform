@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -50,8 +51,13 @@ public class StorageUtilsTest {
 			          .getConnection("jdbc:mysql://localhost/elis_test?"
 			                  + "user=elis_test&password=elis_test");
 			Statement statement = connection.createStatement();
+			
+			// Truncate stuff
 			statement.execute("TRUNCATE TABLE object_lookup_table;");
 			statement.execute("TRUNCATE TABLE user_bindings;");
+			statement.execute("TRUNCATE TABLE collections;");
+			
+			// Object lookup table
 			// c3677d61-2378-4183-b478-ec915fd32e60
 			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e60', 'table1')");
 			// c3677d61-2378-4183-b478-ec915fd32e42
@@ -64,6 +70,19 @@ public class StorageUtilsTest {
 			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e17', 'table1')");
 			// c3677d61-2378-4183-b478-ec915fd32e05
 			statement.execute("INSERT INTO object_lookup_table VALUES (x'c3677d6123784183b478ec915fd32e05', 'table2')");
+			
+			// Collections
+			// c3677d61-2378-4183-b478-ec915fd32e60 <>- c3677d61-2378-4183-b478-ec915fd32e42
+			statement.execute("INSERT INTO collections VALUES (x'c3677d6123784183b478ec915fd32e60', x'c3677d6123784183b478ec915fd32e42', 'collection1')");
+			// c3677d61-2378-4183-b478-ec915fd32e60 <>- c3677d61-2378-4183-b478-ec915fd32e13
+			statement.execute("INSERT INTO collections VALUES (x'c3677d6123784183b478ec915fd32e60', x'c3677d6123784183b478ec915fd32e13', 'collection1')");
+			// c3677d61-2378-4183-b478-ec915fd32e17 <>- c3677d61-2378-4183-b478-ec915fd32e42
+			statement.execute("INSERT INTO collections VALUES (x'c3677d6123784183b478ec915fd32e17', x'c3677d6123784183b478ec915fd32e42', 'collection1')");
+			// c3677d61-2378-4183-b478-ec915fd32e17 <>- c3677d61-2378-4183-b478-ec915fd32e13
+			statement.execute("INSERT INTO collections VALUES (x'c3677d6123784183b478ec915fd32e17', x'c3677d6123784183b478ec915fd32e13', 'collection2')");
+			// c3677d61-2378-4183-b478-ec915fd32e17 <>- c3677d61-2378-4183-b478-ec915fd32e11
+			statement.execute("INSERT INTO collections VALUES (x'c3677d6123784183b478ec915fd32e17', x'c3677d6123784183b478ec915fd32e11', 'collection2')");
+			
 			statement.close();
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
@@ -105,6 +124,45 @@ public class StorageUtilsTest {
 		}
 		
 		return bindings;
+	}
+	
+	private int countObjectsInCollections() {
+		Statement statement;
+		int count = -1;
+		
+		try {
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT count(*) FROM collections");
+			rs.next();
+			count = rs.getInt(1);
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return count;
+	}
+	
+	private int countObjectsInCollection(UUID collector, String collection) {
+		Statement statement;
+		int count = -1;
+		
+		try {
+			statement = connection.createStatement();
+			String query = "SELECT count(*) FROM collections WHERE " +
+					"collecting_object = x'" + collector.toString().replace("-", "") + "' AND " +
+					"collection_name = '" + collection + "';";
+			ResultSet rs = statement.executeQuery(query);
+			rs.next();
+			count = rs.getInt(1);
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return count;
 	}
 
 	@Test
@@ -291,6 +349,24 @@ public class StorageUtilsTest {
 	}
 
 	@Test
+	public void testGenerateQMarksWithCollection() {
+		Properties props = new OrderedProperties();
+		String expected, actual;
+		
+		props.put("col 1", 42);
+		props.put("no col", new ArrayList());
+		props.put("col 2", "Batman!");
+		props.put("col 3", false);
+		props.put("col 4", 1.3);
+		props.put("col 5", UUID.randomUUID());
+		
+		expected = "?, ?, ?, ?, x?";
+		actual = StorageUtils.generateQMarks(props);
+		
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void testGenerateQMarksOnlyOne() {
 		Properties props = new OrderedProperties();
 		String expected, actual;
@@ -411,18 +487,20 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, 1, 0, false);
-			utils.addParameter(stmt, "horses", 1, false);
+			index = utils.addParameter(stmt, 1, index, false);
+			index = utils.addParameter(stmt, "horses", index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Int: 1", (String) objectStore.get(0));
 		assertEquals("String: horses", (String) objectStore.get(1));
+		assertEquals(2, index);
 	}
 
 	@Test
@@ -450,16 +528,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, null, 0, false);
+			index = utils.addParameter(stmt, null, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Null: 0", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -469,16 +549,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, true, 0, false);
+			index = utils.addParameter(stmt, true, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Boolean: true", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -488,16 +570,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (byte) 12, 0, false);
+			index = utils.addParameter(stmt, (byte) 12, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Byte: 12", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -507,16 +591,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, 42, 0, false);
+			index = utils.addParameter(stmt, 42, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Int: 42", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -526,16 +612,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (long) 42, 0, false);
+			index = utils.addParameter(stmt, (long) 42, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Long: 42", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -545,16 +633,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (float) 4.2, 0, false);
+			index = utils.addParameter(stmt, (float) 4.2, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Float: 4.2", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -564,16 +654,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, (double) 4.2, 0, false);
+			index = utils.addParameter(stmt, (double) 4.2, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Double: 4.2", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -583,16 +675,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, "horses", 0, false);
+			index = utils.addParameter(stmt, "horses", index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("String: horses", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -602,16 +696,18 @@ public class StorageUtilsTest {
 		ArrayList<Object> objectStore = connection.getObjectStore();
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, "horses", 0, true);
+			index = utils.addParameter(stmt, "horses", index, true);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("String: %horses%", (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -623,16 +719,18 @@ public class StorageUtilsTest {
 		java.sql.Timestamp ts = new java.sql.Timestamp(dt.getMillis());
 		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
 		PreparedStatement stmt = null;
+		int index = 0;
 		
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, dt, 0, false);
+			index = utils.addParameter(stmt, dt, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("Timestamp: " + ts, (String) objectStore.get(0));
+		assertEquals(1, index);
 	}
 
 	@Test
@@ -646,6 +744,7 @@ public class StorageUtilsTest {
 		String expected = StorageUtils.stripDashesFromUUID(uuid);
 		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
 		byte[] bytes = null;
+		int index = 0;
 
 		bb.putLong(uuid.getMostSignificantBits());
 		bb.putLong(uuid.getLeastSignificantBits());
@@ -654,12 +753,35 @@ public class StorageUtilsTest {
 		try {
 			stmt = connection.prepareStatement(query);
 
-			utils.addParameter(stmt, uuid, 0, false);
+			index = utils.addParameter(stmt, uuid, index, false);
 		} catch (SQLException e) {
 			// This should NEVER happen with a mock object.
 		}
 		
 		assertEquals("String: " + expected, (String) objectStore.get(0));
+		assertEquals(1, index);
+	}
+
+	@Test
+	public void testAddParameterCollection() {
+		MockConnection connection = new MockConnection();
+		StorageUtils utils = new StorageUtils(connection);
+		ArrayList<Object> objectStore = connection.getObjectStore();
+		String query = "INSERT INTO object_lookup_table VALUES(?, ?);";
+		PreparedStatement stmt = null;
+		Collection collection = new ArrayList();
+		int index = 0;
+		
+		try {
+			stmt = connection.prepareStatement(query);
+
+			index = utils.addParameter(stmt, collection, index, false);
+		} catch (SQLException e) {
+			// This should NEVER happen with a mock object.
+			fail("This shouldn't happen");
+		}
+		
+		assertEquals(0, index);
 	}
 
 //	@Test
@@ -1326,6 +1448,235 @@ public class StorageUtilsTest {
 		props.put("foo", "bar");
 		
 		assertTrue(StorageUtils.validateEDOProperties(props, true));
+	}
+	
+	@Test
+	public void testListCollectedObjects() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		UUID[] uuids = utils.listCollectedObjects(uuid, "collection1");
+		
+		assertEquals(2, uuids.length);
+		assertTrue(uuids[0] instanceof UUID);
+	}
+	
+	@Test
+	public void testListCollectedObjectsCollectorHasMoreThanOneCollection() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e17");
+		StorageUtils utils = new StorageUtils(connection);
+		UUID[] uuids1 = utils.listCollectedObjects(uuid, "collection1");
+		UUID[] uuids2 = utils.listCollectedObjects(uuid, "collection2");
+		
+		assertEquals(1, uuids1.length);
+		assertTrue(uuids1[0] instanceof UUID);
+		assertEquals(2, uuids2.length);
+		assertTrue(uuids2[0] instanceof UUID);
+	}
+	
+	@Test
+	public void testListCollectedObjectsNonExistingCollection() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		UUID[] uuids = utils.listCollectedObjects(uuid, "collection3");
+		
+		assertNotNull(uuids);
+		assertEquals(0, uuids.length);
+	}
+	
+	@Test
+	public void testListCollectedObjectsNoObjectsInCollection() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		UUID[] uuids = utils.listCollectedObjects(uuid, "collection1");
+		
+		assertNotNull(uuids);
+		assertEquals(0, uuids.length);
+	}
+	
+	@Test
+	public void testDeleteCollections() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteCollections(uuid);
+		
+		assertEquals(3, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testDeleteCollectionsNonExistingCollector() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteCollections(uuid);
+		
+		assertEquals(5, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testDeleteCollectionsNonExistingCollectee() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e60");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteCollections(uuid);
+		
+		assertEquals(5, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testDeleteFromCollections() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteFromCollections(uuid);
+		
+		assertEquals(3, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testDeleteFromCollectionsNonExistingCollector() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e13");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteFromCollections(uuid);
+		
+		assertEquals(5, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testDeleteFromCollectionsNonExistingCollectee() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("deadbeef-2378-4183-b478-ec915fd32e13");
+		StorageUtils utils = new StorageUtils(connection);
+		
+		utils.deleteFromCollections(uuid);
+		
+		assertEquals(5, countObjectsInCollections());
+	}
+	
+	@Test
+	public void testUpdateCollectionNoChanges() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42"));
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13"));
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(5, countObjectsInCollections());
+		assertEquals(2, countObjectsInCollection(uuid, "collection1"));
+	}
+	
+	@Test
+	public void testUpdateCollectionAddOne() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42"));
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13"));
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e05")); // <- new
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(6, countObjectsInCollections());
+		assertEquals(3, countObjectsInCollection(uuid, "collection1"));
+	}
+	
+	@Test
+	public void testUpdateCollectionAddTwo() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42"));
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13"));
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e05")); // <- new
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e17")); // <- new
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(7, countObjectsInCollections());
+		assertEquals(4, countObjectsInCollection(uuid, "collection1"));
+	}
+	
+	@Test
+	public void testUpdateCollectionRemoveOne() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42"));
+		// collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13")); <- not added, i.e. removed
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(4, countObjectsInCollections());
+		assertEquals(1, countObjectsInCollection(uuid, "collection1"));
+	}
+	
+	@Test
+	public void testUpdateCollectionRemoveTwo() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		// collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42")); <- not added, i.e. removed
+		// collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13")); <- not added, i.e. removed
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(3, countObjectsInCollections());
+		assertEquals(0, countObjectsInCollection(uuid, "collection1"));
+	}
+	
+	@Test
+	public void testUpdateCollectionRemoveOneAddOne() {
+		setUpDatabase();
+		
+		UUID uuid = UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e60");
+		ArrayList<UUID> collection = new ArrayList<UUID>();
+		StorageUtils utils = new StorageUtils(connection);
+
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e42"));
+		// collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e13")); <- not added, i.e. removed
+		collection.add(UUID.fromString("c3677d61-2378-4183-b478-ec915fd32e05")); // <- new
+		
+		utils.updateCollection(uuid, collection, "collection1");
+
+		assertEquals(5, countObjectsInCollections());
+		assertEquals(2, countObjectsInCollection(uuid, "collection1"));
 	}
 	
 	@Test

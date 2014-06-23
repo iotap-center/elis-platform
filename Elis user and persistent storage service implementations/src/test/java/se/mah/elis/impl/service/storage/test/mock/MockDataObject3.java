@@ -1,5 +1,7 @@
 package se.mah.elis.impl.service.storage.test.mock;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -8,33 +10,34 @@ import org.joda.time.DateTime;
 import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.data.OrderedProperties;
 
-public class MockDataObject2 implements ElisDataObject {
+public class MockDataObject3 implements ElisDataObject {
 
 	private UUID id;
 	private UUID ownerid;
 	private float baz;
+	private Collection<MockDataObject2> mdos = new ArrayList<MockDataObject2>();
 	private DateTime created = DateTime.now();
 	
-	public MockDataObject2() {
+	public MockDataObject3() {
 		id = null;
 		ownerid = null;
 		baz = 0;
 	}
 	
-	public MockDataObject2(UUID id, UUID ownerid, float baz) {
+	public MockDataObject3(UUID id, UUID ownerid, float baz) {
 		this.id = id;
 		this.ownerid = ownerid;
 		this.baz = baz;
 	}
 	
-	public MockDataObject2(UUID ownerid, float baz) {
-		this.id = UUID.randomUUID();
+	public MockDataObject3(UUID ownerid, float baz) {
+		this.id = null;
 		this.ownerid = ownerid;
 		this.baz = baz;
 	}
 	
-	public MockDataObject2(float baz) {
-		this.id = UUID.randomUUID();
+	public MockDataObject3(float baz) {
+		this.id = null;
 		this.ownerid = null;
 		this.baz = baz;
 	}
@@ -70,6 +73,7 @@ public class MockDataObject2 implements ElisDataObject {
 			props.put("ownerid", ownerid);
 		}
 		props.put("baz", baz);
+		props.put("mdos", mdos);
 		props.put("created", created);
 		
 		return props;
@@ -82,6 +86,7 @@ public class MockDataObject2 implements ElisDataObject {
 		props.put("dataid", UUID.randomUUID());
 		props.put("ownerid", UUID.randomUUID());
 		props.put("baz", 0.0);
+		props.put("mdos", new ArrayList<MockDataObject2>());
 		props.put("created", created);
 		
 		return props;
@@ -92,6 +97,9 @@ public class MockDataObject2 implements ElisDataObject {
 		id = (UUID) props.get("dataid");
 		ownerid = (UUID) props.get("ownerid");
 		baz = (float) props.get("baz");
+		if (props.get("mdos") != null) {
+			mdos = (Collection) props.get("mdos");
+		}
 		created = (DateTime) props.get("created");
 	}
 
@@ -101,6 +109,10 @@ public class MockDataObject2 implements ElisDataObject {
 	
 	public float getBaz() {
 		return baz;
+	}
+	
+	public Collection<MockDataObject2> getCollection() {
+		return mdos;
 	}
 	
 	public void setCreated(DateTime dt) {
@@ -113,16 +125,14 @@ public class MockDataObject2 implements ElisDataObject {
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof MockDataObject2)) {
-			return false;
+	public boolean equals(Object o) {
+		if (o instanceof MockDataObject3) {
+			MockDataObject3 mdo = (MockDataObject3) o;
+			if (id != null && mdo.getDataId() != null) {
+				return id.equals(mdo.getDataId());
+			}
 		}
 		
-		MockDataObject2 mdo = (MockDataObject2) obj;
-		
-		return this.id.equals(mdo.getDataId()) &&
-				this.ownerid.equals(mdo.getOwnerId()) &&
-				this.baz == mdo.getBaz() &&
-				this.created.getMillis() / 1000 == mdo.created().getMillis() / 1000;
+		return false;
 	}
 }

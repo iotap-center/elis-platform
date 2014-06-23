@@ -28,7 +28,9 @@ public class PlatformUserIdentifierImpl implements PlatformUserIdentifier {
 	public PlatformUserIdentifierImpl(String username, String password)
 			throws IllegalArgumentException {
 		setUsername(username);
-		setPassword(password);
+		if (password != null && !password.isEmpty()) {
+			setPassword(password);
+		}
 	}
 
 	public void setUsername(String username) throws IllegalArgumentException {
