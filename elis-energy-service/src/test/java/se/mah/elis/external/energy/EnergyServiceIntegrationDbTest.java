@@ -105,8 +105,8 @@ public class EnergyServiceIntegrationDbTest extends JerseyTest {
 	
 	private User createEonUser() {
 		Properties props = new Properties();
-		props.put("username", "eon2hem@gmail.com");
-		props.put("password", "02DCBD");
+		props.put("username", "hems7@eon.se");
+		props.put("password", "02DCD0");
 		
 		EonUserRecipe recipe = new EonUserRecipe();
 		
@@ -146,6 +146,6 @@ public class EnergyServiceIntegrationDbTest extends JerseyTest {
 		assertEquals(1, users.length);
 		assertNotNull(users[0]);
 		assertNotNull(users[0].getUserId());
-		assertTrue(users[0].getIdentifier().toString().contains("eon2hem"));
+		assertTrue(users[0].getIdentifier().toString().contains("hems7"));
 	}
 }
