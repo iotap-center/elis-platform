@@ -31,7 +31,7 @@ public class MkbGatewayUser implements GatewayUser {
 	private LogService log;
 	
 	private UUID uuid;
-	private UserIdentifier userIdentifier;
+	private UserIdentifier userIdentifier = new MkbUserIdentifier(null);
 	private Gateway gateway;
 	private DateTime created = DateTime.now();
 
@@ -80,7 +80,7 @@ public class MkbGatewayUser implements GatewayUser {
 		OrderedProperties props = new OrderedProperties();
 		if (uuid != null)
 			props.put("uuid", uuid);
-		props.put("identifier", getIdentifier());
+		props.putAll(getIdentifier().getProperties());
 		props.put("created", created);
 		props.put("service_name", getServiceName());
 		return props;
@@ -90,7 +90,7 @@ public class MkbGatewayUser implements GatewayUser {
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
 		props.put("uuid", uuid);
-		props.put("identifier", getIdentifier());
+		props.putAll(getIdentifier().getPropertiesTemplate());
 		props.put("created", created);
 		props.put("service_name", "32");
 		return props;
