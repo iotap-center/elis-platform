@@ -106,7 +106,7 @@ public class MkbGatewayUser implements GatewayUser {
 		
 		String meterId = (String) props.get("meterId");
 
-		log.log(LogService.LOG_INFO, "Populating MKB user: " + meterId);
+		log(LogService.LOG_INFO, "Populating MKB user: " + meterId);
 		
 		MkbUserIdentifier id = new MkbUserIdentifier(meterId);
 		setIdentifier(id);
@@ -117,10 +117,10 @@ public class MkbGatewayUser implements GatewayUser {
 		try {
 			initialize();
 		} catch (UserInitalizationException e) {
-			log.log(LogService.LOG_ERROR, "Failed to initialise gateway for user: " + meterId);
+			log(LogService.LOG_ERROR, "Failed to initialise gateway for user: " + meterId);
 		}
 		
-		log.log(LogService.LOG_INFO, "Done populating MKB user: " + meterId);
+		log(LogService.LOG_INFO, "Done populating MKB user: " + meterId);
 	}
 
 	@Override
@@ -151,4 +151,9 @@ public class MkbGatewayUser implements GatewayUser {
 		this.log = null;
 	}
 
+	protected void log(int level, String message) {
+		if (log != null) {
+			log.log(level, message);
+		}
+	}
 }
