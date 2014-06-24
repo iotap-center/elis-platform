@@ -200,7 +200,8 @@ public class EnergyServiceTest extends JerseyTest {
 				.queryParam("to", Long.toString(ONE_HOUR))
 				.request()
 				.get(String.class);
-		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
+		EnvelopeBean envelope = gson.fromJson(energyHourlydata, EnvelopeBean.class);
+		EnergyBean bean = gson.fromJson(gson.toJson(envelope.response), EnergyBean.class);
 		
 		// Validate
 		assertEquals("hourly", bean.period);
@@ -220,7 +221,8 @@ public class EnergyServiceTest extends JerseyTest {
 				.queryParam("to", Long.toString(TWENTYFOUR_HOURS))
 				.request()
 				.get(String.class);
-		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
+		EnvelopeBean envelope = gson.fromJson(energyHourlydata, EnvelopeBean.class);
+		EnergyBean bean = gson.fromJson(gson.toJson(envelope.response), EnergyBean.class);
 		
 		// Validate
 		assertEquals("hourly", bean.period);
@@ -242,7 +244,8 @@ public class EnergyServiceTest extends JerseyTest {
 				.queryParam("to", Long.toString(ALMOST_TWENTYFOUR_HOURS))
 				.request()
 				.get(String.class);
-		EnergyBean bean = gson.fromJson(energyHourlydata, EnergyBean.class);
+		EnvelopeBean envelope = gson.fromJson(energyHourlydata, EnvelopeBean.class);
+		EnergyBean bean = gson.fromJson(gson.toJson(envelope.response), EnergyBean.class);
 		
 		// Validate
 		assertEquals("hourly", bean.period);
