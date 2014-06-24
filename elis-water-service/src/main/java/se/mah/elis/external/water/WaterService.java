@@ -93,11 +93,9 @@ public class WaterService {
 		logRequest("now", puid);
 
 		try {
-			System.out.println(puid);
 			uuid = UUID.fromString(puid);
 		} catch (Exception e) {
 			response = ElisResponseBuilder.buildBadRequestResponse();
-			System.out.println("Bad uuid");
 			logWarning("Bad UUID");
 		}
 
@@ -105,18 +103,13 @@ public class WaterService {
 			PlatformUser pu = userService.getPlatformUser(uuid);
 			if (pu != null) {
 				response = buildCurrentWaterConsumptionResponseFrom(pu);
-				System.out.println("We get signal");
 			} else {
 				response = ElisResponseBuilder.buildNotFoundResponse();
-				System.out.println("The bomb.");
 				logWarning("Could not find user: " + uuid.toString());
 			}
 		} else if (response == null) {
 			response = ElisResponseBuilder.buildInternalServerErrorResponse();
-			System.out.println("Also bomb.");
 			logError("User service not available");
-		} else {
-			System.out.println("Some kind of bomb.");
 		}
 
 		return response;
