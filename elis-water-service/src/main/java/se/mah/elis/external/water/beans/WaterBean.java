@@ -5,17 +5,25 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import se.mah.elis.external.beans.PeriodicityBean;
+
 @XmlRootElement
 public class WaterBean {
 
 	@XmlElement
-	public String puid;
+	public String user;
+
+	@XmlElement
+	public String device;
+
+	@XmlElement
+	public String deviceset;
 	
 	@XmlElement
-	public String period;
+	public PeriodicityBean period;
 	
 	@XmlElement
-	public List<WaterDeviceBean> devices;
+	public List<WaterDataPointBean> samples;
 	
 	@XmlElement
 	public WaterSummaryBean summary;

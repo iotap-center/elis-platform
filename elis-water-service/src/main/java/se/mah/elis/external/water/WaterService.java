@@ -1,8 +1,11 @@
 package se.mah.elis.external.water;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,13 +27,18 @@ import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.entities.devices.WaterMeterSampler;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
+import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.data.WaterSample;
+import se.mah.elis.external.beans.EnvelopeBean;
 import se.mah.elis.external.beans.helpers.ElisResponseBuilder;
 import se.mah.elis.external.water.beans.WaterBean;
 import se.mah.elis.external.water.beans.WaterBeanFactory;
+import se.mah.elis.services.storage.Storage;
+import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
@@ -62,6 +70,9 @@ public class WaterService {
 
 	@Reference
 	private UserService userService;
+
+	@Reference
+	private Storage storage;
 	
 	@Reference
 	private LogService log;
@@ -70,9 +81,10 @@ public class WaterService {
 		gson = new GsonBuilder().setPrettyPrinting().create();
 	}
 	
-	public WaterService(UserService us, LogService log) {
+	public WaterService(UserService us, Storage storage, LogService log) {
 		this();
 		this.userService = us;
+		this.storage = storage;
 		this.log = log;
 	}
 
@@ -81,28 +93,50 @@ public class WaterService {
 	 * consumed since the meter was last reset. Resetting cannot be done through 
 	 * the Elis platform.  
 	 * 
-	 * @param puid
+	 * @param id
 	 * @return
 	 */
 	@GET
-	@Path("/{puid}/now")
-	public Response getCurrentWaterConsumption(@PathParam("puid") String puid) {
+	@Path("/{id}/now")
+	public Response getCurrentWaterConsumption(@PathParam("id") String id) {
 		Response response = null;
 		UUID uuid = null;
 		
-		logRequest("now", puid);
+		logRequest("now", id);
 
+		// Things may go bad. First of all, look for a decent id.
 		try {
-			uuid = UUID.fromString(puid);
+			uuid = UUID.fromString(id);
 		} catch (Exception e) {
 			response = ElisResponseBuilder.buildBadRequestResponse();
 			logWarning("Bad UUID");
 		}
 
-		if (isAvailable(userService) && uuid != null) {
-			PlatformUser pu = userService.getPlatformUser(uuid);
+		
+		if (isAvailable(userService) && isAvailable(storage) && uuid != null) {
+			PlatformUser pu = null;
+			ElisDataObject edo = null;
+			
+			try {
+				edo = storage.readData(uuid);
+			} catch (StorageException e) {
+				pu = userService.getPlatformUser(uuid);
+			}
+			
+			// If either edo or pu are set, then we've found something worth
+			// having a look at.
 			if (pu != null) {
 				response = buildCurrentWaterConsumptionResponseFrom(pu);
+			} else if (edo != null) {
+				// Any data object that isn't a Device or a DeviceSet are out
+				// of scope for what we're trying to do here.
+				if (edo instanceof WaterMeterSampler) {
+					response = buildCurrentWaterConsumptionResponseFor((WaterMeterSampler) edo);
+				} else if (edo instanceof DeviceSet) {
+					response = buildCurrentWaterConsumptionResponseFor((DeviceSet) edo);
+				} else {
+					response = ElisResponseBuilder.buildBadRequestResponse();
+				}
 			} else {
 				response = ElisResponseBuilder.buildNotFoundResponse();
 				logWarning("Could not find user: " + uuid.toString());
@@ -124,8 +158,33 @@ public class WaterService {
 		Response response;
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getCurrentSamplesForMeters(waterMeters);
-		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_NOW, pu);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_NOW, pu, DateTime.now());
 		response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+		
+		return response;
+	}
+
+	private Response buildCurrentWaterConsumptionResponseFor(WaterMeterSampler meter) {
+		Response response = null;
+		List<WaterMeterSampler> meters = Arrays.asList(meter);
+		Map<String, List<WaterSample>> samples = getCurrentSamplesForMeters(meters);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_NOW, meter, DateTime.now());
+		response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+		
+		return response;
+	}
+
+	private Response buildCurrentWaterConsumptionResponseFor(DeviceSet set) {
+		Response response = null;
+		List<WaterMeterSampler> waterMeters = waterMetersInSet(set);
+		
+		if (waterMeters.size() > 0) {
+			Map<String, List<WaterSample>> samples = getCurrentSamplesForMeters(waterMeters);
+			WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_NOW, set, DateTime.now());
+			response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+		} else {
+			response = ElisResponseBuilder.buildBadRequestResponse();
+		}
 		
 		return response;
 	}
@@ -144,26 +203,26 @@ public class WaterService {
 	/**
 	 * Get water data usage aggregated by day between two timestamps. 
 	 * 
-	 * @param puid
+	 * @param id
 	 * @param from as unix timestamp
 	 * @param to as unix timestamp
 	 * @return
 	 */
 	@GET
-	@Path("/{puid}/daily")
+	@Path("/{id}/daily")
 	public Response getDailyWaterConsumption(
-			@PathParam("puid") String puid,
+			@PathParam("id") String id,
 			@QueryParam("from") String from,
 			@DefaultValue("") @QueryParam("to") String to) {
-		ResponseBuilder response = null;
+		Response response = null;
 		UUID uuid = null;
 		DateTime fromDt = null;
 		DateTime toDt = null;
 		
-		logRequest("daily", puid, from, to);
+		logRequest("daily", id, from, to);
 		
 		try {
-			uuid = UUID.fromString(puid);
+			uuid = UUID.fromString(id);
 		} catch (Exception e) {
 			logWarning("UUID is malformed");
 		}
@@ -176,35 +235,84 @@ public class WaterService {
 		}
 
 		
-		if (isAvailable(userService)) { 
+		if (isAvailable(userService) && isAvailable(storage) && uuid != null) {
+			PlatformUser pu = null;
+			ElisDataObject edo = null;
+			
+			try {
+				edo = storage.readData(uuid);
+			} catch (StorageException e) {
+				pu = userService.getPlatformUser(uuid);
+			}
+			
+			// If either edo or pu are set, then we've found something worth
+			// having a look at.
 			if (isValidRequest(uuid, fromDt, toDt)) {
-				PlatformUser pu = userService.getPlatformUser(uuid);
-				if (pu != null)
+				if (pu != null) {
 					response = buildDailyWaterConsumptionResponseFrom(pu, fromDt, toDt);
-				else {
-					response = Response.status(Response.Status.NOT_FOUND);
-					logWarning("Could not find user: " + uuid.toString());
+				} else if (edo != null) {
+					// Any data object that isn't a Device or a DeviceSet are out
+					// of scope for what we're trying to do here.
+					if (edo instanceof WaterMeterSampler) {
+						response = buildDailyWaterConsumptionResponseFrom((WaterMeterSampler) edo, fromDt, toDt);
+					} else if (edo instanceof DeviceSet) {
+						response = buildDailyWaterConsumptionResponseFrom((DeviceSet) edo, fromDt, toDt);
+					} else {
+						response = ElisResponseBuilder.buildBadRequestResponse();
+					}
+				} else {
+					logWarning("No such user: " + id);
+					response = ElisResponseBuilder.buildNotFoundResponse();
 				}
 			} else {
-				response = Response.status(Response.Status.BAD_REQUEST);
+				response = ElisResponseBuilder.buildBadRequestResponse();
 			}
 		} else if (response == null) {
-			response = Response.serverError();
-			logError("User service not available");
+			response = ElisResponseBuilder.buildInternalServerErrorResponse();
+			logError("No user service found");
 		}
 		
-		return response.build();
+		return response;
 	}
 
-	private ResponseBuilder buildDailyWaterConsumptionResponseFrom(
+	private Response buildDailyWaterConsumptionResponseFrom(
 			PlatformUser pu, DateTime fromDt, DateTime toDt) {
-		
-		ResponseBuilder response;
+		Response response;
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getDailySamplesForMeters(
 				waterMeters, fromDt, toDt);
-		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_DAILY, pu);
-		response = Response.ok(gson.toJson(waterConsumptionBean));
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_DAILY, pu, fromDt, toDt);
+		response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+
+		return response;
+	}
+
+	private Response buildDailyWaterConsumptionResponseFrom(
+			WaterMeterSampler meter, DateTime fromDt, DateTime toDt) {
+		Response response;
+		List<WaterMeterSampler> waterMeters = Arrays.asList(meter);
+		Map<String, List<WaterSample>> samples = getDailySamplesForMeters(
+				waterMeters, fromDt, toDt);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_DAILY, meter, fromDt, toDt);
+		response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+
+		return response;
+	}
+
+	private Response buildDailyWaterConsumptionResponseFrom(
+			DeviceSet set, DateTime fromDt, DateTime toDt) {
+		Response response;
+		List<WaterMeterSampler> waterMeters = waterMetersInSet(set);
+		
+		if (waterMeters.size() > 0) {
+			Map<String, List<WaterSample>> samples = getDailySamplesForMeters(
+					waterMeters, fromDt, toDt);
+			WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_DAILY, set, fromDt, toDt);
+			response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+		} else {
+			response = ElisResponseBuilder.buildBadRequestResponse();
+		}
+		
 		return response;
 	}
 	
@@ -228,26 +336,26 @@ public class WaterService {
 	/**
 	 * Get water data usage aggregated by week between two timestamps. 
 	 * 
-	 * @param puid
+	 * @param id
 	 * @param from as unix timestamp
 	 * @param to as unix timestamp
 	 * @return
 	 */
 	@GET
-	@Path("/{puid}/weekly")
+	@Path("/{id}/weekly")
 	public Response getWeeklyWaterConsumption(
-			@PathParam("puid") String puid,
+			@PathParam("id") String id,
 			@QueryParam("from") String from,
 			@DefaultValue("") @QueryParam("to") String to) {
-		ResponseBuilder response = null;
+		Response response = null;
 		UUID uuid = null;
 		DateTime fromDt = null;
 		DateTime toDt = null;
 		
-		logRequest("weekly", puid, from, to);
+		logRequest("weekly", id, from, to);
 		
 		try {
-			uuid = UUID.fromString(puid);
+			uuid = UUID.fromString(id);
 		} catch (Exception e) {
 			logWarning("UUID is malformed");
 		}
@@ -258,36 +366,83 @@ public class WaterService {
 		} catch (NumberFormatException nfe) {
 			logWarning("Date is in the future or malformed");
 		}
-
 		
-		if (isAvailable(userService)) { 
+		if (isAvailable(userService) && isAvailable(storage) && uuid != null) {
+			PlatformUser pu = null;
+			ElisDataObject edo = null;
+			
+			try {
+				edo = storage.readData(uuid);
+			} catch (StorageException e) {
+				pu = userService.getPlatformUser(uuid);
+			}
+			
+			// If either edo or pu are set, then we've found something worth
+			// having a look at.
 			if (isValidRequest(uuid, fromDt, toDt)) {
-				PlatformUser pu = userService.getPlatformUser(uuid);
-				if (pu != null)
+				if (pu != null) {
 					response = buildWeeklyWaterConsumptionResponseFrom(pu, fromDt, toDt);
-				else {
-					logWarning("Could not find user: " + uuid.toString());
-					response = Response.status(Response.Status.NOT_FOUND);
+				} else if (edo != null) {
+					// Any data object that isn't a Device or a DeviceSet are out
+					// of scope for what we're trying to do here.
+					if (edo instanceof WaterMeterSampler) {
+						response = buildWeeklyWaterConsumptionResponseFrom((WaterMeterSampler) edo, fromDt, toDt);
+					} else if (edo instanceof DeviceSet) {
+						response = buildWeeklyWaterConsumptionResponseFrom((DeviceSet) edo, fromDt, toDt);
+					} else {
+						response = ElisResponseBuilder.buildBadRequestResponse();
+					}
+				} else {
+					logWarning("No such user: " + id);
+					response = ElisResponseBuilder.buildNotFoundResponse();
 				}
 			} else {
-				response = Response.status(Response.Status.BAD_REQUEST);
+				response = ElisResponseBuilder.buildBadRequestResponse();
 			}
 		} else if (response == null) {
-			response = Response.serverError();
-			logError("User service not available");
+			response = ElisResponseBuilder.buildInternalServerErrorResponse();
+			logError("No user service found");
 		}
 		
-		return response.build();
+		return response;
 	}
 
-	private ResponseBuilder buildWeeklyWaterConsumptionResponseFrom(
+	private Response buildWeeklyWaterConsumptionResponseFrom(
 			PlatformUser pu, DateTime from, DateTime to) {
-		ResponseBuilder response;
+		Response response;
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getWeeklySamplesForMeters(
 				waterMeters, from, to);
-		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_WEEKLY, pu);
-		response = Response.ok(gson.toJson(waterConsumptionBean));
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_WEEKLY, pu, from, to);
+		response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+		return response;
+	}
+
+	private Response buildWeeklyWaterConsumptionResponseFrom(
+			WaterMeterSampler meter, DateTime from, DateTime to) {
+		Response response;
+		List<WaterMeterSampler> waterMeters = Arrays.asList(meter);
+		Map<String, List<WaterSample>> samples = getWeeklySamplesForMeters(
+				waterMeters, from, to);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_WEEKLY, meter, from, to);
+		response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+		return response;
+	}
+
+	private Response buildWeeklyWaterConsumptionResponseFrom(
+			DeviceSet set, DateTime from, DateTime to) {
+		Response response;
+		List<WaterMeterSampler> waterMeters = waterMetersInSet(set);
+		
+		if (waterMeters.size() > 0) {
+			Map<String, List<WaterSample>> samples = getWeeklySamplesForMeters(
+					waterMeters, from, to);
+			WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_WEEKLY, set, from, to);
+			response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+		} else {
+			response = ElisResponseBuilder.buildBadRequestResponse();
+		}
+		
 		return response;
 	}
 	
@@ -311,26 +466,26 @@ public class WaterService {
 	/**
 	 * Get water data usage aggregated by month between two timestamps. 
 	 * 
-	 * @param puid
+	 * @param id
 	 * @param from as unix timestamp
 	 * @param to as unix timestamp
 	 * @return
 	 */
 	@GET
-	@Path("/{puid}/monthly")
+	@Path("/{id}/monthly")
 	public Response getMonthlyWaterConsumption(
-			@PathParam("puid") String puid,
+			@PathParam("id") String id,
 			@QueryParam("from") String from,
 			@DefaultValue("") @QueryParam("to") String to) {
-		ResponseBuilder response = null;
+		Response response = null;
 		UUID uuid = null;
 		DateTime fromDt = null;
 		DateTime toDt = null;
 		
-		logRequest("monthly", puid, from, to);
+		logRequest("monthly", id, from, to);
 		
 		try {
-			uuid = UUID.fromString(puid);
+			uuid = UUID.fromString(id);
 		} catch (Exception e) {
 			logWarning("UUID is malformed");
 		}
@@ -341,40 +496,87 @@ public class WaterService {
 		} catch (NumberFormatException nfe) {
 			logWarning("Date is in the future or malformed");
 		}
-
 		
-		if (isAvailable(userService)) { 
+		if (isAvailable(userService) && isAvailable(storage) && uuid != null) {
+			PlatformUser pu = null;
+			ElisDataObject edo = null;
+			
+			try {
+				edo = storage.readData(uuid);
+			} catch (StorageException e) {
+				pu = userService.getPlatformUser(uuid);
+			}
+			
+			// If either edo or pu are set, then we've found something worth
+			// having a look at.
 			if (isValidRequest(uuid, fromDt, toDt)) {
-				PlatformUser pu = userService.getPlatformUser(uuid);
-				if (pu != null)
+				if (pu != null) {
 					response = buildMonthlyWaterConsumptionResponseFrom(pu, fromDt, toDt);
-				else {
-					logWarning("No such user: " + puid);
-					response = Response.status(Response.Status.NOT_FOUND);
+				} else if (edo != null) {
+					// Any data object that isn't a Device or a DeviceSet are out
+					// of scope for what we're trying to do here.
+					if (edo instanceof WaterMeterSampler) {
+						response = buildMonthlyWaterConsumptionResponseFrom((WaterMeterSampler) edo, fromDt, toDt);
+					} else if (edo instanceof DeviceSet) {
+						response = buildMonthlyWaterConsumptionResponseFrom((DeviceSet) edo, fromDt, toDt);
+					} else {
+						response = ElisResponseBuilder.buildBadRequestResponse();
+					}
+				} else {
+					logWarning("No such user: " + id);
+					response = ElisResponseBuilder.buildNotFoundResponse();
 				}
 			} else {
-				response = Response.status(Response.Status.BAD_REQUEST);
+				response = ElisResponseBuilder.buildBadRequestResponse();
 			}
 		} else if (response == null) {
-			response = Response.serverError();
+			response = ElisResponseBuilder.buildInternalServerErrorResponse();
 			logError("No user service found");
 		}
 
-		return response.build();
+		return response;
 	}
 
 	private boolean isValidRequest(UUID uuid, DateTime fromDt, DateTime toDt) {
 		return (uuid != null && fromDt != null && toDt != null);
 	}
 
-	private ResponseBuilder buildMonthlyWaterConsumptionResponseFrom(
+	private Response buildMonthlyWaterConsumptionResponseFrom(
 			PlatformUser pu, DateTime from, DateTime to) {
-		ResponseBuilder response;
+		Response response;
 		List<WaterMeterSampler> waterMeters = waterMetersForUser(pu);
 		Map<String, List<WaterSample>> samples = getMonthlySamplesForMeters(
 				waterMeters, from, to);
 		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_MONTHLY, pu);
-		response = Response.ok(gson.toJson(waterConsumptionBean));
+		response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+		return response;
+	}
+
+	private Response buildMonthlyWaterConsumptionResponseFrom(
+			WaterMeterSampler meter, DateTime from, DateTime to) {
+		Response response;
+		List<WaterMeterSampler> waterMeters = Arrays.asList(meter);
+		Map<String, List<WaterSample>> samples = getMonthlySamplesForMeters(
+				waterMeters, from, to);
+		WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_MONTHLY, meter);
+		response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+		return response;
+	}
+
+	private Response buildMonthlyWaterConsumptionResponseFrom(
+			DeviceSet set, DateTime from, DateTime to) {
+		Response response;
+		List<WaterMeterSampler> waterMeters = waterMetersInSet(set);
+		
+		if (waterMeters.size() > 0) {
+			Map<String, List<WaterSample>> samples = getMonthlySamplesForMeters(
+					waterMeters, from, to);
+			WaterBean waterConsumptionBean = buildWaterBean(samples, QUERY_PERIOD_MONTHLY, set);
+			response = ElisResponseBuilder.buildOKResponse(waterConsumptionBean);
+		} else {
+			response = ElisResponseBuilder.buildBadRequestResponse();
+		}
+		
 		return response;
 	}
 
@@ -427,6 +629,18 @@ public class WaterService {
 		return meters;
 	}
 
+	private List<WaterMeterSampler> waterMetersInSet(DeviceSet set) {
+		List<WaterMeterSampler> meters = new ArrayList<>();
+		
+		for (Device device : set) {
+			if (device instanceof WaterMeterSampler) {
+				logInfo("Found water metering device: " + device.getName());
+				meters.add((WaterMeterSampler) device);
+			}
+		}
+		return meters;
+	}
+
 	private void tryAdd(Map<String, List<WaterSample>> samples,
 			WaterMeterSampler sampler) {
 		try {
@@ -465,7 +679,56 @@ public class WaterService {
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
 			String queryPeriod, PlatformUser pu) {
-		return WaterBeanFactory.create(samples, queryPeriod, pu.getUserId().toString());
+		return WaterBeanFactory.create(samples, queryPeriod, pu.getUserId().toString(),
+				WaterBeanFactory.IS_USER);
+	}
+
+	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
+			String queryPeriod, PlatformUser pu, DateTime when) {
+		return WaterBeanFactory.create(samples, queryPeriod, pu.getUserId().toString(),
+				WaterBeanFactory.IS_USER, when);
+	}
+
+	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
+			String queryPeriod, PlatformUser pu, DateTime from, DateTime to) {
+		return WaterBeanFactory.create(samples, queryPeriod, pu.getUserId().toString(),
+				WaterBeanFactory.IS_USER, from, to);
+	}
+
+	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
+			String queryPeriod, Device device) {
+		return WaterBeanFactory.create(samples, queryPeriod, device.getDataId().toString(),
+				WaterBeanFactory.IS_DEVICE);
+	}
+
+	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
+			String queryPeriod, Device device, DateTime when) {
+		return WaterBeanFactory.create(samples, queryPeriod, device.getDataId().toString(),
+				WaterBeanFactory.IS_DEVICE, when);
+	}
+
+	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
+			String queryPeriod, Device device, DateTime from, DateTime to) {
+		return WaterBeanFactory.create(samples, queryPeriod, device.getDataId().toString(),
+				WaterBeanFactory.IS_DEVICE, from, to);
+	}
+
+	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
+			String queryPeriod, DeviceSet deviceSet) {
+		return WaterBeanFactory.create(samples, queryPeriod, deviceSet.getDataId().toString(),
+				WaterBeanFactory.IS_DEVICESET);
+	}
+
+	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
+			String queryPeriod, DeviceSet deviceSet, DateTime when) {
+		return WaterBeanFactory.create(samples, queryPeriod, deviceSet.getDataId().toString(),
+				WaterBeanFactory.IS_DEVICESET, when);
+	}
+
+	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
+			String queryPeriod, DeviceSet deviceSet, DateTime from, DateTime to) {
+		return WaterBeanFactory.create(samples, queryPeriod, deviceSet.getDataId().toString(),
+				WaterBeanFactory.IS_DEVICESET, from, to);
 	}
 	
 	private void logRequest(String endpoint, String puid, String from, String to) {
@@ -495,6 +758,14 @@ public class WaterService {
 
 	protected void unbindUserService(UserService us) {
 		this.userService = null;
+	}
+
+	protected void bindStorage(Storage storage) {
+		this.storage = storage;
+	}
+
+	protected void unbindStorage(Storage storage) {
+		this.storage = null;
 	}
 	
 	protected void bindLog(LogService log) {
