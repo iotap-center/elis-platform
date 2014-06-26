@@ -42,17 +42,6 @@ public class MkbGateway implements Gateway {
 	}
 
 	@Override
-	public int getId() {
-		// not used
-		return 0;
-	}
-
-	@Override
-	public void setId(int id) throws StaticEntityException {
-		// not used
-	}
-
-	@Override
 	public String getName() {
 		return gatewayName;
 	}

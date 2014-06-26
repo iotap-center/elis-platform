@@ -92,12 +92,10 @@ public class EonGateway implements Gateway {
 		this.httpBridge = httpBridge;
 	}
 
-	@Override
 	public int getId() {
 		return this.gatewayId;
 	}
 
-	@Override
 	public void setId(int id) throws StaticEntityException {
 		this.gatewayId = id;
 	}

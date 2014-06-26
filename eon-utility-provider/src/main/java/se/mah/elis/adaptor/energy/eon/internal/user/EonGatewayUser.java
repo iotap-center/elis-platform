@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
+import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
@@ -23,7 +24,7 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 public class EonGatewayUser implements GatewayUser {
 
 	private UUID uuid;
-	private Gateway gateway;
+	private EonGateway gateway;
 	private EonGatewayUserIdentifer gatewayUserIdentifier;
 	private DateTime created = DateTime.now();
 
@@ -62,7 +63,7 @@ public class EonGatewayUser implements GatewayUser {
 
 	@Override
 	public void setGateway(Gateway gateway) {
-		this.gateway = gateway;
+		this.gateway = (EonGateway) gateway;
 	}
 
 	@Override
