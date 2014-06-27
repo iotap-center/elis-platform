@@ -32,10 +32,11 @@ public interface ElectricitySampler extends Sampler {
 	/**
 	 * Gets a list of energy usage samples between the from and to date.
 	 * 
-	 * @param from
-	 * @param to
-	 * @return 
-	 * @throws SensorFailedException
+	 * @param from The instant when the sampling starts. This instant is
+	 * 		inclusive.
+	 * @param to The instant when the sampling stops this instant is exclusive.
+	 * @return A list of samples.
+	 * @throws SensorFailedException if the samples couldn't be fetched.
 	 */
 	List<ElectricitySample> getSamples(DateTime from, DateTime to)
 			throws SensorFailedException;
