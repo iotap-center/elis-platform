@@ -3,9 +3,7 @@ package se.mah.elis.external.water;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,7 +14,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
@@ -33,7 +30,6 @@ import se.mah.elis.adaptor.device.api.entities.devices.WaterMeterSampler;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.data.WaterSample;
-import se.mah.elis.external.beans.EnvelopeBean;
 import se.mah.elis.external.beans.helpers.ElisResponseBuilder;
 import se.mah.elis.external.water.beans.WaterBean;
 import se.mah.elis.external.water.beans.WaterBeanFactory;
@@ -42,9 +38,6 @@ import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * This is a HTTP service to retrieve water data statistics.
@@ -66,8 +59,6 @@ public class WaterService {
 	private static final String QUERY_PERIOD_WEEKLY = "weekly";
 	private static final String QUERY_PERIOD_MONTHLY = "monthly";
 
-	private Gson gson;
-
 	@Reference
 	private UserService userService;
 
@@ -78,7 +69,6 @@ public class WaterService {
 	private LogService log;
 
 	public WaterService() {
-		gson = new GsonBuilder().setPrettyPrinting().create();
 	}
 	
 	public WaterService(UserService us, Storage storage, LogService log) {
