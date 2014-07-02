@@ -1,19 +1,18 @@
 package se.mah.elis.external.energy;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
@@ -23,13 +22,17 @@ import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
-import se.mah.elis.adaptor.device.api.entities.devices.PowerSwitch;
+import se.mah.elis.adaptor.device.api.entities.devices.MainPowerMeter;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.ElectricitySample;
+import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.external.beans.helpers.ElisResponseBuilder;
 import se.mah.elis.external.energy.beans.EnergyBean;
 import se.mah.elis.external.energy.beans.EnergyBeanFactory;
+import se.mah.elis.services.storage.Storage;
+import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
@@ -47,6 +50,9 @@ public class EnergyService {
 	private UserService userService;
 	
 	@Reference
+	private Storage storage;
+	
+	@Reference
 	private LogService log;
 
 	private Gson gson;
@@ -55,36 +61,52 @@ public class EnergyService {
 		gson = new GsonBuilder().setPrettyPrinting().create();
 	}
 	
-	public EnergyService(UserService userService, LogService log) {
+	public EnergyService(UserService userService, Storage storage, LogService log) {
 		this();
+		this.storage = storage;
 		this.userService = userService;
 		this.log = log;
 	}
 
 	@GET
-	@Path("/{puid}/now")
-	// TODO: make this endpoint accept device and device set ids as well.
-	public Response getCurrentEnergyConsumption(@PathParam("puid") String puid) {
+	@Path("/{id}/now")
+	public Response getCurrentEnergyConsumption(@PathParam("id") String id) {
 		Response response = null;
+		PlatformUser pu = null;
+		ElisDataObject edo = null;
 		UUID uuid = null;
 		
-		logRequest("now", puid);
+		logRequest("now", id);
+		
+		// Count on things being bad
+		response = ElisResponseBuilder.buildBadRequestResponse();
 		
 		try {
-			uuid = UUID.fromString(puid);
+			uuid = UUID.fromString(id);
 		} catch (Exception e) {
-			response = ElisResponseBuilder.buildBadRequestResponse();
 			logWarning("Bad UUID");
 		}
 		
-		if (userService != null && uuid != null) {
-			PlatformUser pu = userService.getPlatformUser(uuid);
-			if (pu != null)
-				response = buildCurrentEnergyConsumptionResponse("now", pu);
-			else {
-				response = ElisResponseBuilder.buildNotFoundResponse();
-				logWarning("Could not find user: " + uuid.toString());
+		if (userService != null && storage != null && uuid != null) {
+			try {
+				edo = storage.readData(uuid);
+			} catch (StorageException e) {
+				pu = userService.getPlatformUser(uuid);
 			}
+			try {
+				if (pu != null) {
+					response = buildCurrentEnergyConsumptionResponse("now", pu);
+				} else if (edo != null) {
+					if (edo instanceof ElectricitySampler) {
+						response = buildCurrentEnergyConsumptionResponse("now", (ElectricitySampler) edo);
+					} else if (edo instanceof DeviceSet) {
+						response = buildCurrentEnergyConsumptionResponse("now", (DeviceSet) edo);
+					}
+				} else {
+					response = ElisResponseBuilder.buildNotFoundResponse();
+					logWarning("Could not find user: " + uuid.toString());
+				}
+			} catch (SensorFailedException e) {}
 		} else if (response == null) {
 			response = ElisResponseBuilder.buildInternalServerErrorResponse();
 			logError("User service not available");
@@ -94,24 +116,91 @@ public class EnergyService {
 	}
 
 	private Response buildCurrentEnergyConsumptionResponse(
-			String period, PlatformUser pu) {
-		List<ElectricitySampler> availableEnergyMeters = getMeters(pu);
-		EnergyBean bean = EnergyBeanFactory.create(availableEnergyMeters, period, pu);
+			String period, PlatformUser pu) throws SensorFailedException {
+		List<ElectricitySampler> meters = getMeters(pu);
+		meters = filterOutSupersededMeters(meters);
+		Map<ElectricitySampler, List<ElectricitySample>> samples = fetchSamples(meters);
+		EnergyBean bean = EnergyBeanFactory.create(samples, period, pu);
 		return ElisResponseBuilder.buildOKResponse(bean);
+	}
+
+	private Response buildCurrentEnergyConsumptionResponse(
+			String period, ElectricitySampler sampler) throws SensorFailedException {
+		List<ElectricitySampler> meters = Arrays.asList(sampler);
+		meters = filterOutSupersededMeters(meters);
+		Map<ElectricitySampler, List<ElectricitySample>> samples = fetchSamples(meters);
+		EnergyBean bean = EnergyBeanFactory.create(samples, period, sampler);
+		return ElisResponseBuilder.buildOKResponse(bean);
+	}
+
+	private Response buildCurrentEnergyConsumptionResponse(
+			String period, DeviceSet set) throws SensorFailedException {
+		Response response = null;
+		List<ElectricitySampler> meters = getMetersInSet(set);
+		meters = filterOutSupersededMeters(meters);
+		
+		if (meters.size() > 0) {
+			Map<ElectricitySampler, List<ElectricitySample>> samples = fetchSamples(meters);
+			EnergyBean bean = EnergyBeanFactory.create(samples, period, set);
+			response = ElisResponseBuilder.buildOKResponse(bean);
+		} else {
+			response = ElisResponseBuilder.buildBadRequestResponse();
+		}
+		
+		return response;
 	}
 	
 	@GET
-	@Path("/{puid}/hourly")
-	// TODO: make this endpoint accept device and device set ids as well.
-	public Response getHourlyEnergyConsumption(@PathParam("puid") String puid,
+	@Path("/{id}/hourly")
+	public Response getHourlyEnergyConsumption(@PathParam("id") String id,
 			@QueryParam("from") String from,
 			@QueryParam("to") String to) {
-		Response response = ElisResponseBuilder.buildInternalServerErrorResponse();
+		logRequest("hourly", id, from, to);
+		
+		return getHistoricEnergyConsumtion(id, from, to, "hourly");
+	}
+	
+	@GET
+	@Path("/{id}/daily")
+	public Response getDailyEnergyConsumption(@PathParam("id") String id,
+			@QueryParam("from") String from,
+			@QueryParam("to") String to) {
+		logRequest("daily", id, from, to);
+		
+		return getHistoricEnergyConsumtion(id, from, to, "daily");
+	}
+	
+	@GET
+	@Path("/{id}/weekly")
+	public Response getWeeklyEnergyConsumption(@PathParam("id") String id,
+			@QueryParam("from") String from,
+			@QueryParam("to") String to) {
+		logRequest("weekly", id, from, to);
+		
+		return getHistoricEnergyConsumtion(id, from, to, "weekly");
+	}
+	
+	@GET
+	@Path("/{id}/monthly")
+	public Response getMonthlyEnergyConsumption(@PathParam("id") String id,
+			@QueryParam("from") String from,
+			@QueryParam("to") String to) {
+		logRequest("monthly", id, from, to);
+		
+		return getHistoricEnergyConsumtion(id, from, to, "monthly");
+	}
+	
+	private Response getHistoricEnergyConsumtion(String id, String from,
+			String to, String periodicity) {
+		Response response = null;
+		PlatformUser pu = null;
+		ElisDataObject edo = null;
 		UUID uuid = null;
 		DateTime startDate = null;
 		DateTime endDate = null;
 		
-		logRequest("hourly", puid, from, to);
+		// Count on things being bad
+		response = ElisResponseBuilder.buildBadRequestResponse();
 		
 		if (to == null || to.length() == 0) {
 			to = "0";
@@ -119,9 +208,8 @@ public class EnergyService {
 		
 		try {
 			// Try to parse the platform user id.
-			uuid = UUID.fromString(puid);
+			uuid = UUID.fromString(id);
 		} catch (Exception e) {
-			response = ElisResponseBuilder.buildBadRequestResponse();
 			logWarning("Bad UUID");
 			return response;
 		}
@@ -143,19 +231,33 @@ public class EnergyService {
 				throw new Exception();
 			}
 		} catch (Exception e) {
-			response = ElisResponseBuilder.buildBadRequestResponse();
 			logWarning("Bad dates");
 			return response;
 		}
 		
-		if (userService != null && uuid != null) {
-			PlatformUser pu = userService.getPlatformUser(uuid);
-			if (pu != null) {
-				response = buildPeriodicEnergyConsumptionResponse("hourly", startDate, endDate, pu);
-			} else {
-				response = ElisResponseBuilder.buildNotFoundResponse();
-				logWarning("Could not find user: " + uuid.toString());
+		if (userService != null && storage != null && uuid != null) {
+			try {
+				edo = storage.readData(uuid);
+			} catch (StorageException e) {
+				pu = userService.getPlatformUser(uuid);
 			}
+			try {
+				if (pu != null) {
+					response = buildPeriodicEnergyConsumptionResponse(periodicity,
+							startDate, endDate, pu);
+				} else if (edo != null) {
+					if (edo instanceof ElectricitySampler) {
+						response = buildPeriodicEnergyConsumptionResponse(periodicity,
+								startDate, endDate, (ElectricitySampler) edo);
+					} else if (edo instanceof DeviceSet) {
+						response = buildPeriodicEnergyConsumptionResponse(periodicity,
+								startDate, endDate, (DeviceSet) edo);
+					}
+				} else {
+					response = ElisResponseBuilder.buildNotFoundResponse();
+					logWarning("Could not find user: " + uuid.toString());
+				}
+			} catch (SensorFailedException e) {}
 		} else if (response == null) {
 			logError("User service not available");
 		}
@@ -164,19 +266,53 @@ public class EnergyService {
 	}
 
 	private Response buildPeriodicEnergyConsumptionResponse(
-			String period, DateTime startDate, DateTime endDate, PlatformUser pu) {
+			String period, DateTime startDate, DateTime endDate, PlatformUser pu)
+					throws SensorFailedException {
 		List<ElectricitySampler> meters = getMeters(pu);
+		meters = filterOutSupersededMeters(meters);
+		Map<ElectricitySampler, List<ElectricitySample>> samples =
+				fetchSamples(meters, startDate, endDate);
+
 		logDebug("Building periodic response with " + meters.size() + " meters, starting at " + startDate + " and ending at " + endDate);
-		EnergyBean bean = EnergyBeanFactory.create(meters, period, startDate, endDate, pu);
 		
-		List<ElectricitySample> samples = EnergyBeanFactory.pCollectSamplesFor(meters.get(0), startDate, endDate);
+		EnergyBean bean = EnergyBeanFactory.create(samples, period, startDate, endDate, pu);
+		
+		return ElisResponseBuilder.buildOKResponse(bean);
+	}
+
+	private Response buildPeriodicEnergyConsumptionResponse(
+			String period, DateTime startDate, DateTime endDate,
+			ElectricitySampler meter)
+					throws SensorFailedException {
+		List<ElectricitySampler> meters = Arrays.asList(meter);
+		Map<ElectricitySampler, List<ElectricitySample>> samples =
+				fetchSamples(meters, startDate, endDate);
+		
+		logDebug("Building periodic response with " + meters.size() + " meters, starting at " + startDate + " and ending at " + endDate);
+		
+		EnergyBean bean = EnergyBeanFactory.create(samples, period, startDate, endDate, meter);
+		
+		return ElisResponseBuilder.buildOKResponse(bean);
+	}
+
+	private Response buildPeriodicEnergyConsumptionResponse(
+			String period, DateTime startDate, DateTime endDate, DeviceSet set)
+					throws SensorFailedException {
+		List<ElectricitySampler> meters = getMetersInSet(set);
+		meters = filterOutSupersededMeters(meters);
+		Map<ElectricitySampler, List<ElectricitySample>> samples =
+				fetchSamples(meters, startDate, endDate);
+		
+		logDebug("Building periodic response with " + meters.size() + " meters, starting at " + startDate + " and ending at " + endDate);
+		
+		EnergyBean bean = EnergyBeanFactory.create(samples, period, startDate, endDate, set);
 		
 		return ElisResponseBuilder.buildOKResponse(bean);
 	}
 
 	private List<ElectricitySampler> getMeters(PlatformUser pu) {
 		User[] users = userService.getUsers(pu);
-		List<Device> devices = getDevices(users);
+		List<ElectricitySampler> devices = getDevices(users);
 		List<ElectricitySampler> meters = new ArrayList<ElectricitySampler>();
 		String info = "Seems to have found " + meters.size() + " meters:\n";
 		
@@ -192,17 +328,52 @@ public class EnergyService {
 		return meters;
 	}
 
-	private List<Device> getMeters(GatewayUser user) {
-		List<Device> meters = new ArrayList<>();
+	private List<ElectricitySampler> getMeters(GatewayUser user) {
+		List<ElectricitySampler> meters = new ArrayList<>();
 		for (Device device : user.getGateway()) {
 			if (device instanceof ElectricitySampler)
-				meters.add(device);
+				meters.add((ElectricitySampler) device);
 		}
 		return meters;
 	}
 
-	private List<Device> getDevices(User[] users) {
-		List<Device> meters = new ArrayList<>();
+	private List<ElectricitySampler> getMetersInSet(DeviceSet set) {
+		List<ElectricitySampler> meters = new ArrayList<ElectricitySampler>();
+		
+		for (Device device : set) {
+			if (device instanceof ElectricitySampler) {
+				meters.add((ElectricitySampler) device);
+			}
+		}
+		
+		return meters;
+	}
+	
+	private List<ElectricitySampler> filterOutSupersededMeters(List<ElectricitySampler> meters) {
+		List<MainPowerMeter> mainMeters = new ArrayList<MainPowerMeter>();
+		
+		for (Device device : meters) {
+			// We'd better take all the main power meters into a special list,
+			// so that we can remove any devices being present in them later on
+			if (device instanceof MainPowerMeter) {
+				mainMeters.add((MainPowerMeter) device);
+			}
+		}
+		
+		// Now, remove meters which are in fact superseded by main power meters
+		MainPowerMeter[] mms = mainMeters.toArray(new MainPowerMeter[0]);
+		for (int i = 0; i < mms.length; i++) {
+			Device[] devices = (Device[]) ((MainPowerMeter) mms[i]).toArray();
+			for (int j = 0; j < devices.length; j++) {
+				meters.remove(devices[j]);
+			}
+		}
+		
+		return meters;
+	}
+
+	private List<ElectricitySampler> getDevices(User[] users) {
+		List<ElectricitySampler> meters = new ArrayList<>();
 		for (User user : users) {
 			if (user instanceof GatewayUser) {
 				logDebug("Found a GatewayUser");
@@ -212,6 +383,78 @@ public class EnergyService {
 		logDebug("Found " + meters.size() + " devices");
 		return meters;
 	}
+	
+	/**
+	 * Fetches current samples from a group of meters.
+	 * 
+	 * @param meters The meters to fetch samples from
+	 * @return A list of samples
+	 * @throws SensorFailedException If the samples couldn't be fetched.
+	 * @since 1.0
+	 */
+	private Map<ElectricitySampler, List<ElectricitySample>> fetchSamples(
+			List<ElectricitySampler> meters) throws SensorFailedException {
+		Map<ElectricitySampler, List<ElectricitySample>> samples =
+				new HashMap<ElectricitySampler, List<ElectricitySample>>();
+		
+		for (ElectricitySampler meter : meters) {
+			samples.put(meter, Arrays.asList(meter.getSample()));
+		}
+		
+		return samples;
+	}
+	
+	/**
+	 * Fetches samples from a group of meters from a moment of time up until
+	 * a later moment in time.
+	 * 
+	 * @param meters The meters to fetch samples from
+	 * @param from The instant to start fetching samples from
+	 * @param to The instant up until which we'll sample.
+	 * @return A list of samples
+	 * @throws SensorFailedException If the samples couldn't be fetched.
+	 * @since 1.0
+	 */
+	private Map<ElectricitySampler, List<ElectricitySample>> fetchSamples(
+			List<ElectricitySampler> meters, DateTime from, DateTime to)
+					throws SensorFailedException {
+		Map<ElectricitySampler, List<ElectricitySample>> sampleList =
+				new HashMap<ElectricitySampler, List<ElectricitySample>>();
+		
+		for (ElectricitySampler meter : meters) {
+			// First, fetch all samples
+			List<ElectricitySample> samples = meter.getSamples(from, to);
+			
+			// Now, check all samples for sanity
+			List<ElectricitySample> killEmAll =
+					new ArrayList<ElectricitySample>();
+			if (samples != null) {
+				for (ElectricitySample sample : samples) {
+					if (sample.getSampleTimestamp().isBefore(from) ||
+						sample.getSampleTimestamp().isAfter(to)) {
+						killEmAll.add(sample);
+					}
+				}
+			}
+			
+			// OK, some might have been bad. Remove them.
+			for (ElectricitySample sample : killEmAll) {
+				samples.remove(sample);
+			}
+			
+			// If no fitting samples were found, let's throw an exception.
+			if (samples.size() == 0) {
+				throw new SensorFailedException();
+			}
+			
+			// Then, add them to our list
+			sampleList.put(meter, samples);
+		}
+		
+		return sampleList;
+	}
+	
+	// OSGi-related stuff below
 	
 	private void logRequest(String endpoint, String puid, String from, String to) {
 		logInfo("Request: /energy/" + puid + "/" + endpoint
@@ -244,6 +487,14 @@ public class EnergyService {
 
 	protected void bindUserService(UserService userService) {
 		this.userService = userService;
+	}
+	
+	protected void bindStorage(Storage storage) {
+		this.storage = storage;
+	}
+	
+	protected void unbindStorage(Storage storage) {
+		this.storage = null;
 	}
 
 	protected void unbindLog(LogService log) {

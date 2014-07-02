@@ -5,28 +5,40 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.external.beans.PeriodicityBean;
 
 @XmlRootElement
 public class EnergyBean {
 
 	@XmlElement
-	public String puid;
+	public String user;
+
+	@XmlElement
+	public String device;
+
+	@XmlElement
+	public String deviceset;
 	
 	@XmlElement
-	public String period;
+	public PeriodicityBean period;
 	
 	@XmlElement
-	public List<EnergyDeviceBean> devices;
+	public List<EnergyDataBean> samples;
 	
 	@XmlElement
 	public EnergySummaryBean summary;
 	
+	public EnergyBean() {
+		period = new PeriodicityBean();
+	}
+	
 	public String toString() {
-		String out = puid + ", " + period + ", [";
+		String uuid = user + device + deviceset;
+		
+		String out = uuid + ", " + period + ", [";
 		boolean more = false;
 		
-		for (EnergyDeviceBean bean : devices) {
+		for (EnergyDataBean bean : samples) {
 			if (more) {
 				out += ", ";
 			} else {
