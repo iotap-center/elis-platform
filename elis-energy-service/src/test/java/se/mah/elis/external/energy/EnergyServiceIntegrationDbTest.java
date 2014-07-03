@@ -42,7 +42,7 @@ public class EnergyServiceIntegrationDbTest extends JerseyTest {
 
 	protected Application configure() {
 		ResourceConfig config = new ResourceConfig();
-		config.register(new EnergyService(userService, log));
+		config.register(new EnergyService(userService, storage, log));
 		return config;
 	}
 	

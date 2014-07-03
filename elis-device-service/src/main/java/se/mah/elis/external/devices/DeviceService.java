@@ -17,10 +17,14 @@ import org.osgi.service.log.LogService;
 
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
+import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
+import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.external.beans.helpers.ElisResponseBuilder;
 import se.mah.elis.external.devices.beans.DeviceBean;
 import se.mah.elis.external.devices.beans.DeviceSetBean;
+import se.mah.elis.services.storage.Storage;
+import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
@@ -49,6 +53,9 @@ public class DeviceService {
 
 	@Reference
 	private UserService userService;
+	
+	@Reference
+	private Storage storage;
 
 	@Reference
 	private LogService log;
@@ -57,9 +64,10 @@ public class DeviceService {
 		gson = new GsonBuilder().setPrettyPrinting().create();
 	}
 
-	public DeviceService(UserService us, LogService log) {
+	public DeviceService(UserService us, Storage storage, LogService log) {
 		this();
 		userService = us;
+		this.storage = storage;
 	}
 
 	/**
@@ -87,10 +95,28 @@ public class DeviceService {
 			logWarning("Bad UUID");
 		}
 
-		if (userService != null && uuid != null) {
-			PlatformUser pu = userService.getPlatformUser(uuid);
+		if (userService != null && storage != null && uuid != null) {
+			PlatformUser pu = null;
+			ElisDataObject edo = null;
+			
+			try {
+				edo = storage.readData(uuid);
+			} catch (StorageException e) {
+				pu = userService.getPlatformUser(uuid);
+			}
+			
+			// If either edo or pu are set, then we've found something worth
+			// having a look at.
 			if (pu != null) {
 				response = buildDeviceListResponseFrom(pu);
+			} else if (edo != null) {
+				// Any data object that isn't a Device or a DeviceSet are out
+				// of scope for what we're trying to do here.
+				if (edo instanceof Device) {
+					response = buildDeviceResponseFor((Device) edo);
+				} else if (edo instanceof DeviceSet) {
+					response = buildDeviceResponseFor((DeviceSet) edo);
+				}
 			} else {
 				response = ElisResponseBuilder.buildNotFoundResponse();
 				logWarning("Could not find user: " + id);
@@ -113,6 +139,25 @@ public class DeviceService {
 		return response;
 	}
 
+	private Response buildDeviceResponseFor(Device device) {
+		Response response;
+		DeviceBean bean = new DeviceBean();
+		bean.id = device.getDataId().toString();
+		bean.description = device.getDescription();
+		bean.name = device.getName();
+		response = ElisResponseBuilder.buildOKResponse(bean);
+		return response;
+	}
+
+	private Response buildDeviceResponseFor(DeviceSet set) {
+		Response response;
+		DeviceSetBean bean = new DeviceSetBean();
+		bean.puid = set.getOwnerId().toString();
+		bean.devices = convertDevicesToBeans(set);
+		response = ElisResponseBuilder.buildOKResponse(bean);
+		return response;
+	}
+
 	private List<DeviceBean> getAllDevicesFor(User[] users) {
 		List<DeviceBean> devices = new ArrayList<>();
 		for (User user : users) {
@@ -125,9 +170,9 @@ public class DeviceService {
 		return devices;
 	}
 
-	private List<DeviceBean> convertDevicesToBeans(Gateway gateway) {
+	private List<DeviceBean> convertDevicesToBeans(DeviceSet set) {
 		List<DeviceBean> devices = new ArrayList<>();
-		for (Device device : gateway) {
+		for (Device device : set) {
 			DeviceBean bean = new DeviceBean();
 			bean.id = device.getId().toString();
 			bean.description = device.getDescription();
@@ -143,6 +188,14 @@ public class DeviceService {
 
 	protected void unbindUserService(UserService us) {
 		this.userService = null;
+	}
+
+	protected void bindStorage(Storage storage) {
+		this.storage = storage;
+	}
+
+	protected void unbindStorage(Storage storage) {
+		this.storage = null;
 	}
 
 	private void logWarning(String msg) {

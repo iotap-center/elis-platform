@@ -160,7 +160,7 @@ public class EonDeviceFactoryTest {
 
 	private void createSamplePowerSwitchMeterAtRonnen() throws ParseException {
 		POWERSWITCH_METER_AT_RONNEN = (JSONObject) parser
-				.parse(EonParserTest.SAMPLE_POWERMETER_AT_RONNEN);
+				.parse(EonParserTest.SAMPLE_MAIN_POWERMETER);
 	}
 
 	private void createSamplePowerMeter() throws ParseException {

@@ -33,6 +33,7 @@ import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.WaterSample;
 import se.mah.elis.external.beans.EnvelopeBean;
 import se.mah.elis.external.water.beans.WaterBean;
+import se.mah.elis.services.storage.Storage;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
@@ -50,12 +51,13 @@ public class UglyWaterServiceTest extends JerseyTest {
 
 	private static final String TEST_UUID = "00001111-2222-3333-4444-555566667777";
 	private static UserService userService;
+	private static Storage storage;
 	private static LogService log;
 	
 	@Override
 	protected Application configure() {
 		ResourceConfig config = new ResourceConfig();
-		config.register(new WaterService(userService, log));
+		config.register(new WaterService(userService, storage, log));
 		return config;
 	}
 	

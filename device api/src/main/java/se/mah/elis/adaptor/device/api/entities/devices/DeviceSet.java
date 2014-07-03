@@ -19,25 +19,6 @@ import se.mah.elis.exceptions.StaticEntityException;
 public interface DeviceSet extends Collection<Device>, ElisDataObject {
 	
 	/**
-	 * This method is used to get the id number of the set.
-	 * 
-	 * @return The id number of the set.
-	 * @since 1.0
-	 * @deprecated
-	 */
-	int getId();
-	
-	/**
-	 * This method is used to set the id number of the set.
-	 * 
-	 * @param id The set's new id number.
-	 * @throws StaticEntityException if the set's id is locked.
-	 * @since 1.0
-	 * @deprecated
-	 */
-	void setId(int id) throws StaticEntityException;
-	
-	/**
 	 * This method is used to get the name of this set.
 	 * 
 	 * @return The name of the set.

@@ -53,7 +53,7 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 
 	protected Application configure() {
 		ResourceConfig config = new ResourceConfig();
-		config.register(new WaterService(userService, log));
+		config.register(new WaterService(userService, storage, log));
 		return config;
 	}
 
@@ -163,10 +163,10 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 				"/water/" + platformUserId() + "/now")
 				.request().get(String.class);
 		WaterBean bean = gson.fromJson(data, WaterBean.class);
-		assertEquals(platformUserId(), bean.puid);
+		assertEquals(platformUserId(), bean.user);
 		assertEquals("now", bean.period);
-		assertTrue(bean.devices.size() > 0);
-		assertTrue(bean.devices.get(0).data.size() > 0);
+		assertTrue(bean.samples.size() > 0);
+		assertTrue(bean.samples.size() > 0);
 	}
 
 	private String platformUserId() {

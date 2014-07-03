@@ -21,6 +21,7 @@ public interface Device extends ElisDataObject {
 	 * 
 	 * @return The id number of the device.
 	 * @since 1.0
+	 * @deprecated Since 2.0.0
 	 */
 	DeviceIdentifier getId();
 	
@@ -30,6 +31,7 @@ public interface Device extends ElisDataObject {
 	 * @param id The device's new id number.
 	 * @throws StaticEntityException if the device's id is locked.
 	 * @since 1.0
+	 * @deprecated Since 2.0.0
 	 */
 	void setId(DeviceIdentifier id) throws StaticEntityException;
 	

@@ -3,6 +3,8 @@ package se.mah.elis.external.beans.helpers;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.joda.time.DateTime;
+
 import se.mah.elis.external.beans.EnvelopeBean;
 import se.mah.elis.external.beans.ErrorBean;
 
@@ -40,7 +42,7 @@ public class ElisResponseBuilder {
 	 */
 	public static Response buildOKResponse(Object payload) {
 		Response response = null;
-		Gson gson = new GsonBuilder().setPrettyPrinting().create(); 
+		Gson gson = buildGsonWithAdapters();
 		EnvelopeBean envelope = new EnvelopeBean();
 		envelope.status = Status.OK.getReasonPhrase();
 		envelope.code = Status.OK.getStatusCode();
@@ -137,7 +139,7 @@ public class ElisResponseBuilder {
 	 */
 	public static Response buildNotFoundResponse() {
 		Response response = null;
-		Gson gson = new GsonBuilder().setPrettyPrinting().create(); 
+		Gson gson = buildGsonWithAdapters(); 
 		EnvelopeBean envelope = new ErrorBean();
 		envelope.status = "Error";
 		envelope.code = Status.NOT_FOUND.getStatusCode();
@@ -227,6 +229,18 @@ public class ElisResponseBuilder {
 				.entity(gson.toJson(envelope)).build();
 		
 		return response;
+	}
+	
+	/**
+	 * Builds a Gson object.
+	 * 
+	 * @return A Gson object.
+	 * @since 1.0
+	 */
+	private static Gson buildGsonWithAdapters() {
+		return new GsonBuilder().setPrettyPrinting()
+				.registerTypeAdapter(DateTime.class, new DateTimeAdapter())
+				.create();
 	}
 
 }
