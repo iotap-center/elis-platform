@@ -10,6 +10,7 @@ import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonDevice;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonDeviceIdentifier;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonDinPowerSwitchMeter;
+import se.mah.elis.adaptor.energy.eon.internal.devices.EonMainPowerMeter;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonPowerMeter;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonPowerSwitchMeter;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonThermometer;
@@ -20,6 +21,7 @@ import se.mah.elis.exceptions.StaticEntityException;
  * Factory to create java representations of E.On devices from JSON responses
  * 
  * @author Marcus Ljungblad
+ * @author Johan Holmberg
  * @since 1.0
  * @version 1.0.0
  * 
@@ -56,7 +58,11 @@ public class EonDeviceFactory {
 			}
 			break;
 		case EonDevice.TYPE_POWERMETER:
-			device = createPowerMeter(jsonDevice);
+			if (((Boolean) jsonDevice.get("IsSummaryDevice"))) {
+				device = createMainPowerMeter(jsonDevice);
+			} else {
+				device = createPowerMeter(jsonDevice);
+			}
 			break;
 		case EonDevice.TYPE_THERMOSTAT:
 			device = createThermostat(jsonDevice);
@@ -82,6 +88,13 @@ public class EonDeviceFactory {
 	private static Device createPowerMeter(JSONObject any)
 		throws StaticEntityException{
 		Device device = new EonPowerMeter();
+		device = setGenericProperties(device, any);
+		return device;
+	}
+	
+	private static Device createMainPowerMeter(JSONObject any)
+		throws StaticEntityException{
+		Device device = new EonMainPowerMeter();
 		device = setGenericProperties(device, any);
 		return device;
 	}

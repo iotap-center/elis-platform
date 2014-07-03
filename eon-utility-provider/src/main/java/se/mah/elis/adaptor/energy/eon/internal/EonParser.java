@@ -13,6 +13,7 @@ import org.json.simple.parser.ParseException;
 
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
+import se.mah.elis.adaptor.energy.eon.internal.devices.EonMainPowerMeter;
 import se.mah.elis.exceptions.StaticEntityException;
 
 /**
@@ -71,18 +72,30 @@ public class EonParser {
 	public static List<Device> parseDeviceList(String json) throws ParseException {
 		List<Device> deviceList = new ArrayList<Device>();
 		JSONArray devices = (JSONArray) parser.parse(json);
+		EonMainPowerMeter mainMeter = null;
 		for (Iterator<JSONObject> deviceIterator = devices.iterator(); deviceIterator.hasNext(); ) { 
 			JSONObject obj = deviceIterator.next();
 			Device device;
 			try {
 				device = EonDeviceFactory.createFrom(obj);
 				deviceList.add(device);
+				if (device instanceof EonMainPowerMeter) {
+					mainMeter = (EonMainPowerMeter) device;
+				}
 			} catch (MethodNotSupportedException e) {
 				continue;
 			} catch (StaticEntityException e) {
 				throw new ParseException(0);
 			}
 		}
+		if (mainMeter != null) {
+			for (Device device : deviceList) {
+				if (!(device instanceof EonMainPowerMeter)) {
+					mainMeter.add(device);
+				}
+			}
+		}
+		
 		return deviceList;
 	}
 

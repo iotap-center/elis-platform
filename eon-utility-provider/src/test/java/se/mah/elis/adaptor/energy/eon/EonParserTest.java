@@ -10,7 +10,11 @@ import java.util.Map;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
+import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.energy.eon.internal.EonParser;
+import se.mah.elis.adaptor.energy.eon.internal.devices.EonMainPowerMeter;
+import se.mah.elis.adaptor.energy.eon.internal.devices.EonPowerSwitchMeter;
+import se.mah.elis.adaptor.energy.eon.internal.devices.EonThermometer;
 
 public class EonParserTest {
 
@@ -46,6 +50,29 @@ public class EonParserTest {
 		} catch (Exception ignore) {
 			fail();
 		}
+	}
+	
+	@Test
+	public void testGetDeviceListWithMainPowerMeter() {
+		String response = "[" + SAMPLE_POWERSWITCH + ", " +
+				SAMPLE_TERMOMETER + ", " +
+				SAMPLE_MAIN_POWERMETER + "]";
+		List<Device> devices = null;
+		EonMainPowerMeter meter = null;
+		
+		try {
+			devices = EonParser.parseDeviceList(response);
+			meter = (EonMainPowerMeter) get(devices, EonMainPowerMeter.class);
+		} catch (Exception ignore) {
+			fail();
+		}
+		assertEquals(3, devices.size());
+		assertTrue(contains(devices, EonPowerSwitchMeter.class));
+		assertTrue(contains(devices, EonThermometer.class));
+		assertTrue(contains(devices, EonMainPowerMeter.class));
+		assertEquals(2, meter.size());
+		assertTrue(contains(devices, EonPowerSwitchMeter.class));
+		assertTrue(contains(devices, EonThermometer.class));
 	}
 	
 	@Test
@@ -135,6 +162,26 @@ public class EonParserTest {
 		} catch (ParseException e) {
 			fail("Could not parse stat data");
 		}
+	}
+	
+	private boolean contains(List<Device> devices, Class c) {
+		for (Device device : devices) {
+			if (c.isInstance(device)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private Device get(List<Device> devices, Class c) {
+		for (Device device : devices) {
+			if (c.isInstance(device)) {
+				return device;
+			}
+		}
+		
+		return null;
 	}
 	
 	public static final String SAMPLE_STATDATA = ""
@@ -297,13 +344,13 @@ public class EonParserTest {
 	/**
 	 * May also be used to create JSON objects
 	 */
-	public static final String SAMPLE_POWERMETER_AT_RONNEN = ""
+	public static final String SAMPLE_MAIN_POWERMETER = ""
 			+"{"
 			+"\"AreaNo\": 1,"
 			+"\"ChannelNo\": 0,"
 			+"\"ControllerDeviceId\": \"deadbeef-2941-479d-b8ab-898f05fea5da\","
 			+"\"Description\": null,"
-			+"\"DeviceTypeId\": 49,"
+			+"\"DeviceTypeId\": 51,"
 			+"\"DistributorCode\": null,"
 			+"\"EnergyOptimisedDate\": \"\","
 			+"\"EnergyOptimisingMode\": 0,"
