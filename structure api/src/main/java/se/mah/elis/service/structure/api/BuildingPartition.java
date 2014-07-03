@@ -8,6 +8,7 @@ import java.util.Iterator;
 import se.mah.elis.service.structure.api.data.PartitionIdentifier;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
+import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.exceptions.StaticEntityException;
 
 /**
@@ -17,7 +18,7 @@ import se.mah.elis.exceptions.StaticEntityException;
  * @author "Johan Holmberg, Malm�� University"
  * @since 1.0
  */
-public interface BuildingPartition {
+public interface BuildingPartition extends ElisDataObject {
 	
 	/**
 	 * This method is used to get the identifier of this partition.
