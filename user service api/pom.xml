@@ -2,13 +2,13 @@
   <parent>
     <groupId>se.mah.elis</groupId>
     <artifactId>super-pom</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <relativePath>../super/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>se.mah.elis.services.users</groupId>
   <artifactId>user-service</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>2.0.0</version>
   <packaging>bundle</packaging>
   <name>The Elis User Service bundle</name>
   
@@ -31,7 +31,7 @@
   	<dependency>
   		<groupId>se.mah.elis.data</groupId>
   		<artifactId>elis-data-definitions</artifactId>
-  		<version>2.0.0-SNAPSHOT</version>
+  		<version>2.0.0</version>
   		<type>bundle</type>
   	</dependency>
   	<dependency>
