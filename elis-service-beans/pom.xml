@@ -2,13 +2,13 @@
   <parent>
     <groupId>se.mah.elis</groupId>
     <artifactId>super-pom</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <relativePath>../super/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>se.mah.elis.external.beans</groupId>
   <artifactId>elis-service-beans</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>bundle</packaging>
   <name>Elis service beans</name>
   <description>Provides some beans acting as envelopes for respones from the Elis REST API.</description>

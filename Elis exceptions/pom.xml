@@ -2,7 +2,7 @@
   <parent>
     <groupId>se.mah.elis</groupId>
     <artifactId>super-pom</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <relativePath>../super/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
