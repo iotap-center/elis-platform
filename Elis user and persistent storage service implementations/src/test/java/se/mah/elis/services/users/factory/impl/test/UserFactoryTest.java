@@ -18,7 +18,6 @@ import org.junit.Test;
 import static org.fest.assertions.Assertions.assertThat;
 import se.mah.elis.impl.services.users.factory.UserFactoryImpl;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 import se.mah.elis.services.users.factory.UserFactory;
@@ -164,7 +163,6 @@ public class UserFactoryTest {
 	public void testBuildPlatformUser() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
@@ -182,11 +180,9 @@ public class UserFactoryTest {
 			fail("User should have been initialized");
 		}
 		
-		pid = (PlatformUserIdentifier) pu.getIdentifier();
-		
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("arthur", pid.getUsername());
-		assertEquals("don't panic", pid.getPassword());
+		assertEquals("arthur", pu.getUsername());
+		assertEquals("don't panic", pu.getPassword());
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("arthur@heartofgold.net", pu.getEmail());
@@ -194,39 +190,9 @@ public class UserFactoryTest {
 	}
 	
 	@Test
-	public void testBuildPlatformUserNoId() {
-		Properties props = new Properties();
-		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
-		
-		props.put("username", "arthur");
-		props.put("password", "don't panic");
-		props.put("first_name", "Arthur");
-		props.put("last_name", "Dent");
-		props.put("email", "arthur@heartofgold.net");
-		
-		try {
-			pu = uf.build(props);
-		} catch (UserInitalizationException e) {
-			fail("User should have been initialized");
-		}
-		
-		pid = (PlatformUserIdentifier) pu.getIdentifier();
-		
-		assertNull(pu.getUserId());
-		assertEquals("arthur", pid.getUsername());
-		assertEquals("don't panic", pid.getPassword());
-		assertEquals("Arthur", pu.getFirstName());
-		assertEquals("Dent", pu.getLastName());
-		assertEquals("arthur@heartofgold.net", pu.getEmail());
-		assertFalse(DateTime.now().isBefore(pu.created()));
-	}
-	
-	@Test
 	public void testBuildPlatformUserNoUsername() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		
 		props.put("id", 42);
 		props.put("password", "don't panic");
@@ -245,7 +211,6 @@ public class UserFactoryTest {
 	public void testBuildPlatformUserEmptyUsername() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		
 		props.put("id", 42);
 		props.put("username", "");
@@ -265,7 +230,6 @@ public class UserFactoryTest {
 	public void testBuildPlatformUserNoPassword() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
@@ -282,11 +246,9 @@ public class UserFactoryTest {
 			fail("User should have been initialized");
 		}
 		
-		pid = (PlatformUserIdentifier) pu.getIdentifier();
-		
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("arthur", pid.getUsername());
-		assertNull(pid.getPassword());
+		assertEquals("arthur", pu.getUsername());
+		assertNull(pu.getPassword());
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("arthur@heartofgold.net", pu.getEmail());
@@ -297,7 +259,6 @@ public class UserFactoryTest {
 	public void testBuildPlatformUserEmptyPassword() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
@@ -320,7 +281,6 @@ public class UserFactoryTest {
 	public void testBuildPlatformUserEmptyFirstName() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
@@ -338,11 +298,9 @@ public class UserFactoryTest {
 			fail("This should not happen");
 		}
 		
-		pid = (PlatformUserIdentifier) pu.getIdentifier();
-		
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("arthur", pid.getUsername());
-		assertEquals("don't panic", pid.getPassword());
+		assertEquals("arthur", pu.getUsername());
+		assertEquals("don't panic", pu.getPassword());
 		assertEquals("", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("arthur@heartofgold.net", pu.getEmail());
@@ -353,7 +311,6 @@ public class UserFactoryTest {
 	public void testBuildPlatformUserNoFirstName() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
@@ -370,11 +327,9 @@ public class UserFactoryTest {
 			fail("This should not happen");
 		}
 		
-		pid = (PlatformUserIdentifier) pu.getIdentifier();
-		
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("arthur", pid.getUsername());
-		assertEquals("don't panic", pid.getPassword());
+		assertEquals("arthur", pu.getUsername());
+		assertEquals("don't panic", pu.getPassword());
 		assertEquals("", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("arthur@heartofgold.net", pu.getEmail());
@@ -385,7 +340,6 @@ public class UserFactoryTest {
 	public void testBuildPlatformUserEmptyLastName() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
@@ -403,11 +357,9 @@ public class UserFactoryTest {
 			fail("This should not happen");
 		}
 		
-		pid = (PlatformUserIdentifier) pu.getIdentifier();
-		
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("arthur", pid.getUsername());
-		assertEquals("don't panic", pid.getPassword());
+		assertEquals("arthur", pu.getUsername());
+		assertEquals("don't panic", pu.getPassword());
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("", pu.getLastName());
 		assertEquals("arthur@heartofgold.net", pu.getEmail());
@@ -418,7 +370,6 @@ public class UserFactoryTest {
 	public void testBuildPlatformUserNoLastName() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
@@ -435,11 +386,9 @@ public class UserFactoryTest {
 			fail("User should not be initialized");
 		}
 		
-		pid = (PlatformUserIdentifier) pu.getIdentifier();
-		
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("arthur", pid.getUsername());
-		assertEquals("don't panic", pid.getPassword());
+		assertEquals("arthur", pu.getUsername());
+		assertEquals("don't panic", pu.getPassword());
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("", pu.getLastName());
 		assertEquals("arthur@heartofgold.net", pu.getEmail());
@@ -450,7 +399,6 @@ public class UserFactoryTest {
 	public void testBuildPlatformUserEmptyEmail() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
@@ -468,11 +416,9 @@ public class UserFactoryTest {
 			fail("User should not be initialized");
 		}
 		
-		pid = (PlatformUserIdentifier) pu.getIdentifier();
-		
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("arthur", pid.getUsername());
-		assertEquals("don't panic", pid.getPassword());
+		assertEquals("arthur", pu.getUsername());
+		assertEquals("don't panic", pu.getPassword());
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("", pu.getEmail());
@@ -483,7 +429,6 @@ public class UserFactoryTest {
 	public void testBuildPlatformUserNoEmail() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
@@ -500,11 +445,9 @@ public class UserFactoryTest {
 			fail("User should not be initialized");
 		}
 		
-		pid = (PlatformUserIdentifier) pu.getIdentifier();
-		
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("arthur", pid.getUsername());
-		assertEquals("don't panic", pid.getPassword());
+		assertEquals("arthur", pu.getUsername());
+		assertEquals("don't panic", pu.getPassword());
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("", pu.getEmail());
@@ -515,7 +458,6 @@ public class UserFactoryTest {
 	public void testBuildPlatformUserMalformedEmail() {
 		Properties props = new Properties();
 		PlatformUser pu = null;
-		PlatformUserIdentifier pid = null;
 		DateTime now = DateTime.now();
 		UUID uuid = UUID.fromString("00001111-2222-3333-4444-555566667777");
 		
@@ -533,11 +475,9 @@ public class UserFactoryTest {
 			fail("User should not be initialized");
 		}
 		
-		pid = (PlatformUserIdentifier) pu.getIdentifier();
-		
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("arthur", pid.getUsername());
-		assertEquals("don't panic", pid.getPassword());
+		assertEquals("arthur", pu.getUsername());
+		assertEquals("don't panic", pu.getPassword());
 		assertEquals("Arthur", pu.getFirstName());
 		assertEquals("Dent", pu.getLastName());
 		assertEquals("", pu.getEmail());

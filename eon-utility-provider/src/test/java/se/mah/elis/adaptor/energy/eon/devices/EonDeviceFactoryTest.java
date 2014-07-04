@@ -1,6 +1,7 @@
 package se.mah.elis.adaptor.energy.eon.devices;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -52,7 +53,7 @@ public class EonDeviceFactoryTest {
 		try {
 			sample = EonDeviceFactory.createFrom(POWERSWITCH_METER);
 			assertTrue(sample instanceof PowerSwitch);
-			assertFalse(sample.getId().toString().isEmpty());
+			assertNotNull(sample.getDataId());
 			assertFalse(sample.getName().isEmpty());
 		} catch (MethodNotSupportedException | StaticEntityException e) {
 			fail();
@@ -65,7 +66,7 @@ public class EonDeviceFactoryTest {
 		try {
 			sample = EonDeviceFactory.createFrom(THERMOMETER);
 			assertTrue(sample instanceof Thermometer);
-			assertFalse(sample.getId().toString().isEmpty());
+			assertNotNull(sample.getDataId());
 			assertFalse(sample.getName().isEmpty());
 		} catch (MethodNotSupportedException | StaticEntityException e) {
 			fail();
@@ -78,7 +79,7 @@ public class EonDeviceFactoryTest {
 		try {
 			sample = EonDeviceFactory.createFrom(THERMOSTAT);
 			assertTrue(sample instanceof Thermostat);
-			assertFalse(sample.getId().toString().isEmpty());
+			assertNotNull(sample.getDataId());
 			assertFalse(sample.getName().isEmpty());
 		} catch (MethodNotSupportedException | StaticEntityException e) {
 			fail();
@@ -91,7 +92,7 @@ public class EonDeviceFactoryTest {
 		try {
 			sample = EonDeviceFactory.createFrom(POWERMETER);
 			assertTrue(sample instanceof ElectricitySampler);
-			assertFalse(sample.getId().toString().isEmpty());
+			assertNotNull(sample.getDataId());
 			assertFalse(sample.getName().isEmpty());
 		} catch (MethodNotSupportedException | StaticEntityException e) {
 			fail();
@@ -105,7 +106,7 @@ public class EonDeviceFactoryTest {
 			sample = EonDeviceFactory.createFrom(DIN_POWERSWITCH_METER);
 			assertTrue(sample instanceof ElectricitySampler);
 			assertTrue(sample instanceof EonDinPowerSwitchMeter);
-			assertFalse(sample.getId().toString().isEmpty());
+			assertNotNull(sample.getDataId());
 			assertFalse(sample.getName().isEmpty());
 		} catch (MethodNotSupportedException | StaticEntityException e) {
 			fail();
@@ -119,7 +120,7 @@ public class EonDeviceFactoryTest {
 			sample = EonDeviceFactory.createFrom(POWERSWITCH_METER_AT_RONNEN);
 			assertTrue(sample instanceof ElectricitySampler);
 			assertFalse(sample instanceof EonDinPowerSwitchMeter);
-			assertFalse(sample.getId().toString().isEmpty());
+			assertNotNull(sample.getDataId());
 			assertFalse(sample.getName().isEmpty());
 		} catch (MethodNotSupportedException | StaticEntityException e) {
 			fail();

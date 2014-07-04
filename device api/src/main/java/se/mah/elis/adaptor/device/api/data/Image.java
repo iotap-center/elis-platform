@@ -21,12 +21,4 @@ public interface Image {
 	 * @since 1.0
 	 */
 	URL getURL();
-	
-	/**
-	 * Gets the image's identifier object.
-	 * 
-	 * @return An ImageIdentifier object.
-	 * @since 1.0
-	 */
-	ImageIdentifier getIdentifier();
 }

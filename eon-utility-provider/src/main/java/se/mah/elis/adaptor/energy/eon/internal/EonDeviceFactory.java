@@ -4,11 +4,9 @@ import java.util.UUID;
 
 import org.json.simple.JSONObject;
 
-import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.exceptions.MethodNotSupportedException;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonDevice;
-import se.mah.elis.adaptor.energy.eon.internal.devices.EonDeviceIdentifier;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonDinPowerSwitchMeter;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonMainPowerMeter;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonPowerMeter;
@@ -131,7 +129,6 @@ public class EonDeviceFactory {
 		String deviceId = (String) any.get("Id");
 		device.setDataId(UUID.fromString(deviceId));
 		// TODO device.setOwnerId(userId);
-		device.setId((DeviceIdentifier) new EonDeviceIdentifier(deviceId));
 		device.setName((String) any.get("Name")); 
 		device.setDescription((String) any.get("Description"));
 		

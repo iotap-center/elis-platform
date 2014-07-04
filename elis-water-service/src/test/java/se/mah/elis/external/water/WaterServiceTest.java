@@ -27,7 +27,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.any;
-import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
@@ -41,9 +40,7 @@ import se.mah.elis.external.water.beans.WaterBean;
 import se.mah.elis.services.storage.Storage;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
-import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.UserService;
 
 public class WaterServiceTest extends JerseyTest {
@@ -105,27 +102,18 @@ public class WaterServiceTest extends JerseyTest {
 		when(historicSample.getVolume()).thenReturn(HISTORIC_SAMPLE_VOLUME);
 		
 		device = mock(Device.class);
-		DeviceIdentifier devId = mock(DeviceIdentifier.class);
-		when(devId.toString()).thenReturn("ID: device");
-		when(device.getId()).thenReturn(devId);
 		when(device.getName()).thenReturn("Name: device");
 		when(device.getDescription()).thenReturn("Description: device");
 		when(device.getDataId()).thenReturn(UUID.fromString(TEST_BAD_DID));
 		when(device.getOwnerId()).thenReturn(UUID.fromString(TEST_PUID));
 		
 		meter1 = mock(WaterMeterSampler.class);
-		DeviceIdentifier meterId = mock(DeviceIdentifier.class);
-		when(meterId.toString()).thenReturn("ID: meter");
-		when(meter1.getId()).thenReturn(meterId);
 		when(meter1.getName()).thenReturn(SAMPLER_NAME);
 		when(meter1.getDescription()).thenReturn("Description: meter");
 		when(meter1.getDataId()).thenReturn(UUID.fromString(TEST_DID));
 		when(meter1.getOwnerId()).thenReturn(UUID.fromString(TEST_PUID));
 		
 		meter2 = mock(WaterMeterSampler.class);
-		DeviceIdentifier meterId2 = mock(DeviceIdentifier.class);
-		when(meterId.toString()).thenReturn("ID: meter");
-		when(meter2.getId()).thenReturn(meterId2);
 		when(meter2.getName()).thenReturn(SAMPLER_NAME + "2");
 		when(meter2.getDescription()).thenReturn("Description: meter2");
 		when(meter2.getDataId()).thenReturn(UUID.fromString(TEST_DID2));

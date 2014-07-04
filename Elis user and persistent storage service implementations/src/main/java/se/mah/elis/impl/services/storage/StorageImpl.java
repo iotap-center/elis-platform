@@ -37,9 +37,7 @@ import se.mah.elis.services.storage.query.QueryTranslator;
 import se.mah.elis.services.storage.result.ResultSet;
 import se.mah.elis.services.users.AbstractUser;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
-import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 import se.mah.elis.services.users.factory.UserFactory;
 
@@ -424,11 +422,10 @@ public class StorageImpl implements Storage, ManagedService {
 			// Platform users are handled differently from any other user type.
 			if (user instanceof PlatformUser) {
 				PlatformUser pu = (PlatformUser) user;
-				PlatformUserIdentifier pid =
-						(PlatformUserIdentifier) pu.getIdentifier();
 				
 				// First of all, let's make a sanity check of the user.
-				if (pid == null || pid.isEmpty()) {
+				if (pu.getUsername() == null || pu.getUsername().isEmpty() ||
+						pu.getPassword() == null || pu.getPassword().isEmpty()) {
 					log(LogService.LOG_WARNING, USER_NOT_VALID + ": Empty identifier");
 					throw new StorageException(USER_NOT_VALID);
 				}
@@ -466,8 +463,8 @@ public class StorageImpl implements Storage, ManagedService {
 						pu.setUserId(UUID.randomUUID());
 					}
 					stmt.setString(1, StorageUtils.stripDashesFromUUID(pu.getUserId()));
-					stmt.setString(2, pid.getUsername());
-					stmt.setString(3, pid.getPassword());
+					stmt.setString(2, pu.getUsername());
+					stmt.setString(3, pu.getPassword());
 					stmt.setString(4, pu.getFirstName());
 					stmt.setString(5, pu.getLastName());
 					stmt.setString(6, pu.getEmail());
@@ -491,11 +488,6 @@ public class StorageImpl implements Storage, ManagedService {
 				if (!StorageUtils.validateAbstractUserProperties(user.getProperties(), false)) {
 					throw new IllegalArgumentException();
 				}
-				if (user.getIdentifier() == null ||
-						StorageUtils.isEmpty(user.getIdentifier()
-								.getProperties())) {
-					throw new StorageException();
-				}
 				
 				// This might be a new user. Insert it.
 				UUID uuid = null;
@@ -512,9 +504,6 @@ public class StorageImpl implements Storage, ManagedService {
 				
 				// Get the user properties
 				Properties userProps = user.getProperties();
-				
-				// Flatten the user properties
-				userProps = StorageUtils.flattenPropertiesWithIdentifier(userProps, false);
 				
 				// Generate the table name
 				tableName = user.getClass().getCanonicalName();
@@ -545,7 +534,6 @@ public class StorageImpl implements Storage, ManagedService {
 				} catch (SQLException e) {
 					// Try to create a non-existing table, but only once.
 					Properties propTemplate = user.getPropertiesTemplate();
-					propTemplate = StorageUtils.flattenPropertiesWithIdentifier(propTemplate, true);
 					
 					if (e.getErrorCode() == 1146 && !finalRun) {
 						if (StorageUtils.validateAbstractUserProperties(propTemplate, true)) {
@@ -806,21 +794,17 @@ public class StorageImpl implements Storage, ManagedService {
 		if (user != null) {
 			log(LogService.LOG_INFO, "Updating user: " + user);
 			
-			if (user.getIdentifier() == null ||
-				StorageUtils.isEmpty(user.getIdentifier().getProperties()) ||
-				user.getUserId() == null) {
-				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": No identifier");
+			if (user.getUserId() == null) {
+				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": Not identifiable");
 				throw new StorageException(USER_NOT_FOUND);
 			}
 			
 			// Platform users are handled differently from any other user type.
 			if (user instanceof PlatformUser) {
 				PlatformUser pu = (PlatformUser) user;
-				PlatformUserIdentifier pid =
-						(PlatformUserIdentifier) pu.getIdentifier();
 				
 				if (pu.getUserId() == null ||
-					pid.getUsername() == null || pid.getUsername().isEmpty()) {
+					pu.getUsername() == null || pu.getUsername().isEmpty()) {
 					log(LogService.LOG_WARNING, USER_NOT_VALID + ": Missing identifier or username");
 					throw new StorageException(USER_NOT_VALID);
 				}
@@ -833,7 +817,7 @@ public class StorageImpl implements Storage, ManagedService {
 				 * |int id|String username|String password|String first_name|
 				 * 		String last_name|String e-mail|
 				 */
-				if (pid.getPassword() == null || pid.getPassword().isEmpty()) {
+				if (pu.getPassword() == null || pu.getPassword().isEmpty()) {
 					query = "UPDATE `" + tableName + "` SET " +
 							"username = ?, " +
 							"first_name = ?, last_name = ?, `email` = ? " + 
@@ -853,23 +837,20 @@ public class StorageImpl implements Storage, ManagedService {
 				try {
 					stmt = connection.prepareStatement(query);
 					
-					stmt.setString(1, pid.getUsername());
+					stmt.setString(1, pu.getUsername());
 					stmt.setString(2, pu.getFirstName());
 					stmt.setString(3, pu.getLastName());
 					stmt.setString(4, pu.getEmail());
-					if (pid.getPassword() != null && pid.getPassword().length() > 0) {
+					if (pu.getPassword() != null && pu.getPassword().length() > 0) {
 						// Only update the password if it is being changed
-						stmt.setString(5, pid.getPassword());
+						stmt.setString(5, pu.getPassword());
 					}
 					stmt.executeUpdate();
 				} catch (SQLException e) {
 					// Try to create a non-existing table, but only once.
 					if (e.getErrorCode() == 1146 && !finalRun) {
 						// Flatten the user properties
-						Properties template = new Properties();
-						template.putAll(user.getIdentifier()
-								.getPropertiesTemplate());
-						template.putAll(user.getPropertiesTemplate());
+						Properties template = user.getPropertiesTemplate();
 						utils.createTableIfNotExisting(tableName,
 								user.getPropertiesTemplate());
 						insert(user, true);
@@ -892,7 +873,6 @@ public class StorageImpl implements Storage, ManagedService {
 				
 				// Flatten the user properties
 				Properties userProps = user.getProperties();
-				userProps = StorageUtils.flattenPropertiesWithIdentifier(userProps, false);
 				
 				// This will be used by the parameter loop below
 				int i = 1;
@@ -927,8 +907,7 @@ public class StorageImpl implements Storage, ManagedService {
 					// Try to create a non-existing table, but only once.
 					if (e.getErrorCode() == 1146 && !finalRun) {
 						// Flatten the user properties
-						Properties template = new Properties();
-						template = StorageUtils.flattenPropertiesWithIdentifier(template, true);
+						Properties template = user.getPropertiesTemplate();
 						if (StorageUtils.validateAbstractUserProperties(template, true)) {
 							utils.createTableIfNotExisting(tableName,
 									user.getPropertiesTemplate());
@@ -1426,7 +1405,7 @@ public class StorageImpl implements Storage, ManagedService {
 				} else if (className.equals("se.mah.elis.services.users.PlatformUser")) {
 					// A platform user
 					user = userFactory.build(props);
-					((PlatformUserIdentifier) user.getIdentifier()).setPassword(null);
+					((PlatformUser) user).setPassword(null);
 				} else {
 					throw new StorageException(INSTANCE_USER_ERROR);
 				}
@@ -1449,122 +1428,6 @@ public class StorageImpl implements Storage, ManagedService {
 					if (rs != null) {
 						rs.close();
 					}
-					stmt.close();
-				} catch (SQLException e) {}
-			}
-		}
-		
-		return user;
-	}
-
-	/**
-	 * Implementation of
-	 * {@link se.mah.elis.services.storage.Storage#readUser(UserIdentifier) readUser(UserIdentifier)}.
-	 * 
-	 * @param UserIdentifier The user to be read.
-	 * @return The user we're looking for.
-	 * @throws StorageException Thrown when user couldn't be read.
-	 * @since 1.0
-	 */
-	@Override
-	public AbstractUser readUser(UserIdentifier id) throws StorageException {
-		return readUser(id, false);
-	}
-
-	/**
-	 * This method is called by the public readUser(UserIdentifier) method.
-	 * 
-	 * @param UserIdentifier The user to be read.
-	 * @param finalRun True if this method has been run before. Any method
-	 * 		which isn't in fact this very method should call the method by
-	 * 		setting this parameter to false.
-	 * @return The user we're looking for.
-	 * @throws StorageException Thrown when the user couldn't be read.
-	 * @since 2.0
-	 */
-	private AbstractUser readUser(UserIdentifier id, boolean finalRun)
-			throws StorageException {
-		AbstractUser user = null;
-		java.sql.ResultSet rs = null;
-		PreparedStatement stmt = null;
-		Class<?> clazz = id.identifies();
-		String className = clazz.getName();
-		String tableName = StorageUtils.mysqlifyName(className);
-		String query = null;
-		
-		log(LogService.LOG_INFO, "Reading user: " + id);
-
-		if (clazz == se.mah.elis.services.users.PlatformUser.class) {
-			// This is a platform user.
-			String username = ((PlatformUserIdentifier) id).getUsername();
-			String password = ((PlatformUserIdentifier) id).getPassword();
-			Properties props = null;
-			
-			query = "SELECT * FROM `" + tableName + "` WHERE ";
-			if (!username.isEmpty()) {
-				query += "username = ? AND password = PASSWORD(?);";
-			}
-			
-			try {
-				stmt = connection.prepareStatement(query);
-				
-				stmt.setString(1, username);
-				stmt.setString(2, password);
-				
-				rs = stmt.executeQuery();
-				props = utils.resultSetRowToProperties(rs);
-				
-				// Create a PlatformUser object
-				user = userFactory.build(props);
-				((PlatformUserIdentifier) user.getIdentifier()).setPassword(null);
-			} catch (SQLException | NullPointerException e) {
-				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id.toString(), e);
-				throw new StorageException(USER_NOT_FOUND);
-			} catch (UserInitalizationException e) {
-				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": " + id, e);
-				throw new StorageException(INSTANCE_USER_ERROR);
-			} finally {
-				try {
-					rs.close();
-					stmt.close();
-				} catch (SQLException e) {}
-			}
-		} else {
-			stmt = null;
-			rs = null;
-			
-			// This is a generic user.
-			String userType = id.identifies().getSimpleName();
-			Properties props = null;
-			
-			// We'll run this as a prepared statement, since we don't know what
-			// we'll run into.
-			query = "SELECT * FROM `" + tableName + "` WHERE " +
-					StorageUtils.pairUpForSelect(id.getProperties(), false) +
-					" ORDER BY uuid ASC;";
-			
-			try {
-				stmt = connection.prepareStatement(query);
-				
-				int i = 1;
-				for (Entry<Object, Object> entry : id.getProperties().entrySet()) {
-					utils.addParameter(stmt, entry.getValue(), i++, false);
-				}
-				
-				rs = stmt.executeQuery();
-				
-				props = utils.resultSetRowToProperties(rs);
-				user = userFactory.build(userType,
-						(String) props.get("service_name"), props);
-			} catch (SQLException | NullPointerException e) {
-				log(LogService.LOG_WARNING, USER_NOT_FOUND + ": " + id.toString(), e);
-				throw new StorageException(USER_NOT_FOUND);
-			} catch (UserInitalizationException e) {
-				log(LogService.LOG_WARNING, INSTANCE_USER_ERROR + ": " + id, e);
-				throw new StorageException(INSTANCE_USER_ERROR);
-			} finally {
-				try {
-					rs.close();
 					stmt.close();
 				} catch (SQLException e) {}
 			}
@@ -1599,6 +1462,7 @@ public class StorageImpl implements Storage, ManagedService {
 	private AbstractUser readUser(AbstractUser user, boolean finalRun)
 			throws StorageException {
 		if (user != null) {
+			
 			log(LogService.LOG_INFO, "Reading user: " + user);
 			
 			// Generate the table name
@@ -1607,14 +1471,33 @@ public class StorageImpl implements Storage, ManagedService {
 			Statement stmt = null;
 			String query = null;
 			String id = null;
-			
+
+			// Build query			
 			if (user instanceof User) {
-				id = StorageUtils.stripDashesFromUUID(((User) user).getUserId());
+				if (user.getUserId() == null) {
+					throw new StorageException(OBJECT_NOT_VALID);
+				}
+				id = StorageUtils.stripDashesFromUUID(user.getUserId());
 				query = "SELECT * FROM `" + StorageUtils.mysqlifyName(tableName) +
 						"` WHERE uuid = x'" + id + "';";
+			} else if (user instanceof PlatformUser) {
+				if (user.getUserId() == null) {
+					query = "SELECT * FROM `se-mah-elis-services-users-PlatformUser` " +
+							"WHERE username = '" +
+							((PlatformUser) user).getUsername() + "' AND " +
+							"password = PASSWORD('" +
+							((PlatformUser) user).getPassword() + "');";
+				} else {
+					StorageUtils.stripDashesFromUUID(user.getUserId());
+					query = "SELECT * FROM `se-mah-elis-services-users-PlatformUser` " +
+							"WHERE uuid = x'" + id + "' OR (username = '" +
+							((PlatformUser) user).getUsername() + "' AND " +
+							"password = PASSWORD('" +
+							((PlatformUser) user).getPassword() + "'));";
+				}
+				System.out.println(query);
 			}
 
-			// Build query from identifier
 			try {
 				stmt = connection.createStatement();
 				Properties props =

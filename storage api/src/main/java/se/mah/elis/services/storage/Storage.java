@@ -10,7 +10,6 @@ import se.mah.elis.services.storage.result.ResultSet;
 import se.mah.elis.services.users.AbstractUser;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
-import se.mah.elis.services.users.UserIdentifier;
 
 /**
  * The Storage interface defines a set of methods used to store stuff in the
@@ -170,16 +169,6 @@ public interface Storage {
 	 * @since 2.0
 	 */
 	AbstractUser readUser(UUID id) throws StorageException;
-	
-	/**
-	 * Reads out a specific user from the storage.
-	 * 
-	 * @param id The user's user identifier.
-	 * @return An AbstractUser object.
-	 * @throws StorageException if the user wasn't found.
-	 * @since 1.0
-	 */
-	AbstractUser readUser(UserIdentifier id) throws StorageException;
 	
 	/**
 	 * Reads out a specific user from the storage.

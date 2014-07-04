@@ -12,7 +12,6 @@ import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.exceptions.StaticEntityException;
-import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 /**
@@ -31,7 +30,7 @@ public class MkbGatewayUser implements GatewayUser {
 	private LogService log;
 	
 	private UUID uuid;
-	private UserIdentifier userIdentifier = new MkbUserIdentifier(null);
+	private String meterId;
 	private Gateway gateway;
 	private DateTime created = DateTime.now();
 
@@ -43,6 +42,14 @@ public class MkbGatewayUser implements GatewayUser {
 	@Override
 	public void setUserId(UUID id) {
 		this.uuid = id;
+	}
+	
+	public void setMeterId(String meterId) {
+		this.meterId = meterId;
+	}
+	
+	public String getMeterId() {
+		return meterId;
 	}
 
 	@Override
@@ -60,19 +67,8 @@ public class MkbGatewayUser implements GatewayUser {
 	private void addWaterMeter() throws StaticEntityException {
 		MkbWaterMeter meter = new MkbWaterMeter();
 		meter.setGateway(gateway);
-		meter.setName(userIdentifier.toString());
-		meter.setId(new MkbWaterMeterDeviceIdentifier(userIdentifier.toString()));
+		meter.setName(meterId);
 		gateway.add(meter);
-	}
-
-	@Override
-	public UserIdentifier getIdentifier() {
-		return this.userIdentifier;
-	}
-
-	@Override
-	public void setIdentifier(UserIdentifier id) {
-		this.userIdentifier = id;
 	}
 
 	@Override
@@ -80,7 +76,7 @@ public class MkbGatewayUser implements GatewayUser {
 		OrderedProperties props = new OrderedProperties();
 		if (uuid != null)
 			props.put("uuid", uuid);
-		props.putAll(getIdentifier().getProperties());
+		props.put("meterId", meterId);
 		props.put("created", created);
 		props.put("service_name", getServiceName());
 		return props;
@@ -90,7 +86,7 @@ public class MkbGatewayUser implements GatewayUser {
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
 		props.put("uuid", uuid);
-		props.putAll(getIdentifier().getPropertiesTemplate());
+		props.put("meterId", "32");
 		props.put("created", created);
 		props.put("service_name", "32");
 		return props;
@@ -101,15 +97,14 @@ public class MkbGatewayUser implements GatewayUser {
 		if (!props.containsKey("uuid") && !props.containsKey("meterId"))
 			throw new IllegalArgumentException("Missing properties");
 		
-		if (props.containsKey("created"))
+		if (props.containsKey("created")) {
 			created = (DateTime) props.get("created");
-		
-		String meterId = (String) props.get("meterId");
+		}
+
+		meterId = (String) props.get("meterId");
 
 		log(LogService.LOG_INFO, "Populating MKB user: " + meterId);
 		
-		MkbUserIdentifier id = new MkbUserIdentifier(meterId);
-		setIdentifier(id);
 		MkbGatewayUserProvider factory = new MkbGatewayUserProvider();
 		setGateway(factory.createGateway(this));
 		gateway.setUser(this);
@@ -141,6 +136,11 @@ public class MkbGatewayUser implements GatewayUser {
 	@Override
 	public DateTime created() {
 		return created;
+	}
+	
+	@Override
+	public String toString() {
+		return meterId;
 	}
 	
 	protected void bindLog(LogService log) {

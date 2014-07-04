@@ -31,7 +31,6 @@ import se.mah.elis.services.users.factory.UserFactory;
 import se.mah.elis.services.users.factory.impl.test.mock.GatewayUserProvider;
 import se.mah.elis.impl.services.storage.StorageImpl;
 import se.mah.elis.impl.services.users.factory.UserFactoryImpl;
-import se.mah.elis.impl.services.users.PlatformUserIdentifierImpl;
 import se.mah.elis.impl.services.users.PlatformUserImpl;
 import se.mah.elis.impl.services.users.UserServiceImpl;
 import se.mah.elis.services.users.impl.test.mock.GatewayUser;
@@ -263,7 +262,7 @@ public class UserWebServiceTest extends JerseyTest {
 		
 		Response r = uws.addUser(bean);
 		
-		pu = us.getPlatformUser(new PlatformUserIdentifierImpl("1", "secret"));
+		pu = us.getPlatformUser("1", "secret");
 		
 		String responseString = envelopeStart + response201
 				+ "    \"user\": {\n"
@@ -317,7 +316,7 @@ public class UserWebServiceTest extends JerseyTest {
 		assertEquals(400, r.getStatus());
 		assertEquals(responseString, r.getEntity());
 		
-		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "secret")));
+		User[] users = us.getUsers(new PlatformUserImpl("1", "secret"));
 		
 		assertNotNull(users);
 		assertEquals(0, users.length);
@@ -410,7 +409,7 @@ public class UserWebServiceTest extends JerseyTest {
 		assertEquals(responseString, r.getEntity());
 		
 		pu = null;
-		pu = us.getPlatformUser(new PlatformUserIdentifierImpl("1", "supersecret"));
+		pu = us.getPlatformUser("1", "supersecret");
 		
 		assertNotNull(pu);
 		assertEquals("Bruce", pu.getFirstName());
@@ -556,7 +555,7 @@ public class UserWebServiceTest extends JerseyTest {
 		
 		r = uws.decoupleGatewayFromUser(bean.userId, "deadbeef-2222-3333-4444-555566667777");
 		
-		User[] users = us.getUsers(new PlatformUserImpl(new PlatformUserIdentifierImpl("1", "secret")));
+		User[] users = us.getUsers(new PlatformUserImpl("1", "secret"));
 		
 		assertEquals(0, users.length);
 		assertEquals(404, r.getStatus());
@@ -582,7 +581,7 @@ public class UserWebServiceTest extends JerseyTest {
 		
 		uws.addUser(bean);
 		
-		pu = us.getPlatformUser(new PlatformUserIdentifierImpl("1", "secret"));
+		pu = us.getPlatformUser("1", "secret");
 		
 		Response r = uws.decoupleGatewayFromUser("deadbeef-2222-3333-4444-555566667777",
 				"00001111-2222-3333-4444-555566667777");
@@ -620,7 +619,7 @@ public class UserWebServiceTest extends JerseyTest {
 
 		String responseString = envelopeStart + response404 + envelopeEnd;
 		
-		pu = us.getPlatformUser(new PlatformUserIdentifierImpl("1", "secret"));
+		pu = us.getPlatformUser("1", "secret");
 		User[] users = us.getUsers(pu);
 		
 		assertEquals(1, users.length);

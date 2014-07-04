@@ -174,7 +174,7 @@ public class DeviceService {
 		List<DeviceBean> devices = new ArrayList<>();
 		for (Device device : set) {
 			DeviceBean bean = new DeviceBean();
-			bean.id = device.getId().toString();
+			bean.id = device.getDataId().toString();
 			bean.description = device.getDescription();
 			bean.name = device.getName();
 			devices.add(bean);

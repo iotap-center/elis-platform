@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import javax.naming.AuthenticationException;
 import javax.ws.rs.client.ResponseProcessingException;
@@ -33,7 +34,7 @@ public class EonHttpBridgeTest {
 	private static final String TEST_USER = "hems7@eon.se"; //"marcus.ljungblad@mah.se";
 	private static final String TEST_PASS = "02DCD0"; // "medeamah2012";
 	private static final String TEST_GATEWAY = "59"; // "134";
-	private static final String TEST_DEVICEID = "5502864f-5258-4b39-86db-abf69a046a36"; // "ab62ec3d-f86d-46bc-905b-144ee0511a25";
+	private static final UUID TEST_DEVICEID = UUID.fromString("5502864f-5258-4b39-86db-abf69a046a36"); // "ab62ec3d-f86d-46bc-905b-144ee0511a25";
 			
 	private EonHttpBridge bridge; 
 	
@@ -99,14 +100,14 @@ public class EonHttpBridgeTest {
 	public void testGetDeviceStatus() throws ResponseProcessingException, ParseException, AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
 		Map<String, Object> status = bridge.getDeviceStatus(token, TEST_GATEWAY, TEST_DEVICEID);
-		assertEquals(TEST_DEVICEID, status.get("DeviceId"));
+		assertEquals(TEST_DEVICEID.toString(), status.get("DeviceId"));
 	}
 	
 	@Test
 	public void testTurnOn() throws AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
 		try {
-			String tulpanLampa = "ae32e759-9205-4f68-ba35-0932be43a2d2"; // "d114d9c7-8374-4386-a0b6-1bbdc25c28f5";
+			UUID tulpanLampa = UUID.fromString("ae32e759-9205-4f68-ba35-0932be43a2d2"); // "d114d9c7-8374-4386-a0b6-1bbdc25c28f5";
 			EonActionObject reply = bridge.turnOn(token, TEST_GATEWAY, tulpanLampa);
 			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
 		} catch (Exception e) {
@@ -119,7 +120,7 @@ public class EonHttpBridgeTest {
 	public void testTurnOff() throws AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
 		try {
-			String tulpanLampa = "ae32e759-9205-4f68-ba35-0932be43a2d2"; // "d114d9c7-8374-4386-a0b6-1bbdc25c28f5"; 
+			UUID tulpanLampa = UUID.fromString("ae32e759-9205-4f68-ba35-0932be43a2d2"); // "d114d9c7-8374-4386-a0b6-1bbdc25c28f5"; 
 			EonActionObject reply = bridge.turnOff(token, TEST_GATEWAY, tulpanLampa);
 			assertEquals(EonActionStatus.ACTION_WAITING, reply.getStatus());
 		} catch (Exception e) {
@@ -152,7 +153,7 @@ public class EonHttpBridgeTest {
 	public void testGetTemperature() throws AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
 		try {
-			String thermometerDeviceId = "5b38113b-1a92-483d-8a7c-0a92101823bb"; // "b6530784-14da-469b-8a46-36e8e2c0d684";
+			UUID thermometerDeviceId = UUID.fromString("5b38113b-1a92-483d-8a7c-0a92101823bb"); // "b6530784-14da-469b-8a46-36e8e2c0d684";
 			float temperature = bridge.getTemperature(token, TEST_GATEWAY, thermometerDeviceId);
 			assertTrue(temperature == -1f);
 		} catch (Exception ignore) {

@@ -7,19 +7,8 @@ import org.joda.time.DateTime;
 
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.UserIdentifier;
 
 public class MockPlatformUser implements PlatformUser {
-
-	@Override
-	public UserIdentifier getIdentifier() {
-		return new MockUserIdentifier();
-	}
-
-	@Override
-	public void setIdentifier(UserIdentifier id) {
-		// TODO Auto-generated method stub
-	}
 
 	@Override
 	public OrderedProperties getProperties() {
@@ -97,6 +86,41 @@ public class MockPlatformUser implements PlatformUser {
 	public void setUserId(UUID id) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setUsername(String username) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setPassword(String password) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getPassword() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return "id_number: 42";
 	}
 
 }

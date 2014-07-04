@@ -11,7 +11,6 @@ import se.mah.elis.services.storage.query.UserPredicate;
 import se.mah.elis.services.storage.query.test.mock.MockPlatformUser;
 import se.mah.elis.services.storage.query.test.mock.MockTranslator;
 import se.mah.elis.services.storage.query.test.mock.MockUser;
-import se.mah.elis.services.storage.query.test.mock.MockUserIdentifier;
 import se.mah.elis.services.users.PlatformUser;
 import se.mah.elis.services.users.User;
 
@@ -37,25 +36,13 @@ public class UserPredicateTest {
 	}
 
 	@Test
-	public void testUserPredicateUserIdentifier() {
-		MockUserIdentifier id = new MockUserIdentifier();
-		UserPredicate up = new UserPredicate(id);
-		String actual = up.toString();
-		String expected = "UserPredicate:\n" +
-						  "  Translator: null\n" +
-						  "  User: {id_number=42}";
-		
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	public void testUserPredicateUser() {
 		User user = new MockUser();
 		UserPredicate up = new UserPredicate(user);
 		String actual = up.toString();
 		String expected = "UserPredicate:\n" +
 						  "  Translator: null\n" +
-						  "  User: {id_number=42}";
+						  "  User: {id_number: 42}";
 		
 		assertEquals(expected, actual);
 	}
@@ -67,20 +54,7 @@ public class UserPredicateTest {
 		String actual = up.toString();
 		String expected = "UserPredicate:\n" +
 						  "  Translator: null\n" +
-						  "  User: {id_number=42}";
-		
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void testSetUserUserIdentifier() {
-		MockUserIdentifier id = new MockUserIdentifier();
-		UserPredicate up = new UserPredicate();
-		up.setUser(id);
-		String actual = up.toString();
-		String expected = "UserPredicate:\n" +
-						  "  Translator: null\n" +
-						  "  User: {id_number=42}";
+						  "  User: {id_number: 42}";
 		
 		assertEquals(expected, actual);
 	}
@@ -93,7 +67,7 @@ public class UserPredicateTest {
 		String actual = up.toString();
 		String expected = "UserPredicate:\n" +
 						  "  Translator: null\n" +
-						  "  User: {id_number=42}";
+						  "  User: {id_number: 42}";
 		
 		assertEquals(expected, actual);
 	}
@@ -106,7 +80,7 @@ public class UserPredicateTest {
 		String actual = up.toString();
 		String expected = "UserPredicate:\n" +
 						  "  Translator: null\n" +
-						  "  User: {id_number=42}";
+						  "  User: {id_number: 42}";
 		
 		assertEquals(expected, actual);
 	}
@@ -125,11 +99,10 @@ public class UserPredicateTest {
 
 	@Test
 	public void testCompile() {
-		UserPredicate up = new UserPredicate(new MockUserIdentifier());
+		UserPredicate up = new UserPredicate(new MockUser());
 		up.setTranslator(new MockTranslator());
 		String actual = null;
-		String expected = " user: " + MockUserIdentifier.class.getSimpleName() +
-						  ": id_number: 42";
+		String expected = " user: id_number: 42";
 		
 		try {
 			actual = up.compile();
@@ -142,7 +115,7 @@ public class UserPredicateTest {
 
 	@Test
 	public void testCompileNoTranslator() {
-		UserPredicate up = new UserPredicate(new MockUserIdentifier());
+		UserPredicate up = new UserPredicate(new MockUser());
 		
 		try {
 			up.compile();

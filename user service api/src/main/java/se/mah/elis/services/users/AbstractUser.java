@@ -50,22 +50,6 @@ public interface AbstractUser {
 	 * @since 2.0
 	 */
 	void setUserId(UUID id);
-	
-	/**
-	 * Get this user's identifier.
-	 * 
-	 * @return The identifier.
-	 * @since 1.0
-	 */
-	UserIdentifier getIdentifier();
-	
-	/**
-	 * Set this user's identifier.
-	 * 
-	 * @param id The identifier.
-	 * @since 1.0
-	 */
-	void setIdentifier(UserIdentifier id);
 
 	/**
 	 * <p>Get a Properties-based representation of the object, the identifier

@@ -12,7 +12,6 @@ import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
 import se.mah.elis.data.OrderedProperties;
-import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 /**
@@ -24,8 +23,9 @@ import se.mah.elis.services.users.exceptions.UserInitalizationException;
 public class EonGatewayUser implements GatewayUser {
 
 	private UUID uuid;
+	private String username; 
+	private String password;
 	private EonGateway gateway;
-	private EonGatewayUserIdentifer gatewayUserIdentifier;
 	private DateTime created = DateTime.now();
 
 	/**
@@ -43,17 +43,6 @@ public class EonGatewayUser implements GatewayUser {
 				throw new UserInitalizationException();
 			}
 		}
-	}
-
-	@Override
-	public UserIdentifier getIdentifier() {
-		return gatewayUserIdentifier;
-	}
-
-	@Override
-	public void setIdentifier(UserIdentifier userIdentifier) {
-		gatewayUserIdentifier = (EonGatewayUserIdentifer) userIdentifier;
-		gatewayUserIdentifier.identifies(this.getClass());
 	}
 
 	@Override
@@ -75,6 +64,22 @@ public class EonGatewayUser implements GatewayUser {
 	public void setUserId(UUID id) {
 		this.uuid = id;
 	}
+	
+	public String getUsername() {
+		return username;
+	}
+	
+	public void setUsername(String name) {
+		username = name;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
 	@Override
 	public OrderedProperties getProperties() {
@@ -82,7 +87,8 @@ public class EonGatewayUser implements GatewayUser {
 		
 		if (uuid != null)
 			props.put("uuid", uuid);
-		props.putAll(gatewayUserIdentifier.getProperties());
+		props.put("username", username);
+		props.put("password", password);
 		props.put("gateway", gateway.getId());
 		props.put("created", created);
 		props.put("service_name", getServiceName());
@@ -94,7 +100,8 @@ public class EonGatewayUser implements GatewayUser {
 	public OrderedProperties getPropertiesTemplate() {
 		OrderedProperties props = new OrderedProperties();
 		props.put("uuid", uuid);
-		props.putAll(gatewayUserIdentifier.getPropertiesTemplate());
+		props.put("username", "256");
+		props.put("password", "256");
 		props.put("gateway", new Integer(0));
 		props.put("created", created);
 		props.put("service_name", "32");
@@ -118,12 +125,9 @@ public class EonGatewayUser implements GatewayUser {
 		
 		String username = (String) props.get("username");
 		String password = (String) props.get("password");
-		
-		EonGatewayUserIdentifer gwId = new EonGatewayUserIdentifer();
-		gwId.setPassword(password);
-		gwId.setUsername(username);
 
-		setIdentifier(gwId);
+		username = (String) props.get("username");
+		password = (String) props.get("password");
 		setUserId((UUID) props.get("uuid"));
 		
 		EonGatewayUserFactory factory = new EonGatewayUserFactory();
@@ -145,6 +149,11 @@ public class EonGatewayUser implements GatewayUser {
 	@Override
 	public DateTime created() {
 		return created;
+	}
+	
+	@Override
+	public String toString() {
+		return username;
 	}
 
 }

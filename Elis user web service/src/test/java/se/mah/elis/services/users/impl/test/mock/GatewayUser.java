@@ -7,7 +7,6 @@ import org.joda.time.DateTime;
 
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.User;
-import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 public class GatewayUser implements User {
@@ -26,16 +25,6 @@ public class GatewayUser implements User {
 		this.id = id;
 		this.serviceUserName = serviceUserName;
 		this.servicePassword = servicePassword;
-	}
-
-	@Override
-	public UserIdentifier getIdentifier() {
-		return new GatewayUserIdentifier("" + id);
-	}
-
-	@Override
-	public void setIdentifier(UserIdentifier id) {
-		
 	}
 
 	@Override

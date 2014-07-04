@@ -1,24 +1,16 @@
 package se.mah.elis.external.energy.beans;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.joda.time.DateTime;
-import org.joda.time.Instant;
 
-import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.device.api.entities.devices.ElectricitySampler;
-import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.data.ElectricitySample;
-import se.mah.elis.data.WaterSample;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 
 public class EnergyBeanFactory {
 

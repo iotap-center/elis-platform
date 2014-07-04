@@ -15,7 +15,7 @@ import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.ChainingPredicate;
 import se.mah.elis.services.storage.query.Predicate;
 import se.mah.elis.services.storage.query.QueryTranslator;
-import se.mah.elis.services.users.UserIdentifier;
+import se.mah.elis.services.users.AbstractUser;
 
 /**
  * The MySQLQueryTranslator translates Query objects to runnable MySQL queries.
@@ -308,7 +308,7 @@ public class MySQLQueryTranslator implements QueryTranslator {
 	 * @since 2.0
 	 */
 	@Override
-	public String user(UserIdentifier user) {
+	public String user(AbstractUser user) {
 		String compiled = "";
 		Properties props = user.getProperties();
 		int i = 0;

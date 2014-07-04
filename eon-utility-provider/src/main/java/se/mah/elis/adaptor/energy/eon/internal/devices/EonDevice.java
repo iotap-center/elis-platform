@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 
-import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
@@ -45,7 +44,6 @@ public abstract class EonDevice implements Device {
 	protected DateTime created = DateTime.now();
 	protected boolean isOnline;
 	protected EonGateway gateway;
-	protected DeviceIdentifier deviceId;
 	protected String deviceName = "";
 	protected String description = "";
 
@@ -82,16 +80,6 @@ public abstract class EonDevice implements Device {
 	@Override
 	public DateTime created() {
 		return created;
-	}
-
-	@Override
-	public DeviceIdentifier getId() {
-		return deviceId;
-	}
-
-	@Override
-	public void setId(DeviceIdentifier id) throws StaticEntityException {
-		deviceId = id;
 	}
 
 	@Override
@@ -143,7 +131,6 @@ public abstract class EonDevice implements Device {
 		props.put("dataid", dataid);
 		props.put("ownerid", ownerid);
 		props.put("created", created);
-		props.put("identifier", deviceId);
 		props.put("device_name", deviceName);
 		props.put("description", description);
 		props.put("gateway", gateway.getDataId());
@@ -156,7 +143,6 @@ public abstract class EonDevice implements Device {
 		props.put("dataid", UUID.randomUUID());
 		props.put("ownerid", UUID.randomUUID());
 		props.put("created", created);
-		props.put("identifier", new EonDeviceIdentifier("a"));
 		props.put("device_name", "64");
 		props.put("description", "256");
 		props.put("gateway", UUID.randomUUID());
@@ -168,10 +154,8 @@ public abstract class EonDevice implements Device {
 		this.dataid = (UUID) props.get("dataid");
 		this.ownerid = (UUID) props.get("ownerid");
 		this.created = (DateTime) props.get("created");
-		this.deviceId = new EonDeviceIdentifier("");
-		this.deviceName = (String) props.get("deviceName");
+		this.deviceName = (String) props.get("device_name");
 		this.description = props.getProperty("description");
-		this.deviceId.populate(props);
 		
 		// TODO Create gateway
 	}

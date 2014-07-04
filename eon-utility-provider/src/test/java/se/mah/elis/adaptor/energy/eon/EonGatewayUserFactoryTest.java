@@ -21,7 +21,6 @@ import se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge;
 import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
 import se.mah.elis.adaptor.energy.eon.internal.user.EonGatewayUser;
 import se.mah.elis.adaptor.energy.eon.internal.user.EonGatewayUserFactory;
-import se.mah.elis.adaptor.energy.eon.internal.user.EonGatewayUserIdentifer;
 
 public class EonGatewayUserFactoryTest {
 
@@ -49,13 +48,11 @@ public class EonGatewayUserFactoryTest {
 		try {
 			EonGatewayUser user = (EonGatewayUser) factory.getUser(TEST_USER,
 					TEST_PASS, bridge);
-			EonGatewayUserIdentifer userId = (EonGatewayUserIdentifer) user
-					.getIdentifier();
 			EonGateway gateway = (EonGateway) user.getGateway();
 			assertEquals(gateway.getAuthenticationToken(), TEST_TOKEN);
 			assertNotNull(gateway.getHttpBridge());
-			assertEquals(TEST_USER, userId.getUsername());
-			assertEquals(TEST_PASS, userId.getPassword());
+			assertEquals(TEST_USER, user.getUsername());
+			assertEquals(TEST_PASS, user.getPassword());
 		} catch (Exception e) {
 			fail();
 		}

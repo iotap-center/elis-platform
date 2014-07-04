@@ -3,7 +3,6 @@
  */
 package se.mah.elis.adaptor.device.api.entities.devices;
 
-import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.data.ElisDataObject;
 import se.mah.elis.exceptions.StaticEntityException;
 
@@ -15,25 +14,6 @@ import se.mah.elis.exceptions.StaticEntityException;
  * @since 1.0
  */
 public interface Device extends ElisDataObject {
-	
-	/**
-	 * This method is used to get the id number of the device.
-	 * 
-	 * @return The id number of the device.
-	 * @since 1.0
-	 * @deprecated Since 2.0.0
-	 */
-	DeviceIdentifier getId();
-	
-	/**
-	 * This method is used to set the id number of the device.
-	 * 
-	 * @param id The device's new id number.
-	 * @throws StaticEntityException if the device's id is locked.
-	 * @since 1.0
-	 * @deprecated Since 2.0.0
-	 */
-	void setId(DeviceIdentifier id) throws StaticEntityException;
 	
 	/**
 	 * This method is used to get the name of this device.

@@ -12,8 +12,6 @@ import org.joda.time.DateTime;
 
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
-import se.mah.elis.services.users.UserIdentifier;
 
 /**
  * @author "Johan Holmberg, Malm\u00f6 University"
@@ -25,8 +23,9 @@ public class PlatformUserImpl
 	public static final Pattern VALID_EMAIL = 
 			Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
 					Pattern.CASE_INSENSITIVE);
-	
-	private UserIdentifier id;
+
+	private String username;
+	private String password;
 	private UUID uuid;
 	private String firstName;
 	private String lastName;
@@ -37,21 +36,24 @@ public class PlatformUserImpl
 	 * Create a brand new, empty platform user.
 	 */
 	public PlatformUserImpl() {
-		id = new PlatformUserIdentifierImpl();
 		uuid = null;
+		username = "";
+		password = null;
 		firstName = "";
 		lastName = "";
 		email = "";
 	}
 	
 	/**
-	 * Create a platform user with a given user identifier.
+	 * Create a platform user with a username and a password.
 	 * 
-	 * @param id The user identifier.
+	 * @param username The username to use.
+	 * @param password The password to use.
 	 */
-	public PlatformUserImpl(PlatformUserIdentifier id) {
-		this.id = id;
+	public PlatformUserImpl(String username, String password) {
 		uuid = null;
+		this.username = username;
+		this.password = password;
 		firstName = "";
 		lastName = "";
 		email = "";
@@ -63,42 +65,17 @@ public class PlatformUserImpl
 	 * @param p The user information stored in the database.
 	 */
 	public PlatformUserImpl(Properties p) {
-		id = null;
 		uuid = null;
+		username = "";
+		password = null;
 		firstName = "";
 		lastName = "";
 		email = "";
 		populate(p);
 	}
 
-	/* (non-Javadoc)
-	 * @see se.mah.elis.services.users.AbstractUser#getId()
-	 */
-	@Override
-	public UserIdentifier getIdentifier() {
-		return id;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.mah.elis.services.users.AbstractUser#setId(se.mah.elis.services.users.UserIdentifier)
-	 */
-	@Override
-	public void setIdentifier(UserIdentifier id) {
-		if (id != null) {
-			this.id = id;
-		} else {
-			this.id = new PlatformUserIdentifierImpl();
-		}
-	}
-
 	@Override
 	public String toString() {
-		String username = null;
-		
-		if (id != null) {
-			username = ((PlatformUserIdentifier) id).getUsername();
-		}
-		
 		return "PlatformUser " + username + " (" + getUserId() + ")";
 	}
 
@@ -147,20 +124,11 @@ public class PlatformUserImpl
 	@Override
 	public boolean equals(Object o) {
 		if (o.getClass().getName().equals(this.getClass().getName())) {
-			return this.id.equals(((PlatformUserImpl) o).getIdentifier()) ||
-					this.getUserId() != null &&
-					this.getUserId() == ((PlatformUser) o).getUserId();
+			return this.getUserId() != null &&
+				   this.getUserId().equals(((PlatformUser) o).getUserId());
 		}
 		
 		return false;
-	}
-
-	@Override
-	public int compareTo(PlatformUserImpl pu) {
-		PlatformUserIdentifierImpl puId = (PlatformUserIdentifierImpl) pu.getIdentifier();
-		PlatformUserIdentifierImpl thisId = (PlatformUserIdentifierImpl) id;
-		
-		return puId.getUsername().compareTo(thisId.getUsername());
 	}
 	
 	private boolean validateAddress(String address) {
@@ -180,7 +148,12 @@ public class PlatformUserImpl
 		if (uuid != null) {
 			p.put("uuid", uuid);
 		}
-		p.putAll(id.getProperties());
+		p.put("username", username);
+		if (password != null) {
+			p.put("password", password);
+		} else {
+			p.put("password", "");
+		}
 		p.put("first_name", firstName);
 		p.put("last_name", lastName);
 		p.put("email", email);
@@ -191,8 +164,10 @@ public class PlatformUserImpl
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		OrderedProperties p = id.getPropertiesTemplate();
+		OrderedProperties p = new OrderedProperties();
 		
+		p.put("username", "256");
+		p.put("password", "256");
 		p.put("uuid", UUID.randomUUID());
 		p.put("first_name", "32");
 		p.put("last_name", "32");
@@ -210,35 +185,25 @@ public class PlatformUserImpl
 						props.get("created") instanceof DateTime)) {
 			throw new IllegalArgumentException();
 		}
-		if (props.containsKey("identifier") &&
-			props.get("identifier") instanceof PlatformUserIdentifier &&
-			!(props.containsKey("created") &&
+		if (!(props.containsKey("created") &&
 					props.get("created") instanceof DateTime)) {
 			throw new IllegalArgumentException();
 		}
-		// The identifier part can be of two kinds: either a full Identifier
-		// object or a flattened version.
-		if (!((props.containsKey("identifier") &&
-			   props.get("identifier") instanceof PlatformUserIdentifierImpl) ||
-			(props.containsKey("username") &&
-			   props.get("username") instanceof String))) {
+		// Let's see if the username is OK
+		String un = (String) props.get("username");
+		if (un == null || un.isEmpty()) {
 			// Apparently not. Let's bail out.
 			throw new IllegalArgumentException();
 		}
 		
 		// OK, all properties are fine. Let's start with taking care of the
 		// identifier and add that to the object.
-		if (props.containsKey("identifier")) {
-			id = (UserIdentifier) props.get("identifier");
-		} else {
-			String username = (String) props.get("username");
-			String password = null;
-			
-			if (props.containsKey("password")) {
-				password = (String) props.get("password");
-			}
-			
-			id = new PlatformUserIdentifierImpl(username, password);
+		username = un;
+		password = null;
+		
+		if (props.containsKey("password") && props.get("password") != null &&
+				!props.getProperty("password").isEmpty()) {
+			password = (String) props.get("password");
 		}
 		
 		// Set the rest of the object's properties.
@@ -274,5 +239,54 @@ public class PlatformUserImpl
 	@Override
 	public void setUserId(UUID id) {
 		uuid = id;
+	}
+
+	public void setUsername(String username) throws IllegalArgumentException {
+		if (username != null) {
+			username = username.trim();
+		} else {
+			throw new IllegalArgumentException("User name can't be empty");
+		}
+		
+		if (!username.isEmpty()) {
+			this.username = username;
+		} else {
+			throw new IllegalArgumentException("User name can't be empty");
+		}
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		if (password != null) {
+			password = password.trim();
+			
+			if (!password.isEmpty()) {
+				this.password = password;
+			} else {
+				throw new IllegalArgumentException("Password can't be empty");
+			}
+		} else {
+			this.password = null;
+		}
+	}
+	
+	public boolean isEmpty() {
+		return username.isEmpty() || password.isEmpty();
+	}
+
+	@Override
+	public int compareTo(PlatformUserImpl pu) {
+		if (pu != null) {
+			return pu.getUsername().compareTo(username);
+		}
+		
+		return 0;
 	}
 }

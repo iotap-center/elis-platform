@@ -1,12 +1,9 @@
 package se.mah.elis.services.storage.query;
 
-import java.util.Date;
-
 import org.joda.time.DateTime;
 
 import se.mah.elis.exceptions.TypeMismatchException;
 import se.mah.elis.services.storage.exceptions.StorageException;
-import se.mah.elis.services.users.UserIdentifier;
 
 /**
  * <p>The SimplePredicate describes a predicate that compares a data value with

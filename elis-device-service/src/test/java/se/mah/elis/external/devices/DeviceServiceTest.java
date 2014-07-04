@@ -22,7 +22,6 @@ import org.osgi.service.log.LogService;
 
 import com.google.gson.Gson;
 
-import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
@@ -81,9 +80,7 @@ public class DeviceServiceTest extends JerseyTest {
 			when(storage.readUser(UUID.fromString(PUID))).thenReturn(platformUser);
 		} catch (StorageException e) {}
 		
-		DeviceIdentifier devId = mock(DeviceIdentifier.class);
-		when(devId.toString()).thenReturn("ID:" + DEVICENAME);
-		when(device.getId()).thenReturn(devId);
+		when(device.getDataId()).thenReturn(UUID.fromString(DID));
 		when(device.getName()).thenReturn(DEVICENAME);
 		when(device.getDescription()).thenReturn(DEVICEDESCRIPTION);
 		

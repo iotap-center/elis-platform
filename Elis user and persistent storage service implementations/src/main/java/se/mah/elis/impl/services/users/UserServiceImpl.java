@@ -19,9 +19,7 @@ import se.mah.elis.impl.services.storage.StorageUtils;
 import se.mah.elis.services.storage.Storage;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
-import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
 import se.mah.elis.services.users.exceptions.UserExistsException;
@@ -103,27 +101,11 @@ public class UserServiceImpl implements UserService {
 		log(LogService.LOG_INFO, "Fetching user " + uuid);
 		
 		try {
-			if (storage.readUser((PlatformUserIdentifier)
-					pu.getIdentifier()) != null) {
+			if (storage.readUser(pu.getUserId()) != null) {
 				user = (User) storage.readUser(uuid);
 			}
 		} catch (StorageException e) {
 			log(LogService.LOG_WARNING, "Couldn't find user " + uuid, e);
-		}
-		
-		return user;
-	}
-
-	@Override
-	public PlatformUser getPlatformUser(UserIdentifier identifier) {
-		PlatformUser user = null;
-		
-		log(LogService.LOG_INFO, "Fetching user " + identifier);
-		
-		try {
-			user = (PlatformUser) storage.readUser(identifier);
-		} catch (StorageException e) {
-			log(LogService.LOG_WARNING, "Couldn't find user " + identifier, e);
 		}
 		
 		return user;
@@ -139,6 +121,21 @@ public class UserServiceImpl implements UserService {
 			user = (PlatformUser) storage.readUser(id);
 		} catch (StorageException e) {
 			log(LogService.LOG_INFO, "Couldn't find platform user " + id, e);
+		}
+		
+		return user;
+	}
+
+	@Override
+	public PlatformUser getPlatformUser(String username, String password) {
+		PlatformUser user = null;
+		
+		log(LogService.LOG_INFO, "Trying to fetch platform user " + username);
+		
+		try {
+			user = (PlatformUser) storage.readUser(new PlatformUserImpl(username, password));
+		} catch (StorageException e) {
+			log(LogService.LOG_INFO, "Couldn't find platform user " + username, e);
 		}
 		
 		return user;
@@ -190,16 +187,15 @@ public class UserServiceImpl implements UserService {
 	public synchronized PlatformUser createPlatformUser(String username,
 			String password)
 					throws UserExistsException, IllegalArgumentException {
-		PlatformUserIdentifier id = new PlatformUserIdentifierImpl();
-		PlatformUser pu = new PlatformUserImpl(id);
+		PlatformUser pu = new PlatformUserImpl();
 		
 		log(LogService.LOG_INFO, "Creating " + username);
 		
-		id.setUsername(username);
-		id.setPassword(password);
+		pu.setUsername(username);
+		pu.setPassword(password);
 		
 		try {
-			storage.readUser(id);
+			storage.readUser(pu);
 			// If there is an existing user, this will happen
 			throw new UserExistsException();
 		} catch (StorageException e1) {

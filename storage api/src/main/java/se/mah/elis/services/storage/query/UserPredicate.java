@@ -3,9 +3,7 @@ package se.mah.elis.services.storage.query;
 import java.util.Properties;
 
 import se.mah.elis.services.storage.exceptions.StorageException;
-import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.User;
-import se.mah.elis.services.users.UserIdentifier;
+import se.mah.elis.services.users.AbstractUser;
 
 /**
  * <p>UserPredicate describes a predicate coupling a user to a dataset.</p>
@@ -19,7 +17,7 @@ import se.mah.elis.services.users.UserIdentifier;
 public class UserPredicate implements Predicate {
 
 	private QueryTranslator translator;
-	private UserIdentifier uid;
+	private AbstractUser user;
 	
 	/**
 	 * Creates an instance of UserPredicate.
@@ -28,18 +26,7 @@ public class UserPredicate implements Predicate {
 	 */
 	public UserPredicate() {
 		translator = null;
-		uid = null;
-	}
-	
-	/**
-	 * Creates an instance of UserPredicate.
-	 * 
-	 * @param id The user to look for.
-	 * @since 2.0
-	 */
-	public UserPredicate(UserIdentifier id) {
-		translator = null;
-		uid = id;
+		user = null;
 	}
 	
 	/**
@@ -48,30 +35,9 @@ public class UserPredicate implements Predicate {
 	 * @param user The user to look for.
 	 * @since 2.0
 	 */
-	public UserPredicate(User user) {
+	public UserPredicate(AbstractUser user) {
 		translator = null;
-		uid = user.getIdentifier();
-	}
-	
-	/**
-	 * Creates an instance of UserPredicate.
-	 * 
-	 * @param user The user to look for.
-	 * @since 2.0
-	 */
-	public UserPredicate(PlatformUser user) {
-		translator = null;
-		uid = user.getIdentifier();
-	}
-
-	/**
-	 * Sets the user to look for.
-	 * 
-	 * @param id The user to look for.
-	 * @since 2.0
-	 */
-	public void setUser(UserIdentifier id) {
-		uid = id;
+		this.user = user;
 	}
 	
 	/**
@@ -80,29 +46,19 @@ public class UserPredicate implements Predicate {
 	 * @param user The user to look for.
 	 * @since 2.0
 	 */
-	public void setUser(User user) {
-		uid = user.getIdentifier();
-	}
-	
-	/**
-	 * Sets the user to look for.
-	 * 
-	 * @param user The user to look for.
-	 * @since 2.0
-	 */
-	public void setUser(PlatformUser user) {
-		uid = user.getIdentifier();
+	public void setUser(AbstractUser user) {
+		this.user = user;
 	}
 	
 	@Override
 	public String compile() throws StorageException {
 		if (translator == null) {
 			throw new StorageException("No translator set");
-		} else if (uid == null) {
+		} else if (user == null) {
 			throw new StorageException("No user set");
 		}
 		
-		return translator.user(uid);
+		return translator.user(user);
 	}
 
 	@Override
@@ -118,18 +74,19 @@ public class UserPredicate implements Predicate {
 	 * @since 2.0
 	 */
 	public String toString() {
-		Properties user = null;
 		String translatorString = null;
+		String userString = null;
 		
 		if (translator != null) {
 			translatorString = translator.getClass().getName();
 		}
-		if (uid != null) {
-			user = uid.getProperties();
+		
+		if (user != null) {
+			userString = "{" + user + "}";
 		}
 		
 		return "UserPredicate:\n" +
 			   "  Translator: " + translatorString + "\n" +
-			   "  User: " + user;
+			   "  User: " + userString;
 	}
 }

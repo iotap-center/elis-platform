@@ -42,7 +42,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 		try {
 			value = httpBridge.getPowerMeterKWh(
 					this.gateway.getAuthenticationToken(), getGatewayAddress(),
-					getId().toString());
+					dataid);
 		} catch (ParseException e) {
 			throw new SensorFailedException();
 		}
@@ -95,7 +95,7 @@ public class EonPowerMeter extends EonDevice implements ElectricitySampler {
 			try {
 				data = httpBridge.getStatData(
 						gateway.getAuthenticationToken(), getGatewayAddress(),
-						getId().toString(), formatDate(start), formatDate(stop),
+						dataid, formatDate(start), formatDate(stop),
 						HOURLY);
 				someSamples.addAll(convertToSamples(data, start));
 			} catch (ParseException e) {

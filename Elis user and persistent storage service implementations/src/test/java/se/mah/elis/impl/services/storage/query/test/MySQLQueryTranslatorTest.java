@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.mah.elis.exceptions.TypeMismatchException;
-import se.mah.elis.impl.service.storage.test.mock.MockUserIdentifier;
+import se.mah.elis.impl.service.storage.test.mock.MockUser1;
 import se.mah.elis.impl.services.storage.query.MySQLQueryTranslator;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.storage.query.ChainingPredicate;
@@ -18,7 +18,7 @@ import se.mah.elis.services.storage.query.QueryTranslator;
 import se.mah.elis.services.storage.query.SimplePredicate;
 import se.mah.elis.services.storage.query.SimplePredicate.CriterionType;
 import se.mah.elis.services.storage.query.UserPredicate;
-import se.mah.elis.services.users.UserIdentifier;
+import se.mah.elis.services.users.User;
 
 public class MySQLQueryTranslatorTest {
 
@@ -1085,13 +1085,16 @@ public class MySQLQueryTranslatorTest {
 	@Test
 	public void testUser() {
 		QueryTranslator translator = new MySQLQueryTranslator();
-		UserIdentifier uid = new MockUserIdentifier();
-		String expected = "(`id_number` = 1 AND `username` = 'Batman' " +
-						  "AND `password` = 'Robin')";
+		User user = new MockUser1();
+		String expected = "(`uuid` = '00001111-2222-dead-beef-555566667777' " +
+				  "AND `service_name` = 'test' AND `id_number` = 1 " +
+				  "AND `username` = 'Batman' AND `password` = 'Robin' " +
+				  "AND `whatever` = 0 AND `created` = " + 
+				  user.created().getMillis() + ")";
 		String actual = "";
 		
 		try {
-			actual = translator.user(uid);
+			actual = translator.user(user);
 		} catch (TypeMismatchException e) {
 			fail("This shouldn't happen");
 		}
@@ -1194,11 +1197,14 @@ public class MySQLQueryTranslatorTest {
 		SimplePredicate neq = new SimplePredicate(CriterionType.NEQ);
 		SimplePredicate gt = new SimplePredicate(CriterionType.GT);
 		UserPredicate up = new UserPredicate();
-		UserIdentifier uid = new MockUserIdentifier();
+		User user = new MockUser1();
 		String expected = "SELECT * FROM `java-lang-String` WHERE " +
 						  "(`foo` = 'bar' OR `a` <> 1) AND " +
-						  "((`id_number` = 1 AND `username` = 'Batman' AND " +
-						  "`password` = 'Robin') OR " +
+						  "((`uuid` = '00001111-2222-dead-beef-555566667777' " +
+						  "AND `service_name` = 'test' AND `id_number` = 1 " +
+						  "AND `username` = 'Batman' AND `password` = 'Robin' " +
+						  "AND `whatever` = 0 AND `created` = " + 
+						  user.created().getMillis() + ") OR " +
 						  "(`b` > 0 OR `foo` = 'bar')) LIMIT 0, 10 ORDER BY `created` DESC;";
 		String actual = "";
 		
@@ -1213,7 +1219,7 @@ public class MySQLQueryTranslatorTest {
 			gt.setCriterion(0);
 			or2.setLeft(gt);
 			or2.setRight(eq);
-			up.setUser(uid);
+			up.setUser(user);
 			or3.setLeft(up);
 			or3.setRight(or2);
 			and.setLeft(or);
@@ -1260,12 +1266,15 @@ public class MySQLQueryTranslatorTest {
 	public void testCompileDeleteQueryWithUser() {
 		MySQLQueryTranslator translator = new MySQLQueryTranslator();
 		Class what = java.lang.String.class;
-		UserIdentifier uid = new MockUserIdentifier();
-		UserPredicate up = new UserPredicate(uid);
+		MockUser1 user = new MockUser1();
+		UserPredicate up = new UserPredicate(user);
 		String actual = null;
 		String expected = "DELETE FROM `java-lang-String` WHERE " +
-						  "(`id_number` = 1 AND `username` = 'Batman' " +
-						  "AND `password` = 'Robin');";
+						  "(`uuid` = '00001111-2222-dead-beef-555566667777' " +
+						  "AND `service_name` = 'test' AND `id_number` = 1 " +
+						  "AND `username` = 'Batman' AND `password` = 'Robin' " +
+						  "AND `whatever` = 0 AND `created` = " + 
+						  user.created().getMillis() + ");";
 		
 		
 		translator.what(what);

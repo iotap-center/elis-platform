@@ -16,7 +16,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.log.LogService;
 
-import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.entities.devices.WaterMeterSampler;
@@ -42,12 +41,13 @@ import se.mah.elis.exceptions.StaticEntityException;
 public class MkbWaterMeter implements WaterMeterSampler {
 
 	private static final long serialVersionUID = 1483471192257524353L;
-	private DeviceIdentifier deviceId;
 	private String deviceName;
 	private String description;
 	private Gateway gateway;
-	private UUID uuid;
+	private UUID dataId;
+	private UUID ownerId;
 	private boolean isOnline;
+	private DateTime created = DateTime.now();
 
 	@Reference(policy = ReferencePolicy.DYNAMIC, 
 			cardinality = ReferenceCardinality.OPTIONAL_UNARY)
@@ -57,10 +57,9 @@ public class MkbWaterMeter implements WaterMeterSampler {
 			cardinality = ReferenceCardinality.OPTIONAL_UNARY)
 	private LogService log; 
 	
-	private UUID userOwner;
 	private static ComponentContext ctx;
 
-	public MkbWaterMeter() { } 
+	public MkbWaterMeter() {} 
 	
 	protected MkbWaterMeter(WaterDataService wds) {
 		waterDataSource = wds;
@@ -75,16 +74,6 @@ public class MkbWaterMeter implements WaterMeterSampler {
 	public void activate(ComponentContext context) {
 		ctx = context;
 		setLog();
-	}
-
-	@Override
-	public DeviceIdentifier getId() {
-		return deviceId;
-	}
-
-	@Override
-	public void setId(DeviceIdentifier id) throws StaticEntityException {
-		this.deviceId = id;
 	}
 
 	@Override
@@ -129,20 +118,39 @@ public class MkbWaterMeter implements WaterMeterSampler {
 
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		
+		if (dataId != null) {
+			props.put("dataid", dataId);
+		}
+		if (ownerId != null) {
+			props.put("ownerid", ownerId);
+		}
+		props.put("name", deviceName);
+		props.put("created", created);
+		
+		return props;
 	}
 
 	@Override
 	public OrderedProperties getPropertiesTemplate() {
-		// TODO Auto-generated method stub
-		return null;
+		OrderedProperties props = new OrderedProperties();
+		
+		props.put("dataid", UUID.randomUUID());
+		props.put("ownerid", UUID.randomUUID());
+		props.put("name", "32");
+		props.put("created", created);
+		
+		return props;
 	}
 
 	@Override
 	public void populate(Properties props) {
-		// TODO Auto-generated method stub
-
+		dataId = (UUID) props.get("dataid");
+		ownerId = (UUID) props.get("ownerid");
+		deviceName = (String) props.get("name");
+		created = (DateTime) props.get("created");
+		description = deviceName;
 	}
 
 	@Override
@@ -216,27 +224,27 @@ public class MkbWaterMeter implements WaterMeterSampler {
 
 	@Override
 	public UUID getDataId() {
-		return uuid;
+		return dataId;
 	}
 
 	@Override
 	public void setDataId(UUID uuid) {
-		this.uuid = uuid;
+		this.dataId = uuid;
 	}
 
 	@Override
 	public void setOwnerId(UUID userId) {
-		this.userOwner = userId;
+		this.ownerId = userId;
 	}
 
 	@Override
 	public UUID getOwnerId() {
-		return userOwner;
+		return ownerId;
 	}
 
 	@Override
 	public DateTime created() {
-		return null;
+		return created;
 	}
 
 	protected void bindLog(LogService ls) {

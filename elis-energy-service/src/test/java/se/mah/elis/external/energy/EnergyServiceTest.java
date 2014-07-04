@@ -24,7 +24,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.service.log.LogService;
 
-import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
@@ -161,54 +160,36 @@ public class EnergyServiceTest extends JerseyTest {
 		when(historicSample2.getCurrentVoltage()).thenReturn(MAIN_DEVICE_VOLTAGE);
 		
 		device = mock(Device.class);
-		DeviceIdentifier devId = mock(DeviceIdentifier.class);
-		when(devId.toString()).thenReturn("ID: device");
-		when(device.getId()).thenReturn(devId);
 		when(device.getName()).thenReturn(DEVICE + "0");
 		when(device.getDescription()).thenReturn("Description: device");
 		when(device.getDataId()).thenReturn(UUID.fromString(BAD_DEVICE));
 		when(device.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER));
 		
 		meter1 = mock(ElectricitySampler.class);
-		DeviceIdentifier meterId = mock(DeviceIdentifier.class);
-		when(meterId.toString()).thenReturn("ID: meter");
-		when(meter1.getId()).thenReturn(meterId);
 		when(meter1.getName()).thenReturn(DEVICE + "1");
 		when(meter1.getDescription()).thenReturn("Description: meter1");
 		when(meter1.getDataId()).thenReturn(UUID.fromString(METER));
 		when(meter1.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER));
 		
 		meter2 = mock(ElectricitySampler.class);
-		DeviceIdentifier meterId2 = mock(DeviceIdentifier.class);
-		when(meterId2.toString()).thenReturn("ID: meter2");
-		when(meter2.getId()).thenReturn(meterId2);
 		when(meter2.getName()).thenReturn(DEVICE + "2");
 		when(meter2.getDescription()).thenReturn("Description: meter2");
 		when(meter2.getDataId()).thenReturn(UUID.fromString(METER2));
 		when(meter2.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER));
 		
 		mainMeter1 = mock (MainPowerMeter.class);
-		DeviceIdentifier meterId3 = mock(DeviceIdentifier.class);
-		when(meterId3.toString()).thenReturn("ID: meter3");
-		when(mainMeter1.getId()).thenReturn(meterId3);
 		when(mainMeter1.getName()).thenReturn(DEVICE + "3");
 		when(mainMeter1.getDescription()).thenReturn("Description: meter3");
 		when(mainMeter1.getDataId()).thenReturn(UUID.fromString(MAIN_METER1));
 		when(mainMeter1.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER_WITH_MAIN_METER));
 		
 		mainMeter2 = mock (MainPowerMeter.class);
-		DeviceIdentifier meterId4 = mock(DeviceIdentifier.class);
-		when(meterId4.toString()).thenReturn("ID: meter4");
-		when(mainMeter2.getId()).thenReturn(meterId3);
 		when(mainMeter2.getName()).thenReturn(DEVICE + "4");
 		when(mainMeter2.getDescription()).thenReturn("Description: meter4");
 		when(mainMeter2.getDataId()).thenReturn(UUID.fromString(MAIN_METER2));
 		when(mainMeter2.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER_WITH_MAIN_METER));
 		
 		mainMeter3 = mock (MainPowerMeter.class);
-		DeviceIdentifier meterId5 = mock(DeviceIdentifier.class);
-		when(meterId5.toString()).thenReturn("ID: meter5");
-		when(mainMeter3.getId()).thenReturn(meterId3);
 		when(mainMeter3.getName()).thenReturn(DEVICE + "5");
 		when(mainMeter3.getDescription()).thenReturn("Description: meter5");
 		when(mainMeter3.getDataId()).thenReturn(UUID.fromString(MAIN_METER3));
@@ -366,12 +347,8 @@ public class EnergyServiceTest extends JerseyTest {
 		when(deviceSample.getSampleTimestamp()).thenReturn(from);
 		when(deviceSample.getTotalEnergyUsageInWh()).thenReturn(DEVICE_KWH*1000);
 		when(deviceSample.getCurrentPower()).thenReturn(DEVICE_KWH*1000);
-
-		DeviceIdentifier identifier = mock(DeviceIdentifier.class);
-		when(identifier.toString()).thenReturn(DEVICE + id);
 		
 		ElectricitySampler meter = mock(ElectricitySampler.class);
-		when(meter.getId()).thenReturn(identifier);
 		when(meter.getName()).thenReturn(DEVICE + id + "-name");
 		try {
 			when(meter.getSample()).thenReturn(deviceSample);

@@ -1,8 +1,5 @@
 package se.mah.elis.services.users;
 
-import java.util.Properties;
-import java.util.UUID;
-
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 /**

@@ -2,7 +2,6 @@ package se.mah.elis.external.water;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -25,7 +24,6 @@ import org.osgi.service.log.LogService;
 import se.mah.elis.adaptor.water.mkb.MkbProvider;
 import se.mah.elis.external.water.beans.WaterBean;
 import se.mah.elis.impl.services.storage.StorageImpl;
-import se.mah.elis.impl.services.users.PlatformUserIdentifierImpl;
 import se.mah.elis.impl.services.users.UserServiceImpl;
 import se.mah.elis.impl.services.users.factory.UserFactoryImpl;
 import se.mah.elis.services.users.PlatformUser;
@@ -134,6 +132,7 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 			user.setFirstName("testuser");
 			user.setLastName("testuserlastname");
 			user.setEmail("test@mah.se");
+			System.out.println(user);
 			userService.updatePlatformUser(user);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -152,7 +151,7 @@ public class WaterServiceIntegrationDbTest extends JerseyTest {
 		assertEquals(1, users.length);
 		assertNotNull(users[0]);
 		assertNotNull(users[0].getUserId());
-		assertEquals(METERID, users[0].getIdentifier().toString());
+		assertEquals(METERID, users[0].toString());
 	}
 
 	@Test

@@ -1,7 +1,7 @@
 package se.mah.elis.services.storage.query;
 
 import se.mah.elis.services.storage.exceptions.StorageException;
-import se.mah.elis.services.users.UserIdentifier;
+import se.mah.elis.services.users.AbstractUser;
 
 /**
  * A QueryTranslator is needed to convert a Query object into a query that can
@@ -157,7 +157,7 @@ public interface QueryTranslator {
 	 * @return The string representing the predicate.
 	 * @since 2.0
 	 */
-	String user(UserIdentifier user);
+	String user(AbstractUser user);
 	
 	/**
 	 * Translates a query into a string suitable for the backend database.

@@ -5,7 +5,6 @@ package se.mah.elis.service.structure.api;
 
 import java.util.Iterator;
 
-import se.mah.elis.service.structure.api.data.PartitionIdentifier;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
 import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
 import se.mah.elis.data.ElisDataObject;
@@ -19,23 +18,6 @@ import se.mah.elis.exceptions.StaticEntityException;
  * @since 1.0
  */
 public interface BuildingPartition extends ElisDataObject {
-	
-	/**
-	 * This method is used to get the identifier of this partition.
-	 * 
-	 * @return The identifier of the partition.
-	 * @since 1.0
-	 */
-	PartitionIdentifier getId();
-	
-	/**
-	 * This method is used to set the identifier of a partition.
-	 * 
-	 * @param id The partition's new identifier.
-	 * @throws StaticEntityException if the partition's id is locked.
-	 * @since 1.0
-	 */
-	void setId(PartitionIdentifier id) throws StaticEntityException;
 	
 	/**
 	 * This method is used to get the name of this partition.

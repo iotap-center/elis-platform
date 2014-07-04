@@ -7,12 +7,11 @@ import org.joda.time.DateTime;
 
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
-import se.mah.elis.services.users.UserIdentifier;
 
 public class MockPlatformUser implements PlatformUser {
 
-	private PlatformUserIdentifier id;
+	private String username;
+	private String password;
 	private String firstName;
 	private String lastName;
 	private String email;
@@ -23,34 +22,24 @@ public class MockPlatformUser implements PlatformUser {
 	 * Create a brand new, empty platform user.
 	 */
 	public MockPlatformUser() {
-		id = new MockPlatformUserIdentifier();
 		uuid = null;
+		username = "";
+		password = null;
 		firstName = "";
 		lastName = "";
 		email = "";
-	}
-	
-	/**
-	 * Create a platform user with a given user identifier.
-	 * 
-	 * @param id The user identifier.
-	 */
-	public MockPlatformUser(PlatformUserIdentifier id) {
-		this.id = id;
-		uuid = null;
-		firstName = "";
-		lastName = "";
-		email = "";
-	}
-	
-	@Override
-	public UserIdentifier getIdentifier() {	
-		return id;
 	}
 
-	@Override
-	public void setIdentifier(UserIdentifier id) {
-		this.id = (PlatformUserIdentifier) id;
+	/**
+	 * Create a brand new, empty platform user.
+	 */
+	public MockPlatformUser(String username, String password) {
+		uuid = null;
+		this.username = username;
+		this.password = password;
+		firstName = "";
+		lastName = "";
+		email = "";
 	}
 
 	@Override
@@ -60,9 +49,8 @@ public class MockPlatformUser implements PlatformUser {
 		if (uuid != null) {
 			props.put("uuid", uuid);
 		}
-		if (id != null) {
-			props.putAll(id.getProperties());
-		}
+		props.put("username", username);
+		props.put("password", password);
 		props.put("first_name", firstName);
 		props.put("last_name", lastName);
 		props.put("email", email);
@@ -79,7 +67,6 @@ public class MockPlatformUser implements PlatformUser {
 
 	@Override
 	public void populate(Properties props) throws IllegalArgumentException {
-		PlatformUserIdentifier puid = new MockPlatformUserIdentifier();
 	}
 
 	@Override
@@ -134,6 +121,32 @@ public class MockPlatformUser implements PlatformUser {
 	@Override
 	public void setUserId(UUID id) {
 		uuid = id;
+	}
+
+	@Override
+	public void setUsername(String username) throws IllegalArgumentException {
+		this.username = username;
+	}
+
+	@Override
+	public String getUsername() {
+		return username;
+	}
+
+	@Override
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	@Override
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

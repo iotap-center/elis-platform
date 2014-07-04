@@ -3,6 +3,7 @@ package se.mah.elis.adaptor.energy.eon.internal;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import javax.naming.AuthenticationException;
 import javax.net.ssl.SSLContext;
@@ -155,13 +156,13 @@ public class EonHttpBridge {
 	 * @throws ParseException
 	 */
 	public Map<String, Object> getDeviceStatus(String token, String gatewayId,
-			String deviceId) throws ResponseProcessingException, ParseException {
+			UUID deviceId) throws ResponseProcessingException, ParseException {
 		JSONArray deviceList = new JSONArray();
 		JSONObject device = new JSONObject();
-		device.put("DeviceId", deviceId);
+		device.put("DeviceId", deviceId.toString());
 		deviceList.add(device);
 		Response response = post(token, DEVICESTATUS_ENDPOINT,
-				deviceList.toJSONString(), EWP_PANEL_ID, gatewayId);
+				deviceList.toJSONString(), EWP_PANEL_ID, gatewayId.toString());
 		verifyResponse(response);
 		return EonParser.parseDeviceStatus(response.readEntity(String.class));
 	}
@@ -176,7 +177,7 @@ public class EonHttpBridge {
 	 * @throws ResponseProcessingException
 	 * @throws ParseException
 	 */
-	public double getPowerMeterKWh(String token, String gatewayId, String deviceId)
+	public double getPowerMeterKWh(String token, String gatewayId, UUID deviceId)
 		throws ResponseProcessingException, ParseException {
 		Map<String, Object> data = getDeviceStatus(token, gatewayId, deviceId);
 		double value = ((Number) data.get("CurrentKwh")).doubleValue();
@@ -193,9 +194,10 @@ public class EonHttpBridge {
 	 * @throws ParseException 
 	 */
 	public float getTemperature(String token, String gatewayId,
-			String deviceId) throws ParseException {
+			UUID deviceId) throws ParseException {
 		WebTarget target = createTarget(TEMPERATURE_ENDPOINT);
-		target = target.queryParam(EWP_PANEL_ID, gatewayId).queryParam("DeviceId", deviceId);
+		target = target.queryParam(EWP_PANEL_ID, gatewayId).queryParam("DeviceId",
+				deviceId.toString());
 		Response response = doGet(token,target);
 		verifyResponse(response);
 	
@@ -211,11 +213,12 @@ public class EonHttpBridge {
 	 * @throws ActuatorFailedException
 	 */
 	public void setDesiredTemperature(String token , String gatewayId,
-			String deviceId, float temp) throws ParseException {
+			UUID deviceId, float temp) throws ParseException {
 		
 		WebTarget target = createTarget(THERMOSTAT_ENDPOINT);
 		target = target.queryParam(EWP_PANEL_ID, gatewayId)
-				.queryParam("DeviceId", deviceId).queryParam("Temp", temp);
+				.queryParam("DeviceId", deviceId.toString())
+				.queryParam("Temp", temp);
 		Response response = doGet(token, target);
 		verifyResponse(response);
 
@@ -256,7 +259,7 @@ public class EonHttpBridge {
 	 * @throws ParseException
 	 */
 	public EonActionObject turnOn(String token, String gatewayId,
-			String deviceId) throws ResponseProcessingException, ParseException {
+			UUID deviceId) throws ResponseProcessingException, ParseException {
 		return switchPSS(token, gatewayId, deviceId, TURN_ON);
 	}
 	
@@ -271,7 +274,7 @@ public class EonHttpBridge {
 	 * @throws ParseException
 	 */
 	public EonActionObject turnOff(String token, String gatewayId,
-			String deviceId) throws ResponseProcessingException, ParseException {
+			UUID deviceId) throws ResponseProcessingException, ParseException {
 		return switchPSS(token, gatewayId, deviceId, TURN_OFF);
 	}
 
@@ -287,10 +290,10 @@ public class EonHttpBridge {
 	 * @throws ParseException
 	 */
 	public EonActionObject switchPSS(String token, String gatewayId,
-			String deviceId, int onoff) throws ResponseProcessingException, ParseException {
+			UUID deviceId, int onoff) throws ResponseProcessingException, ParseException {
 		WebTarget target = createTarget(SWITCHPSS_ENDPOINT);
 		target = target.queryParam(EWP_PANEL_ID, gatewayId)
-				.queryParam("DeviceId", deviceId).queryParam("TurnOn", onoff);
+				.queryParam("DeviceId", deviceId.toString()).queryParam("TurnOn", onoff);
 		
 		Response response = null;
 		
@@ -320,9 +323,9 @@ public class EonHttpBridge {
 	 * @throws ParseException
 	 */
 	public List<Map<String, Object>> getStatData(String token, String gatewayId, 
-			String deviceId, String from, String to, int level) throws ParseException {
+			UUID deviceId, String from, String to, int level) throws ParseException {
 		JSONObject options = new JSONObject();
-		options.put("DeviceId", deviceId);
+		options.put("DeviceId", deviceId.toString());
 		options.put("From", from);
 		options.put("To", to);
 

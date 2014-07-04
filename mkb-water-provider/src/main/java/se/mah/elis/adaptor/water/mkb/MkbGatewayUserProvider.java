@@ -44,7 +44,7 @@ public class MkbGatewayUserProvider implements GatewayUserProvider {
 
 	private MkbGatewayUser createUser(String meterId) {
 		MkbGatewayUser user = new MkbGatewayUser();
-		user.setIdentifier(new MkbUserIdentifier(meterId));
+		user.setMeterId(meterId);
 		return user;
 	}
 

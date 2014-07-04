@@ -1,10 +1,8 @@
 package se.mah.elis.impl.service.storage.factory.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.Properties;
@@ -22,19 +20,9 @@ import se.mah.elis.impl.service.storage.test.mock.MockDataObject1;
 import se.mah.elis.impl.service.storage.test.mock.MockDataObject1Provider;
 import se.mah.elis.impl.service.storage.test.mock.MockDataObject2Provider;
 import se.mah.elis.impl.services.storage.factory.DataObjectFactoryImpl;
-import se.mah.elis.impl.services.users.factory.UserFactoryImpl;
 import se.mah.elis.services.storage.factory.DataObjectFactory;
 import se.mah.elis.services.storage.factory.DataObjectProvider;
 import se.mah.elis.services.storage.factory.DataObjectRecipe;
-import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
-import se.mah.elis.services.users.User;
-import se.mah.elis.services.users.factory.UserFactory;
-import se.mah.elis.services.users.factory.UserProvider;
-import se.mah.elis.services.users.factory.UserRecipe;
-import se.mah.elis.services.users.factory.impl.test.mock.AnotherMockUserProvider;
-import se.mah.elis.services.users.factory.impl.test.mock.MockUserProvider;
-import se.mah.elis.services.users.impl.test.mock.MockUser;
 
 public class DataObjectFactoryTest {
 

@@ -7,50 +7,39 @@ import org.joda.time.DateTime;
 
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.users.User;
-import se.mah.elis.services.users.UserIdentifier;
 import se.mah.elis.services.users.exceptions.UserInitalizationException;
 
 public class MockUser2 implements User {
 
-	private UserIdentifier uid;
 	private UUID uuid;
+	private int idNumber;
+	private String username;
+	private String password;
 	private String stuff;
 	private DateTime created = DateTime.now();
 	
 	public MockUser2() {
-		uid = new MockUserIdentifier();
 		uuid = UUID.fromString("0000dead-beef-3333-4444-555566667777");
+		idNumber = 1;
+		username = "Batman";
+		password = "Robin";
 		stuff = "";
-		
-		uid.identifies(this.getClass());
 	}
 	
 	public MockUser2(String stuff) {
-		uid = new MockUserIdentifier();
 		uuid = UUID.fromString("0000dead-beef-3333-4444-555566667777");
+		idNumber = 1;
+		username = "Batman";
+		password = "Robin";
 		this.stuff = stuff;
-		
-		uid.identifies(this.getClass());
 	}
 	
 	public MockUser2(UUID uuid, String stuff) {
-		uid = new MockUserIdentifier();
 		this.uuid = uuid;
+		idNumber = 1;
+		username = "Batman";
+		password = "Robin";
 		this.stuff = stuff;
-		
-		uid.identifies(this.getClass());
-	}
-
-	@Override
-	public UserIdentifier getIdentifier() {
-		return uid;
-	}
-
-	@Override
-	public void setIdentifier(UserIdentifier id) {
-		uid = id;
-		if (uid != null)
-			uid.identifies(this.getClass());
 	}
 
 	@Override
@@ -75,7 +64,9 @@ public class MockUser2 implements User {
 			props.put("uuid", uuid);
 		}
 		props.put("service_name", "test");
-		props.put("identifier", new MockUserIdentifier());
+		props.put("id_number", idNumber);
+		props.put("username", username);
+		props.put("password", password);
 		if (stuff != null) {
 			props.put("stuff", stuff);
 		}
@@ -90,7 +81,9 @@ public class MockUser2 implements User {
 		
 		props.put("uuid", uuid);
 		props.put("service_name", "9");
-		props.put("identifier", new MockUserIdentifier());
+		props.put("id_number", new Integer(0));
+		props.put("username", "32");
+		props.put("password", "32");
 		props.put("stuff", "32");
 		props.put("created", created);
 		
@@ -99,8 +92,10 @@ public class MockUser2 implements User {
 
 	@Override
 	public void populate(Properties props) {
-		uid = new MockUserIdentifier();
 		uuid = (UUID) props.get("uuid");
+		idNumber = (int) props.get("id_number");
+		username = (String) props.get("username");
+		password = (String) props.get("password");
 		stuff = (String) props.get("stuff");
 		created = (DateTime) props.get("created");
 	}
@@ -122,7 +117,8 @@ public class MockUser2 implements User {
 	
 	@Override
 	public String toString() {
-		return "MockUser2, uid: " + uid + ", UUID: " + uuid +
+		return "MockUser2, id: " + idNumber + ", username: " + username +
+				", password: " + password + ", UUID: " + uuid +
 				", stuff: " + stuff;
 	}
 	

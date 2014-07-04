@@ -2,6 +2,7 @@ package se.mah.elis.adaptor.energy.eon.devices;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.anyInt;
@@ -25,12 +26,10 @@ import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.data.GatewayAddress;
 import se.mah.elis.adaptor.device.api.exceptions.GatewayCommunicationException;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge;
-import se.mah.elis.adaptor.energy.eon.internal.devices.EonDeviceIdentifier;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonPowerMeter;
 import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
 import se.mah.elis.adaptor.energy.eon.internal.user.EonGatewayUserFactory;
@@ -51,15 +50,12 @@ public class EonPowerMeterTest {
 		List<Map<String, Object>> history = createHistoricSamples();
 		
 		bridge = mock(EonHttpBridge.class);
-		when(bridge.getPowerMeterKWh(anyString(), anyString(), anyString())).thenReturn(DUMMY_KWH);
-		when(bridge.getStatData(anyString(), anyString(), anyString(), 
+		when(bridge.getPowerMeterKWh(anyString(), anyString(), any(UUID.class))).thenReturn(DUMMY_KWH);
+		when(bridge.getStatData(anyString(), anyString(), any(UUID.class), 
 				anyString(), anyString(), anyInt())).thenReturn(history);
 		
 		GatewayAddress gwaddr = mock(GatewayAddress.class);
 		when(gwaddr.toString()).thenReturn("gateway");
-		
-		DeviceIdentifier psmId = mock(DeviceIdentifier.class);
-		when(psmId.toString()).thenReturn("device");
 		
 		gateway = mock(EonGateway.class);
 		when(gateway.getAddress()).thenReturn(gwaddr);
@@ -68,7 +64,8 @@ public class EonPowerMeterTest {
 		eonPowerMeter = new EonPowerMeter();
 		eonPowerMeter.setHttpBridge(bridge);
 		eonPowerMeter.setGateway(gateway);
-		eonPowerMeter.setId(psmId);
+		eonPowerMeter.setName("device");
+		eonPowerMeter.setDescription("device");
 		
 	}
 	

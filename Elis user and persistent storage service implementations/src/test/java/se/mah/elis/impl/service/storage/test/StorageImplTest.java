@@ -18,7 +18,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.mah.elis.data.ElisDataObject;
-import se.mah.elis.impl.service.storage.test.mock.EmptyMockUserIdentifier;
 import se.mah.elis.impl.service.storage.test.mock.MockConnection;
 import se.mah.elis.impl.service.storage.test.mock.MockDataObject1;
 import se.mah.elis.impl.service.storage.test.mock.MockDataObject1Provider;
@@ -27,7 +26,6 @@ import se.mah.elis.impl.service.storage.test.mock.MockDataObject2Provider;
 import se.mah.elis.impl.service.storage.test.mock.MockDataObject3;
 import se.mah.elis.impl.service.storage.test.mock.MockDataObject3Provider;
 import se.mah.elis.impl.service.storage.test.mock.MockPlatformUser;
-import se.mah.elis.impl.service.storage.test.mock.MockPlatformUserIdentifier;
 import se.mah.elis.impl.service.storage.test.mock.MockUser1;
 import se.mah.elis.impl.service.storage.test.mock.MockUser1Provider;
 import se.mah.elis.impl.service.storage.test.mock.MockUser2;
@@ -35,7 +33,6 @@ import se.mah.elis.impl.service.storage.test.mock.MockUser2Provider;
 import se.mah.elis.impl.service.storage.test.mock.MockUser3;
 import se.mah.elis.impl.service.storage.test.mock.MockUser4;
 import se.mah.elis.impl.service.storage.test.mock.MockUser4Provider;
-import se.mah.elis.impl.service.storage.test.mock.MockUserIdentifier;
 import se.mah.elis.impl.services.storage.StorageImpl;
 import se.mah.elis.impl.services.storage.StorageUtils;
 import se.mah.elis.impl.services.storage.factory.DataObjectFactoryImpl;
@@ -50,7 +47,6 @@ import se.mah.elis.services.storage.query.ChainingPredicate.ChainingType;
 import se.mah.elis.services.storage.query.SimplePredicate.CriterionType;
 import se.mah.elis.services.users.AbstractUser;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.factory.UserFactory;
 
@@ -597,14 +593,13 @@ public class StorageImplTest {
 		Statement statement;
 		int bindings = -1;
 		String query = "";
-		String table = user.getIdentifier().identifies().getName().replace('.', '-');
+		String table = user.getClass().getName().replace('.', '-');
 		
 		query = "SELECT * FROM `" + table + "`";
 		try {
 			statement = connection.createStatement();
 			ResultSet rs = statement.executeQuery(query);
 			while (rs.next()) {
-				System.out.println(rs.getInt(3) + " " + rs.getString(4) + ", " + rs.getString(6) + " " + rs.getInt(7));
 			}
 			statement.close();
 		} catch (SQLException e) {
@@ -1217,8 +1212,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Kalle", "kvack");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("Kalle", "kvack");
 		
 		pu.setFirstName("Kalle");
 		pu.setLastName("Anka");
@@ -1241,8 +1235,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Kalle", "kvack");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("Kalle", "kvack");
 		UUID uuid = UUID.randomUUID();
 		
 		pu.setUserId(uuid);
@@ -1267,8 +1260,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Kalle", "kvack");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("Kalle", "kvack");
 		UUID uuid = UUID.randomUUID();
 		
 		pu.setUserId(uuid);
@@ -1310,8 +1302,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Kalle", "kvack");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("Kalle", "kvack");
 		
 		pu.setFirstName("Kalle");
 		pu.setLastName("Anka");
@@ -1334,8 +1325,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Kalle", "");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("Kalle", "");
 		
 		pu.setFirstName("Kalle");
 		pu.setLastName("Anka");
@@ -1356,8 +1346,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Batman", "kvack");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("Batman", "kvack");
 		
 		pu.setFirstName("Kalle");
 		pu.setLastName("Anka");
@@ -1378,8 +1367,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("", "kvack");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("", "kvack");
 		
 		pu.setFirstName("Kalle");
 		pu.setLastName("Anka");
@@ -1400,8 +1388,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Kalle", "kvack");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("Kalle", "kvack");
 		
 		pu.setLastName("Anka");
 		pu.setEmail("kalle.anka@margarinfabriken.nu");
@@ -1422,8 +1409,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Kalle", "kvack");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("Kalle", "kvack");
 		
 		pu.setFirstName("Kalle");
 		pu.setEmail("kalle.anka@margarinfabriken.nu");
@@ -1444,8 +1430,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Kalle", "kvack");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("Kalle", "kvack");
 		
 		pu.setFirstName("Kalle");
 		pu.setLastName("Anka");
@@ -1555,24 +1540,6 @@ public class StorageImplTest {
 	}
 
 	@Test
-	public void testInsertAbstractUserEmptyIdentifier() {
-		buildAndPopulateMU1Table();
-		
-		Storage storage = new StorageImpl(connection);
-		MockUser1 mu = new MockUser1(null, "Horses", 2);
-		mu.setIdentifier(new EmptyMockUserIdentifier(mu.getClass()));
-		
-		try {
-			storage.insert(mu);
-			fail("This shouldn't happen");
-		} catch (StorageException e) {
-		}
-		
-		assertEquals(MU1_COUNT, countBindingsInDB(mu));
-		assertEquals(MU1_COUNT, countBindingsInDB());
-	}
-
-	@Test
 	public void testInsertAbstractUserHasNoServiceName() {
 		Storage storage = new StorageImpl(connection);
 		MockUser3 mu = new MockUser3(null, "Foo");
@@ -1582,25 +1549,6 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		} catch (StorageException e) {
 		}
-	}
-
-	@Test
-	public void testInsertAbstractUserWithIdentifier() {
-		buildAndPopulateMU2Table();
-		
-		Storage storage = new StorageImpl(connection);
-		MockUser2 mu = new MockUser2(null, "Horses");
-		
-		try {
-			storage.insert(mu);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertNotNull(mu.getUserId());
-		assertEquals(MU2_COUNT + 1, countBindingsInDB(mu));
-		assertEquals(MU2_COUNT + 1, countBindingsInDB());
 	}
 
 	@Test
@@ -1927,7 +1875,8 @@ public class StorageImplTest {
 		MockUser1 mu3 = new MockUser1(null, "Scorpions", 8);
 		MockPlatformUser pu = new MockPlatformUser();
 		
-		pu.setIdentifier(new MockPlatformUserIdentifier("user", "pass"));
+		pu.setUsername("user");
+		pu.setPassword("pass");
 		pu.setFirstName("first name");
 		pu.setLastName("last name");
 		pu.setEmail("name@email.com");
@@ -2416,157 +2365,17 @@ public class StorageImplTest {
 	}
 
 	@Test
-	public void testReadUserUserIdentifier() {
-		buildAndPopulateMU1Table();
-		
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		MockUserIdentifier uid = new MockUserIdentifier();
-		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667771");
-		AbstractUser au = null;
-		
-		factory.registerProvider(new MockUser1Provider());
-		
-		uid.identifies(MockUser1.class);
-		
-		try {
-			au = storage.readUser(uid);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertNotNull(au);
-		assertTrue(au instanceof MockUser1);
-		assertEquals(uuid, ((MockUser1) au).getUserId());
-		assertEquals(21, ((MockUser1) au).getWhatever());
-		assertEquals("Rajec", ((MockUser1) au).getStuff());
-	}
-
-	@Test
-	public void testReadUserUserIdentifierMalformedIdentifierNoIdentifyingData() {
-		buildAndPopulateMU1Table();
-		
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		MockUserIdentifier uid = new MockUserIdentifier(0, "", "");
-		AbstractUser au = null;
-		
-		factory.registerProvider(new MockUser1Provider());
-		
-		uid.identifies(MockUser1.class);
-		
-		try {
-			au = storage.readUser(uid);
-			fail("This shouldn't happen");
-		} catch (StorageException e) {
-		}
-		
-		assertNull(au);
-	}
-
-	@Test
-	public void testReadUserUserIdentifierUserDoesntExist() {
-		buildAndPopulateMU1Table();
-		
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		MockUserIdentifier uid = new MockUserIdentifier(2, "George", "Carlin");
-		AbstractUser au = null;
-		
-		factory.registerProvider(new MockUser1Provider());
-		
-		uid.identifies(MockUser1.class);
-		
-		try {
-			au = storage.readUser(uid);
-			fail("This shouldn't happen");
-		} catch (StorageException e) {
-		}
-		
-		assertNull(au);
-	}
-
-	@Test
-	public void testReadUserUserIdentifierUserSeveralHits() {
-		buildAndPopulateMU1Table();
-		
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		MockUserIdentifier uid = new MockUserIdentifier(1, "Batman", "Robin");
-		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667750");
-		AbstractUser au = null;
-		
-		factory.registerProvider(new MockUser1Provider());
-		
-		runQuery("INSERT INTO `se-mah-elis-impl-service-storage-test-mock-MockUser1` " +
-				"VALUES (x'" + StorageUtils.stripDashesFromUUID(uuid) +
-				"', 'test', 1, 'Batman', 'Robin', " +
-				"'Water', 1, '2014-02-22 16:18:00');");
-		runQuery("INSERT INTO `object_lookup_table` VALUES (x'" +
-				StorageUtils.stripDashesFromUUID(uuid) +
-				"', 'se-mah-elis-impl-service-storage-test-mock-MockUser1');");
-		
-		uid.identifies(MockUser1.class);
-		
-		try {
-			au = storage.readUser(uid);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertNotNull(au);
-		assertTrue(au instanceof MockUser1);
-		assertEquals(uuid, ((MockUser1) au).getUserId());
-		assertEquals(1, ((MockUser1) au).getWhatever());
-		assertEquals("Water", ((MockUser1) au).getStuff());
-	}
-
-	@Test
-	public void testReadUserUserIdentifierPlatformUser() {
-		populatePUTable();
-		
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		MockPlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
-		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
-		AbstractUser au = null;
-		
-		factory.registerProvider(new MockUser1Provider());
-		
-		try {
-			au = storage.readUser(uid);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertNotNull(au);
-		assertTrue(au instanceof PlatformUser);
-		assertEquals(uuid, au.getUserId());
-		assertEquals("Batman", ((PlatformUserIdentifier) au.getIdentifier()).getUsername());
-		assertNull(((PlatformUserIdentifier) au.getIdentifier()).getPassword());
-		assertEquals("Bruce", ((PlatformUser) au).getFirstName());
-		assertEquals("Wayne", ((PlatformUser) au).getLastName());
-		assertEquals("bruce@waynecorp.com", ((PlatformUser) au).getEmail());
-	}
-
-	@Test
 	public void testReadUserAbstractUser() {
 		buildAndPopulateMU1Table();
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		MockUserIdentifier uid = new MockUserIdentifier();
-		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667771");
+		UUID uuid = MU1_1u;
 		MockUser1 mu = new MockUser1();
 		AbstractUser au = null;
 		
 		factory.registerProvider(new MockUser1Provider());
 		
-		uid.identifies(MockUser1.class);
-		mu.setIdentifier(uid);
 		mu.setUserId(uuid);
 		
 		try {
@@ -2589,87 +2398,12 @@ public class StorageImplTest {
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		MockUserIdentifier uid = new MockUserIdentifier();
 		AbstractUser au = new MockUser1();
 		
 		factory.registerProvider(new MockUser1Provider());
 		
-		uid.identifies(MockUser1.class);
-		au.setIdentifier(uid);
-		
 		try {
 			au = storage.readUser(au);
-			fail("This shouldn't happen");
-		} catch (StorageException e) {
-		}
-	}
-
-	@Test
-	public void testReadUserAbstractUserNoIdentifier() {
-		buildAndPopulateMU1Table();
-		
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		MockUserIdentifier uid = new MockUserIdentifier();
-		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667771");
-		MockUser1 mu = new MockUser1();
-		AbstractUser au = null;
-		
-		factory.registerProvider(new MockUser1Provider());
-		
-		uid.identifies(MockUser1.class);
-		mu.setUserId(uuid);
-		
-		try {
-			au = storage.readUser(mu);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		assertNotNull(au);
-		assertTrue(au instanceof MockUser1);
-		assertEquals(uuid, ((MockUser1) au).getUserId());
-		assertEquals(21, ((MockUser1) au).getWhatever());
-		assertEquals("Rajec", ((MockUser1) au).getStuff());
-	}
-
-	@Test
-	public void testReadUserAbstractUserNeitherIdNorIdentifier() {
-		buildAndPopulateMU1Table();
-		
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		MockUser1 mu = new MockUser1();
-		AbstractUser au = null;
-		
-		factory.registerProvider(new MockUser1Provider());
-		
-		try {
-			au = storage.readUser(mu);
-			fail("This shouldn't happen");
-		} catch (StorageException e) {
-		}
-	}
-
-	@Test
-	public void testReadUserAbstractUserNeitherIdNorValidIdentifier() {
-		buildAndPopulateMU1Table();
-		
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		MockUserIdentifier uid = new MockUserIdentifier(0, "", "");
-		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566667771");
-		MockUser1 mu = new MockUser1();
-		AbstractUser au = null;
-		
-		factory.registerProvider(new MockUser1Provider());
-		
-		uid.identifies(MockUser1.class);
-		mu.setIdentifier(uid);
-		
-		try {
-			au = storage.readUser(mu);
 			fail("This shouldn't happen");
 		} catch (StorageException e) {
 		}
@@ -2681,15 +2415,12 @@ public class StorageImplTest {
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		MockUserIdentifier uid = new MockUserIdentifier();
 		UUID uuid = UUID.fromString("00001111-2222-dead-beef-555566660000");
 		MockUser1 mu = new MockUser1();
 		AbstractUser au = null;
 		
 		factory.registerProvider(new MockUser1Provider());
 		
-		uid.identifies(MockUser1.class);
-		mu.setIdentifier(uid);
 		mu.setUserId(uuid);
 		
 		try {
@@ -2861,8 +2592,12 @@ public class StorageImplTest {
 		MockUser1 mu1 = new MockUser1(null, "Voda", 1);
 		MockUser1 mu2 = new MockUser1(null, "Káva", 2);
 		
-		mu1.setIdentifier(new MockUserIdentifier(13, "man", "Secret"));
-		mu2.setIdentifier(new MockUserIdentifier(17, "mandibles", "Arthropod"));
+		mu1.setId(13);
+		mu1.setUsername("man");
+		mu1.setPassword("Secret");
+		mu2.setId(17);
+		mu2.setUsername("mandibles");
+		mu2.setPassword("Arthropod");
 		
 		// Set timestamp to a second into the future to preserve order.
 		mu2.setCreated(new DateTime(DateTime.now().getMillis() + 1000));
@@ -2886,25 +2621,25 @@ public class StorageImplTest {
 		assertTrue(users[0] instanceof MockUser1);
 		
 		// Batman
-		props = users[0].getIdentifier().getProperties();
+		props = users[0].getProperties();
 		assertEquals("Batman", props.get("username"));
 		assertEquals(21, ((MockUser1) users[0]).getWhatever());
 		assertEquals("Rajec", ((MockUser1) users[0]).getStuff());
 		
 		// Superman
-		props = users[1].getIdentifier().getProperties();
+		props = users[1].getProperties();
 		assertEquals("Superman", props.get("username"));
 		assertEquals(22, ((MockUser1) users[1]).getWhatever());
 		assertEquals("Vinea", ((MockUser1) users[1]).getStuff());
 		
 		// man
-		props = users[2].getIdentifier().getProperties();
+		props = users[2].getProperties();
 		assertEquals("man", props.get("username"));
 		assertEquals(1, ((MockUser1) users[2]).getWhatever());
 		assertEquals("Voda", ((MockUser1) users[2]).getStuff());
 		
 		// mandibles
-		props = users[3].getIdentifier().getProperties();
+		props = users[3].getProperties();
 		assertEquals("mandibles", props.get("username"));
 		assertEquals(2, ((MockUser1) users[3]).getWhatever());
 		assertEquals("Káva", ((MockUser1) users[3]).getStuff());
@@ -3292,8 +3027,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Superman", "Louis Lane");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("Superman", "Louis Lane");
 		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		
 		pu.setUserId(uuid);
@@ -3314,8 +3048,7 @@ public class StorageImplTest {
 		populatePUTable();
 		
 		Storage storage = new StorageImpl(connection);
-		PlatformUserIdentifier pid = new MockPlatformUserIdentifier("Superman", "Louis Lane");
-		PlatformUser pu = new MockPlatformUser(pid);
+		PlatformUser pu = new MockPlatformUser("Superman", "Louis Lane");
 		UUID uuid = UUID.fromString("00000000-1111-1111-1111-111111111111");
 		
 		pu.setUserId(uuid);
@@ -3477,10 +3210,8 @@ public class StorageImplTest {
 		
 		Storage storage = new StorageImpl(connection);
 		PlatformUser[] pus = new PlatformUser[2];
-		PlatformUserIdentifier pid1 = new MockPlatformUserIdentifier("Superman", "Louis Lane");
-		PlatformUserIdentifier pid2 = new MockPlatformUserIdentifier("Batman", "Robin");
-		PlatformUser pu1 = new MockPlatformUser(pid1);
-		PlatformUser pu2 = new MockPlatformUser(pid2);
+		PlatformUser pu1 = new MockPlatformUser("Superman", "Louis Lane");
+		PlatformUser pu2 = new MockPlatformUser("Batman", "Robin");
 		UUID uuid1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
 		UUID uuid2 = UUID.fromString("11111111-1111-1111-1111-111111111112");
 		
@@ -3507,10 +3238,8 @@ public class StorageImplTest {
 		
 		Storage storage = new StorageImpl(connection);
 		PlatformUser[] pus = new PlatformUser[2];
-		PlatformUserIdentifier pid1 = new MockPlatformUserIdentifier("Superman", "Louis Lane");
-		PlatformUserIdentifier pid2 = new MockPlatformUserIdentifier("Batman", "Robin");
-		PlatformUser pu1 = new MockPlatformUser(pid1);
-		PlatformUser pu2 = new MockPlatformUser(pid2);
+		PlatformUser pu1 = new MockPlatformUser("Superman", "Louis Lane");
+		PlatformUser pu2 = new MockPlatformUser("Batman", "Robin");
 		UUID uuid1 = UUID.fromString("deadbeef-1111-1111-1111-111111111111");
 		UUID uuid2 = UUID.fromString("11111111-1111-1111-1111-111111111111");
 		
@@ -4166,7 +3895,6 @@ public class StorageImplTest {
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		PlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
 		PlatformUser pu = null;
 		String password = null;
 		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
@@ -4180,11 +3908,10 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		password = ((PlatformUserIdentifier) pu.getIdentifier()).getPassword();
+		password = pu.getPassword();
 		
-		uid.setUsername("George");
-		uid.setPassword("Horse");
-		pu.setIdentifier(uid);
+		pu.setUsername("George");
+		pu.setPassword("Horse");
 		pu.setFirstName("George");
 		pu.setLastName("Ofthejungle");
 		pu.setEmail("george@djungle.za");
@@ -4200,8 +3927,7 @@ public class StorageImplTest {
 		
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("George", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
-		assertNull(((PlatformUserIdentifier) pu.getIdentifier()).getPassword());
+		assertEquals("George", pu.getUsername());
 		assertEquals("George", ((PlatformUser) pu).getFirstName());
 		assertEquals("Ofthejungle", ((PlatformUser) pu).getLastName());
 		assertEquals("george@djungle.za", ((PlatformUser) pu).getEmail());
@@ -4213,7 +3939,6 @@ public class StorageImplTest {
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		PlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
 		PlatformUser pu = null;
 		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
 		
@@ -4236,70 +3961,11 @@ public class StorageImplTest {
 	}
 
 	@Test
-	public void testUpdateAbstractUserPlatformUserNoUserName() {
-		populatePUTable();
-		
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		PlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
-		PlatformUser pu = null;
-		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
-		
-		factory.registerProvider(new MockUser1Provider());
-		
-		try {
-			pu = (PlatformUser) storage.readUser(uuid);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		uid.setUsername(null);
-		pu.setIdentifier(uid);
-		
-		try {
-			storage.update(pu);
-			fail("This shouldn't happen");
-		} catch (StorageException e) {
-		}
-	}
-
-	@Test
-	public void testUpdateAbstractUserPlatformUserEmptyUserName() {
-		populatePUTable();
-		
-		UserFactory factory = new UserFactoryImpl();
-		Storage storage = new StorageImpl(connection, factory);
-		PlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
-		PlatformUser pu = null;
-		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
-		
-		factory.registerProvider(new MockUser1Provider());
-		
-		try {
-			pu = (PlatformUser) storage.readUser(uuid);
-		} catch (StorageException e) {
-			e.printStackTrace();
-			fail("This shouldn't happen");
-		}
-		
-		uid.setUsername("");
-		pu.setIdentifier(uid);
-		
-		try {
-			storage.update(pu);
-			fail("This shouldn't happen");
-		} catch (StorageException e) {
-		}
-	}
-
-	@Test
 	public void testUpdateAbstractUserPlatformUserNoPassword() {
 		populatePUTable();
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		PlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
 		PlatformUser pu = null;
 		String password = null;
 		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
@@ -4313,10 +3979,9 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		password = ((PlatformUserIdentifier) pu.getIdentifier()).getPassword();
+		password = pu.getPassword();
 		
-		uid.setUsername("George");
-		pu.setIdentifier(uid);
+		pu.setUsername("George");
 		pu.setFirstName("George");
 		pu.setLastName("Ofthejungle");
 		pu.setEmail("george@djungle.za");
@@ -4324,7 +3989,7 @@ public class StorageImplTest {
 		try {
 			storage.update(pu);
 			pu = null;
-			pu = (PlatformUser) storage.readUser(uid);
+			pu = (PlatformUser) storage.readUser(uuid);
 		} catch (StorageException e) {
 			e.printStackTrace();
 			fail("This shouldn't happen");
@@ -4332,8 +3997,8 @@ public class StorageImplTest {
 		
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("George", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
-		assertNull(((PlatformUserIdentifier) pu.getIdentifier()).getPassword());
+		assertEquals("George", pu.getUsername());
+		assertNull(pu.getPassword());
 		assertEquals("George", ((PlatformUser) pu).getFirstName());
 		assertEquals("Ofthejungle", ((PlatformUser) pu).getLastName());
 		assertEquals("george@djungle.za", ((PlatformUser) pu).getEmail());
@@ -4345,7 +4010,6 @@ public class StorageImplTest {
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		MockPlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
 		PlatformUser pu = null;
 		String password = null;
 		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
@@ -4359,11 +4023,9 @@ public class StorageImplTest {
 			fail("This shouldn't happen");
 		}
 		
-		password = ((PlatformUserIdentifier) pu.getIdentifier()).getPassword();
+		password = pu.getPassword();
 		
-		uid.setUsername("George");
-		uid.setPassword("");
-		pu.setIdentifier(uid);
+		pu.setUsername("George");
 		pu.setFirstName("George");
 		pu.setLastName("Ofthejungle");
 		pu.setEmail("george@djungle.za");
@@ -4371,8 +4033,7 @@ public class StorageImplTest {
 		try {
 			storage.update(pu);
 			pu = null;
-			uid.setPassword("Robin");
-			pu = (PlatformUser) storage.readUser(uid);
+			pu = (PlatformUser) storage.readUser(uuid);
 		} catch (StorageException e) {
 			e.printStackTrace();
 			fail("This shouldn't happen");
@@ -4380,8 +4041,8 @@ public class StorageImplTest {
 		
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("George", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
-		assertNull(((PlatformUserIdentifier) pu.getIdentifier()).getPassword());
+		assertEquals("George", pu.getUsername());
+		assertNull(pu.getPassword());
 		assertEquals("George", ((PlatformUser) pu).getFirstName());
 		assertEquals("Ofthejungle", ((PlatformUser) pu).getLastName());
 		assertEquals("george@djungle.za", ((PlatformUser) pu).getEmail());
@@ -4393,7 +4054,6 @@ public class StorageImplTest {
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		MockPlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
 		PlatformUser pu = null;
 		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
 		
@@ -4419,7 +4079,7 @@ public class StorageImplTest {
 		
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("Batman", pu.getUsername());
 		assertEquals("", ((PlatformUser) pu).getFirstName());
 		assertEquals("Wayne", ((PlatformUser) pu).getLastName());
 		assertEquals("bruce@waynecorp.com", ((PlatformUser) pu).getEmail());
@@ -4431,7 +4091,6 @@ public class StorageImplTest {
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		MockPlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
 		PlatformUser pu = null;
 		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
 		
@@ -4457,7 +4116,7 @@ public class StorageImplTest {
 		
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("Batman", pu.getUsername());
 		assertEquals("", ((PlatformUser) pu).getFirstName());
 		assertEquals("Wayne", ((PlatformUser) pu).getLastName());
 		assertEquals("bruce@waynecorp.com", ((PlatformUser) pu).getEmail());
@@ -4469,7 +4128,6 @@ public class StorageImplTest {
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		MockPlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
 		PlatformUser pu = null;
 		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
 		
@@ -4495,7 +4153,7 @@ public class StorageImplTest {
 		
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("Batman", pu.getUsername());
 		assertEquals("Bruce", ((PlatformUser) pu).getFirstName());
 		assertEquals("", ((PlatformUser) pu).getLastName());
 		assertEquals("bruce@waynecorp.com", ((PlatformUser) pu).getEmail());
@@ -4507,7 +4165,6 @@ public class StorageImplTest {
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		MockPlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
 		PlatformUser pu = null;
 		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
 		
@@ -4533,7 +4190,7 @@ public class StorageImplTest {
 		
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("Batman", pu.getUsername());
 		assertEquals("Bruce", ((PlatformUser) pu).getFirstName());
 		assertEquals("", ((PlatformUser) pu).getLastName());
 		assertEquals("bruce@waynecorp.com", ((PlatformUser) pu).getEmail());
@@ -4545,7 +4202,6 @@ public class StorageImplTest {
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		MockPlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
 		PlatformUser pu = null;
 		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
 		
@@ -4571,7 +4227,7 @@ public class StorageImplTest {
 		
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("Batman", pu.getUsername());
 		assertEquals("Bruce", ((PlatformUser) pu).getFirstName());
 		assertEquals("Wayne", ((PlatformUser) pu).getLastName());
 		assertEquals("", ((PlatformUser) pu).getEmail());
@@ -4583,7 +4239,6 @@ public class StorageImplTest {
 		
 		UserFactory factory = new UserFactoryImpl();
 		Storage storage = new StorageImpl(connection, factory);
-		MockPlatformUserIdentifier uid = new MockPlatformUserIdentifier("Batman", "Robin");
 		PlatformUser pu = null;
 		UUID uuid = UUID.fromString("11111111-1111-1111-1111-111111111111");
 		
@@ -4609,7 +4264,7 @@ public class StorageImplTest {
 		
 		assertNotNull(pu);
 		assertEquals(uuid, pu.getUserId());
-		assertEquals("Batman", ((PlatformUserIdentifier) pu.getIdentifier()).getUsername());
+		assertEquals("Batman", pu.getUsername());
 		assertEquals("Bruce", ((PlatformUser) pu).getFirstName());
 		assertEquals("Wayne", ((PlatformUser) pu).getLastName());
 		assertEquals("", ((PlatformUser) pu).getEmail());
@@ -4689,8 +4344,6 @@ public class StorageImplTest {
 		MockUser1 mu = new MockUser1(null, "", 0);
 		
 		factory.registerProvider(new MockUser1Provider());
-		
-		mu.setIdentifier(null);
 		
 		try {
 			storage.update(mu);
@@ -5114,8 +4767,6 @@ public class StorageImplTest {
 		UUID uuid1 = UUID.fromString("00001111-2222-dead-beef-555566667772");
 		
 		factory.registerProvider(new MockUser1Provider());
-		
-		mu2.setIdentifier(null);
 		
 		try {
 			mu1 = (MockUser1) storage.readUser(uuid1);

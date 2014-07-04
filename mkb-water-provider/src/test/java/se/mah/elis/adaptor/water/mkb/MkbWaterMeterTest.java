@@ -106,7 +106,7 @@ public class MkbWaterMeterTest {
 	private void changeMeter(String mid) {
 		try {
 			meter.setName(mid);
-			meter.setId(new MkbWaterMeterDeviceIdentifier(mid));
+			meter.setDescription(mid);
 		} catch (StaticEntityException e) {
 			fail("couldnt set meter id");
 		}

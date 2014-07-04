@@ -146,6 +146,6 @@ public class EnergyServiceIntegrationDbTest extends JerseyTest {
 		assertEquals(1, users.length);
 		assertNotNull(users[0]);
 		assertNotNull(users[0].getUserId());
-		assertTrue(users[0].getIdentifier().toString().contains("hems7"));
+		assertTrue(users[0].toString().contains("hems7"));
 	}
 }

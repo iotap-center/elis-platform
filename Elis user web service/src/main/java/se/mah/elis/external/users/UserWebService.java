@@ -39,7 +39,6 @@ import se.mah.elis.external.users.jaxbeans.PlatformUserBean;
 import se.mah.elis.external.users.jaxbeans.GatewayUserBean;
 import se.mah.elis.external.users.jaxbeans.UserContainerBean;
 import se.mah.elis.services.users.PlatformUser;
-import se.mah.elis.services.users.PlatformUserIdentifier;
 import se.mah.elis.services.users.User;
 import se.mah.elis.services.users.UserService;
 import se.mah.elis.services.users.exceptions.NoSuchUserException;
@@ -176,7 +175,6 @@ public class UserWebService {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		PlatformUserBean[] beans = null;
 		PlatformUserBean bean = null;
-		PlatformUserIdentifier id = null;
 		
 		logThis("GET /users");
 		
@@ -185,15 +183,13 @@ public class UserWebService {
 		
 		for (int i = 0; i < pus.length; i++) {
 			bean = new PlatformUserBean();
-			id = (PlatformUserIdentifier) pus[i].getIdentifier();
 			bean.userId = pus[i].getUserId().toString();
-			bean.username = id.getUsername();
+			bean.username = pus[i].getUsername();
 			bean.firstName = pus[i].getFirstName();
 			bean.lastName = pus[i].getLastName();
 			bean.email = pus[i].getEmail();
 			
 			beans[i] = bean;
-			id = null;
 			bean = null;
 		}
 		
@@ -326,12 +322,10 @@ public class UserWebService {
 		PlatformUser pu = userService.getPlatformUser(UUID.fromString(userId));
 		
 		if (pu != null) {
-			PlatformUserIdentifier id =
-					(PlatformUserIdentifier) pu.getIdentifier();
 			PlatformUserBean bean = new PlatformUserBean();
 			
 			bean.userId = pu.getUserId().toString();
-			bean.username = id.getUsername();
+			bean.username = pu.getUsername();
 			bean.firstName = pu.getFirstName();
 			bean.lastName = pu.getLastName();
 			bean.email = pu.getEmail();
@@ -482,8 +476,7 @@ public class UserWebService {
 				userService.registerUserToPlatformUser(user, pu);
 
 				bean.userId = pu.getUserId().toString();
-				bean.username = ((PlatformUserIdentifier) pu.getIdentifier())
-						.getUsername();
+				bean.username = pu.getUsername();
 				bean.firstName = pu.getFirstName();
 				bean.lastName = pu.getLastName();
 				bean.email = pu.getEmail();
@@ -535,8 +528,7 @@ public class UserWebService {
 				userService.unregisterUserFromPlatformUser(u, pu);
 				
 				bean.userId = platformUserId;
-				bean.username = ((PlatformUserIdentifier) pu.getIdentifier())
-						.getUsername();
+				bean.username = pu.getUsername();
 				bean.firstName = pu.getFirstName();
 				bean.lastName = pu.getLastName();
 				bean.email = pu.getEmail();

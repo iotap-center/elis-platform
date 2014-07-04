@@ -1,15 +1,18 @@
 package se.mah.elis.adaptor.energy.eon.devices;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.UUID;
 
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.data.GatewayAddress;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
 import se.mah.elis.adaptor.energy.eon.internal.EonHttpBridge;
@@ -29,14 +32,11 @@ public class EonThermometerTest {
 	public void setUp() throws StaticEntityException, ParseException{
 		// Create a mockup httpbridge
 		bridge = mock(EonHttpBridge.class);
-		when(bridge.getTemperature(anyString(), anyString(), anyString()))
+		when(bridge.getTemperature(anyString(), anyString(), any(UUID.class)))
 			.thenReturn(DUMMY_TEMPERATURE);
 		
 		GatewayAddress gwaddr = mock(GatewayAddress.class);
 		when(gwaddr.toString()).thenReturn("gateway");
-		
-		DeviceIdentifier psmId = mock(DeviceIdentifier.class);
-		when(psmId.toString()).thenReturn("device");
 		
 		gateway = mock(EonGateway.class);
 		when(gateway.getAddress()).thenReturn(gwaddr);
@@ -45,7 +45,8 @@ public class EonThermometerTest {
 		eonThermometer = new EonThermometer();
 		eonThermometer.setHttpBridge(bridge);
 		eonThermometer.setGateway(gateway);
-		eonThermometer.setId(psmId);
+		eonThermometer.setName("device");
+		eonThermometer.setDescription("device");
 	}
 	
 	@Test

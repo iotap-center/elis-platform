@@ -317,7 +317,6 @@ public class StorageUtilsTest {
 	@Test
 	public void testGenerateKeyListIncludingNonString() {
 		Properties props = new OrderedProperties();
-		String expected, actual;
 		
 		props.put("col 1", 42);
 		props.put(true, "Batman!");

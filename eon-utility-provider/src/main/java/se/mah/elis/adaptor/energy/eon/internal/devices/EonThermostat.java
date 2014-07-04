@@ -1,22 +1,14 @@
 package se.mah.elis.adaptor.energy.eon.internal.devices;
 
 import java.util.Properties;
-import java.util.UUID;
 
-import org.joda.time.DateTime;
 import org.json.simple.parser.ParseException;
 
-import se.mah.elis.adaptor.device.api.data.DeviceIdentifier;
 import se.mah.elis.adaptor.device.api.entities.devices.Actuator;
-import se.mah.elis.adaptor.device.api.entities.devices.DeviceSet;
-import se.mah.elis.adaptor.device.api.entities.devices.Gateway;
 import se.mah.elis.adaptor.device.api.entities.devices.Thermostat;
 import se.mah.elis.adaptor.device.api.exceptions.ActuatorFailedException;
 import se.mah.elis.adaptor.device.api.exceptions.SensorFailedException;
-import se.mah.elis.adaptor.energy.eon.internal.gateway.EonGateway;
-import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.data.TemperatureData;
-import se.mah.elis.exceptions.StaticEntityException;
 
 /**
  * A virtual representation of the E.On Thermostat
@@ -39,7 +31,8 @@ public class EonThermostat extends EonDevice implements Actuator,Thermostat {
 		float goalTemp = goal.getCelsius();
 
 		try {
-			httpBridge.setDesiredTemperature(this.gateway.getAuthenticationToken(), getGatewayAddress(), getId().toString(), goalTemp);
+			httpBridge.setDesiredTemperature(this.gateway.getAuthenticationToken(),
+					getGatewayAddress(), dataid, goalTemp);
 		} catch (ParseException e) {
 			throw new ActuatorFailedException();
 		}
@@ -53,7 +46,7 @@ public class EonThermostat extends EonDevice implements Actuator,Thermostat {
 		try {
 			currentTemperature = httpBridge.getTemperature(
 					this.gateway.getAuthenticationToken(), getGatewayAddress(),
-					getId().toString());
+					dataid);
 		} catch (ParseException e) {
 			throw new SensorFailedException();
 		}

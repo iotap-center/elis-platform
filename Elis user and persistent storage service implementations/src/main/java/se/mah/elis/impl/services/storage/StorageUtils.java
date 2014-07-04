@@ -22,11 +22,9 @@ import org.joda.time.DateTime;
 import org.osgi.service.log.LogService;
 
 import se.mah.elis.data.ElisDataObject;
-import se.mah.elis.data.Identifier;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.AbstractUser;
-import se.mah.elis.services.users.UserIdentifier;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.felix.scr.annotations.Component;
@@ -899,8 +897,6 @@ public class StorageUtils {
 				}
 			} else if (value instanceof Number) {
 				isEmpty = (((Number) value).equals(0));
-			} else if (value instanceof Identifier) {
-				isEmpty = isEmpty(((Identifier) value).getProperties());
 			} else if (value instanceof DateTime) {
 				if (!entry.getKey().equals("created")) {
 					isEmpty = ((DateTime) value).isEqual(0);
@@ -915,32 +911,32 @@ public class StorageUtils {
 		return isEmpty;
 	}
 	
-	/**
-	 * Flatten a set of properties prior to saving them to the database.
-	 * 
-	 * @param props The properties to flatten.
-	 * @param isTemplate If set to true, the method will call the
-	 * 		getPropertiesTemplate() method on the identifier.
-	 * @return Returns a flattened Properties object.
-	 * @since 2.0
-	 */
-	public static Properties flattenPropertiesWithIdentifier(Properties props, boolean isTemplate) {
-		OrderedProperties flatProps = new OrderedProperties();
-		
-		for (Entry<Object, Object> prop : props.entrySet()) {
-			if (prop.getValue() instanceof UserIdentifier) {
-				if (isTemplate ) {
-					flatProps.putAll(((UserIdentifier) prop.getValue()).getPropertiesTemplate());
-				} else {
-					flatProps.putAll(((UserIdentifier) prop.getValue()).getProperties());
-				}
-			} else {
-				flatProps.put(prop.getKey(), prop.getValue());
-			}
-		}
-		
-		return flatProps;
-	}
+//	/**
+//	 * Flatten a set of properties prior to saving them to the database.
+//	 * 
+//	 * @param props The properties to flatten.
+//	 * @param isTemplate If set to true, the method will call the
+//	 * 		getPropertiesTemplate() method on the identifier.
+//	 * @return Returns a flattened Properties object.
+//	 * @since 2.0
+//	 */
+//	public static Properties flattenPropertiesWithIdentifier(Properties props, boolean isTemplate) {
+//		OrderedProperties flatProps = new OrderedProperties();
+//		
+//		for (Entry<Object, Object> prop : props.entrySet()) {
+//			if (prop.getValue() instanceof UserIdentifier) {
+//				if (isTemplate ) {
+//					flatProps.putAll(((UserIdentifier) prop.getValue()).getPropertiesTemplate());
+//				} else {
+//					flatProps.putAll(((UserIdentifier) prop.getValue()).getProperties());
+//				}
+//			} else {
+//				flatProps.put(prop.getKey(), prop.getValue());
+//			}
+//		}
+//		
+//		return flatProps;
+//	}
 	
 	/**
 	 * <p>Validates that a set of properties are OK for storing. The criteria

@@ -62,7 +62,7 @@ public class EonPowerSwitchMeter extends EonPowerMeter
 		try {
 			EonActionObject longRunningTask = 
 					httpBridge.turnOff(this.gateway.getAuthenticationToken(),
-							getGatewayAddress(), getId().toString());
+							getGatewayAddress(), dataid);
 			success = waitForSuccess(longRunningTask);
 		} catch (ResponseProcessingException | ParseException e) {
 			throw new ActuatorFailedException();
@@ -77,7 +77,7 @@ public class EonPowerSwitchMeter extends EonPowerMeter
 		try {
 			EonActionObject longRunningTask = 
 					httpBridge.turnOn(this.gateway.getAuthenticationToken(),
-							getGatewayAddress(), getId().toString());
+							getGatewayAddress(), dataid);
 			success = waitForSuccess(longRunningTask);
 		} catch (ResponseProcessingException | ParseException e) {
 			throw new ActuatorFailedException();
