@@ -280,6 +280,10 @@ public class EnergyServiceTest extends JerseyTest {
 		when(mainMeter2.toArray()).thenReturn(devices4.toArray(new Device[0]));
 		when(mainMeter3.toArray()).thenReturn(devices2.toArray(new Device[0]));
 
+		when(mainMeter1.toArray(any(Device[].class))).thenReturn(devices3.toArray(new Device[0]));
+		when(mainMeter2.toArray(any(Device[].class))).thenReturn(devices4.toArray(new Device[0]));
+		when(mainMeter3.toArray(any(Device[].class))).thenReturn(devices2.toArray(new Device[0]));
+
 		when(meter1.getSamples(from, oneHour)).thenReturn(oneSample);
 		when(meter2.getSamples(from, oneHour)).thenReturn(oneSample);
 		when(mainMeter1.getSamples(from, oneHour)).thenReturn(oneSample);

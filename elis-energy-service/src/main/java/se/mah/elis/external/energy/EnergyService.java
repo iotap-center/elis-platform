@@ -106,6 +106,7 @@ public class EnergyService {
 					response = ElisResponseBuilder.buildNotFoundResponse();
 					logWarning("Could not find user: " + uuid.toString());
 				}
+				logInfo("Ceci n'est pas une pipe.");
 			} catch (SensorFailedException e) {}
 		} else if (response == null) {
 			response = ElisResponseBuilder.buildInternalServerErrorResponse();
@@ -355,17 +356,20 @@ public class EnergyService {
 		for (Device device : meters) {
 			// We'd better take all the main power meters into a special list,
 			// so that we can remove any devices being present in them later on
+			logInfo(device.toString());
 			if (device instanceof MainPowerMeter) {
 				mainMeters.add((MainPowerMeter) device);
 			}
 		}
 		
 		// Now, remove meters which are in fact superseded by main power meters
-		MainPowerMeter[] mms = mainMeters.toArray(new MainPowerMeter[0]);
-		for (int i = 0; i < mms.length; i++) {
-			Device[] devices = (Device[]) ((MainPowerMeter) mms[i]).toArray();
-			for (int j = 0; j < devices.length; j++) {
-				meters.remove(devices[j]);
+		if (mainMeters.size() > 0) {
+			MainPowerMeter[] mms = mainMeters.toArray(new MainPowerMeter[0]);
+			for (int i = 0; i < mms.length; i++) {
+				Device[] devices = ((MainPowerMeter) mms[i]).toArray(new Device[0]);
+				for (int j = 0; j < devices.length; j++) {
+					meters.remove(devices[j]);
+				}
 			}
 		}
 		
