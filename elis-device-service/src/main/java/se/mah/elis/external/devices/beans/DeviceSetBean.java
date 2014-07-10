@@ -9,7 +9,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DeviceSetBean {
 	
 	@XmlElement
-	public String puid;
+	public String user;
+	
+	@XmlElement
+	public String device;
+	
+	@XmlElement
+	public String deviceset;
 	
 	@XmlElement(required = true)
 	public List<DeviceBean> devices;

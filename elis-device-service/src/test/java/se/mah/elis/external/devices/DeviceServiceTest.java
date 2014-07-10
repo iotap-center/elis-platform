@@ -104,7 +104,7 @@ public class DeviceServiceTest extends JerseyTest {
 		final String deviceResponse = target("/devices/" + PUID + "/").request().get(String.class);
 		EnvelopeBean envelope = gson.fromJson(deviceResponse, EnvelopeBean.class);
 		DeviceSetBean bean = gson.fromJson(gson.toJson(envelope.response), DeviceSetBean.class);
-		assertEquals(PUID, bean.puid);
+		assertEquals(PUID, bean.user);
 		assertEquals(1, bean.devices.size());
 		assertEquals(DEVICENAME, bean.devices.get(0).name);
 	}
@@ -130,7 +130,7 @@ public class DeviceServiceTest extends JerseyTest {
 		final String deviceResponse = target("/devices/" + DSID + "/").request().get(String.class);
 		EnvelopeBean envelope = gson.fromJson(deviceResponse, EnvelopeBean.class);
 		DeviceSetBean bean = gson.fromJson(gson.toJson(envelope.response), DeviceSetBean.class);
-		assertEquals(PUID, bean.puid);
+		assertEquals(PUID, bean.deviceset);
 		assertEquals(1, bean.devices.size());
 		assertEquals(DEVICENAME, bean.devices.get(0).name);
 	}
