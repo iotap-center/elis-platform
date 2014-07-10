@@ -74,7 +74,9 @@ public interface ColoredLamp extends Actuator {
 	void setColor(byte r, byte g, byte b);
 	
 	/**
-	 * Gets the current colour value.
+	 * Gets the current colour value. The colour is defined by a 24 bit value,
+	 * giving a colour space between 0 and 16777215, i.e.
+	 * 255*255*255.
 	 * 
 	 * @return The colour code.
 	 * @since 1.0
