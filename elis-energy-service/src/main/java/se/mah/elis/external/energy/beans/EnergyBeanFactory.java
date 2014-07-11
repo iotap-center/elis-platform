@@ -158,7 +158,7 @@ public class EnergyBeanFactory {
 					points.add(i, bean);
 				}
 				bean.watts += entry.getValue().get(i).getCurrentVoltage();
-				bean.kwh += entry.getValue().get(i).getCurrentPower();
+				bean.kwh += entry.getValue().get(i).getCurrentPower() / 1000;
 			}
 		}
 		

@@ -257,7 +257,9 @@ public class EnergyService {
 					response = ElisResponseBuilder.buildNotFoundResponse();
 					logWarning("Could not find user: " + uuid.toString());
 				}
-			} catch (SensorFailedException e) {}
+			} catch (SensorFailedException e) {
+				logWarning("Couldn't read some samples.");
+			}
 		} else if (response == null) {
 			logError("User service not available");
 		}
@@ -361,11 +363,13 @@ public class EnergyService {
 		}
 		
 		// Now, remove meters which are in fact superseded by main power meters
-		MainPowerMeter[] mms = mainMeters.toArray(new MainPowerMeter[0]);
-		for (int i = 0; i < mms.length; i++) {
-			Device[] devices = (Device[]) ((MainPowerMeter) mms[i]).toArray();
-			for (int j = 0; j < devices.length; j++) {
-				meters.remove(devices[j]);
+		if (mainMeters.size() > 0) {
+			MainPowerMeter[] mms = mainMeters.toArray(new MainPowerMeter[0]);
+			for (int i = 0; i < mms.length; i++) {
+				Device[] devices = ((MainPowerMeter) mms[i]).toArray(new Device[0]);
+				for (int j = 0; j < devices.length; j++) {
+					meters.remove(devices[j]);
+				}
 			}
 		}
 		
@@ -405,8 +409,12 @@ public class EnergyService {
 	}
 	
 	/**
-	 * Fetches samples from a group of meters from a moment of time up until
-	 * a later moment in time.
+	 * <p>Fetches samples from a group of meters from a moment of time up until
+	 * a later moment in time.</p>
+	 * 
+	 * <p>If all of the samples fail to be read, the method will throw an
+	 * exception. If at least one sample is read, the read samples will be
+	 * returned.</p>
 	 * 
 	 * @param meters The meters to fetch samples from
 	 * @param from The instant to start fetching samples from
@@ -420,35 +428,46 @@ public class EnergyService {
 					throws SensorFailedException {
 		Map<ElectricitySampler, List<ElectricitySample>> sampleList =
 				new HashMap<ElectricitySampler, List<ElectricitySample>>();
+		boolean throwException = false;
 		
 		for (ElectricitySampler meter : meters) {
 			// First, fetch all samples
-			List<ElectricitySample> samples = meter.getSamples(from, to);
-			
-			// Now, check all samples for sanity
-			List<ElectricitySample> killEmAll =
-					new ArrayList<ElectricitySample>();
-			if (samples != null) {
-				for (ElectricitySample sample : samples) {
-					if (sample.getSampleTimestamp().isBefore(from) ||
-						sample.getSampleTimestamp().isAfter(to)) {
-						killEmAll.add(sample);
+			try {
+				List<ElectricitySample> samples = meter.getSamples(from, to);
+				
+				// Now, check all samples for sanity
+				List<ElectricitySample> killEmAll =
+						new ArrayList<ElectricitySample>();
+				if (samples != null) {
+					for (ElectricitySample sample : samples) {
+						if (sample.getSampleTimestamp().isBefore(from) ||
+							sample.getSampleTimestamp().isAfter(to)) {
+							killEmAll.add(sample);
+						}
 					}
 				}
+				
+				// OK, some might have been bad. Remove them.
+				for (ElectricitySample sample : killEmAll) {
+					samples.remove(sample);
+				}
+				
+				// If no fitting samples were found, let's throw an exception.
+				if (samples.size() == 0) {
+					throw new SensorFailedException();
+				}
+				
+				// Then, add them to our list
+				sampleList.put(meter, samples);
+			} catch (SensorFailedException e) {
+				logInfo("Can't read from " + meter + ", " + e.getMessage());
+				throwException = true;
 			}
-			
-			// OK, some might have been bad. Remove them.
-			for (ElectricitySample sample : killEmAll) {
-				samples.remove(sample);
-			}
-			
-			// If no fitting samples were found, let's throw an exception.
-			if (samples.size() == 0) {
-				throw new SensorFailedException();
-			}
-			
-			// Then, add them to our list
-			sampleList.put(meter, samples);
+		}
+		
+		// If all of the samplings failed, then let's throw an exception.
+		if (throwException && sampleList.size() == 0) {
+			throw new SensorFailedException();
 		}
 		
 		return sampleList;

@@ -319,7 +319,7 @@ public class StorageImpl implements Storage, ManagedService {
 			} finally {
 				try {
 					stmt.close();
-				} catch (SQLException e) {}
+				} catch (Exception e) {}
 			}
 		} else {
 			log(LogService.LOG_WARNING, "Failed to insert data");
@@ -479,7 +479,7 @@ public class StorageImpl implements Storage, ManagedService {
 				} finally {
 					try {
 						stmt.close();
-					} catch (SQLException e) {}
+					} catch (Exception e) {}
 				}
 			} else {
 				// Just a generic User object.
@@ -698,7 +698,7 @@ public class StorageImpl implements Storage, ManagedService {
 			} finally {
 				try {
 					stmt.close();
-				} catch (SQLException e) {}
+				} catch (Exception e) {}
 			}
 			
 			if (!updated) {
@@ -862,7 +862,7 @@ public class StorageImpl implements Storage, ManagedService {
 				} finally {
 					try {
 						stmt.close();
-					} catch (SQLException e) {}
+					} catch (Exception e) {}
 				}
 			} else {
 				// Just a generic AbstractUser object.
@@ -921,7 +921,7 @@ public class StorageImpl implements Storage, ManagedService {
 				} finally {
 					try {
 						stmt.close();
-					} catch (SQLException e) {}
+					} catch (Exception e) {}
 				}
 			}
 		} else {
@@ -1040,7 +1040,7 @@ public class StorageImpl implements Storage, ManagedService {
 			} finally {
 				try {
 					stmt.close();
-				} catch (SQLException e) {}
+				} catch (Exception e) {}
 			}
 		} else {
 			log(LogService.LOG_WARNING, "Failed to delete data object");
@@ -1163,7 +1163,7 @@ public class StorageImpl implements Storage, ManagedService {
 			} finally {
 				try {
 					stmt.close();
-				} catch (SQLException e) {}
+				} catch (Exception e) {}
 			}
 		}
 	}
@@ -1253,7 +1253,7 @@ public class StorageImpl implements Storage, ManagedService {
 			} finally {
 				try {
 					stmt.close();
-				} catch (SQLException e) {}
+				} catch (Exception e) {}
 			}
 		}
 	}
@@ -1288,6 +1288,7 @@ public class StorageImpl implements Storage, ManagedService {
 		if (id == null) {
 			throw new StorageException(OBJECT_NOT_FOUND);
 		}
+		
 		Statement stmt = null;
 		java.sql.ResultSet rs = null;
 		ElisDataObject edo = null;
@@ -1316,16 +1317,17 @@ public class StorageImpl implements Storage, ManagedService {
 				// This is where we do that.
 				fetchCollections(edo);
 			} catch (SQLException e) {
-				log(LogService.LOG_WARNING, OBJECT_NOT_FOUND + ": " + id, e);
 				throw new StorageException(OBJECT_NOT_FOUND);
 			} catch (DataInitalizationException e) {
 				log(LogService.LOG_WARNING, INSTANCE_OBJECT_ERROR + ": " + id, e);
 				throw new StorageException(INSTANCE_OBJECT_ERROR);
 			} finally {
 				try {
-					rs.close();
+					if (rs != null) {
+						rs.close();
+					}
 					stmt.close();
-				} catch (SQLException e) {}
+				} catch (Exception e) {}
 			}
 		}
 		
@@ -1429,7 +1431,7 @@ public class StorageImpl implements Storage, ManagedService {
 						rs.close();
 					}
 					stmt.close();
-				} catch (SQLException e) {}
+				} catch (Exception e) {}
 			}
 		}
 		
@@ -1495,7 +1497,6 @@ public class StorageImpl implements Storage, ManagedService {
 							"password = PASSWORD('" +
 							((PlatformUser) user).getPassword() + "'));";
 				}
-				System.out.println(query);
 			}
 
 			try {
@@ -1510,7 +1511,7 @@ public class StorageImpl implements Storage, ManagedService {
 			} finally {
 				try {
 					stmt.close();
-				} catch (SQLException e) {}
+				} catch (Exception e) {}
 			}
 		} else {
 			log(LogService.LOG_WARNING, "Failed to read user");
