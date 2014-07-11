@@ -1,6 +1,7 @@
 package se.mah.elis.external.devices.beans;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -9,13 +10,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DeviceSetBean {
 	
 	@XmlElement
-	public String user;
+	public UUID user;
 	
 	@XmlElement
-	public String device;
+	public UUID device;
 	
 	@XmlElement
-	public String deviceset;
+	public UUID deviceset;
 	
 	@XmlElement(required = true)
 	public List<DeviceBean> devices;

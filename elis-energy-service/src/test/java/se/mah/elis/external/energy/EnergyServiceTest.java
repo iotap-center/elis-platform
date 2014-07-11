@@ -48,17 +48,17 @@ import com.google.gson.GsonBuilder;
 
 public class EnergyServiceTest extends JerseyTest {
 
-	private static final String PLATFORM_USER = "00001111-2222-3333-4444-555566667777";
-	private static final String PLATFORM_USER_WITH_MAIN_METER = "01001111-2222-3333-4444-555566667777";
-	private static final String METER = "10001111-2222-3333-4444-555566667777";
-	private static final String METER2 = "11001111-2222-3333-4444-555566667777";
-	private static final String MAIN_METER1 = "12001111-2222-3333-4444-555566667777";
-	private static final String MAIN_METER2 = "13001111-2222-3333-4444-555566667777";
-	private static final String MAIN_METER3 = "14001111-2222-3333-4444-555566667777";
-	private static final String BAD_DEVICE = "20001111-2222-3333-4444-555566667777";
-	private static final String DEVICESET = "30001111-2222-3333-4444-555566667777";
-	private static final String DEVICESET_WITH_MAIN_METER = "31001111-2222-3333-4444-555566667777";
-	private static final String BAD_DEVICESET = "40001111-2222-3333-4444-555566667777";
+	private static final UUID PLATFORM_USER = UUID.fromString("00001111-2222-3333-4444-555566667777");
+	private static final UUID PLATFORM_USER_WITH_MAIN_METER = UUID.fromString("01001111-2222-3333-4444-555566667777");
+	private static final UUID METER = UUID.fromString("10001111-2222-3333-4444-555566667777");
+	private static final UUID METER2 = UUID.fromString("11001111-2222-3333-4444-555566667777");
+	private static final UUID MAIN_METER1 = UUID.fromString("12001111-2222-3333-4444-555566667777");
+	private static final UUID MAIN_METER2 = UUID.fromString("13001111-2222-3333-4444-555566667777");
+	private static final UUID MAIN_METER3 = UUID.fromString("14001111-2222-3333-4444-555566667777");
+	private static final UUID BAD_DEVICE = UUID.fromString("20001111-2222-3333-4444-555566667777");
+	private static final UUID DEVICESET = UUID.fromString("30001111-2222-3333-4444-555566667777");
+	private static final UUID DEVICESET_WITH_MAIN_METER = UUID.fromString("31001111-2222-3333-4444-555566667777");
+	private static final UUID BAD_DEVICESET = UUID.fromString("40001111-2222-3333-4444-555566667777");
 	private static final long TWENTYFOUR_HOURS = 1392768000000l; // T + 24 h
 	private static final long ALMOST_TWENTYFOUR_HOURS = 1392767999000l; // T + 24 h - 1 s
 	private static final long TEN_DAYS = 1393545600000l; // T + 24 h - 1 s
@@ -126,10 +126,10 @@ public class EnergyServiceTest extends JerseyTest {
 		log = mock(LogService.class);
 		
 		platformUser = mock(PlatformUser.class);
-		when(platformUser.getUserId()).thenReturn(UUID.fromString(PLATFORM_USER));
+		when(platformUser.getUserId()).thenReturn(PLATFORM_USER);
 		
 		platformUser2 = mock(PlatformUser.class);
-		when(platformUser2.getUserId()).thenReturn(UUID.fromString(PLATFORM_USER_WITH_MAIN_METER));
+		when(platformUser2.getUserId()).thenReturn(PLATFORM_USER_WITH_MAIN_METER);
 		
 		gateway = mock(Gateway.class);
 		gatewayUser = mock(GatewayUser.class);
@@ -162,64 +162,64 @@ public class EnergyServiceTest extends JerseyTest {
 		device = mock(Device.class);
 		when(device.getName()).thenReturn(DEVICE + "0");
 		when(device.getDescription()).thenReturn("Description: device");
-		when(device.getDataId()).thenReturn(UUID.fromString(BAD_DEVICE));
-		when(device.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER));
+		when(device.getDataId()).thenReturn(BAD_DEVICE);
+		when(device.getOwnerId()).thenReturn(PLATFORM_USER);
 		
 		meter1 = mock(ElectricitySampler.class);
 		when(meter1.getName()).thenReturn(DEVICE + "1");
 		when(meter1.getDescription()).thenReturn("Description: meter1");
-		when(meter1.getDataId()).thenReturn(UUID.fromString(METER));
-		when(meter1.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER));
+		when(meter1.getDataId()).thenReturn(METER);
+		when(meter1.getOwnerId()).thenReturn(PLATFORM_USER);
 		
 		meter2 = mock(ElectricitySampler.class);
 		when(meter2.getName()).thenReturn(DEVICE + "2");
 		when(meter2.getDescription()).thenReturn("Description: meter2");
-		when(meter2.getDataId()).thenReturn(UUID.fromString(METER2));
-		when(meter2.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER));
+		when(meter2.getDataId()).thenReturn(METER2);
+		when(meter2.getOwnerId()).thenReturn(PLATFORM_USER);
 		
 		mainMeter1 = mock (MainPowerMeter.class);
 		when(mainMeter1.getName()).thenReturn(DEVICE + "3");
 		when(mainMeter1.getDescription()).thenReturn("Description: meter3");
-		when(mainMeter1.getDataId()).thenReturn(UUID.fromString(MAIN_METER1));
-		when(mainMeter1.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER_WITH_MAIN_METER));
+		when(mainMeter1.getDataId()).thenReturn(MAIN_METER1);
+		when(mainMeter1.getOwnerId()).thenReturn(PLATFORM_USER_WITH_MAIN_METER);
 		
 		mainMeter2 = mock (MainPowerMeter.class);
 		when(mainMeter2.getName()).thenReturn(DEVICE + "4");
 		when(mainMeter2.getDescription()).thenReturn("Description: meter4");
-		when(mainMeter2.getDataId()).thenReturn(UUID.fromString(MAIN_METER2));
-		when(mainMeter2.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER_WITH_MAIN_METER));
+		when(mainMeter2.getDataId()).thenReturn(MAIN_METER2);
+		when(mainMeter2.getOwnerId()).thenReturn(PLATFORM_USER_WITH_MAIN_METER);
 		
 		mainMeter3 = mock (MainPowerMeter.class);
 		when(mainMeter3.getName()).thenReturn(DEVICE + "5");
 		when(mainMeter3.getDescription()).thenReturn("Description: meter5");
-		when(mainMeter3.getDataId()).thenReturn(UUID.fromString(MAIN_METER3));
-		when(mainMeter3.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER_WITH_MAIN_METER));
+		when(mainMeter3.getDataId()).thenReturn(MAIN_METER3);
+		when(mainMeter3.getOwnerId()).thenReturn(PLATFORM_USER_WITH_MAIN_METER);
 		
 		deviceset1 = mock(DeviceSet.class);
-		when(deviceset1.getDataId()).thenReturn(UUID.fromString(DEVICESET));
-		when(deviceset1.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER));
+		when(deviceset1.getDataId()).thenReturn(DEVICESET);
+		when(deviceset1.getOwnerId()).thenReturn(PLATFORM_USER);
 		
 		deviceset2 = mock(DeviceSet.class);
-		when(deviceset2.getDataId()).thenReturn(UUID.fromString(BAD_DEVICESET));
-		when(deviceset2.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER));
+		when(deviceset2.getDataId()).thenReturn(BAD_DEVICESET);
+		when(deviceset2.getOwnerId()).thenReturn(PLATFORM_USER);
 		
 		deviceset3 = mock(DeviceSet.class);
-		when(deviceset3.getDataId()).thenReturn(UUID.fromString(DEVICESET_WITH_MAIN_METER));
-		when(deviceset3.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER_WITH_MAIN_METER));
+		when(deviceset3.getDataId()).thenReturn(DEVICESET_WITH_MAIN_METER);
+		when(deviceset3.getOwnerId()).thenReturn(PLATFORM_USER_WITH_MAIN_METER);
 		
 		storage = mock(Storage.class);
 		try {
-			when(storage.readData(UUID.fromString(PLATFORM_USER))).thenThrow(new StorageException());
-			when(storage.readData(UUID.fromString(PLATFORM_USER_WITH_MAIN_METER))).thenThrow(new StorageException());
-			when(storage.readData(UUID.fromString(METER))).thenReturn(meter1);
-			when(storage.readData(UUID.fromString(METER2))).thenReturn(meter2);
-			when(storage.readData(UUID.fromString(MAIN_METER1))).thenReturn(mainMeter1);
-			when(storage.readData(UUID.fromString(MAIN_METER2))).thenReturn(mainMeter2);
-			when(storage.readData(UUID.fromString(MAIN_METER3))).thenReturn(mainMeter3);
-			when(storage.readData(UUID.fromString(BAD_DEVICE))).thenReturn(device);
-			when(storage.readData(UUID.fromString(DEVICESET))).thenReturn(deviceset1);
-			when(storage.readData(UUID.fromString(DEVICESET_WITH_MAIN_METER))).thenReturn(deviceset3);
-			when(storage.readData(UUID.fromString(BAD_DEVICESET))).thenReturn(deviceset2);
+			when(storage.readData(PLATFORM_USER)).thenThrow(new StorageException());
+			when(storage.readData(PLATFORM_USER_WITH_MAIN_METER)).thenThrow(new StorageException());
+			when(storage.readData(METER)).thenReturn(meter1);
+			when(storage.readData(METER2)).thenReturn(meter2);
+			when(storage.readData(MAIN_METER1)).thenReturn(mainMeter1);
+			when(storage.readData(MAIN_METER2)).thenReturn(mainMeter2);
+			when(storage.readData(MAIN_METER3)).thenReturn(mainMeter3);
+			when(storage.readData(BAD_DEVICE)).thenReturn(device);
+			when(storage.readData(DEVICESET)).thenReturn(deviceset1);
+			when(storage.readData(DEVICESET_WITH_MAIN_METER)).thenReturn(deviceset3);
+			when(storage.readData(BAD_DEVICESET)).thenReturn(deviceset2);
 			when(meter1.getSample()).thenReturn(sample);
 			when(meter2.getSample()).thenReturn(sample);
 			when(mainMeter1.getSample()).thenReturn(sample2);
@@ -228,12 +228,12 @@ public class EnergyServiceTest extends JerseyTest {
 		} catch (StorageException | SensorFailedException e) {}
 		
 		userService = mock(UserService.class);
-		when(userService.getPlatformUser(UUID.fromString(PLATFORM_USER))).thenReturn(platformUser);
-		when(userService.getPlatformUser(UUID.fromString(PLATFORM_USER_WITH_MAIN_METER))).thenReturn(platformUser2);
+		when(userService.getPlatformUser(PLATFORM_USER)).thenReturn(platformUser);
+		when(userService.getPlatformUser(PLATFORM_USER_WITH_MAIN_METER)).thenReturn(platformUser2);
 		when(userService.getUsers(platformUser)).thenReturn(new User[] { gatewayUser });
-		when(userService.getUser(platformUser, UUID.fromString(PLATFORM_USER))).thenReturn(gatewayUser);
+		when(userService.getUser(platformUser, PLATFORM_USER)).thenReturn(gatewayUser);
 		when(userService.getUsers(platformUser2)).thenReturn(new User[] { gatewayUser2 });
-		when(userService.getUser(platformUser2, UUID.fromString(PLATFORM_USER_WITH_MAIN_METER))).thenReturn(gatewayUser2);
+		when(userService.getUser(platformUser2, PLATFORM_USER_WITH_MAIN_METER)).thenReturn(gatewayUser2);
 		
 		
 	}
@@ -250,8 +250,8 @@ public class EnergyServiceTest extends JerseyTest {
 		meter2 = mock(ElectricitySampler.class);
 		when(meter2.getName()).thenReturn(DEVICE + "2");
 		when(meter2.getDescription()).thenReturn("Description: meter2");
-		when(meter2.getDataId()).thenReturn(UUID.fromString(METER2));
-		when(meter2.getOwnerId()).thenReturn(UUID.fromString(PLATFORM_USER));
+		when(meter2.getDataId()).thenReturn(METER2);
+		when(meter2.getOwnerId()).thenReturn(PLATFORM_USER);
 		when(meter2.getSample()).thenReturn(sample);
 		
 		devices1 = new ArrayList<Device>();
@@ -401,19 +401,7 @@ public class EnergyServiceTest extends JerseyTest {
 		return sample;
 	}
 
-	
-	private String getFirstDevice(List<EnergyDeviceBean> devices) {
-		List<String> names = new ArrayList<>();
-		
-		for (EnergyDeviceBean bean : devices) 
-			names.add(bean.deviceId);
-		
-		Collections.sort(names);
-		
-		return names.get(0);
-	}
-
-	private EnvelopeBean getNowRequest(String uuid) {
+	private EnvelopeBean getNowRequest(UUID uuid) {
 		final String energyNowData = target("/energy/" + uuid + "/now")
 				.request().get(String.class);
 		EnvelopeBean envelope = gson.fromJson(energyNowData, EnvelopeBean.class);

@@ -1,6 +1,7 @@
 package se.mah.elis.external.water.beans;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -11,13 +12,13 @@ import se.mah.elis.external.beans.PeriodicityBean;
 public class WaterBean {
 
 	@XmlElement
-	public String user;
+	public UUID user;
 
 	@XmlElement
-	public String device;
+	public UUID device;
 
 	@XmlElement
-	public String deviceset;
+	public UUID deviceset;
 	
 	@XmlElement
 	public PeriodicityBean period;

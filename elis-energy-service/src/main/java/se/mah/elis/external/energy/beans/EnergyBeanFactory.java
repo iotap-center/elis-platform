@@ -26,7 +26,7 @@ public class EnergyBeanFactory {
 			Map<ElectricitySampler, List<ElectricitySample>> samples,
 			String period, PlatformUser pu) {
 		EnergyBean bean = new EnergyBean();
-		bean.user = pu.getUserId().toString();
+		bean.user = pu.getUserId();
 		bean.samples = createDataListFromSamples(samples);
 		bean.summary = createSummary(samples);
 		bean.period.periodicity = period;
@@ -39,7 +39,7 @@ public class EnergyBeanFactory {
 			Map<ElectricitySampler, List<ElectricitySample>> samples,
 			String period, ElectricitySampler sampler) {
 		EnergyBean bean = new EnergyBean();
-		bean.device = sampler.getDataId().toString();
+		bean.device = sampler.getDataId();
 		bean.samples = createDataListFromSamples(samples);
 		bean.summary = createSummary(samples);
 		bean.period.periodicity = period;
@@ -52,7 +52,7 @@ public class EnergyBeanFactory {
 			Map<ElectricitySampler, List<ElectricitySample>> samples,
 			String period, DeviceSet set) {
 		EnergyBean bean = new EnergyBean();
-		bean.deviceset = set.getDataId().toString();
+		bean.deviceset = set.getDataId();
 		bean.samples = createDataListFromSamples(samples);
 		bean.summary = createSummary(samples);
 		bean.period.periodicity = period;
@@ -75,7 +75,7 @@ public class EnergyBeanFactory {
 			Map<ElectricitySampler, List<ElectricitySample>> samples,
 			String period, DateTime from, DateTime to, PlatformUser pu) {
 		EnergyBean bean = new EnergyBean();
-		bean.user = pu.getUserId().toString();
+		bean.user = pu.getUserId();
 		bean.samples = createDataListFromSamples(samples);
 		bean.summary = createSummary(samples);
 		bean.period.periodicity = period;
@@ -99,7 +99,7 @@ public class EnergyBeanFactory {
 			Map<ElectricitySampler, List<ElectricitySample>> samples,
 			String period, DateTime from, DateTime to, ElectricitySampler sampler) {
 		EnergyBean bean = new EnergyBean();
-		bean.device = sampler.getDataId().toString();
+		bean.device = sampler.getDataId();
 		bean.samples = createDataListFromSamples(samples);
 		bean.summary = createSummary(samples);
 		bean.period.periodicity = period;
@@ -123,7 +123,7 @@ public class EnergyBeanFactory {
 			Map<ElectricitySampler, List<ElectricitySample>> samples,
 			String period, DateTime from, DateTime to, DeviceSet set) {
 		EnergyBean bean = new EnergyBean();
-		bean.device = set.getDataId().toString();
+		bean.device = set.getDataId();
 		bean.samples = createDataListFromSamples(samples);
 		bean.summary = createSummary(samples);
 		bean.period.periodicity = period;
