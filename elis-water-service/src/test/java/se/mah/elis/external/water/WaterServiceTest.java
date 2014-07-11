@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 
@@ -13,9 +12,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.osgi.service.log.LogService;
 
 import com.google.gson.Gson;
@@ -24,8 +21,6 @@ import com.google.gson.GsonBuilder;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.any;
 import se.mah.elis.adaptor.device.api.entities.GatewayUser;
 import se.mah.elis.adaptor.device.api.entities.devices.Device;
@@ -45,12 +40,12 @@ import se.mah.elis.services.users.UserService;
 
 public class WaterServiceTest extends JerseyTest {
 
-	private static final String TEST_PUID = "00001111-2222-3333-4444-555566667777";
-	private static final String TEST_DID = "10001111-2222-3333-4444-555566667777";
-	private static final String TEST_DID2 = "11001111-2222-3333-4444-555566667777";
-	private static final String TEST_DSID = "20001111-2222-3333-4444-555566667777";
-	private static final String TEST_BAD_DID = "30001111-2222-3333-4444-555566667777";
-	private static final String TEST_BAD_DSID = "40001111-2222-3333-4444-555566667777";
+	private static final UUID TEST_PUID = UUID.fromString("00001111-2222-3333-4444-555566667777");
+	private static final UUID TEST_DID = UUID.fromString("10001111-2222-3333-4444-555566667777");
+	private static final UUID TEST_DID2 = UUID.fromString("11001111-2222-3333-4444-555566667777");
+	private static final UUID TEST_DSID = UUID.fromString("20001111-2222-3333-4444-555566667777");
+	private static final UUID TEST_BAD_DID = UUID.fromString("30001111-2222-3333-4444-555566667777");
+	private static final UUID TEST_BAD_DSID = UUID.fromString("40001111-2222-3333-4444-555566667777");
 	private static final float SAMPLE_VOLUME = 1.1f;
 	private static final String SAMPLER_NAME = "sampler";
 	private static final Float HISTORIC_SAMPLE_VOLUME = 2.2f;
@@ -91,7 +86,7 @@ public class WaterServiceTest extends JerseyTest {
 		log = mock(LogService.class);
 		
 		platformUser = mock(PlatformUser.class);
-		when(platformUser.getUserId()).thenReturn(UUID.fromString(TEST_PUID));
+		when(platformUser.getUserId()).thenReturn(TEST_PUID);
 		
 		sample = mock(WaterSample.class);		
 		when(sample.getSampleTimestamp()).thenReturn(now);
@@ -104,28 +99,28 @@ public class WaterServiceTest extends JerseyTest {
 		device = mock(Device.class);
 		when(device.getName()).thenReturn("Name: device");
 		when(device.getDescription()).thenReturn("Description: device");
-		when(device.getDataId()).thenReturn(UUID.fromString(TEST_BAD_DID));
-		when(device.getOwnerId()).thenReturn(UUID.fromString(TEST_PUID));
+		when(device.getDataId()).thenReturn(TEST_BAD_DID);
+		when(device.getOwnerId()).thenReturn(TEST_PUID);
 		
 		meter1 = mock(WaterMeterSampler.class);
 		when(meter1.getName()).thenReturn(SAMPLER_NAME);
 		when(meter1.getDescription()).thenReturn("Description: meter");
-		when(meter1.getDataId()).thenReturn(UUID.fromString(TEST_DID));
-		when(meter1.getOwnerId()).thenReturn(UUID.fromString(TEST_PUID));
+		when(meter1.getDataId()).thenReturn(TEST_DID);
+		when(meter1.getOwnerId()).thenReturn(TEST_PUID);
 		
 		meter2 = mock(WaterMeterSampler.class);
 		when(meter2.getName()).thenReturn(SAMPLER_NAME + "2");
 		when(meter2.getDescription()).thenReturn("Description: meter2");
-		when(meter2.getDataId()).thenReturn(UUID.fromString(TEST_DID2));
-		when(meter2.getOwnerId()).thenReturn(UUID.fromString(TEST_PUID));
+		when(meter2.getDataId()).thenReturn(TEST_DID2);
+		when(meter2.getOwnerId()).thenReturn(TEST_PUID);
 		
 		deviceset1 = mock(DeviceSet.class);
-		when(deviceset1.getDataId()).thenReturn(UUID.fromString(TEST_DSID));
-		when(deviceset1.getOwnerId()).thenReturn(UUID.fromString(TEST_PUID));
+		when(deviceset1.getDataId()).thenReturn(TEST_DSID);
+		when(deviceset1.getOwnerId()).thenReturn(TEST_PUID);
 		
 		deviceset2 = mock(DeviceSet.class);
-		when(deviceset2.getDataId()).thenReturn(UUID.fromString(TEST_BAD_DSID));
-		when(deviceset2.getOwnerId()).thenReturn(UUID.fromString(TEST_PUID));
+		when(deviceset2.getDataId()).thenReturn(TEST_BAD_DSID);
+		when(deviceset2.getOwnerId()).thenReturn(TEST_PUID);
 
 		gateway = mock(Gateway.class);
 		
@@ -138,11 +133,11 @@ public class WaterServiceTest extends JerseyTest {
 		
 		storage = mock(Storage.class);
 		try {
-			when(storage.readData(UUID.fromString(TEST_PUID))).thenThrow(new StorageException());
-			when(storage.readData(UUID.fromString(TEST_DID))).thenReturn(meter1);
-			when(storage.readData(UUID.fromString(TEST_BAD_DID))).thenReturn(device);
-			when(storage.readData(UUID.fromString(TEST_DSID))).thenReturn(deviceset1);
-			when(storage.readData(UUID.fromString(TEST_BAD_DSID))).thenReturn(deviceset2);
+			when(storage.readData(TEST_PUID)).thenThrow(new StorageException());
+			when(storage.readData(TEST_DID)).thenReturn(meter1);
+			when(storage.readData(TEST_BAD_DID)).thenReturn(device);
+			when(storage.readData(TEST_DSID)).thenReturn(deviceset1);
+			when(storage.readData(TEST_BAD_DSID)).thenReturn(deviceset2);
 			when(meter1.getSample()).thenReturn(sample);
 			when(meter1.getSample(any(DateTime.class), any(DateTime.class))).thenReturn(historicSample);
 			when(meter2.getSample()).thenReturn(sample);

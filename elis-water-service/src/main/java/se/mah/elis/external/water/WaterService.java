@@ -669,55 +669,55 @@ public class WaterService {
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
 			String queryPeriod, PlatformUser pu) {
-		return WaterBeanFactory.create(samples, queryPeriod, pu.getUserId().toString(),
+		return WaterBeanFactory.create(samples, queryPeriod, pu.getUserId(),
 				WaterBeanFactory.IS_USER);
 	}
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
 			String queryPeriod, PlatformUser pu, DateTime when) {
-		return WaterBeanFactory.create(samples, queryPeriod, pu.getUserId().toString(),
+		return WaterBeanFactory.create(samples, queryPeriod, pu.getUserId(),
 				WaterBeanFactory.IS_USER, when);
 	}
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
 			String queryPeriod, PlatformUser pu, DateTime from, DateTime to) {
-		return WaterBeanFactory.create(samples, queryPeriod, pu.getUserId().toString(),
+		return WaterBeanFactory.create(samples, queryPeriod, pu.getUserId(),
 				WaterBeanFactory.IS_USER, from, to);
 	}
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
 			String queryPeriod, Device device) {
-		return WaterBeanFactory.create(samples, queryPeriod, device.getDataId().toString(),
+		return WaterBeanFactory.create(samples, queryPeriod, device.getDataId(),
 				WaterBeanFactory.IS_DEVICE);
 	}
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
 			String queryPeriod, Device device, DateTime when) {
-		return WaterBeanFactory.create(samples, queryPeriod, device.getDataId().toString(),
+		return WaterBeanFactory.create(samples, queryPeriod, device.getDataId(),
 				WaterBeanFactory.IS_DEVICE, when);
 	}
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
 			String queryPeriod, Device device, DateTime from, DateTime to) {
-		return WaterBeanFactory.create(samples, queryPeriod, device.getDataId().toString(),
+		return WaterBeanFactory.create(samples, queryPeriod, device.getDataId(),
 				WaterBeanFactory.IS_DEVICE, from, to);
 	}
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
 			String queryPeriod, DeviceSet deviceSet) {
-		return WaterBeanFactory.create(samples, queryPeriod, deviceSet.getDataId().toString(),
+		return WaterBeanFactory.create(samples, queryPeriod, deviceSet.getDataId(),
 				WaterBeanFactory.IS_DEVICESET);
 	}
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
 			String queryPeriod, DeviceSet deviceSet, DateTime when) {
-		return WaterBeanFactory.create(samples, queryPeriod, deviceSet.getDataId().toString(),
+		return WaterBeanFactory.create(samples, queryPeriod, deviceSet.getDataId(),
 				WaterBeanFactory.IS_DEVICESET, when);
 	}
 
 	private WaterBean buildWaterBean(Map<String, List<WaterSample>> samples,
 			String queryPeriod, DeviceSet deviceSet, DateTime from, DateTime to) {
-		return WaterBeanFactory.create(samples, queryPeriod, deviceSet.getDataId().toString(),
+		return WaterBeanFactory.create(samples, queryPeriod, deviceSet.getDataId(),
 				WaterBeanFactory.IS_DEVICESET, from, to);
 	}
 	

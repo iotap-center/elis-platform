@@ -1,5 +1,7 @@
 package se.mah.elis.external.devices.beans;
 
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -13,6 +15,6 @@ public class DeviceBean {
 	public String description;
 	
 	@XmlElement
-	public String id;
+	public UUID id;
 	
 }

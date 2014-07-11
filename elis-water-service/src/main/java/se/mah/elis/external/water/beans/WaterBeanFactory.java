@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.joda.time.DateTime;
 
@@ -17,7 +18,7 @@ public class WaterBeanFactory {
 	public static final int IS_DEVICESET = 3;
 
 	public static WaterBean create(Map<String, List<WaterSample>> samples,
-			String queryPeriod, String uuid, int mode) {
+			String queryPeriod, UUID uuid, int mode) {
 		WaterBean bean = new WaterBean();
 		
 		switch (mode) {
@@ -39,7 +40,7 @@ public class WaterBeanFactory {
 	}
 	
 	public static WaterBean create(Map<String, List<WaterSample>> samples,
-			String queryPeriod, String uuid, int mode,
+			String queryPeriod, UUID uuid, int mode,
 			DateTime from, DateTime to) {
 		WaterBean bean = create(samples, queryPeriod, uuid, mode);
 		
@@ -50,7 +51,7 @@ public class WaterBeanFactory {
 	}
 	
 	public static WaterBean create(Map<String, List<WaterSample>> samples,
-			String queryPeriod, String uuid, int mode, DateTime when) {
+			String queryPeriod, UUID uuid, int mode, DateTime when) {
 		WaterBean bean = create(samples, queryPeriod, uuid, mode);
 		
 		bean.period.when = when;
@@ -87,7 +88,7 @@ public class WaterBeanFactory {
 				} catch (IndexOutOfBoundsException e) {
 					bean = new WaterDataPointBean();
 					bean.humanReadableTimestamp = entry.getValue().get(i).getSampleTimestamp().toString();
-					bean.timestamp = String.valueOf(entry.getValue().get(i).getSampleTimestamp().getMillis());
+					bean.timestamp = entry.getValue().get(i).getSampleTimestamp().getMillis();
 					points.add(i, bean);
 				}
 				bean.volume += entry.getValue().get(i).getVolume();

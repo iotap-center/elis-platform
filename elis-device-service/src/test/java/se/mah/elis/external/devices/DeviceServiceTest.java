@@ -37,9 +37,9 @@ import se.mah.elis.services.users.UserService;
 
 public class DeviceServiceTest extends JerseyTest {
 
-	private static final String PUID = "00001111-2222-3333-4444-555566667777";
-	private static final String DID = "10001111-2222-3333-4444-555566667777";
-	private static final String DSID = "20001111-2222-3333-4444-555566667777";
+	private static final UUID PUID = UUID.fromString("00001111-2222-3333-4444-555566667777");
+	private static final UUID DID = UUID.fromString("10001111-2222-3333-4444-555566667777");
+	private static final UUID DSID = UUID.fromString("20001111-2222-3333-4444-555566667777");
 	private static final String DEVICENAME = "deviceName";
 	private static final String DEVICEDESCRIPTION = "deviceDescription";
 	private static UserService userService;
@@ -65,29 +65,29 @@ public class DeviceServiceTest extends JerseyTest {
 		storage = mock(Storage.class);
 		device = mock(Device.class);
 		deviceset = mock(DeviceSet.class);
-		when(platformUser.getUserId()).thenReturn(UUID.fromString(PUID));
-		when(device.getDataId()).thenReturn(UUID.fromString(DID));
+		when(platformUser.getUserId()).thenReturn(PUID);
+		when(device.getDataId()).thenReturn(DID);
 	
 		when(userService.getPlatformUser(any(UUID.class))).thenReturn(platformUser);
 		when(userService.getUsers(any(PlatformUser.class))).thenReturn(new User[] { gatewayUser });
 		
 		try {
-			when(storage.readData(UUID.fromString(DID))).thenReturn(device);
-			when(storage.readData(UUID.fromString(DSID))).thenReturn(deviceset);
-			when(storage.readData(UUID.fromString(PUID))).thenThrow(new StorageException());
-			when(storage.readUser(UUID.fromString(DID))).thenThrow(new StorageException());
-			when(storage.readUser(UUID.fromString(DSID))).thenThrow(new StorageException());
-			when(storage.readUser(UUID.fromString(PUID))).thenReturn(platformUser);
+			when(storage.readData(DID)).thenReturn(device);
+			when(storage.readData(DSID)).thenReturn(deviceset);
+			when(storage.readData(PUID)).thenThrow(new StorageException());
+			when(storage.readUser(DID)).thenThrow(new StorageException());
+			when(storage.readUser(DSID)).thenThrow(new StorageException());
+			when(storage.readUser(PUID)).thenReturn(platformUser);
 		} catch (StorageException e) {}
 		
-		when(device.getDataId()).thenReturn(UUID.fromString(DID));
+		when(device.getDataId()).thenReturn(DID);
 		when(device.getName()).thenReturn(DEVICENAME);
 		when(device.getDescription()).thenReturn(DEVICEDESCRIPTION);
 		
 		devices.add(device);
 		
 		when(deviceset.iterator()).thenReturn(devices.iterator());
-		when(deviceset.getOwnerId()).thenReturn(UUID.fromString(PUID));
+		when(deviceset.getOwnerId()).thenReturn(PUID);
 	}
 	
 	@Before
