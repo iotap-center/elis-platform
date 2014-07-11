@@ -133,7 +133,7 @@ public class DeviceService {
 		Response response;
 		User[] users = userService.getUsers(pu);
 		DeviceSetBean deviceset = new DeviceSetBean();
-		deviceset.user = pu.getUserId().toString();
+		deviceset.user = pu.getUserId();
 		deviceset.devices = getAllDevicesFor(users);
 		response = ElisResponseBuilder.buildOKResponse(deviceset);
 		return response;
@@ -142,7 +142,7 @@ public class DeviceService {
 	private Response buildDeviceResponseFor(Device device) {
 		Response response;
 		DeviceBean bean = new DeviceBean();
-		bean.id = device.getDataId().toString();
+		bean.id = device.getDataId();
 		bean.description = device.getDescription();
 		bean.name = device.getName();
 		response = ElisResponseBuilder.buildOKResponse(bean);
@@ -152,7 +152,7 @@ public class DeviceService {
 	private Response buildDeviceResponseFor(DeviceSet set) {
 		Response response;
 		DeviceSetBean bean = new DeviceSetBean();
-		bean.deviceset = set.getOwnerId().toString();
+		bean.deviceset = set.getOwnerId();
 		bean.devices = convertDevicesToBeans(set);
 		response = ElisResponseBuilder.buildOKResponse(bean);
 		return response;
@@ -175,7 +175,7 @@ public class DeviceService {
 		for (Device device : set) {
 			DeviceBean bean = new DeviceBean();
 			if (device.getDataId() != null) { // TODO: Fix this when the water meters get their IDs
-				bean.id = device.getDataId().toString();
+				bean.id = device.getDataId();
 			}
 			bean.description = device.getDescription();
 			bean.name = device.getName();

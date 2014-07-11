@@ -1,6 +1,7 @@
 package se.mah.elis.external.energy.beans;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -11,13 +12,13 @@ import se.mah.elis.external.beans.PeriodicityBean;
 public class EnergyBean {
 
 	@XmlElement
-	public String user;
+	public UUID user;
 
 	@XmlElement
-	public String device;
+	public UUID device;
 
 	@XmlElement
-	public String deviceset;
+	public UUID deviceset;
 	
 	@XmlElement
 	public PeriodicityBean period;
@@ -33,7 +34,14 @@ public class EnergyBean {
 	}
 	
 	public String toString() {
-		String uuid = user + device + deviceset;
+		String uuid = "";
+		if (user != null) {
+			uuid = user.toString();
+		} else if (device != null) {
+			uuid = device.toString();
+		} else if (deviceset != null) {
+			uuid = deviceset.toString();
+		}
 		
 		String out = uuid + ", " + period + ", [";
 		boolean more = false;
