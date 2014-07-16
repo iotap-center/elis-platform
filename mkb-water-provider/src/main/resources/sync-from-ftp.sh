@@ -1,12 +1,12 @@
 #!/bin/bash
 
-mkdir -p /tmp/mkb-water-data
+mkdir -p /home/felix/mkb-water-data
 
 HOST="ftp.elvaco.se"
 USER="eonimd"
 PASS="Metering2013%"
 FTPURL="ftp://$USER:$PASS@$HOST"
-LCD="/tmp/mkb-water-data"
+LCD="/home/felix/mkb-water-data"
 RCD="/"
 #DELETE="--delete"
 lftp -c "open '$FTPURL';
@@ -15,6 +15,6 @@ cd $RCD;
 mirror --verbose"
 
 # get rid of dups 
-cd /tmp/mkb-water-data
+cd /home/felix/mkb-water-data
 sort export_*.txt | uniq > all.txt
 

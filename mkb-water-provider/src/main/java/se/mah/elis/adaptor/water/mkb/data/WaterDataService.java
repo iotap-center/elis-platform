@@ -88,7 +88,7 @@ public class WaterDataService implements ManagedService {
 
 	private class WaterUpdater implements Runnable {
 
-		public static final String DEFAULT_WATERDATA = "/tmp/mkb-water-data/all.txt";
+		public static final String DEFAULT_WATERDATA = "/home/felix/mkb-water-data/all.txt";
 		private static final long ONE_HOUR = 1000 * 60 * 60;
 
 		@Override
