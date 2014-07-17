@@ -221,4 +221,13 @@ public interface Storage {
 	 * @since 1.0
 	 */
 	ResultSet select(Query query) throws StorageException;
+	
+	/**
+	 * Checks whether an object exists in the data storage or not.
+	 * 
+	 * @param object The id of the object to look for.
+	 * @return True if the object exists, otherwise false.
+	 * @since 2.1
+	 */
+	boolean objectExists(UUID object);
 }
