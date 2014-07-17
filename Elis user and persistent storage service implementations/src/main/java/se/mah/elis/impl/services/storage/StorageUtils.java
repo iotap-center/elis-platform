@@ -417,8 +417,8 @@ public class StorageUtils {
 	 * Looks up the table associated with a UUID.
 	 * 
 	 * @param uuid The UUID to look up.
-	 * @return The name of the table in which the UUID-identifed entry is to be
-	 * 		found.
+	 * @return The name of the table in which the UUID-identified entry is to
+	 * 		be found.
 	 * @since 2.0
 	 */
 	public String lookupUUIDTable(UUID uuid) {
