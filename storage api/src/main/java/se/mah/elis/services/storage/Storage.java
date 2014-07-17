@@ -227,8 +227,7 @@ public interface Storage {
 	 * 
 	 * @param object The id of the object to look for.
 	 * @return True if the object exists, otherwise false.
-	 * @throws StorageException if something broke.
 	 * @since 2.1
 	 */
-	boolean objectExists(UUID object) throws StorageException;
+	boolean objectExists(UUID object);
 }
