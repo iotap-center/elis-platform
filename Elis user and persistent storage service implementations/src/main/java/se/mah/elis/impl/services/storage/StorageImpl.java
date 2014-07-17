@@ -1706,6 +1706,11 @@ public class StorageImpl implements Storage, ManagedService {
 				
 		return result;
 	}
+
+	@Override
+	public boolean objectExists(UUID object) {
+		return utils.lookupUUIDTable(object) != null;
+	}
 	
 	/**
 	 * Updates collections belonging to a data object.

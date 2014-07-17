@@ -4787,6 +4787,31 @@ public class StorageImplTest {
 		} catch (StorageException e) {
 		}
 	}
+	
+	@Test
+	public void testObjectExistsUser() {
+		buildAndPopulateMU1Table();
+		
+		Storage storage = new StorageImpl(connection);
+		
+		assertTrue(storage.objectExists(MU1_1u));
+	}
+	
+	@Test
+	public void testObjectExistsEDO() {
+		buildAndPopulateMDO1Table();
+		
+		Storage storage = new StorageImpl(connection);
+		
+		assertTrue(storage.objectExists(MDO1_1u));
+	}
+	
+	@Test
+	public void testObjectExistsNoSuchObject() {
+		Storage storage = new StorageImpl(connection);
+		
+		assertFalse(storage.objectExists(MDO1_1u));
+	}
 
 //	@Test
 //	public void testSelectOneHit() {

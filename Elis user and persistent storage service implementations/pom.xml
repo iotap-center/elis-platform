@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>se.mah.elis.impl.services.users-and-storage</groupId>
   <artifactId>user-and-storage-service-impl</artifactId>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <packaging>bundle</packaging>
   <name>The Elis User and Persistent Storage Services Implementation bundle</name>
   
@@ -55,7 +55,7 @@
   	<dependency>
   		<groupId>se.mah.elis.services.storage</groupId>
   		<artifactId>storage-api</artifactId>
-  		<version>2.0.0</version>
+  		<version>2.1.0</version>
   		<type>bundle</type>
   	</dependency>
   	<dependency>
