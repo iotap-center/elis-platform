@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,7 +35,6 @@ import se.mah.elis.external.beans.EnvelopeBean;
 import se.mah.elis.external.beans.helpers.DateTimeAdapter;
 import se.mah.elis.external.energy.beans.EnergyBean;
 import se.mah.elis.external.energy.beans.EnergyDataBean;
-import se.mah.elis.external.energy.beans.EnergyDeviceBean;
 import se.mah.elis.services.storage.Storage;
 import se.mah.elis.services.storage.exceptions.StorageException;
 import se.mah.elis.services.users.PlatformUser;
