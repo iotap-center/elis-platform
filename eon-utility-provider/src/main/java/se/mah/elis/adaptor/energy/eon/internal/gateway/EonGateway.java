@@ -26,6 +26,8 @@ import se.mah.elis.adaptor.energy.eon.internal.user.EonGatewayUser;
 import se.mah.elis.adaptor.energy.eon.internal.user.EonGatewayUserFactory;
 import se.mah.elis.data.OrderedProperties;
 import se.mah.elis.exceptions.StaticEntityException;
+import se.mah.elis.services.storage.Storage;
+import se.mah.elis.services.storage.exceptions.StorageException;
 
 /**
  * Implementation of an E.On panel (in Elis terms: gateway)
@@ -63,8 +65,18 @@ public class EonGateway implements Gateway {
 		this.gatewayHasConnected = false;
 	}
 
+	// Used for tests
+	public EonGateway(Storage storage) {
+		this.devices = new ArrayList<Device>();
+		this.gatewayHasConnected = false;
+		this.storage = storage;
+	}
+
 	@Reference
 	private LogService log;
+	
+	@Reference
+	private Storage storage;
 
 	/**
 	 * Get the active E.On authentication token
@@ -241,7 +253,14 @@ public class EonGateway implements Gateway {
 		List<Device> devices = null;
 		try {
 			devices = httpBridge.getDevices(getAuthenticationToken(),
-					getAddress().toString());
+					getAddress().toString(), uniqueUserId);
+			
+			// Ceci n'est pas belle, but it works. Basically, what we do here is to
+			// check whether we have a reference to the object saved in the storage
+			// or not. If we don't, then we'll create a reference to it.
+			for (Device device : devices) {
+				registerDevice(device);
+			}
 		} catch (ResponseProcessingException e1) {
 			e1.printStackTrace();
 		} catch (ParseException e1) {
@@ -255,6 +274,16 @@ public class EonGateway implements Gateway {
 			} catch (StaticEntityException e) {
 				e.printStackTrace();
 				continue; // TODO: add logging
+			}
+		}
+	}
+	
+	private void registerDevice(Device device) {
+		if (!storage.objectExists(device.getDataId())) {
+			try {
+				storage.insert(device);
+			} catch (StorageException e) {
+				logWarning("Couldn't store device: " + device);
 			}
 		}
 	}
@@ -358,5 +387,13 @@ public class EonGateway implements Gateway {
 
 	protected void unbindLog(LogService ls) {
 		log = null;
+	}
+
+	protected void bindStorage(Storage storage) {
+		this.storage = storage;
+	}
+
+	protected void unbindStorage(Storage storage) {
+		this.storage = null;
 	}
 }

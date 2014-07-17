@@ -35,6 +35,7 @@ public class EonHttpBridgeTest {
 	private static final String TEST_PASS = "02DCD0"; // "medeamah2012";
 	private static final String TEST_GATEWAY = "59"; // "134";
 	private static final UUID TEST_DEVICEID = UUID.fromString("5502864f-5258-4b39-86db-abf69a046a36"); // "ab62ec3d-f86d-46bc-905b-144ee0511a25";
+	private static final UUID USER_ID = UUID.fromString("00001111-2222-3333-4444-555566667777");
 			
 	private EonHttpBridge bridge; 
 	
@@ -92,7 +93,7 @@ public class EonHttpBridgeTest {
 	@Test
 	public void testGetDeviceList() throws ResponseProcessingException, ParseException, AuthenticationException {
 		String token = bridge.authenticate(TEST_USER, TEST_PASS);
-		List<Device> devices = bridge.getDevices(token, TEST_GATEWAY);
+		List<Device> devices = bridge.getDevices(token, TEST_GATEWAY, USER_ID);
 		assertTrue(devices.size() > 0);
 	}
 	

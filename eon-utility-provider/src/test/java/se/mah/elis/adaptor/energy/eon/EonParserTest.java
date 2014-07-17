@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
@@ -17,7 +18,7 @@ import se.mah.elis.adaptor.energy.eon.internal.devices.EonPowerSwitchMeter;
 import se.mah.elis.adaptor.energy.eon.internal.devices.EonThermometer;
 
 public class EonParserTest {
-
+	private static final UUID USER_ID = UUID.fromString("00001111-2222-3333-4444-555566667777");
 	
 	@Test
 	public void testParseToken() {
@@ -45,8 +46,11 @@ public class EonParserTest {
 	@Test
 	public void testGetDeviceList() {
 		String response = "[" + SAMPLE_POWERSWITCH + "]";
+		
 		try {
-			assertEquals(1, EonParser.parseDeviceList(response).size());
+			List<Device> devices = EonParser.parseDeviceList(response, USER_ID);
+			assertEquals(1, devices.size());
+			assertEquals(USER_ID, devices.get(0).getOwnerId());
 		} catch (Exception ignore) {
 			fail();
 		}
@@ -61,8 +65,9 @@ public class EonParserTest {
 		EonMainPowerMeter meter = null;
 		
 		try {
-			devices = EonParser.parseDeviceList(response);
+			devices = EonParser.parseDeviceList(response, USER_ID);
 			meter = (EonMainPowerMeter) get(devices, EonMainPowerMeter.class);
+			assertEquals(USER_ID, devices.get(0).getOwnerId());
 		} catch (Exception ignore) {
 			fail();
 		}
@@ -79,7 +84,7 @@ public class EonParserTest {
 	public void testGetDeviceListWithEmptyList() {
 		String response = "[]";
 		try {
-			assertEquals(0, EonParser.parseDeviceList(response).size());
+			assertEquals(0, EonParser.parseDeviceList(response, USER_ID).size());
 		} catch (Exception ignore) { fail(); }
 	}
 	

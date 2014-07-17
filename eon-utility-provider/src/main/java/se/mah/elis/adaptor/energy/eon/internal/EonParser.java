@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -66,10 +67,12 @@ public class EonParser {
 	 * Parses the device list response from the E.On API. 
 	 * 
 	 * @param json
+	 * @param user
 	 * @return
 	 * @throws ParseException
 	 */
-	public static List<Device> parseDeviceList(String json) throws ParseException {
+	public static List<Device> parseDeviceList(String json, UUID user)
+			throws ParseException {
 		List<Device> deviceList = new ArrayList<Device>();
 		JSONArray devices = (JSONArray) parser.parse(json);
 		EonMainPowerMeter mainMeter = null;
@@ -77,7 +80,7 @@ public class EonParser {
 			JSONObject obj = deviceIterator.next();
 			Device device;
 			try {
-				device = EonDeviceFactory.createFrom(obj);
+				device = EonDeviceFactory.createFrom(obj, user);
 				deviceList.add(device);
 				if (device instanceof EonMainPowerMeter) {
 					mainMeter = (EonMainPowerMeter) device;

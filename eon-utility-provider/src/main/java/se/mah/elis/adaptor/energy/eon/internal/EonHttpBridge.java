@@ -133,16 +133,17 @@ public class EonHttpBridge {
 	 * 
 	 * @param token
 	 * @param gatewayId
+	 * @param userId
 	 * @return a list of device representations List<Map<String, Object>>
 	 * @throws ResponseProcessingException
 	 * @throws ParseException
 	 */
-	public List<Device> getDevices(String token, String gatewayId)
+	public List<Device> getDevices(String token, String gatewayId, UUID userId)
 			throws ResponseProcessingException, ParseException {
 		Response response = get(token, DEVICELIST_ENDPOINT, EWP_PANEL_ID,
 				gatewayId);
 		verifyResponse(response);
-		return EonParser.parseDeviceList(response.readEntity(String.class));
+		return EonParser.parseDeviceList(response.readEntity(String.class), userId);
 	}
 
 	/**

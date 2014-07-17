@@ -34,12 +34,13 @@ public class EonDeviceFactory {
 	 * to do this. 
 	 *  
 	 * @param jsonDevice
+	 * @param user
 	 * @return an {@link EonDevice}
 	 * @throws MethodNotSupportedException
 	 * @throws StaticEntityException
 	 * @since 1.0
 	 */
-	public static Device createFrom(JSONObject jsonDevice)
+	public static Device createFrom(JSONObject jsonDevice, UUID user)
 			throws MethodNotSupportedException, StaticEntityException {
 		Device device = null;
 		
@@ -72,6 +73,10 @@ public class EonDeviceFactory {
 		if (device == null) {
 			throw new MethodNotSupportedException();
 		}
+		
+		// The user id isn't provided by the JSON data, so we have to set it
+		// ourselves. That's done below
+		device.setOwnerId(user);
 
 		return device;
 	}
@@ -128,7 +133,6 @@ public class EonDeviceFactory {
 			throws StaticEntityException {
 		String deviceId = (String) any.get("Id");
 		device.setDataId(UUID.fromString(deviceId));
-		// TODO device.setOwnerId(userId);
 		device.setName((String) any.get("Name")); 
 		device.setDescription((String) any.get("Description"));
 		
