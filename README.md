@@ -1,30 +1,18 @@
-The Elis Platform
-=============
-
-Version 0.2.2
+# The Elis Platform
 
 This project focuses on exploring the potential of mobile services on mobile devices (e.g. smart phones and tablets) to promote energy efficiency in existing buildings. Read more about the background [here](http://elis.mah.se).
 
-This document describes aspects useful while working on the implementation of Elis.
+Other documents also worth checking out: 
+
+* [Build Guide](super/readme.md)
+* [Deployment Guide](Deployment%20guide.md)
+
+The rest of this document describes aspects useful while working on the implementation of Elis. 
 
 ## Terminology
 
 * Bundle - a module that is installable in the Felix runtime
 * Provider - a bundle which communicates with, for example, E.On and conforms to the Elis APIs
-
-## Building the platform
-
-Elis uses [Maven](http://maven.apache.org/) to compile, test and deploy Elis artifacts. 
-
-Each bundle can be compiled using `mvn compile` or to test `mvn test`. To create a bundle jar, install it to your local Maven repository and upload a copy to your local Elis deployment run: 
-
-`mvn clean compile test scr:scr bundle:bundle install:install wagon:upload`
-
-### Compiling everything
-
-There is a special project called `super` which contains a Maven specification to compile the entire Elis project. To make things simple, this project contains a Makefile. Run `make build` to deploy to your local Elis installation. To build everything, including documentation, use the following command: 
-
-`mvn clean compile test bundle:bundle install:install wagon:upload javadoc:javadoc site`
 
 ## Version management
 
@@ -39,10 +27,6 @@ Follows the pattern `major.minor.patch`. _major_ is used when a change in the pu
 **HTTP API**
 
 Follows the pattern `/api/v#` where `#` is an ever increasing integer. Update version number for any additions or breaking changes to the API. Breaking changes includes both requests and responses. 
-
-## Demo users
-
-The `elis-demo-users` bundle provides a set of demo users that can be used for system and integration testing. It installs a demo platform user and connects two providers to it: E.On and MKB Water data. For the water data to work it is necessary to download a copy of the data from Elvaco ([instructions here](https://github.com/medeamalmo/elis-platform/tree/master/felix-configuration#deploying-elis)). 
 
 ## Referencing bundles
 

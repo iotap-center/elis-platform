@@ -1,4 +1,4 @@
-# Building the Super POM
+# Building the Elis platform
 
 This repository and readme aims to describe how to configure and build the Elis platform using Apache Maven.
 
