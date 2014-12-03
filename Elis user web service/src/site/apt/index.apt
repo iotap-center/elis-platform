@@ -1,0 +1,14 @@
+What is this?
+
+  The User web service component exposes Elis's user functionality to the REST
+  API as the /user/ endpoint.
+  
+  Being the earliest endpoint to be implemented, it contains some quirks that
+  were removed in later endpoints.
+  
+How does it work?
+
+  The endpoint services are annotated with Java's JAX-RS annotations. By doing
+  so, the Elis platform's embedded Jersey server will then automatically
+  recognize the exposed services as being web services and expose them to the
+  outside world.

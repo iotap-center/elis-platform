@@ -1,0 +1,58 @@
+What is this?
+
+  The Storage API describes how to deal with data in the Elis platform. It is
+  largely divided into two parts: one that describes a generalized storage
+  service (with accompanying auxiliaries), and another part that describes a
+  generalized Java-based query language. The data objects themselves are
+  described in the {{{../elis-data-definitions/index.html}Data definitions package}}
+
+The storage service
+
+  The storage service consists first and foremost of an interface called
+  Storage. It describes a set of methods for reading, inserting, deleting and
+  modifying data objects. To support the storage service, a set of auxiliary
+  interfaces related to data object creation are provided. Those interfaces are
+  centered around the DataObjectFactory interface, which works together with
+  the DataObjectProvider and DataObjectRecipe interfaces. Any other service may
+  choose to register data object providers. By doing so, the object factory is
+  made capable of creating those objects. This is important to do if you intend
+  to be able to make your objects persistent, as most storage service
+  implementations would most likely use the object factory to create its data
+  objects.
+
+The query language
+
+  The Elis Persistent Query language is a simplistic language, built entirely
+  of Java objects. Its main class is {@link Query}. A Query can look for data
+  in one data collection (e.g. a table in a relational database) at a time.
+  Hence, it is nowhere as flexible nor as powerful as e.g. SQL.
+
+  Queries are compiled using an implementation of the QueryTranslator
+  interface, meaning that the data management is a black box towards the rest
+  of the Elis platform. Translators can be written to facilitate relational
+  databases, NoSQL databases, file-based storage or just whatever is desired by
+  a developer. It is also possible for a single Persistent Storage
+  implementation to provide several translators.
+
+  A query consists of Predicates, which can be of the SimplePredicate type,
+  providing functionality for value matching, or of the ChainingPredicate type,
+  providing functionality for combinational matching. By chaining several
+  ChainingPredicates, it is possible to build rather complex queries.
+
+  Queries can, if they are simple select-type queries, be limited and paginated
+  using Query.limit(). It is also possible to choose the order in which the
+  result is ordered.
+
+  Building a query, one uses the various methods of Query. Since almost all
+  methods return a reference pointer back to the calling object, it is possible
+  to daisy chain the query calls, making things like the query below possible.
+
++---
+    Query q = new Query();
+    q.setDataType("java.lang.String")
+      .setPredicate(new ChainingPredicate.OR
+      	.setLeft(new SimplePredicate.EQ("id", 5)
+      	.setRight(new SimplePredicate.LIKE("name","Lukas"))
+      )
+      .limit(100, 10);
++---

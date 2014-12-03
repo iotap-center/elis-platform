@@ -1,0 +1,98 @@
+What is this?
+
+  The User Service API describes how to deal with users in the Elis platform.
+  The API is roughly comprised of two parts: The user object interfaces, and
+  the interfaces that describe how to build and retrieve user objects.
+
+How do user objects relate to each other on the Elis platform?
+
+  The Elis platform basically deals with two kinds of users: platform users and
+  every other kind of user. The platform user is the one that is visible to the
+  outside world, I.E. third party developers building services on top of the
+  REST API. They are the main aggregating point on the Elis platform and "own"
+  other users.
+  
+  All other users are basically users of external systems, be it a user of a
+  domotic system (which is indeed the normal case), a social media account, or
+  just about anything. A special case of this is the GatewayUser, which is
+  described in the Device API.
+  
+[images/userrelations.png] How user objects relate to each other.
+  
+  The diagram above shows how different user objects relate to each other in
+  the platform. Notice how all data flows (blue arrows) between both external
+  systems, and between third party applications and external systems, all go
+  through the platform user.
+
+User object interfaces
+
+  All user objects floating around in the Elis platform environment implement
+  these interfaces. However, only two of them, PlatformUser and User, are ever
+  implemented directly, as those two both inherit from AbstractUser. 
+
+[images/usertypes.png] A schematic view of when and how to use the interfaces.
+
+* AbstractUser
+
+  AbstractUser is at the topmost abstraction level. It basically defines how a
+  user is identified (spoiler: they're all identified with a UUID) and how it
+  is constructed. When retrieving users using the Storage API, this is what
+  you'll get. In practice, no user objects implement this interface directly,
+  but rather implement the PlatformUser, or User interfaces.
+
+* PlatformUser
+
+  The PlatformUser interface describes a platform user. As described above, the
+  platform user represent the main platform user account, and is used to
+  associate different user accounts. This, in turn, is done by the user service
+  described below.
+
+* User
+
+  All non-platform users have to implement this interface. Whenever the
+  platform services deal with non-platform users, they will deal with User
+  objects alone. This means, that if you as a developer choose to for some
+  reason model your users without implementing the User interface, they will
+  not be used by the platform services.
+  
+  The User interface also defines an initialize() method, which is used by the
+  user factories (see below) to kick-start the user objects once they are
+  created.
+
+UserService, UserFactory and friends
+
+  The user objects can't live in a vacuum. They have to be created and
+  otherwise managed in some way. To accomplish this, the Elis platform offers a
+  set of auxiliary services, namely the UserService, which deals with user
+  relations, and UserFactory, which is capable of creating users on demand.
+
+UserService
+
+  The user service is the heart of Elis's user management. It holds a list of
+  all platform users, as well as lists users belonging to each platform user.
+
+UserFactory
+
+  The user factory is used to build new users. This is done by using user
+  providers, as described below. Unless you're writing your own user service
+  (this is usually done only by the platform provider), you shouldn't implement
+  this interface.
+
+UserProvider
+
+  The user providers are used by the user factory to construct new users. Each
+  user provider can provide one single user type, but there is no limitation to
+  the number of providers each service can register with the user factory. 
+  
+  As soon as a bundle providing its own users is started, its user providers
+  should be registered with the user factory. Until this is done, no users will
+  be created.
+
+UserRecipe
+
+  User recipes define how a user object is built. Every user class has a
+  corresponding recipe that is used by the user service to construct new users.
+  
+  It is retrieved and registered by the UserFactory implementation when a
+  UserProvider is registered. UserRecipe's getProperties() method usually
+  return the same list of properties that its corresponding user does.

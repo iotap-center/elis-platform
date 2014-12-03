@@ -1,0 +1,34 @@
+What is this?
+
+  The Device API component contains the Device API, as is hinted by its name.
+  The Device API describes a number of interfaces to be implemented mainly by
+  people aiming at writing an adaptor for the Elis platform (hence its somewhat
+  cryptic name se.mah.elis.adaptor.device.api.*).
+  
+Devices in the Elis platform
+  
+  The API is mainly concerned with defining various device-centric interfaces.
+  The main idea behind this part of the API is to let the adaptor-providing
+  party define its own set of device classes that implement any number of
+  Device API interfaces. By doing so, any Device object could be a power
+  switch, as well as a dimmer and a thermometer, should there exist such a
+  device in the real world. This means, that one way of approaching those
+  interfaces, is to see them more as capabilites, rather than proper device
+  classes.
+  
+Triggering and listening for events
+  
+  Other than devices, the API specifies ways of producing and consuming events,
+  which are useful for making services that respond to events in the underlying
+  domotic systems. The API specifies four types of events: DetectorEvent,
+  PresenceEvent, SensorEvent and TripwireEvent, out of which SensorEvent acts
+  as the base interface, whereas the three other event types focus on presence
+  detection in various forms. Events are triggered by the Device sub-interface
+  Detector.
+  
+  Events on their own are of no use unless they can be consumed. For this,
+  there exists a very simple interface, called NotificationConsumer. All it
+  does is to define a method, triggerEvent(SensorEvent), that consumes an
+  event. The name of this method is unfortunate to say the least.
+  
+[images/southbound.jpg] The extent of the Device API.

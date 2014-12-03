@@ -1,0 +1,18 @@
+<project name="The Elis Platform">
+  <bannerLeft>
+    <name>Elis</name>
+    <src>images/banner.png</src>
+    <alt>The Elis Platform</alt>
+    <href>../site/index.html</href>
+  </bannerLeft>
+  <body>
+    <menu name="Parent project">
+    	<item name="The Elis project" href="../site/index.html" />
+    </menu>
+    <menu name="Third party developers">
+    	<item name="Building adaptors" href="../site/adaptor.html" />
+    	<item name="REST API documentation" href="http://docs.elis1.apiary.io/" />
+    </menu>
+    <menu name="Reports" ref="reports" />
+  </body>
+</project>

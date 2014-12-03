@@ -1,0 +1,48 @@
+What is this?
+
+  The Elis platform is, at its very core, all about data exchange. Whether this
+  manifests as exchanging data between different domotic systems, or simply
+  exposing data to a third party app developer, those data points must be able
+  to see and reach in some way. This component deals with just that.
+  
+  All Elis-friendly data objects share some common treats that need to be
+  expressed and formalized in order to ensure that the objects are
+  interchangeable and universally understood throughout the platform. One of
+  those treats is that every data object has a unique identification number, in
+  form of a UUID object. This is used to identify the object in the storage
+  service, and is equally used to publish the data object to the outside world
+  through Elis's Rest API.
+  
+  In Elis, the most basic interface that describes a data object is called
+  ElisDataObject. It describes how a storable data object should be implemented
+  and what capabilities can be expected by such an object. There are no further
+  requirements set by the platform on data objects, other than they should
+  faithfully implement this interface.
+  
+What objects are Elis data objects?
+
+  Basically, any object that should be able to be
+  
+  * Storable
+  
+  * Accessible
+  
+  * Processable
+  
+  []
+  
+  is a good candidate for being an Elis data object. With one exception: user
+  objects are not data objects. They are covered by their own base interface,
+  which is described in {{{../user-service/index.html}the user service API}}.
+  
+  Some data object types are so common throughout the platform, that they have
+  been granted their own base interfaces, all extending the ElisDataObject
+  interface. Those interfaces deal with things like samples (the Sample,
+  WaterSample, and ElectricitySample interfaces), pricing (the PriceData
+  interface), and unit conversion (the TemperatureData interface).
+
+Data traversal tools
+
+  The data definitions component also provides a SampleTraverser class, that
+  can be used to traverse certain data sets (of the type Sample) and extract
+  data from those sets.

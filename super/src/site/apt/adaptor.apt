@@ -1,0 +1,108 @@
+                          ------------------------
+                          Building an Elis adaptor
+                          ------------------------
+                          Johan Holmberg
+                          ------------------------
+                          2014-10-13
+                          ------------------------
+
+Building an Elis adaptor
+
++---
+N.B THIS IS A DRAFT!
++---
+
+What is an adaptor?
+
+  At its very core the Elis platform is merely a simple hub, facilitating
+  communication between a variety of vendor-supplied systems dealing with
+  energy metering, building control, climate control, and related areas,
+  publishing the services and capabilities of those systems to the world
+  through a unified REST API.
+  
+  While the Elis platform itself is vendor agnostic, the various
+  vendor-supplied systems need to make their services and capabilities
+  available to the platform. This is done by supplying an OSGi bundle
+  implementing a number of Elis's Java APIs. This bundle is called an adaptor.
+  
+Data flow in the Elis platform
+
+  While it is entirely possible to write applications that run within the
+  platform (remember, the Elis platform is merely a set of OSGi bundles), the
+  most obvious way of writing software on top of Elis, is to use the REST API.
+  The following chapter will describe a request made by an application
+  consuming the REST API.
+  
+  Elis's REST API consists of a number of endpoints, each implemented and
+  described in a separate OSGi bundle. This makes the rather API flexible. We
+  will take a look at three endpoints: /user/, /device/ and /power/.
+
+The REST API request
+
+  Once we're authenticated against the platform (N.B. for the time being, there
+  is no authentication process in place), we can start interacting with objects
+  in the platform. Each accessible object, be it a user, a device, an
+  apartment, or even a simple data point, is represented by a UUID. Different
+  endpoints can make use of a different set of objects. As an example, the
+  /user/ endpoint deals exclusively with user objects.
+
+Fetching an object
+
+  * Users
+  
+  * Devices
+  
+  * Device sets
+  
+  * Other objects
+  
+  []
+
+Communicating with vendor-supplied systems
+
+Implementing the adaptor
+
+  The adaptors themselves are written in Java (or any other language that can
+  run on the JVM, such as Scala) and packaged in OSGi bundles.
+
+* Providing users
+
+* Providing devices
+
+* Providing samples
+
+APIs
+
+  * User Service API
+  
+    * Users
+    
+      * AbstractUser, PlatformUser and User
+      
+      * UserInitalizationException
+      
+    * User factories
+    
+    * UserProvider
+    
+    * UserRecipe
+    
+  * Device API
+  
+    * Devices
+    
+      * Device
+      
+      * DeviceSet
+      
+    * Gateways
+    
+      * GatewayUser
+      
+      * GatewayAddress
+      
+    * Events
+    
+      * Warn for stuff not done
+      
+    * Exceptions

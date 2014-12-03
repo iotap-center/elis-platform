@@ -1,0 +1,13 @@
+What is this?
+
+  The Basic control services component enables the user of the REST API to use
+  various controlling aspects of the Elis platform. Currently, it supports
+  dimming, color setting and powerstate manipulation through the /dimlevel/,
+  /color/ and /powerstate/ endpoints.
+  
+How does it work?
+
+  The endpoint services are annotated with Java's JAX-RS annotations. By doing
+  so, the Elis platform's embedded Jersey server will then automatically
+  recognize the exposed services as being web services and expose them to the
+  outside world.

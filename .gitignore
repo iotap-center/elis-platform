@@ -1,0 +1,39 @@
+*.class
+*.orig
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Eclipse workspace metadata
+/.metadata
+/External Plug-in Libraries
+
+# Eclipse compiler output
+/*/bin
+/*/bin_test
+/*/generated
+/*/target
+/*feature/compile*.xml
+/*/target
+
+# vi detritus
+*.swp
+*~
+
+# Mac OS detritus
+.DS_Store
+
+# Bnd stuff
+/cnf/eclipse-*/bnd.index
+/cnf/cache
+
+# ant
+.ant-targets-build.xml
+
+# findbugs
+*.findbugs.xml
+
+# Project specific
+!/felix-configuration/bundle/*.jar

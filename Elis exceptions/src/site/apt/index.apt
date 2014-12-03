@@ -1,0 +1,13 @@
+What is this?
+
+  The Elis exceptions component provides a set of system wide exceptions.
+  These exceptions are the only ones, save for the exceptions defined in
+  Oracle's Java API specification, that are allowed to be thrown by the methods
+  defined in Elis APIs.
+  
+How does it work?
+
+  The endpoint services are annotated with Java's JAX-RS annotations. By doing
+  so, the Elis platform's embedded Jersey server will then automatically
+  recognize the exposed services as being web services and expose them to the
+  outside world.

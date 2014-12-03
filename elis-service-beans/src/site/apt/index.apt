@@ -1,0 +1,44 @@
+What is this?
+
+  The Service beans component provides the two envelope beans EnvelopeBean and
+  ErrorBean. They are the base of each response of Elis's REST API. The
+  component also provides the PeriodicityBean, which is used to describe data
+  related to periodicity, timestamps, and durations. Other than this, the
+  component also supplies three helper classes, one of which help with
+  translation of JSON-to-Java conversions, and one which help with building
+  REST responses.
+
+What are the Elis envelopes good for?
+
+  Each response from the REST API is wrapped in a JSON envelope. The envelope
+  contains, besides the actual response, the HTTP status code represented by
+  both an integer and a string, i.e. a empty 200 response would look as
+  follows:
+  
+----------
+{
+  "status": "OK",
+  "code": 200,
+  "response": {}
+}
+----------
+
+  Whenever a request fails, the REST API responds by sending a response wrapped
+  in an error envelope, which is represented by an ErrorBean. The error
+  envelope contains, in addition to the <status> and <code> fields, two fields
+  called <errorType> and <errorDetail>. They are used to describe the error at
+  hand. An error-induced response would look as follows:
+    
+----------
+{
+  "status": "Error",
+  "code": 409,
+  "errorType": "Conflict",
+  "errorDetail": "The proposed URL already exists on this server."
+}
+----------
+
+  By wrapping all responses in similar envelopes, the 3rd party developer will
+  be able to count on that all responses from Elis have at least some degree of
+  shared characteristics, even though their payloads may vary, depending on the
+  requests that produced them.

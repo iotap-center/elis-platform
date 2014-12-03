@@ -1,0 +1,11 @@
+What is this?
+
+  The Device service component provides a way of accessing the devices in the
+  Elis platform through the REST API, using the /devices/ endpoint.
+  
+How does it work?
+
+  The endpoint services are annotated with Java's JAX-RS annotations. By doing
+  so, the Elis platform's embedded Jersey server will then automatically
+  recognize the exposed services as being web services and expose them to the
+  outside world.

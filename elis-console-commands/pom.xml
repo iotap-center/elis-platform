@@ -1,0 +1,90 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>se.mah.elis</groupId>
+    <artifactId>super-pom</artifactId>
+    <version>0.0.1</version>
+    <relativePath>../super/pom.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>se.mah.elis.console</groupId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+  <name>Elis console commands</name>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>org.osgi</groupId>
+  		<artifactId>org.osgi.core</artifactId>
+  		<version>4.3.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.osgi</groupId>
+  		<artifactId>org.osgi.compendium</artifactId>
+  		<version>4.3.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.felix</groupId>
+  		<artifactId>org.apache.felix.shell</artifactId>
+  		<version>1.4.3</version>
+  		<type>bundle</type>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.felix</groupId>
+  		<artifactId>org.apache.felix.gogo.command</artifactId>
+  		<version>0.12.0</version>
+  		<type>bundle</type>
+  	</dependency>
+  	<dependency>
+  		<groupId>se.mah.elis.services.users</groupId>
+  		<artifactId>user-service</artifactId>
+  		<type>bundle</type>
+  		<version>[0.0.1, 3.0.0)</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.felix</groupId>
+  		<artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+  		<version>1.2.4</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>biz.aQute</groupId>
+  		<artifactId>bndlib</artifactId>
+  		<version>2.0.0.20130123-133441</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.felix</groupId>
+  		<artifactId>org.apache.felix.scr.annotations</artifactId>
+  		<version>1.9.6</version>
+  	</dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>    <!-- (2) START -->
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.4.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>${project.groupId}</Export-Package>
+            <Private-Package>${project.groupId}.*</Private-Package>
+          </instructions>
+        </configuration>
+      </plugin>    <!-- (2) END -->
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-scr-plugin</artifactId>
+        <version>1.14.0</version>
+        <executions>
+          <execution>
+            <id>generate-scr-scrdescriptor</id>
+            <goals>
+              <goal>scr</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <artifactId>elis-console-commands</artifactId>
+  <description>Console commands for the Elis platform</description>
+</project>

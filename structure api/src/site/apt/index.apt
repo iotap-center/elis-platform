@@ -1,0 +1,18 @@
+What is this?
+
+  This component provides the Structure API, which defines a way of describing
+  building layouts.
+  
+  The main interface of this API is the BuildingPartition, which serves as the
+  base interface for three out of four other interfaces in the API. It is
+  basically a collection of devices with a name and a description. As this
+  interface, along with all of its sub-interfaces, extends the ElisDataObject
+  interface, they are storable by Elis's storage facilities by design.
+  
+  The Building API is basically a collection of BuildingPartitions. Also this
+  interface extends ElisDataObject.
+  
+  The relation between the interfaces defined by this API are pictured in this
+  diagram:
+  
+[images/structure-uml.png] Relations between Structure API interfaces

@@ -1,0 +1,240 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>se.mah.elis</groupId>
+	<artifactId>super-pom</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+	<name>The Elis Platform</name>
+	
+	<developers>
+		<developer>
+			<id>archie</id>
+			<name>Marcus Ljungblad</name>
+			<email>marcus.ljungblad@mah.se</email>
+			<organization>MEDEA, Malmö University</organization>
+			<organizationUrl>http://medea.mah.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>koddas</id>
+			<name>Johan Holmberg</name>
+			<email>johan.holmberg@mah.se</email>
+			<organization>MEDEA, Malmö University</organization>
+			<organizationUrl>http://medea.mah.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>joakimlithell</id>
+			<name>Joakim Lithell</name>
+			<email>joakim.lithell@mah.se</email>
+			<organization>MEDEA, Malmö University</organization>
+			<organizationUrl>http://medea.mah.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>axelolsson</id>
+			<name>Axel Olsson</name>
+			<email>axel.olsson@mah.se</email>
+			<organization>MEDEA, Malmö University</organization>
+			<organizationUrl>http://medea.mah.se</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+	<organization>
+		<name>MEDEA, Malmö University</name>
+		<url>http://medea.mah.se</url>
+	</organization>
+	<scm>
+		<url>https://github.com/medeamalmo/elis-platform/</url>
+		<tag>HEAD</tag>
+		<connection>scm:git:https://github.com/medeamalmo/elis-platform/</connection>
+		<developerConnection>scm:git:https://github.com/medeamalmo/elis-platform/</developerConnection>
+	</scm>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>wagon-maven-plugin</artifactId>
+			<version>1.0-beta-4</version>
+			<type>maven-plugin</type>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-project-info-reports-plugin</artifactId>
+			<version>2.7</version>
+			<type>maven-plugin</type>
+		</dependency>
+	</dependencies>
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-file</artifactId>
+				<version>1.0-beta-4</version>
+			</extension>
+		</extensions>
+		<plugins>
+			<plugin>    <!-- OSGi BND START -->
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.4.0</version>
+				<extensions>true</extensions>
+			</plugin>    <!-- OSGi BND END -->
+			<plugin>    <!-- Wagon START -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>wagon-maven-plugin</artifactId>
+				<version>1.0-beta-4</version>
+				<executions>
+					<execution>
+						<id>deploy-to-local-test-installation</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<fromDir>${project.build.directory}</fromDir>
+					<includes>*.jar</includes>
+					<url>file://${user.home}/elis</url>
+					<toDir>osgi</toDir>
+				</configuration>
+			</plugin>    <!-- Wagon END -->
+			<plugin>     <!-- Surefire tests START -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12</version>
+				<configuration>
+					<forkMode>always</forkMode>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${user.home}/elis/osgi/*.jar</additionalClasspathElement>
+					</additionalClasspathElements>
+				</configuration>
+			</plugin>     <!-- Surefire tests END -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+				<plugin>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.5</version>
+					<executions>
+						<execution>
+							<id>copy-sitedescriptor</id>
+							<!-- fetch site.xml before creating site documentation -->
+							<phase>pre-site</phase>
+							<goals>
+								<goal>copy-resources</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${basedir}/src/site/</outputDirectory>
+								<resources>
+									<resource>
+										<directory>${site.basedir}/src/site/</directory>
+										<includes>
+											<!-- <include>**/site.xml</include> -->
+											<include>**/resources/images/banner.png</include>
+										</includes>
+									</resource>
+								</resources>
+							</configuration>
+						</execution>
+					</executions>
+			   </plugin>     
+		</plugins>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<excludePackageNames>*.internal:*.impl</excludePackageNames>
+					<groups>
+						<group>
+							<title>API specification</title>
+							<packages>
+								se.mah.elis.exceptions:se.mah.elis.data*:se.mah.elis.adaptor.device*:se.mah.elis.adaptor.structure*:se.mah.elis.services*
+							</packages>
+						</group>
+						<group>
+							<title>REST API bundles</title>
+							<packages>
+								se.mah.elis.external*
+							</packages>
+						</group>
+						<group>
+							<title>Adaptors</title>
+							<packages>
+								se.mah.elis.adaptor.energy.eon*:se.mah.elis.adaptor.water.mkb*
+							</packages>
+						</group>
+					</groups>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+	<distributionManagement>
+		<site>
+			<id>${project.artifactId}-site</id>
+			<name>The Elis Platform</name>
+			<url>./</url>
+		</site>
+	</distributionManagement>
+	<modules>
+		<!-- Internal API modules -->
+		<module>../Elis exceptions</module>
+		<module>../Data definitions</module>
+		<module>../user service api</module>
+		<module>../storage api</module>
+		<module>../device api</module>
+		<module>../structure api</module>
+		
+		<!-- REST API modules -->
+		<module>../elis-service-beans</module>
+		<module>../elis-device-service</module>
+        <module>../elis-energy-service</module>
+        <module>../elis-water-service</module>
+        <module>../elis-basic-control-services</module>
+        <module>../Elis user web service</module>
+		
+		<!-- Reference implementation modules -->
+		<module>../Elis user and persistent storage service implementations</module>
+		
+		<!-- Misc modules -->
+	</modules>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.27</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>
