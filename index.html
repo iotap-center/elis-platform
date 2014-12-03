@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Elis-platform by iotap-center</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Elis-platform</h1>
+          <h2>http://elis.mah.se</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/iotap-center/elis-platform/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/iotap-center/elis-platform/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/iotap-center/elis-platform" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
+<a id="the-elis-platform" class="anchor" href="#the-elis-platform" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Elis Platform</h1>
+
+<p>This project focuses on exploring the potential of mobile services on mobile devices (e.g. smart phones and tablets) to promote energy efficiency in existing buildings. Read more about the background <a href="http://elis.mah.se">here</a>.</p>
+
+<p>Other documents also worth checking out: </p>
+
+<ul>
+<li><a href="super/readme.md">Build Guide</a></li>
+<li><a href="Deployment%20guide.md">Deployment Guide</a></li>
+<li>Platform documentation (generated upon build, located in super/target/site)</li>
+</ul>
+
+<p>The rest of this document describes aspects useful while working on the implementation of Elis. </p>
+
+<h2>
+<a id="terminology" class="anchor" href="#terminology" aria-hidden="true"><span class="octicon octicon-link"></span></a>Terminology</h2>
+
+<ul>
+<li>Bundle - a module that is installable in the Felix runtime</li>
+<li>Provider - a bundle which communicates with, for example, E.On and conforms to the Elis APIs</li>
+</ul>
+
+<h2>
+<a id="version-management" class="anchor" href="#version-management" aria-hidden="true"><span class="octicon octicon-link"></span></a>Version management</h2>
+
+<p><strong>Releases</strong></p>
+
+<p>Follows the pattern <code>major.minor.patch</code>. <em>major</em> is used when significant new releases are made, e.g., several new APIs are added to the platform. <em>minor</em> is used for smaller updates, e.g., improved performance or small features. <em>patch</em> is used for hotfixes. </p>
+
+<p><strong>Bundles</strong></p>
+
+<p>Follows the pattern <code>major.minor.patch</code>. <em>major</em> is used when a change in the public API isn't backwards compatible. <em>minor</em> is used when the public API is extended in a backwards compatible way. <em>patch</em> is used when the public API is left unchanged (e.g. a bug fix).</p>
+
+<p><strong>HTTP API</strong></p>
+
+<p>Follows the pattern <code>/api/v#</code> where <code>#</code> is an ever increasing integer. Update version number for any additions or breaking changes to the API. Breaking changes includes both requests and responses. </p>
+
+<h2>
+<a id="referencing-bundles" class="anchor" href="#referencing-bundles" aria-hidden="true"><span class="octicon octicon-link"></span></a>Referencing bundles</h2>
+
+<p>The Elis platform consists of a number of API bundles that must be used when implementing a provider. These are: </p>
+
+<ul>
+<li>Data definitions</li>
+<li>Elis exceptions</li>
+<li>building api</li>
+<li>automation api</li>
+<li>user service api</li>
+<li>structure api</li>
+<li>storage api</li>
+</ul>
+
+<p>To implement a bundle it is only necessary to reference those that are required. </p>
+
+<p>For testing it is sometimes necessary to reference an implementation bundle. This is only allowed when testing and, hence, should be marked accordingly in the bundle's POM. For example: </p>
+
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
+  &lt;<span class="pl-ent">groupId</span>&gt;org.glassfish.jersey.test-framework.providers&lt;/<span class="pl-ent">groupId</span>&gt;
+  &lt;<span class="pl-ent">artifactId</span>&gt;jersey-test-framework-provider-inmemory&lt;/<span class="pl-ent">artifactId</span>&gt;
+  &lt;<span class="pl-ent">version</span>&gt;2.6&lt;/<span class="pl-ent">version</span>&gt;
+  &lt;<span class="pl-ent">scope</span>&gt;test&lt;/<span class="pl-ent">scope</span>&gt;
+&lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
+
+<h2>
+<a id="logging" class="anchor" href="#logging" aria-hidden="true"><span class="octicon octicon-link"></span></a>Logging</h2>
+
+<p>To use logging in an object it is necessary to reference the OSGI log service. The following example illustrates how. The <code>bindLog</code> and <code>unbindLog</code> methods are used by the OSGI framework to set a reference to the frameworks's log service.</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">package</span> <span class="pl-smp">se.mah.elis.services.demo.users</span>;
+
+<span class="pl-k">import</span> <span class="pl-smi">org.apache.felix.scr.annotations.Reference</span>;
+<span class="pl-k">import</span> <span class="pl-smi">org.osgi.service.log.LogService</span>;
+
+<span class="pl-s">public</span> <span class="pl-s">class</span> <span class="pl-en">LoggingExample</span> {
+
+  <span class="pl-st">@Reference</span>
+  <span class="pl-s">private</span> <span class="pl-stj">LogService</span> log;
+
+  <span class="pl-s">public</span> <span class="pl-st">void</span> <span class="pl-en">callMeMaybe</span>() {
+    <span class="pl-k">if</span> (log <span class="pl-k">!=</span> <span class="pl-c1">null</span>)
+      log<span class="pl-k">.</span>log(<span class="pl-stj">LogService</span><span class="pl-c1"><span class="pl-k">.</span>LOG_INFO</span>, <span class="pl-s1"><span class="pl-pds">"</span>Tada!<span class="pl-pds">"</span></span>);
+  }
+
+  <span class="pl-s">protected</span> <span class="pl-st">void</span> <span class="pl-en">bindLog</span>(<span class="pl-stj">LogService</span> <span class="pl-v">service</span>) {
+    log <span class="pl-k">=</span> service;
+  }
+
+  <span class="pl-s">protected</span> <span class="pl-st">void</span> <span class="pl-en">unbindLog</span>(<span class="pl-stj">LogService</span> <span class="pl-v">service</span>) {
+    log <span class="pl-k">=</span> <span class="pl-c1">null</span>;
+  }
+}</pre></div>
+
+<p>Your bundle POM file must include the following dependency:</p>
+
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
+  &lt;<span class="pl-ent">groupId</span>&gt;org.apache.felix&lt;/<span class="pl-ent">groupId</span>&gt;
+  &lt;<span class="pl-ent">artifactId</span>&gt;org.apache.felix.scr.annotations&lt;/<span class="pl-ent">artifactId</span>&gt;
+  &lt;<span class="pl-ent">version</span>&gt;1.9.6&lt;/<span class="pl-ent">version</span>&gt;
+&lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
+
+<p>For testing purposes it may be useful to provide a mock log service. This can be done using <a href="https://code.google.com/p/mockito/">Mockito</a> in the following manner: </p>
+
+<div class="highlight highlight-java"><pre><span class="pl-stj">LogService</span> log <span class="pl-k">=</span> mock(<span class="pl-stj">LogService</span><span class="pl-k">.</span>class);
+instanceOfLoggingExample<span class="pl-k">.</span>bindLog(log);</pre></div>
+
+<h2>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>Elis uses the OSGI Configuration Admin service to manage configuration properties for bundles. The configuration management interface can be reached in the <a href="http://195.178.234.87:8080/system/console/configMgr">Web Console</a>.</p>
+
+<p>An OSGI service that needs to be configurable must implement the <code>ManagedService</code> Java interface. Configuration updates are propagated through the <code>updated(Dictionary&lt;String, ?&gt;)</code> method. </p>
+
+<div class="highlight highlight-java"><pre>@Component(name <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>ExampleConfigurationService<span class="pl-pds">"</span></span>, immediate <span class="pl-k">=</span> <span class="pl-c1">true</span>)
+@<span class="pl-stj">Service</span>
+<span class="pl-s">public</span> <span class="pl-s">class</span> <span class="pl-en">ExampleService</span> <span class="pl-s">implements</span> <span class="pl-e">ManagedService</span> {
+
+  <span class="pl-c">// properties</span>
+  <span class="pl-s">public</span> <span class="pl-s">static</span> <span class="pl-stj">String</span> <span class="pl-c1">SERVICE_PID</span> <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>se.mah.elis.adaptor.example.service<span class="pl-pds">"</span></span>;
+  <span class="pl-s">public</span> <span class="pl-s">static</span> <span class="pl-stj">String</span> <span class="pl-c1">PROPERTY_1</span> <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>se.mah.elis.adaptor.example.service.some_property<span class="pl-pds">"</span></span>;
+
+  <span class="pl-s">public</span> <span class="pl-s">static</span> <span class="pl-st">Dictionary&lt;<span class="pl-stj">String</span>, ?&gt;</span> properties;
+
+  <span class="pl-st">@Reference</span>
+  <span class="pl-s">private</span> <span class="pl-stj">ConfigurationAdmin</span> configAdmin;
+
+  <span class="pl-s">protected</span> <span class="pl-st">void</span> <span class="pl-en">bindConfigAdmin</span>(<span class="pl-stj">ConfigurationAdmin</span> <span class="pl-v">ca</span>) {
+    configAdmin <span class="pl-k">=</span> ca;
+    setConfig();
+  }
+
+  <span class="pl-s">private</span> <span class="pl-st">void</span> <span class="pl-en">setConfig</span>() {
+    <span class="pl-k">try</span> {
+      <span class="pl-stj">Configuration</span> config <span class="pl-k">=</span> configAdmin<span class="pl-k">.</span>getConfiguration(<span class="pl-c1">SERVICE_PID</span>);
+      properties <span class="pl-k">=</span> config<span class="pl-k">.</span>getProperties();
+
+      <span class="pl-k">if</span> (properties <span class="pl-k">==</span> <span class="pl-c1">null</span>) 
+        properties <span class="pl-k">=</span> getDefaultConfiguration(); <span class="pl-c">// not implemented here</span>
+
+      config<span class="pl-k">.</span>update(properties);
+    } <span class="pl-k">catch</span> (<span class="pl-stj">IOException</span> e) {
+      <span class="pl-c">// handle this</span>
+    }
+  }
+
+  <span class="pl-s">protected</span> <span class="pl-st">void</span> <span class="pl-en">unbindConfigAdmin</span>(<span class="pl-stj">ConfigurationAdmin</span> <span class="pl-v">ca</span>) {
+    configAdmin <span class="pl-k">=</span> <span class="pl-c1">null</span>;
+  }
+
+  <span class="pl-st">@Override</span>
+  <span class="pl-s">public</span> <span class="pl-st">void</span> <span class="pl-en">updated</span>(<span class="pl-st">Dictionary&lt;<span class="pl-stj">String</span>, ?&gt;</span> <span class="pl-v">props</span>)
+      <span class="pl-s">throws</span> <span class="pl-stj">ConfigurationException</span> {
+    <span class="pl-k">if</span> (props <span class="pl-k">!=</span> <span class="pl-c1">null</span>) {
+      properties <span class="pl-k">=</span> props;
+      <span class="pl-c">// do something is properties change</span>
+    }
+  }
+}</pre></div>
+
+<p>By default, all Elis specific configuration files are stored in <code>$FELIX_HOME/elis_conf</code> and persistent across restarts. </p>
+
+<h2>
+<a id="development-tools" class="anchor" href="#development-tools" aria-hidden="true"><span class="octicon octicon-link"></span></a>Development tools</h2>
+
+<h3>
+<a id="continuous-integration" class="anchor" href="#continuous-integration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Continuous integration</h3>
+
+<p>Each push to the master branch is automatically built by the Elis <a href="http://195.178.234.87:8081/">Jenkins server</a>. If all tests pass the generated artifacts are automatically deployed to the <a href="http://195.178.234.87:8080/">staging environment</a>. </p>
+
+<h3>
+<a id="branching-model" class="anchor" href="#branching-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Branching model</h3>
+
+<p>The Elis project uses Nvie's <a href="http://nvie.com/posts/a-successful-git-branching-model/">git flow</a> branching model. </p>
+
+<h2>
+<a id="contributors" class="anchor" href="#contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributors</h2>
+
+<ul>
+<li><a href="mailto:johan.holmberg@mah.se">Johan Holmberg</a></li>
+<li><a href="mailto:marcus@ljungblad.nu">Marcus Ljungblad</a></li>
+<li><a href="mailto:axel.olsson@mah.se">Axel Olsson</a></li>
+<li><a href="mailto:joakim.lithell@mah.se">Joakim Lithell</a></li>
+</ul>
+        </section>
+
+        <footer>
+          Elis-platform is maintained by <a href="https://github.com/iotap-center">iotap-center</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
